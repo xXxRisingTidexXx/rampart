@@ -1,0 +1,20 @@
+shell: bash
+commands:
+  compile:
+    description: Compile the source code
+    cmd: go build -o prospector cmd/prospector/main.go
+  run:
+    description: Execute the binary
+    cmd: ./prospector
+  format:
+    description: Format the source code
+    cmd: gofmt -w -s .
+  lint:
+    description: Lint the source code
+    cmd: golangci-lint run
+  test:
+    description: Run test suites
+    cmd: go test -v
+  benchmark:
+    description: Run benchmarking
+    cmd: go test -bench=. -benchmem
