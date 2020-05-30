@@ -9,34 +9,9 @@ import (
 	"time"
 )
 
-type Locality struct {
-	City    string   `json:"cityName"`
-	State   string   `json:"stateName"`
-	Payload *Payload `json:"payload"`
-}
-
-func (locality *Locality) String() string {
-	return fmt.Sprintf("{%s %s %v}", locality.City, locality.State, locality.Payload)
-}
-
-type Payload struct {
-	CityID  int `json:"cityId"`
-	StateID int `json:"stateId"`
-}
-
-func (payload *Payload) String() string {
-	return fmt.Sprintf("{%d %d}", payload.CityID, payload.StateID)
-}
-
-type Housing int
-
-const (
-	Primary Housing = iota
-	Secondary
-)
-
-func NewFetcher(timeout time.Duration) *Fetcher {
+func NewFetcher(portion int, timeout time.Duration) *Fetcher {
 	return &Fetcher{
+		portion,
 		&http.Client{Timeout: timeout},
 		map[Housing]string{Primary: "newbuildings=1", Secondary: "secondary=1"},
 		"prospector/1.0 (rampart/prospector)",
@@ -47,6 +22,7 @@ func NewFetcher(timeout time.Duration) *Fetcher {
 }
 
 type Fetcher struct {
+	portion      int
 	client       *http.Client
 	housingFlags map[Housing]string
 	userAgent    string
@@ -54,7 +30,22 @@ type Fetcher struct {
 	flatURL      string
 }
 
-func (fetcher *Fetcher) Fetch() ([]map[string]interface{}, error) {
+func (fetcher *Fetcher) Fetch(state, city string, housing Housing) ([]map[string]interface{}, error) {
+	localities := make([]*Locality, 24)
+	if err := fetcher.fetchJSON(fetcher.localityURL, &localities); err != nil {
+		return nil, err
+	}
+	stateID, cityID := -1, -1
+	for _, locality := range localities {
+		if locality.State == state && locality.City == city {
+			stateID, cityID = locality.Payload.StateID, locality.Payload.CityID
+			break
+		}
+	}
+	if stateID == -1 || cityID == -1 {
+		return nil, fmt.Errorf("couldn't find locality with state %s and city %s", state, city)
+	}
+	log.Info(stateID, cityID)
 	return []map[string]interface{}{}, nil
 }
 
@@ -81,32 +72,32 @@ func (fetcher *Fetcher) fetchJSON(url string, target interface{}) error {
 	return nil
 }
 
+type Locality struct {
+	State   string   `json:"stateName"`
+	City    string   `json:"cityName"`
+	Payload *Payload `json:"payload"`
+}
+
+func (locality *Locality) String() string {
+	return fmt.Sprintf("{%s %s %v}", locality.State, locality.City, locality.Payload)
+}
+
+type Payload struct {
+	StateID int `json:"stateId"`
+	CityID  int `json:"cityId"`
+}
+
+func (payload *Payload) String() string {
+	return fmt.Sprintf("{%d %d}", payload.StateID, payload.CityID)
+}
+
 func main() {
 	log.SetLevel(log.InfoLevel)
 	log.Info("prospector started")
-
-	citiesURL := "https://dom.ria.com/node/api/autocompleteCities?langId=4"
-	client := http.Client{Timeout: time.Second * 2}
-	request, err := http.NewRequest(http.MethodGet, citiesURL, nil)
+	fetcher := NewFetcher(5, 5*time.Second)
+	_, err := fetcher.Fetch("Київська", "Київ", Primary)
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatal(err)
 	}
-	request.Header.Set("User-Agent", "prospector/1.0 (rampart/prospector)")
-	response, err := client.Do(request)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	body, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	localities := make([]*Locality, 24)
-	if err := json.Unmarshal(body, &localities); err != nil {
-		log.Fatalln(err)
-	}
-	if err := response.Body.Close(); err != nil {
-		log.Fatalln(err)
-	}
-	log.Info(localities)
 	log.Info("prospector finished")
 }
