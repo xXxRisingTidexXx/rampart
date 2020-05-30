@@ -99,6 +99,10 @@ func (fetcher *fetcher) mapItem(item *item) (*flat, error) {
 		return nil, fmt.Errorf("domria: item url can't be empty")
 	}
 	originURL := fmt.Sprintf(fetcher.originURL, item.BeautifulURL)
+	imageURL := item.MainPhoto
+	if imageURL != "" {
+		imageURL = fmt.Sprintf(fetcher.imageURL, imageURL)
+	}
 	rawPrice, ok := item.PriceArr["1"]
 	if !ok {
 		return nil, fmt.Errorf("domria: absent USD price at %s", originURL)
@@ -110,5 +114,17 @@ func (fetcher *fetcher) mapItem(item *item) (*flat, error) {
 	if item.TotalSquareMeters <= 0 {
 		return nil, fmt.Errorf("domria: non-positive total area at %s", originURL)
 	}
-	return &flat{}, nil
+	if item.LivingSquareMeters < 0 {
+		return nil, fmt.Errorf("domria: negative living area at %s", originURL)
+	}
+	if item.KitchenSquareMeters < 0 {
+		return nil, fmt.Errorf("domria: negative kitchen area at %s", originURL)
+	}
+	
+	return &flat{
+		originURL: originURL,
+		imageURL: imageURL,
+		updatedAt: (*time.Time)(item.UpdatedAt),
+		price: price,
+	}, nil
 }
