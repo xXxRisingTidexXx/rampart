@@ -8,7 +8,7 @@ import (
 type flat struct {
 	originURL   string
 	imageURL    string
-	accessTime  time.Time
+	updatedAt   time.Time
 	price       float64
 	totalArea   float64
 	livingArea  float64
