@@ -11,4 +11,3 @@ type search struct {
 func (search *search) String() string {
 	return fmt.Sprintf("{%v}", search.Items)
 }
-
