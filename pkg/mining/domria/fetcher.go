@@ -6,7 +6,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
-	"rampart/pkg"
 	"rampart/pkg/mining"
 	"strconv"
 	"strings"
@@ -23,9 +22,8 @@ func newFetcher(portion int, timeout time.Duration) *fetcher {
 		0,
 		portion,
 		map[mining.Housing]string{mining.Primary: "newbuildings=1", mining.Secondary: "secondary=1"},
-		"https://dom.ria.com/node/api/autocompleteCities?langId=4",
-		"https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1" +
-			"&fullCategoryOperation=1_2_1&%s&page=%d&state_id=%d&city_id=%d&limit=%d",
+		"https://dom.ria.com/searchEngine/?category=1&realty_type=2&opera" +
+			"tion_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d",
 		"https://dom.ria.com/uk/%s",
 		"https://cdn.riastatic.com/photos/%s",
 	}
@@ -37,30 +35,17 @@ type fetcher struct {
 	page         int
 	portion      int
 	housingFlags map[mining.Housing]string
-	localityURL  string
 	searchURL    string
 	originURL    string
 	imageURL     string
 }
 
-func (fetcher *fetcher) fetchFlats(state, city string, housing mining.Housing) ([]*flat, error) {
-	var localities []*locality
-	if err := fetcher.fetchJSON(fetcher.localityURL, &localities); err != nil {
-		return nil, err
-	}
-	stateID, cityID, err := fetcher.findLocalityIDs(localities, state, city)
-	if err != nil {
-		return nil, err
-	}
+func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
 	housingFlag, ok := fetcher.housingFlags[housing]
 	if !ok {
-		return nil, fmt.Errorf("domria: couldn't find flag with housing %v", housing)
+		return nil, fmt.Errorf("domria: %v housing isn't acceptable", housing)
 	}
-	var search search
-	err = fetcher.fetchJSON(
-		fmt.Sprintf(fetcher.searchURL, housingFlag, fetcher.page, stateID, cityID, fetcher.portion),
-		&search,
-	)
+	search, err := fetcher.fetchSearch(housingFlag)
 	if err != nil {
 		return nil, err
 	}
@@ -81,36 +66,32 @@ func (fetcher *fetcher) fetchFlats(state, city string, housing mining.Housing) (
 	return flats, nil
 }
 
-func (fetcher *fetcher) fetchJSON(url string, target pkg.Any) error {
-	request, err := http.NewRequest(http.MethodGet, url, nil)
+func (fetcher *fetcher) fetchSearch(housingFlag string) (*search, error) {
+	request, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf(fetcher.searchURL, housingFlag, fetcher.page, fetcher.portion),
+		nil,
+	)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("domria: failed to construct a request, %v", err)
 	}
 	request.Header.Set("User-Agent", fetcher.userAgent)
 	response, err := fetcher.client.Do(request)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("domria: failed to perform a request, %v", err)
 	}
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("domria: failed to read the response body, %v", err)
 	}
-	if err := json.Unmarshal(body, target); err != nil {
-		return err
+	var search search
+	if err := json.Unmarshal(body, &search); err != nil {
+		return nil, fmt.Errorf("domria: failed to unmarshal the search, %v", search)
 	}
 	if err := response.Body.Close(); err != nil {
-		return err
+		return nil, fmt.Errorf("domria: failed to close the response body, %v", err)
 	}
-	return nil
-}
-
-func (fetcher *fetcher) findLocalityIDs(localities []*locality, city, state string) (int, int, error) {
-	for _, locality := range localities {
-		if locality.State == state && locality.City == city {
-			return locality.Payload.StateID, locality.Payload.CityID, nil
-		}
-	}
-	return 0, 0, fmt.Errorf("domria: unknown locality with state %s and city %s", state, city)
+	return &search, nil
 }
 
 func (fetcher *fetcher) mapItem(item *item) (*flat, error) {
@@ -129,7 +110,5 @@ func (fetcher *fetcher) mapItem(item *item) (*flat, error) {
 	if item.TotalSquareMeters <= 0 {
 		return nil, fmt.Errorf("domria: non-positive total area at %s", originURL)
 	}
-	return &flat{
-
-	}, nil
+	return &flat{}, nil
 }
