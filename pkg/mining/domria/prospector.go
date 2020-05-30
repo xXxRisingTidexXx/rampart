@@ -14,6 +14,8 @@ type prospector struct {
 	fetcher *fetcher
 }
 
-func (prospector *prospector) Prospect(state, city string, housing mining.Housing) {
-	log.Info(prospector.fetcher.fetchFlats(state, city, housing))
+func (prospector *prospector) Prospect(housing mining.Housing) error {
+	flats, err := prospector.fetcher.fetchFlats(housing)
+	log.Info(flats)
+	return err
 }
