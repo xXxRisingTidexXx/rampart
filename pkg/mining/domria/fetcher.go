@@ -8,10 +8,15 @@ import (
 	"net/http"
 	"rampart/pkg"
 	"rampart/pkg/mining"
+	"strconv"
+	"strings"
 	"time"
 )
 
 func newFetcher(portion int, timeout time.Duration) *fetcher {
+	if portion < 1 {
+		panic(fmt.Sprintf("domria: fetcher got invalid portion, %d", portion))
+	}
 	return &fetcher{
 		&http.Client{Timeout: timeout},
 		"prospector/1.0 (rampart/prospector)",
@@ -109,5 +114,22 @@ func (fetcher *fetcher) findLocalityIDs(localities []*locality, city, state stri
 }
 
 func (fetcher *fetcher) mapItem(item *item) (*flat, error) {
-	return nil, nil
+	if item.BeautifulURL == "" {
+		return nil, fmt.Errorf("domria: item url can't be empty")
+	}
+	originURL := fmt.Sprintf(fetcher.originURL, item.BeautifulURL)
+	rawPrice, ok := item.PriceArr["1"]
+	if !ok {
+		return nil, fmt.Errorf("domria: absent USD price at %s", originURL)
+	}
+	price, err := strconv.ParseFloat(strings.ReplaceAll(rawPrice, " ", ""), 64)
+	if err != nil {
+		return nil, fmt.Errorf("domria: invalid USD price at %s, %v", originURL, err)
+	}
+	if item.TotalSquareMeters <= 0 {
+		return nil, fmt.Errorf("domria: non-positive total area at %s", originURL)
+	}
+	return &flat{
+
+	}, nil
 }

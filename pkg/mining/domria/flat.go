@@ -1,7 +1,8 @@
 package domria
 
 type flat struct {
-	url       string
+	originURL string
+	imageURL  string
 	price     float64
 	totalArea float64
 }
