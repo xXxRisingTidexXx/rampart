@@ -8,10 +8,10 @@ import (
 
 func main() {
 	log.SetLevel(log.DebugLevel)
-	log.Debug("prospector started")
-	prospector := domria.NewProspector()
-	if err := prospector.Prospect(mining.Secondary); err != nil {
+	log.Debug("mining: started")
+	prospector := domria.NewProspector(mining.Secondary)
+	if err := prospector.Prospect(); err != nil {
 		log.Fatal(err)
 	}
-	log.Debug("prospector finished")
+	log.Debug("mining: finished")
 }
