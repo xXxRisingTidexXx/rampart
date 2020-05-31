@@ -8,9 +8,14 @@ prospectors:
         primary: newbuildings=1
         secondary: secondary=1
       searchURL: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d
-      originURL: https://dom.ria.com/uk/%s
-      imageURL: https://cdn.riastatic.com/photos/%s
-      usdLabel: '1'
+      originURLPrefix: https://dom.ria.com/uk/
+      imageURLPrefix: https://cdn.riastatic.com/photos/
+      stateEnding: ька
+      stateSuffix: ' область'
+      districtLabel: Район
+      districtEnding: ий
+      districtSuffix: ' район'
+    validator:
       minTotalArea: 12
       maxTotalArea: 560
       minLivingArea: 0
@@ -26,8 +31,3 @@ prospectors:
       maxLongitude: 180
       minLatitude: -90
       maxLatitude: 90
-      stateEnding: ька
-      stateSuffix: ' область'
-      districtLabel: Район
-      districtEnding: ий
-      districtSuffix: ' район'
