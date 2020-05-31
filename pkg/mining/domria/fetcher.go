@@ -20,8 +20,8 @@ func newFetcher(userAgent string, config *configs.Fetcher) *fetcher {
 		config.Portion,
 		config.Flags,
 		config.SearchURL,
-		config.OriginURL,
-		config.ImageURL,
+		config.OriginURLPrefix,
+		config.ImageURLPrefix,
 		config.StateEnding,
 		config.StateSuffix,
 		config.DistrictLabel,
@@ -37,8 +37,8 @@ type fetcher struct {
 	portion         int
 	flags           map[mining.Housing]string
 	searchURL       string
-	originURL       string
-	imageURL        string
+	originURLPrefix string
+	imageURLPrefix  string
 	stateEnding     string
 	stateSuffix     string
 	districtLabel   string
@@ -102,11 +102,11 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([
 	for i, item := range search.Items {
 		originURL := item.BeautifulURL
 		if originURL != "" {
-			originURL = fmt.Sprintf(fetcher.originURL, originURL)
+			originURL = fetcher.originURLPrefix + originURL
 		}
 		imageURL := item.MainPhoto
 		if imageURL != "" {
-			imageURL = fmt.Sprintf(fetcher.imageURL, imageURL)
+			imageURL = fetcher.imageURLPrefix + imageURL
 		}
 		state := item.StateNameUK
 		if state != "" && strings.HasSuffix(state, fetcher.stateEnding) {
