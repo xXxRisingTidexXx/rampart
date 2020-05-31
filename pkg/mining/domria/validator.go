@@ -1,9 +1,8 @@
 package domria
 
 type validator struct {
-
 }
 
-func (validator *validator) validateFlats()  {
+func (validator *validator) validateFlats() {
 
 }
