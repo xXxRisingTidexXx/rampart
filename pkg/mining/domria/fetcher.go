@@ -15,7 +15,7 @@ import (
 func newFetcher() *fetcher {
 	return &fetcher{
 		&http.Client{Timeout: 20 * time.Second},
-		"prospector/1.0 (rampart/prospector)",
+		"rampart/v1.0.0",
 		0,
 		100,
 		map[mining.Housing]string{mining.Primary: "newbuildings=1", mining.Secondary: "secondary=1"},
