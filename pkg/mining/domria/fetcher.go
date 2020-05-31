@@ -22,22 +22,6 @@ func newFetcher(userAgent string, config *configs.Fetcher) *fetcher {
 		config.SearchURL,
 		config.OriginURL,
 		config.ImageURL,
-		config.USDLabel,
-		config.MinTotalArea,
-		config.MaxTotalArea,
-		config.MinLivingArea,
-		config.MinKitchenArea,
-		config.MinRoomNumber,
-		config.MaxRoomNumber,
-		config.MinSpecificArea,
-		config.MaxSpecificArea,
-		config.MinFloor,
-		config.MinTotalFloor,
-		config.MaxTotalFloor,
-		config.MinLongitude,
-		config.MaxLongitude,
-		config.MinLatitude,
-		config.MaxLatitude,
 		config.StateEnding,
 		config.StateSuffix,
 		config.DistrictLabel,
@@ -55,22 +39,6 @@ type fetcher struct {
 	searchURL       string
 	originURL       string
 	imageURL        string
-	usdLabel        string
-	minTotalArea    float64
-	maxTotalArea    float64
-	minLivingArea   float64
-	minKitchenArea  float64
-	minRoomNumber   int
-	maxRoomNumber   int
-	minSpecificArea float64
-	maxSpecificArea float64
-	minFloor        int
-	minTotalFloor   int
-	maxTotalFloor   int
-	minLongitude    float64
-	maxLongitude    float64
-	minLatitude     float64
-	maxLatitude     float64
 	stateEnding     string
 	stateSuffix     string
 	districtLabel   string
