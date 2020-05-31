@@ -3,11 +3,10 @@ package domria
 import (
 	log "github.com/sirupsen/logrus"
 	"rampart/pkg/mining"
-	"time"
 )
 
 func NewProspector() mining.Prospector {
-	return &prospector{newFetcher(10, 10*time.Second)}
+	return &prospector{newFetcher()}
 }
 
 type prospector struct {
