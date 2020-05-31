@@ -22,10 +22,10 @@ prospectors:
       minFloor: 1
       minTotalFloor: 2
       maxTotalFloor: 50
-      minLongitude: 22
-      maxLongitude: 40
-      minLatitude: 44
-      maxLatitude: 52
+      minLongitude: -180
+      maxLongitude: 180
+      minLatitude: -90
+      maxLatitude: 90
       stateEnding: ька
       stateSuffix: ' область'
       districtLabel: Район
