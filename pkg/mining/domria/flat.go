@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// TODO: check golang gis geometry library integration
+// TODO: check golang gis geometry library integration.
 type flat struct {
 	originURL   string
 	imageURL    string

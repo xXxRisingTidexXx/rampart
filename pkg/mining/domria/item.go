@@ -1,6 +1,6 @@
 package domria
 
-// TODO: easyjson from mailru
+// TODO: easyjson from mailru.
 type item struct {
 	BeautifulURL        string            `json:"beautiful_url"`
 	MainPhoto           string            `json:"main_photo"`
