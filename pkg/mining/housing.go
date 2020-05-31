@@ -1,19 +1,12 @@
 package mining
 
-type Housing int
+type Housing string
 
 const (
-	Primary Housing = iota
-	Secondary
+	Primary Housing = "primary"
+	Secondary Housing = "secondary"
 )
 
 func (housing Housing) String() string {
-	switch housing {
-	case Primary:
-		return "primary"
-	case Secondary:
-		return "secondary"
-	default:
-		return "undefined"
-	}
+	return string(housing)
 }
