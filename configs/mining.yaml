@@ -1,4 +1,5 @@
 userAgent: rampart-mining-bot/v1.0.0
+srid: 4326
 prospectors:
   domria:
     fetcher:
