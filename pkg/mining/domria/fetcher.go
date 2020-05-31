@@ -12,32 +12,51 @@ import (
 	"time"
 )
 
-func newFetcher(portion int, timeout time.Duration) *fetcher {
-	if portion < 1 {
-		panic(fmt.Sprintf("domria: fetcher got invalid portion, %d", portion))
-	}
+func newFetcher() *fetcher {
 	return &fetcher{
-		&http.Client{Timeout: timeout},
+		&http.Client{Timeout: 10 * time.Second},
 		"prospector/1.0 (rampart/prospector)",
 		0,
-		portion,
+		10,
 		map[mining.Housing]string{mining.Primary: "newbuildings=1", mining.Secondary: "secondary=1"},
 		"https://dom.ria.com/searchEngine/?category=1&realty_type=2&opera" +
 			"tion_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d",
 		"https://dom.ria.com/uk/%s",
 		"https://cdn.riastatic.com/photos/%s",
+		10,
+		560,
+		8,
+		2,
+		1,
+		9,
+		12,
+		130,
+		1,
+		2,
+		50,
 	}
 }
 
 type fetcher struct {
-	client       *http.Client
-	userAgent    string
-	page         int
-	portion      int
-	housingFlags map[mining.Housing]string
-	searchURL    string
-	originURL    string
-	imageURL     string
+	client          *http.Client
+	userAgent       string
+	page            int
+	portion         int
+	housingFlags    map[mining.Housing]string
+	searchURL       string
+	originURL       string
+	imageURL        string
+	minTotalArea    float64
+	maxTotalArea    float64
+	minLivingArea   float64
+	minKitchenArea  float64
+	minRoomNumber   int
+	maxRoomNumber   int
+	minSpecificArea float64
+	maxSpecificArea float64
+	minFloor        int
+	minTotalFloor   int
+	maxTotalFloor   int
 }
 
 func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
@@ -57,7 +76,7 @@ func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
 	fetcher.page++
 	flats := make([]*flat, 0, length)
 	for _, item := range search.Items {
-		if flat, err := fetcher.mapItem(item); err != nil {
+		if flat, err := fetcher.mapItem(item, housing); err != nil {
 			log.Error(err)
 		} else {
 			flats = append(flats, flat)
@@ -94,7 +113,7 @@ func (fetcher *fetcher) fetchSearch(housingFlag string) (*search, error) {
 	return &search, nil
 }
 
-func (fetcher *fetcher) mapItem(item *item) (*flat, error) {
+func (fetcher *fetcher) mapItem(item *item, housing mining.Housing) (*flat, error) {
 	if item.BeautifulURL == "" {
 		return nil, fmt.Errorf("domria: item url can't be empty")
 	}
@@ -111,20 +130,65 @@ func (fetcher *fetcher) mapItem(item *item) (*flat, error) {
 	if err != nil {
 		return nil, fmt.Errorf("domria: invalid USD price at %s, %v", originURL, err)
 	}
-	if item.TotalSquareMeters <= 0 {
-		return nil, fmt.Errorf("domria: non-positive total area at %s", originURL)
+	if item.TotalSquareMeters < fetcher.minTotalArea || item.TotalSquareMeters > fetcher.maxTotalArea {
+		return nil, fmt.Errorf("domria: total area is out of range at %s", originURL)
 	}
-	if item.LivingSquareMeters < 0 {
-		return nil, fmt.Errorf("domria: negative living area at %s", originURL)
+	if item.LivingSquareMeters != 0 &&
+		(item.LivingSquareMeters < fetcher.minLivingArea ||
+			item.LivingSquareMeters >= item.TotalSquareMeters) {
+		return nil, fmt.Errorf("domria: living area is out of range at %s", originURL)
 	}
-	if item.KitchenSquareMeters < 0 {
-		return nil, fmt.Errorf("domria: negative kitchen area at %s", originURL)
+	if item.KitchenSquareMeters != 0 &&
+		(item.KitchenSquareMeters < fetcher.minKitchenArea ||
+			item.KitchenSquareMeters >= item.TotalSquareMeters) {
+		return nil, fmt.Errorf("domria: kitchen area is out of range at %s", originURL)
 	}
-	
+	if item.RoomsCount < fetcher.minRoomNumber || item.RoomsCount > fetcher.maxRoomNumber {
+		return nil, fmt.Errorf("domria: room number is out of range at %s", originURL)
+	}
+	specificArea := item.TotalSquareMeters / float64(item.RoomsCount)
+	if specificArea < fetcher.minSpecificArea || specificArea > fetcher.maxSpecificArea {
+		return nil, fmt.Errorf("domria: specific area is out of range at %s", originURL)
+	}
+	if item.FloorsCount < fetcher.minTotalFloor || item.FloorsCount > fetcher.maxTotalFloor {
+		return nil, fmt.Errorf("domria: total floor is out of range, %s", originURL)
+	}
+	if item.Floor < fetcher.minFloor || item.Floor > item.FloorsCount {
+		return nil, fmt.Errorf("domria: floor is out of range, %s", originURL)
+	}
+	if item.Longitude < -180 || item.Longitude > 180 {
+		return nil, fmt.Errorf("domria: longitude is out of range at %s", originURL)
+	}
+	if item.Latitude < -90 || item.Latitude > 90 {
+		return nil, fmt.Errorf("domria: latitude is out of range at %s", originURL)
+	}
+	district := item.DistrictNameUK
+	if district != "" && item.DistrictTypeName == "Район" {
+		district = district + " район"
+	}
+	street := item.StreetNameUK
+	if street == "" && item.StreetName != "" {
+		street = item.StreetName
+	}
 	return &flat{
-		originURL: originURL,
-		imageURL: imageURL,
-		updatedAt: (*time.Time)(item.UpdatedAt),
-		price: price,
+		originURL,
+		imageURL,
+		(*time.Time)(item.UpdatedAt),
+		price,
+		item.TotalSquareMeters,
+		item.LivingSquareMeters,
+		item.KitchenSquareMeters,
+		item.RoomsCount,
+		item.Floor,
+		item.FloorsCount,
+		housing,
+		item.UserNewbuildNameUK,
+		float64(item.Longitude),
+		float64(item.Latitude),
+		item.StateNameUK + " область",
+		item.CityNameUK,
+		district,
+		street,
+		item.BuildingNumberStr,
 	}, nil
 }

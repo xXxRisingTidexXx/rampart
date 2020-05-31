@@ -18,7 +18,7 @@ type flat struct {
 	totalFloor  int
 	housing     mining.Housing
 	complex     string
-	longitude   float64  // TODO: check golang gis geometry library integration
+	longitude   float64 // TODO: check golang gis geometry library integration
 	latitude    float64
 	state       string
 	city        string
