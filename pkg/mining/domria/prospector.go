@@ -1,7 +1,6 @@
 package domria
 
 import (
-	log "github.com/sirupsen/logrus"
 	"rampart/pkg/mining"
 )
 
@@ -14,9 +13,6 @@ type prospector struct {
 }
 
 func (prospector *prospector) Prospect(housing mining.Housing) error {
-	flats, err := prospector.fetcher.fetchFlats(housing)
-	for _, flat := range flats {
-		log.Info(flat)
-	}
+	_, err := prospector.fetcher.fetchFlats(housing)
 	return err
 }

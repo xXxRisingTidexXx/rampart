@@ -17,7 +17,7 @@ func newFetcher() *fetcher {
 		&http.Client{Timeout: 20 * time.Second},
 		"prospector/1.0 (rampart/prospector)",
 		0,
-		1000,
+		100,
 		map[mining.Housing]string{mining.Primary: "newbuildings=1", mining.Secondary: "secondary=1"},
 		"https://dom.ria.com/searchEngine/?category=1&realty_type=2&opera" +
 			"tion_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d",
@@ -77,7 +77,7 @@ func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
 	flats := make([]*flat, 0, length)
 	for _, item := range search.Items {
 		if flat, err := fetcher.mapItem(item, housing); err != nil {
-			log.Error(err)
+			log.Warning(err)
 		} else {
 			flats = append(flats, flat)
 		}
