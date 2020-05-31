@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"rampart/pkg/mining"
 	"rampart/pkg/mining/configs"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -84,30 +83,25 @@ func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
 	if !ok {
 		return nil, fmt.Errorf("domria: %v housing isn't acceptable", housing)
 	}
-	search, err := fetcher.fetchSearch(flag)
+	bytes, err := fetcher.getSearch(flag)
 	if err != nil {
 		return nil, err
 	}
-	length := len(search.Items)
-	if length == 0 {
+	flats, err := fetcher.unmarshalSearch(bytes, housing)
+	if err != nil {
+		return nil, err
+	}
+	if length := len(flats); length > 0 {
+		log.Debugf("domria: %s housing fetcher on %d page fetched %d flats", housing, fetcher.page, length)
+		fetcher.page++
+	} else {
 		log.Debugf("domria: %s housing fetcher on %d page reset", housing, fetcher.page)
 		fetcher.page = 0
-		return nil, nil
 	}
-	flats := make([]*flat, 0, length)
-	for _, item := range search.Items {
-		if flat, err := fetcher.mapItem(item, housing); err != nil {
-			log.Error(err)
-		} else {
-			flats = append(flats, flat)
-		}
-	}
-	log.Debugf("domria: %s housing fetcher on %d page fetched %d flats", housing, fetcher.page, len(flats))
-	fetcher.page++
 	return flats, nil
 }
 
-func (fetcher *fetcher) fetchSearch(flag string) (*search, error) {
+func (fetcher *fetcher) getSearch(flag string) ([]byte, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf(fetcher.searchURL, flag, fetcher.page, fetcher.portion),
@@ -121,102 +115,66 @@ func (fetcher *fetcher) fetchSearch(flag string) (*search, error) {
 	if err != nil {
 		return nil, fmt.Errorf("domria: failed to perform a request, %v", err)
 	}
-	body, err := ioutil.ReadAll(response.Body)
+	bytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return nil, fmt.Errorf("domria: failed to read the response body, %v", err)
 	}
-	var search search
-	if err := json.Unmarshal(body, &search); err != nil {
-		return nil, fmt.Errorf("domria: failed to unmarshal the search, %v", err)
-	}
-	if err := response.Body.Close(); err != nil {
+	if err = response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: failed to close the response body, %v", err)
 	}
-	return &search, nil
+	return bytes, nil
 }
 
-func (fetcher *fetcher) mapItem(item *item, housing mining.Housing) (*flat, error) {
-	if item.BeautifulURL == "" {
-		return nil, fmt.Errorf("domria: item url can't be empty")
+func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([]*flat, error) {
+	var search search
+	if err := json.Unmarshal(bytes, &search); err != nil {
+		return nil, fmt.Errorf("domria: failed to unmarshal the search, %v", err)
 	}
-	originURL := fmt.Sprintf(fetcher.originURL, item.BeautifulURL)
-	imageURL := item.MainPhoto
-	if imageURL != "" {
-		imageURL = fmt.Sprintf(fetcher.imageURL, imageURL)
+	flats := make([]*flat, len(search.Items))
+	for i, item := range search.Items {
+		originURL := item.BeautifulURL
+		if originURL != "" {
+			originURL = fmt.Sprintf(fetcher.originURL, originURL)
+		}
+		imageURL := item.MainPhoto
+		if imageURL != "" {
+			imageURL = fmt.Sprintf(fetcher.imageURL, imageURL)
+		}
+		state := item.StateNameUK
+		if state != "" && strings.HasSuffix(state, fetcher.stateEnding) {
+			state += fetcher.stateSuffix
+		}
+		district := item.DistrictNameUK
+		if district != "" &&
+			item.DistrictTypeName == fetcher.districtLabel &&
+			strings.HasSuffix(district, fetcher.districtEnding) {
+			district += fetcher.districtSuffix
+		}
+		street := item.StreetNameUK
+		if street == "" && item.StreetName != "" {
+			street = item.StreetName
+		}
+		flats[i] = &flat{
+			originURL,
+			imageURL,
+			(*time.Time)(item.UpdatedAt),
+			float64(item.PriceArr.USD),
+			item.TotalSquareMeters,
+			item.LivingSquareMeters,
+			item.KitchenSquareMeters,
+			item.RoomsCount,
+			item.Floor,
+			item.FloorsCount,
+			housing,
+			item.UserNewbuildNameUK,
+			float64(item.Longitude),
+			float64(item.Latitude),
+			state,
+			item.CityNameUK,
+			district,
+			street,
+			item.BuildingNumberStr,
+		}
 	}
-	rawPrice, ok := item.PriceArr[fetcher.usdLabel]
-	if !ok {
-		return nil, fmt.Errorf("domria: absent USD price at %s", originURL)
-	}
-	price, err := strconv.ParseFloat(strings.ReplaceAll(rawPrice, " ", ""), 64)
-	if err != nil {
-		return nil, fmt.Errorf("domria: invalid USD price at %s, %v", originURL, err)
-	}
-	if item.TotalSquareMeters < fetcher.minTotalArea || item.TotalSquareMeters > fetcher.maxTotalArea {
-		return nil, fmt.Errorf("domria: total area is out of range at %s", originURL)
-	}
-	if item.LivingSquareMeters < fetcher.minLivingArea ||
-		item.LivingSquareMeters >= item.TotalSquareMeters {
-		return nil, fmt.Errorf("domria: living area is out of range at %s", originURL)
-	}
-	if item.KitchenSquareMeters < fetcher.minKitchenArea ||
-		item.KitchenSquareMeters >= item.TotalSquareMeters {
-		return nil, fmt.Errorf("domria: kitchen area is out of range at %s", originURL)
-	}
-	if item.RoomsCount < fetcher.minRoomNumber || item.RoomsCount > fetcher.maxRoomNumber {
-		return nil, fmt.Errorf("domria: room number is out of range at %s", originURL)
-	}
-	specificArea := item.TotalSquareMeters / float64(item.RoomsCount)
-	if specificArea < fetcher.minSpecificArea || specificArea > fetcher.maxSpecificArea {
-		return nil, fmt.Errorf("domria: specific area is out of range at %s", originURL)
-	}
-	if item.FloorsCount < fetcher.minTotalFloor || item.FloorsCount > fetcher.maxTotalFloor {
-		return nil, fmt.Errorf("domria: total floor is out of range, %s", originURL)
-	}
-	if item.Floor < fetcher.minFloor || item.Floor > item.FloorsCount {
-		return nil, fmt.Errorf("domria: floor is out of range, %s", originURL)
-	}
-	longitude := float64(item.Longitude)
-	if longitude < fetcher.minLongitude || longitude > fetcher.maxLongitude {
-		return nil, fmt.Errorf("domria: longitude is out of range at %s", originURL)
-	}
-	latitude := float64(item.Latitude)
-	if latitude < fetcher.minLatitude || latitude > fetcher.maxLatitude {
-		return nil, fmt.Errorf("domria: latitude is out of range at %s", originURL)
-	}
-	state := item.StateNameUK
-	if state != "" && strings.HasSuffix(state, fetcher.stateEnding) {
-		state += fetcher.stateSuffix
-	}
-	district := item.DistrictNameUK
-	if district != "" &&
-		item.DistrictTypeName == fetcher.districtLabel &&
-		strings.HasSuffix(district, fetcher.districtEnding) {
-		district += fetcher.districtSuffix
-	}
-	street := item.StreetNameUK
-	if street == "" && item.StreetName != "" {
-		street = item.StreetName
-	}
-	return &flat{
-		originURL,
-		imageURL,
-		(*time.Time)(item.UpdatedAt),
-		price,
-		item.TotalSquareMeters,
-		item.LivingSquareMeters,
-		item.KitchenSquareMeters,
-		item.RoomsCount,
-		item.Floor,
-		item.FloorsCount,
-		housing,
-		item.UserNewbuildNameUK,
-		latitude,
-		longitude,
-		state,
-		item.CityNameUK,
-		district,
-		street,
-		item.BuildingNumberStr,
-	}, nil
+	return flats, nil
 }
