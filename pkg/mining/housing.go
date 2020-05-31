@@ -5,7 +5,6 @@ type Housing int
 const (
 	Primary Housing = iota
 	Secondary
-	All
 )
 
 func (housing Housing) String() string {
@@ -14,8 +13,6 @@ func (housing Housing) String() string {
 		return "primary"
 	case Secondary:
 		return "secondary"
-	case All:
-		return "all"
 	default:
 		return "undefined"
 	}
