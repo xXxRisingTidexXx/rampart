@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"github.com/twpayne/go-geom"
 	"io/ioutil"
 	"net/http"
 	"rampart/pkg/mining"
@@ -108,6 +109,10 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([
 		if imageURL != "" {
 			imageURL = fetcher.imageURLPrefix + imageURL
 		}
+		var point *geom.Point
+		if item.Longitude != 0 && item.Latitude != 0 {
+			point = geom.NewPointFlat(geom.XY, []float64{float64(item.Longitude), float64(item.Latitude)})
+		}
 		state := item.StateNameUK
 		if state != "" && strings.HasSuffix(state, fetcher.stateEnding) {
 			state += fetcher.stateSuffix
@@ -135,14 +140,14 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([
 			item.FloorsCount,
 			housing,
 			item.UserNewbuildNameUK,
-			float64(item.Longitude),
-			float64(item.Latitude),
+			point,
 			state,
 			item.CityNameUK,
 			district,
 			street,
 			item.BuildingNumberStr,
 		}
+		log.Info(flats[i])
 	}
 	return flats, nil
 }

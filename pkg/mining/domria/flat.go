@@ -2,11 +2,11 @@ package domria
 
 import (
 	"fmt"
+	"github.com/twpayne/go-geom"
 	"rampart/pkg/mining"
 	"time"
 )
 
-// TODO: check golang gis geometry library integration.
 type flat struct {
 	originURL   string
 	imageURL    string
@@ -20,8 +20,7 @@ type flat struct {
 	totalFloor  int
 	housing     mining.Housing
 	complex     string
-	longitude   float64
-	latitude    float64
+	point       *geom.Point
 	state       string
 	city        string
 	district    string
@@ -31,7 +30,7 @@ type flat struct {
 
 func (flat *flat) String() string {
 	return fmt.Sprintf(
-		"{%s %s %v %.2f %.1f %.1f %.1f %d %d %d %s %s %.6f %.6f %s %s %s %s %s}",
+		"{%s %s %v %.2f %.1f %.1f %.1f %d %d %d %s %s %v %s %s %s %s %s}",
 		flat.originURL,
 		flat.imageURL,
 		flat.updateTime,
@@ -44,8 +43,7 @@ func (flat *flat) String() string {
 		flat.totalFloor,
 		flat.housing,
 		flat.complex,
-		flat.longitude,
-		flat.latitude,
+		flat.point,
 		flat.state,
 		flat.city,
 		flat.district,
