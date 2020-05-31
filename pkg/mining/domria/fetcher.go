@@ -7,45 +7,56 @@ import (
 	"io/ioutil"
 	"net/http"
 	"rampart/pkg/mining"
+	"rampart/pkg/mining/configs"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func newFetcher() *fetcher {
+func newFetcher(userAgent string, config *configs.Fetcher) *fetcher {
 	return &fetcher{
-		&http.Client{Timeout: 20 * time.Second},
-		"rampart/v1.0.0",
+		userAgent,
+		&http.Client{Timeout: config.Timeout},
 		0,
-		100,
-		map[mining.Housing]string{mining.Primary: "newbuildings=1", mining.Secondary: "secondary=1"},
-		"https://dom.ria.com/searchEngine/?category=1&realty_type=2&opera" +
-			"tion_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d",
-		"https://dom.ria.com/uk/%s",
-		"https://cdn.riastatic.com/photos/%s",
-		10,
-		560,
-		8,
-		2,
-		1,
-		9,
-		12,
-		130,
-		1,
-		2,
-		50,
+		config.Portion,
+		config.Flags,
+		config.SearchURL,
+		config.OriginURL,
+		config.ImageURL,
+		config.USDLabel,
+		config.MinTotalArea,
+		config.MaxTotalArea,
+		config.MinLivingArea,
+		config.MinKitchenArea,
+		config.MinRoomNumber,
+		config.MaxRoomNumber,
+		config.MinSpecificArea,
+		config.MaxSpecificArea,
+		config.MinFloor,
+		config.MinTotalFloor,
+		config.MaxTotalFloor,
+		config.MinLongitude,
+		config.MaxLongitude,
+		config.MinLatitude,
+		config.MaxLatitude,
+		config.StateEnding,
+		config.StateSuffix,
+		config.DistrictLabel,
+		config.DistrictEnding,
+		config.DistrictSuffix,
 	}
 }
 
 type fetcher struct {
-	client          *http.Client
 	userAgent       string
+	client          *http.Client
 	page            int
 	portion         int
-	housingFlags    map[mining.Housing]string
+	flags           map[mining.Housing]string
 	searchURL       string
 	originURL       string
 	imageURL        string
+	usdLabel        string
 	minTotalArea    float64
 	maxTotalArea    float64
 	minLivingArea   float64
@@ -57,14 +68,23 @@ type fetcher struct {
 	minFloor        int
 	minTotalFloor   int
 	maxTotalFloor   int
+	minLongitude    float64
+	maxLongitude    float64
+	minLatitude     float64
+	maxLatitude     float64
+	stateEnding     string
+	stateSuffix     string
+	districtLabel   string
+	districtEnding  string
+	districtSuffix  string
 }
 
 func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
-	housingFlag, ok := fetcher.housingFlags[housing]
+	flag, ok := fetcher.flags[housing]
 	if !ok {
 		return nil, fmt.Errorf("domria: %v housing isn't acceptable", housing)
 	}
-	search, err := fetcher.fetchSearch(housingFlag)
+	search, err := fetcher.fetchSearch(flag)
 	if err != nil {
 		return nil, err
 	}
@@ -87,10 +107,10 @@ func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
 	return flats, nil
 }
 
-func (fetcher *fetcher) fetchSearch(housingFlag string) (*search, error) {
+func (fetcher *fetcher) fetchSearch(flag string) (*search, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf(fetcher.searchURL, housingFlag, fetcher.page, fetcher.portion),
+		fmt.Sprintf(fetcher.searchURL, flag, fetcher.page, fetcher.portion),
 		nil,
 	)
 	if err != nil {
@@ -124,7 +144,7 @@ func (fetcher *fetcher) mapItem(item *item, housing mining.Housing) (*flat, erro
 	if imageURL != "" {
 		imageURL = fmt.Sprintf(fetcher.imageURL, imageURL)
 	}
-	rawPrice, ok := item.PriceArr["1"]
+	rawPrice, ok := item.PriceArr[fetcher.usdLabel]
 	if !ok {
 		return nil, fmt.Errorf("domria: absent USD price at %s", originURL)
 	}
@@ -135,14 +155,12 @@ func (fetcher *fetcher) mapItem(item *item, housing mining.Housing) (*flat, erro
 	if item.TotalSquareMeters < fetcher.minTotalArea || item.TotalSquareMeters > fetcher.maxTotalArea {
 		return nil, fmt.Errorf("domria: total area is out of range at %s", originURL)
 	}
-	if item.LivingSquareMeters != 0 &&
-		(item.LivingSquareMeters < fetcher.minLivingArea ||
-			item.LivingSquareMeters >= item.TotalSquareMeters) {
+	if item.LivingSquareMeters < fetcher.minLivingArea ||
+		item.LivingSquareMeters >= item.TotalSquareMeters {
 		return nil, fmt.Errorf("domria: living area is out of range at %s", originURL)
 	}
-	if item.KitchenSquareMeters != 0 &&
-		(item.KitchenSquareMeters < fetcher.minKitchenArea ||
-			item.KitchenSquareMeters >= item.TotalSquareMeters) {
+	if item.KitchenSquareMeters < fetcher.minKitchenArea ||
+		item.KitchenSquareMeters >= item.TotalSquareMeters {
 		return nil, fmt.Errorf("domria: kitchen area is out of range at %s", originURL)
 	}
 	if item.RoomsCount < fetcher.minRoomNumber || item.RoomsCount > fetcher.maxRoomNumber {
@@ -158,15 +176,23 @@ func (fetcher *fetcher) mapItem(item *item, housing mining.Housing) (*flat, erro
 	if item.Floor < fetcher.minFloor || item.Floor > item.FloorsCount {
 		return nil, fmt.Errorf("domria: floor is out of range, %s", originURL)
 	}
-	if item.Longitude < -180 || item.Longitude > 180 {
+	longitude := float64(item.Longitude)
+	if longitude < fetcher.minLongitude || longitude > fetcher.maxLongitude {
 		return nil, fmt.Errorf("domria: longitude is out of range at %s", originURL)
 	}
-	if item.Latitude < -90 || item.Latitude > 90 {
+	latitude := float64(item.Latitude)
+	if latitude < fetcher.minLatitude || latitude > fetcher.maxLatitude {
 		return nil, fmt.Errorf("domria: latitude is out of range at %s", originURL)
 	}
+	state := item.StateNameUK
+	if state != "" && strings.HasSuffix(state, fetcher.stateEnding) {
+		state += fetcher.stateSuffix
+	}
 	district := item.DistrictNameUK
-	if district != "" && item.DistrictTypeName == "Район" && strings.HasSuffix(district, "ий") {
-		district += " район"
+	if district != "" &&
+		item.DistrictTypeName == fetcher.districtLabel &&
+		strings.HasSuffix(district, fetcher.districtEnding) {
+		district += fetcher.districtSuffix
 	}
 	street := item.StreetNameUK
 	if street == "" && item.StreetName != "" {
@@ -185,9 +211,9 @@ func (fetcher *fetcher) mapItem(item *item, housing mining.Housing) (*flat, erro
 		item.FloorsCount,
 		housing,
 		item.UserNewbuildNameUK,
-		float64(item.Longitude),
-		float64(item.Latitude),
-		item.StateNameUK + " область",
+		latitude,
+		longitude,
+		state,
 		item.CityNameUK,
 		district,
 		street,
