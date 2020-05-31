@@ -70,18 +70,20 @@ func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
 	}
 	length := len(search.Items)
 	if length == 0 {
+		log.Debugf("domria: %s housing fetcher on %d page reset", housing, fetcher.page)
 		fetcher.page = 0
 		return nil, nil
 	}
-	fetcher.page++
 	flats := make([]*flat, 0, length)
 	for _, item := range search.Items {
 		if flat, err := fetcher.mapItem(item, housing); err != nil {
-			log.Warning(err)
+			log.Error(err)
 		} else {
 			flats = append(flats, flat)
 		}
 	}
+	log.Debugf("domria: %s housing fetcher on %d page fetched %d flats", housing, fetcher.page, len(flats))
+	fetcher.page++
 	return flats, nil
 }
 
