@@ -3,7 +3,7 @@ package mining
 type Housing string
 
 const (
-	Primary Housing = "primary"
+	Primary   Housing = "primary"
 	Secondary Housing = "secondary"
 )
 
