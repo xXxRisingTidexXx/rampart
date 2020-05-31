@@ -10,7 +10,7 @@ func main() {
 	log.SetLevel(log.InfoLevel)
 	log.Info("prospector started")
 	prospector := domria.NewProspector()
-	if err := prospector.Prospect(mining.Primary); err != nil {
+	if err := prospector.Prospect(mining.Secondary); err != nil {
 		log.Fatal(err)
 	}
 	log.Info("prospector finished")

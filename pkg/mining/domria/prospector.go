@@ -15,6 +15,8 @@ type prospector struct {
 
 func (prospector *prospector) Prospect(housing mining.Housing) error {
 	flats, err := prospector.fetcher.fetchFlats(housing)
-	log.Info(flats)
+	for _, flat := range flats {
+		log.Info(flat)
+	}
 	return err
 }

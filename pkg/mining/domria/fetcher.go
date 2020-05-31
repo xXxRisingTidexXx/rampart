@@ -14,10 +14,10 @@ import (
 
 func newFetcher() *fetcher {
 	return &fetcher{
-		&http.Client{Timeout: 10 * time.Second},
+		&http.Client{Timeout: 20 * time.Second},
 		"prospector/1.0 (rampart/prospector)",
 		0,
-		10,
+		1000,
 		map[mining.Housing]string{mining.Primary: "newbuildings=1", mining.Secondary: "secondary=1"},
 		"https://dom.ria.com/searchEngine/?category=1&realty_type=2&opera" +
 			"tion_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d",
@@ -105,7 +105,7 @@ func (fetcher *fetcher) fetchSearch(housingFlag string) (*search, error) {
 	}
 	var search search
 	if err := json.Unmarshal(body, &search); err != nil {
-		return nil, fmt.Errorf("domria: failed to unmarshal the search, %v", search)
+		return nil, fmt.Errorf("domria: failed to unmarshal the search, %v", err)
 	}
 	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: failed to close the response body, %v", err)
@@ -163,8 +163,8 @@ func (fetcher *fetcher) mapItem(item *item, housing mining.Housing) (*flat, erro
 		return nil, fmt.Errorf("domria: latitude is out of range at %s", originURL)
 	}
 	district := item.DistrictNameUK
-	if district != "" && item.DistrictTypeName == "Район" {
-		district = district + " район"
+	if district != "" && item.DistrictTypeName == "Район" && strings.HasSuffix(district, "ий") {
+		district += " район"
 	}
 	street := item.StreetNameUK
 	if street == "" && item.StreetName != "" {
