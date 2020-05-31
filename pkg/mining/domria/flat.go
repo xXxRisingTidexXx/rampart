@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// TODO: check golang gis geometry library integration
 type flat struct {
 	originURL   string
 	imageURL    string
@@ -19,7 +20,7 @@ type flat struct {
 	totalFloor  int
 	housing     mining.Housing
 	complex     string
-	longitude   float64 // TODO: check golang gis geometry library integration
+	longitude   float64
 	latitude    float64
 	state       string
 	city        string
