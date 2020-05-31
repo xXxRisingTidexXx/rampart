@@ -10,10 +10,10 @@ import (
 type moment time.Time
 
 const (
-	momentLength = 3
+	momentLength     = 3
 	dateTimingLength = 2
-	dateLength = 3
-	timingLength = 3
+	dateLength       = 3
+	timingLength     = 3
 )
 
 func (m *moment) UnmarshalJSON(bytes []byte) error {
