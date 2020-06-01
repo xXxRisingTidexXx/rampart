@@ -11,3 +11,4 @@ linters:
     - gochecknoglobals
     - goimports
     - goerr113
+    - testpackage
