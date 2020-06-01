@@ -17,6 +17,7 @@ prospectors:
       districtEnding: ий
       districtSuffix: ' район'
     validator:
+      minPrice: 1
       minTotalArea: 12
       maxTotalArea: 560
       minLivingArea: 0
