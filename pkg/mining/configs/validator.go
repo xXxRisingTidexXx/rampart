@@ -42,4 +42,3 @@ func (validator *Validator) String() string {
 		validator.MaxLatitude,
 	)
 }
-
