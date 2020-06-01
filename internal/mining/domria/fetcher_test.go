@@ -111,8 +111,18 @@ func TestFetcherUnmarshalSearchEmptySearch(t *testing.T) {
 	}
 }
 
-//func TestFetcherUnmarshalSearchInvalidItem(t *testing.T) {}
+func TestFetcherUnmarshalSearchEmptyItem(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("empty_item"), mining.Primary)
+	if err != nil {
+		t.Errorf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	if flats[0].originURL != "" || flats[0].imageURL != "" {
+		t.Errorf("domria: unexpected flat, %v", flats[0])
+	}
+}
 
-//func TestFetcherUnmarshalSearchEmptyItem(t *testing.T) {}
-//
 //func TestFetcherUnmarshalSearchValidItem(t *testing.T) {}
