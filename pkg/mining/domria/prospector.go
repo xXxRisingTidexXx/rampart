@@ -23,12 +23,14 @@ func (prospector *prospector) Prospect() error {
 		return err
 	}
 	if len(flats) == 0 {
+		prospector.logFinish()
 		return nil
 	}
-	flats = prospector.validator.validateFlats(flats)
-	if len(flats) == 0 {
-		return nil
-	}
-	log.Debugf("domria: %s housing prospector finished", prospector.housing)
+	_ = prospector.validator.validateFlats(flats)
+	prospector.logFinish()
 	return nil
+}
+
+func (prospector *prospector) logFinish() {
+	log.Debugf("domria: %s housing prospector finished", prospector.housing)
 }
