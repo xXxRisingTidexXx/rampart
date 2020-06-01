@@ -147,7 +147,6 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([
 			street,
 			item.BuildingNumberStr,
 		}
-		log.Info(flats[i])
 	}
 	return flats, nil
 }
