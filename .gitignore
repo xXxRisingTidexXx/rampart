@@ -11,3 +11,4 @@ out
 gen
 node_modules
 venv
+/mining

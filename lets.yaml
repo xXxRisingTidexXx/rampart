@@ -2,10 +2,10 @@ shell: bash
 commands:
   compile:
     description: Compile the source code
-    cmd: go build -o prospector cmd/prospector/main.go
+    cmd: go build -o mining cmd/mining/main.go
   run:
     description: Execute the binary
-    cmd: ./prospector
+    cmd: ./mining
   format:
     description: Format the source code
     cmd: gofmt -w -s .
