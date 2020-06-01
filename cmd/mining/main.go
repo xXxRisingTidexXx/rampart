@@ -9,7 +9,7 @@ import (
 
 func main() {
 	log.SetLevel(log.DebugLevel)
-	log.Debug("mining: started")
+	log.Debug("main: mining started")
 	config, err := configs.NewMining()
 	if err != nil {
 		log.Fatal(err)
@@ -18,5 +18,5 @@ func main() {
 	if err := prospector.Prospect(); err != nil {
 		log.Fatal(err)
 	}
-	log.Debug("mining: finished")
+	log.Debug("main: mining finished")
 }
