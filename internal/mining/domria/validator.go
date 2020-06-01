@@ -2,7 +2,7 @@ package domria
 
 import (
 	log "github.com/sirupsen/logrus"
-	"rampart/pkg/mining/configs"
+	"rampart/internal/mining/configs"
 )
 
 func newValidator(config *configs.Validator) *validator {

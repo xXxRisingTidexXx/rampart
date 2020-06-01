@@ -3,7 +3,7 @@ package configs
 import (
 	"fmt"
 	"gopkg.in/yaml.v3"
-	"rampart/pkg/mining"
+	"rampart/internal/mining"
 	"time"
 )
 

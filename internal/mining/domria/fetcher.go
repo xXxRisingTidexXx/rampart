@@ -7,8 +7,8 @@ import (
 	"github.com/twpayne/go-geom"
 	"io/ioutil"
 	"net/http"
-	"rampart/pkg/mining"
-	"rampart/pkg/mining/configs"
+	"rampart/internal/mining"
+	"rampart/internal/mining/configs"
 	"strings"
 	"time"
 )

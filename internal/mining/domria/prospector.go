@@ -2,8 +2,8 @@ package domria
 
 import (
 	log "github.com/sirupsen/logrus"
-	"rampart/pkg/mining"
-	"rampart/pkg/mining/configs"
+	"rampart/internal/mining"
+	"rampart/internal/mining/configs"
 )
 
 func NewProspector(housing mining.Housing, userAgent string, config *configs.Domria) mining.Prospector {

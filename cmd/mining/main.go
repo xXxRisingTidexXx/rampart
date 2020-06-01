@@ -2,9 +2,9 @@ package main
 
 import (
 	log "github.com/sirupsen/logrus"
-	"rampart/pkg/mining"
-	"rampart/pkg/mining/configs"
-	"rampart/pkg/mining/domria"
+	"rampart/internal/mining"
+	"rampart/internal/mining/configs"
+	"rampart/internal/mining/domria"
 )
 
 func main() {
