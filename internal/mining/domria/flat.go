@@ -51,19 +51,3 @@ func (flat *flat) String() string {
 		flat.houseNumber,
 	)
 }
-
-func (flat *flat) Equal(other *flat) bool {
-	return other != nil &&
-		flat.originURL == other.originURL &&
-		flat.imageURL == other.imageURL &&
-		flat.updateTime.Equal(*other.updateTime) &&
-		flat.price == other.price &&
-		flat.totalArea == other.totalArea &&
-		flat.livingArea == other.livingArea &&
-		flat.kitchenArea == other.kitchenArea &&
-		flat.roomNumber == other.roomNumber &&
-		flat.floor == other.floor &&
-		flat.totalFloor == other.totalFloor &&
-		flat.housing == other.housing &&
-		flat.complex == other.complex
-}
