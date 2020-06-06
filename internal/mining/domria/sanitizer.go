@@ -17,9 +17,9 @@ func newSanitizer(config *configs.Sanitizer) *sanitizer {
 	}
 }
 
-// TODO: add street split (some streets contain house numbers)
-// TODO: add street purity (replace shorts and russian suffixes and endings)
-// TODO: add complex purity (replace "ЖК " prefixes if needed)
+// TODO: add street split (some streets contain house numbers).
+// TODO: add street purity (replace shorts and russian suffixes and endings).
+// TODO: add complex purity (replace "ЖК " prefixes if needed).
 type sanitizer struct {
 	originURLPrefix string
 	imageURLPrefix  string
