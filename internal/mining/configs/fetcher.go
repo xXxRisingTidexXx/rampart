@@ -11,6 +11,7 @@ type Fetcher struct {
 	Timeout         time.Duration
 	Portion         int
 	Flags           map[mining.Housing]string
+	Headers         map[string]string
 	SearchURL       string
 	OriginURLPrefix string
 	ImageURLPrefix  string
@@ -26,6 +27,7 @@ func (fetcher *Fetcher) UnmarshalYAML(node *yaml.Node) error {
 		Timeout         string                    `yaml:"timeout"`
 		Portion         int                       `yaml:"portion"`
 		Flags           map[mining.Housing]string `yaml:"flags"`
+		Headers         map[string]string         `yaml:"headers"`
 		SearchURL       string                    `yaml:"searchURL"`
 		OriginURLPrefix string                    `yaml:"originURLPrefix"`
 		ImageURLPrefix  string                    `yaml:"imageURLPrefix"`
@@ -46,6 +48,7 @@ func (fetcher *Fetcher) UnmarshalYAML(node *yaml.Node) error {
 	fetcher.Timeout = timeout
 	fetcher.Portion = alias.Portion
 	fetcher.Flags = alias.Flags
+	fetcher.Headers = alias.Headers
 	fetcher.SearchURL = alias.SearchURL
 	fetcher.OriginURLPrefix = alias.OriginURLPrefix
 	fetcher.ImageURLPrefix = alias.ImageURLPrefix
@@ -59,10 +62,11 @@ func (fetcher *Fetcher) UnmarshalYAML(node *yaml.Node) error {
 
 func (fetcher *Fetcher) String() string {
 	return fmt.Sprintf(
-		"{%s %d %v %s %s %s %s %s %s %s %s}",
+		"{%s %d %v %v %s %s %s %s %s %s %s %s}",
 		fetcher.Timeout,
 		fetcher.Portion,
 		fetcher.Flags,
+		fetcher.Headers,
 		fetcher.SearchURL,
 		fetcher.OriginURLPrefix,
 		fetcher.ImageURLPrefix,

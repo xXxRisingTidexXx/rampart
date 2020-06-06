@@ -13,13 +13,13 @@ import (
 	"time"
 )
 
-func newFetcher(userAgent string, config *configs.Fetcher) *fetcher {
+func newFetcher(config *configs.Fetcher) *fetcher {
 	return &fetcher{
-		userAgent,
 		&http.Client{Timeout: config.Timeout},
 		0,
 		config.Portion,
 		config.Flags,
+		config.Headers,
 		config.SearchURL,
 		config.OriginURLPrefix,
 		config.ImageURLPrefix,
@@ -32,11 +32,11 @@ func newFetcher(userAgent string, config *configs.Fetcher) *fetcher {
 }
 
 type fetcher struct {
-	userAgent       string
 	client          *http.Client
 	page            int
 	portion         int
 	flags           map[mining.Housing]string
+	headers         map[string]string
 	searchURL       string
 	originURLPrefix string
 	imageURLPrefix  string
@@ -79,7 +79,9 @@ func (fetcher *fetcher) getSearch(flag string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("domria: failed to construct a request, %v", err)
 	}
-	request.Header.Set("User-Agent", fetcher.userAgent)
+	for key, value := range fetcher.headers {
+		request.Header.Set(key, value)
+	}
 	response, err := fetcher.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("domria: failed to perform a request, %v", err)

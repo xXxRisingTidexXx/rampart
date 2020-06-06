@@ -1,4 +1,3 @@
-userAgent: rampart-mining-bot/v1.0.0
 srid: 4326
 prospectors:
   domria:
@@ -8,6 +7,8 @@ prospectors:
       flags:
         primary: newbuildings=1
         secondary: secondary=1
+      headers:
+        User-Agent: rampart-mining-bot/v1.0.0
       searchURL: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d
       originURLPrefix: https://dom.ria.com/uk/
       imageURLPrefix: https://cdn.riastatic.com/photos/

@@ -6,8 +6,8 @@ import (
 	"rampart/internal/mining/configs"
 )
 
-func NewProspector(housing mining.Housing, userAgent string, config *configs.Domria) mining.Prospector {
-	return &prospector{housing, newFetcher(userAgent, config.Fetcher), newValidator(config.Validator)}
+func NewProspector(housing mining.Housing, config *configs.Domria) mining.Prospector {
+	return &prospector{housing, newFetcher(config.Fetcher), newValidator(config.Validator)}
 }
 
 type prospector struct {
