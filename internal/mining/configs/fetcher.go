@@ -8,20 +8,20 @@ import (
 )
 
 type Fetcher struct {
-	Timeout         time.Duration
-	Portion         int
-	Flags           map[mining.Housing]string
-	Headers         map[string]string
-	SearchURL       string
+	Timeout   time.Duration
+	Portion   int
+	Flags     map[mining.Housing]string
+	Headers   map[string]string
+	SearchURL string
 }
 
 func (fetcher *Fetcher) UnmarshalYAML(node *yaml.Node) error {
 	type Alias struct {
-		Timeout         string                    `yaml:"timeout"`
-		Portion         int                       `yaml:"portion"`
-		Flags           map[mining.Housing]string `yaml:"flags"`
-		Headers         map[string]string         `yaml:"headers"`
-		SearchURL       string                    `yaml:"searchURL"`
+		Timeout   string                    `yaml:"timeout"`
+		Portion   int                       `yaml:"portion"`
+		Flags     map[mining.Housing]string `yaml:"flags"`
+		Headers   map[string]string         `yaml:"headers"`
+		SearchURL string                    `yaml:"searchURL"`
 	}
 	var alias Alias
 	if err := node.Decode(&alias); err != nil {
