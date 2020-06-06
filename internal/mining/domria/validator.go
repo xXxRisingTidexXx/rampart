@@ -82,7 +82,9 @@ func (validator *validator) validateFlat(flat *flat) bool {
 		validator.minTotalFloor <= flat.totalFloor &&
 		flat.totalFloor <= validator.maxTotalFloor &&
 		(flat.point == nil &&
+			flat.state != "" &&
 			flat.city != "" &&
+			flat.district != "" &&
 			flat.street != "" &&
 			flat.houseNumber != "" ||
 			flat.point != nil &&
