@@ -155,7 +155,18 @@ func TestFetcherUnmarshalSearchEmptyItem(t *testing.T) {
 	if flats[0].state != "" {
 		t.Errorf("domria: non-empty state, %v", flats[0])
 	}
-	// TODO: city, district, street, house number
+	if flats[0].city != "" {
+		t.Errorf("domria: non-empty city, %v", flats[0])
+	}
+	if flats[0].district != "" {
+		t.Errorf("domria: non-empty district, %v", flats[0])
+	}
+	if flats[0].street != "" {
+		t.Errorf("domria: non-empty street, %v", flats[0])
+	}
+	if flats[0].houseNumber != "" {
+		t.Errorf("domria: non-empty house number, %v", flats[0])
+	}
 }
 
 func TestFetcherUnmarshalSearchValidItem(t *testing.T) {
