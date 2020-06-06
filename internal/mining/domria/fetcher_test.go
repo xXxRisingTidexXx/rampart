@@ -113,9 +113,49 @@ func TestFetcherUnmarshalSearchEmptyItem(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	if flats[0].originURL != "" || flats[0].imageURL != "" {
-		t.Errorf("domria: unexpected flat, %v", flats[0])
+	if flats[0].originURL != "" {
+		t.Errorf("domria: non-empty origin url, %v", flats[0])
 	}
+	if flats[0].imageURL != "" {
+		t.Errorf("domria: non-empty image url, %v", flats[0])
+	}
+	if flats[0].updateTime != nil {
+		t.Errorf("domria: non-empty update time, %v", flats[0])
+	}
+	if flats[0].price != 0 {
+		t.Errorf("domria: non-zero price, %v", flats[0])
+	}
+	if flats[0].totalArea != 0 {
+		t.Errorf("domria: non-zero total area, %v", flats[0])
+	}
+	if flats[0].livingArea != 0 {
+		t.Errorf("domria: non-zero living area, %v", flats[0])
+	}
+	if flats[0].kitchenArea != 0 {
+		t.Errorf("domria: non-zero kitchen area, %v", flats[0])
+	}
+	if flats[0].roomNumber != 0 {
+		t.Errorf("domria: non-zero room number, %v", flats[0])
+	}
+	if flats[0].floor != 0 {
+		t.Errorf("domria: non-zero floor, %v", flats[0])
+	}
+	if flats[0].totalFloor != 0 {
+		t.Errorf("domria: non-zero total floor, %v", flats[0])
+	}
+	if flats[0].housing != mining.Primary {
+		t.Errorf("domria: invalid housing, %v", flats[0])
+	}
+	if flats[0].complex != "" {
+		t.Errorf("domria: non-empty complex, %v", flats[0])
+	}
+	if flats[0].point != nil {
+		t.Errorf("domria: non-empty point, %v", flats[0])
+	}
+	if flats[0].state != "" {
+		t.Errorf("domria: non-empty state, %v", flats[0])
+	}
+	// TODO: city, district, street, house number
 }
 
 func TestFetcherUnmarshalSearchValidItem(t *testing.T) {
@@ -127,5 +167,5 @@ func TestFetcherUnmarshalSearchValidItem(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	
+
 }
