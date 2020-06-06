@@ -113,59 +113,79 @@ func TestFetcherUnmarshalSearchEmptyItem(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	if flats[0].originURL != "" {
-		t.Errorf("domria: non-empty origin url, %v", flats[0])
+	assertFlat(t, flats[0], &flat{})
+}
+
+func assertFlat(t *testing.T, actual *flat, expected *flat) {
+	if actual == nil {
+		t.Fatal("domria: empty actual")
 	}
-	if flats[0].imageURL != "" {
-		t.Errorf("domria: non-empty image url, %v", flats[0])
+	if expected == nil {
+		t.Fatal("domria: empty expected")
 	}
-	if flats[0].updateTime != nil {
-		t.Errorf("domria: non-empty update time, %v", flats[0])
+	if actual.originURL != expected.originURL {
+		t.Errorf("domria: invalid origin url, %s", actual.originURL)
 	}
-	if flats[0].price != 0 {
-		t.Errorf("domria: non-zero price, %v", flats[0])
+	if actual.imageURL != expected.imageURL {
+		t.Errorf("domria: invalid image url, %s", actual.imageURL)
 	}
-	if flats[0].totalArea != 0 {
-		t.Errorf("domria: non-zero total area, %v", flats[0])
+	if expected.updateTime == nil && actual.updateTime != nil {
+		t.Errorf("domria: non-nil update time, %v", actual.updateTime)
 	}
-	if flats[0].livingArea != 0 {
-		t.Errorf("domria: non-zero living area, %v", flats[0])
+	if expected.updateTime != nil &&
+		(actual.updateTime == nil || !actual.updateTime.Equal(*expected.updateTime)) {
+		t.Errorf("domria: invalid update time, %v", actual.updateTime)
 	}
-	if flats[0].kitchenArea != 0 {
-		t.Errorf("domria: non-zero kitchen area, %v", flats[0])
+	if actual.price != expected.price {
+		t.Errorf("domria: invalid price, %.1f", actual.price)
 	}
-	if flats[0].roomNumber != 0 {
-		t.Errorf("domria: non-zero room number, %v", flats[0])
+	if actual.totalArea != expected.totalArea {
+		t.Errorf("domria: invalid total area, %1.f", actual.totalArea)
 	}
-	if flats[0].floor != 0 {
-		t.Errorf("domria: non-zero floor, %v", flats[0])
+	if actual.livingArea != expected.livingArea {
+		t.Errorf("domria: invalid living area, %.1f", actual.livingArea)
 	}
-	if flats[0].totalFloor != 0 {
-		t.Errorf("domria: non-zero total floor, %v", flats[0])
+	if actual.kitchenArea != expected.kitchenArea {
+		t.Errorf("domria: invalid kitchen area, %.1f", actual.kitchenArea)
 	}
-	if flats[0].housing != mining.Primary {
-		t.Errorf("domria: invalid housing, %v", flats[0])
+	if actual.roomNumber != expected.roomNumber {
+		t.Errorf("domria: invalid room number, %d", actual.roomNumber)
 	}
-	if flats[0].complex != "" {
-		t.Errorf("domria: non-empty complex, %v", flats[0])
+	if actual.floor != expected.floor {
+		t.Errorf("domria: invalid floor, %d", actual.floor)
 	}
-	if flats[0].point != nil {
-		t.Errorf("domria: non-empty point, %v", flats[0])
+	if actual.totalFloor != expected.totalFloor {
+		t.Errorf("domria: invalid total floor, %d", actual.totalFloor)
 	}
-	if flats[0].state != "" {
-		t.Errorf("domria: non-empty state, %v", flats[0])
+	if actual.housing != mining.Primary {
+		t.Errorf("domria: invalid housing, %s", actual.housing)
 	}
-	if flats[0].city != "" {
-		t.Errorf("domria: non-empty city, %v", flats[0])
+	if actual.complex != expected.complex {
+		t.Errorf("domria: invalid complex, %s", actual.complex)
 	}
-	if flats[0].district != "" {
-		t.Errorf("domria: non-empty district, %v", flats[0])
+	if expected.point == nil && actual.point != nil {
+		t.Errorf("domria: non-nil point, %v", actual.point)
 	}
-	if flats[0].street != "" {
-		t.Errorf("domria: non-empty street, %v", flats[0])
+	if expected.point != nil &&
+		(actual.point == nil ||
+			actual.point.X() != expected.point.X() ||
+			actual.point.Y() != expected.point.Y()) {
+		t.Errorf("domria: invalid point, %v", actual.point)
 	}
-	if flats[0].houseNumber != "" {
-		t.Errorf("domria: non-empty house number, %v", flats[0])
+	if actual.state != expected.state {
+		t.Errorf("domria: invalid state, %s", actual.state)
+	}
+	if actual.city != expected.city {
+		t.Errorf("domria: invalid city, %s", actual.city)
+	}
+	if actual.district != expected.district {
+		t.Errorf("domria: invalid district, %s", actual.district)
+	}
+	if actual.street != expected.street {
+		t.Errorf("domria: invalid street, %s", actual.street)
+	}
+	if actual.houseNumber != expected.houseNumber {
+		t.Errorf("domria: invalid house number, %s", actual.houseNumber)
 	}
 }
 
@@ -178,5 +198,66 @@ func TestFetcherUnmarshalSearchValidItem(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-rovno-schastlivoe-chernovola-vyacheslava-ulitsa-16818824.html"
+		},
+	)
+	if flats[0].originURL != "realty-prodaja-kvartira-rovno-schastlivoe-chernovola-vyacheslava-ulitsa-16818824.html" {
+		t.Errorf("domria: invalid origin url, %v", flats[0])
+	}
+	if flats[0].imageURL != "dom/photo/10925/1092575/109257503/109257503.jpg" {
+		t.Errorf("domria: invalid image url, %v", flats[0])
+	}
+	if flats[0].updateTime == nil ||
+		flats[0].updateTime.Unix() != time.Date(2020, time.June, 6, 14, 57, 18, 0, time.Local).Unix() {
+		t.Errorf("domria: invalid update time, %v", flats[0])
+	}
+	if flats[0].price != 27800 {
+		t.Errorf("domria: invalid price, %v", flats[0])
+	}
+	if flats[0].totalArea != 45 {
+		t.Errorf("domria: invalid total area, %v", flats[0])
+	}
+	if flats[0].livingArea != 0 {
+		t.Errorf("domria: invalid living area, %v", flats[0])
+	}
+	if flats[0].kitchenArea != 0 {
+		t.Errorf("domria: invalid kitchen area, %v", flats[0])
+	}
+	if flats[0].roomNumber != 1 {
+		t.Errorf("domria: invalid room number, %v", flats[0])
+	}
+	if flats[0].floor != 2 {
+		t.Errorf("domria: invalid floor, %v", flats[0])
+	}
+	if flats[0].totalFloor != 9 {
+		t.Errorf("domria: invalid total floor, %v", flats[0])
+	}
+	if flats[0].housing != mining.Primary {
+		t.Errorf("domria: invalid housing, %v", flats[0])
+	}
+	if flats[0].complex != "ЖК На Щасливому, будинок 27" {
+		t.Errorf("domria: invalid complex, %v", flats[0])
+	}
+	if flats[0].point == nil || flats[0].point.X() != 26.267247115344 || flats[0].point.Y() != 50.59766586795 {
+		t.Errorf("domria: invalid point, %v", flats[0])
+	}
+	if flats[0].state != "Рівненська" {
+		t.Errorf("domria: invalid state, %v", flats[0])
+	}
+	if flats[0].city != "Рівне" {
+		t.Errorf("domria: invalid city, %v", flats[0])
+	}
+	if flats[0].district != "Щасливе" {
+		t.Errorf("domria: invalid district, %v", flats[0])
+	}
+	if flats[0].street != "Черновола Вячеслава улица" {
+		t.Errorf("domria: invalid street, %v", flats[0])
+	}
+	if flats[0].houseNumber != "91-Ф" {
+		t.Errorf("domria: invalid house number, %v", flats[0])
+	}
 }
