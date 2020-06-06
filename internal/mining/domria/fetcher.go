@@ -37,19 +37,21 @@ func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
 	if !ok {
 		return nil, fmt.Errorf("domria: %v housing isn't acceptable", housing)
 	}
+	start := time.Now()
 	bytes, err := fetcher.getSearch(flag)
 	if err != nil {
 		return nil, err
 	}
+	duration := time.Since(start).Seconds()
 	flats, err := fetcher.unmarshalSearch(bytes, housing)
 	if err != nil {
 		return nil, err
 	}
 	if length := len(flats); length > 0 {
-		log.Debugf("domria: fetcher on %d page received %d flats", fetcher.page, length)
+		log.Debugf("domria: fetcher on %d page received %d flats (%.3fs)", fetcher.page, length, duration)
 		fetcher.page++
 	} else {
-		log.Debugf("domria: fetcher on %d page reset", fetcher.page)
+		log.Debugf("domria: fetcher on %d page reset (%.3fs)", fetcher.page, duration)
 		fetcher.page = 0
 	}
 	return flats, nil
