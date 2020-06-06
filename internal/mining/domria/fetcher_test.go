@@ -118,4 +118,14 @@ func TestFetcherUnmarshalSearchEmptyItem(t *testing.T) {
 	}
 }
 
-//func TestFetcherUnmarshalSearchValidItem(t *testing.T) {}
+func TestFetcherUnmarshalSearchValidItem(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("valid_item"), mining.Primary)
+	if err != nil {
+		t.Errorf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	
+}
