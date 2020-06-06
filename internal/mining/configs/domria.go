@@ -6,9 +6,10 @@ import (
 
 type Domria struct {
 	Fetcher   *Fetcher   `yaml:"fetcher"`
+	Sanitizer *Sanitizer `yaml:"sanitizer"`
 	Validator *Validator `yaml:"validator"`
 }
 
 func (domria *Domria) String() string {
-	return fmt.Sprintf("{%v %v}", domria.Fetcher, domria.Validator)
+	return fmt.Sprintf("{%v %v %v}", domria.Fetcher, domria.Sanitizer, domria.Validator)
 }

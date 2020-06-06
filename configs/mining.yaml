@@ -10,11 +10,11 @@ prospectors:
       headers:
         User-Agent: rampart-mining-bot/v1.0.0
       searchURL: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d
+    sanitizer:
       originURLPrefix: https://dom.ria.com/uk/
       imageURLPrefix: https://cdn.riastatic.com/photos/
       stateEnding: ька
       stateSuffix: ' область'
-      districtLabel: Район
       districtEnding: ий
       districtSuffix: ' район'
     validator:
