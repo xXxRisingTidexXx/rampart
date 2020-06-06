@@ -23,11 +23,11 @@ func TestFetcherUnmarshalSearchEmptyString(t *testing.T) {
 
 func newDefaultFetcher() *fetcher {
 	return newFetcher(
-		"domria-test-bot/v1.0.0",
 		&configs.Fetcher{
 			Timeout:         2 * time.Second,
 			Portion:         10,
 			Flags:           map[mining.Housing]string{mining.Primary: "pm_housing=1"},
+			Headers:         map[string]string{"User-Agent": "domria-test-bot/v1.0.0"},
 			SearchURL:       "https://domria.ua/search/",
 			OriginURLPrefix: "https://domria.ua/uk/",
 			ImageURLPrefix:  "https://cdn.riastatic.ua/photos/",
