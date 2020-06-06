@@ -12,7 +12,6 @@ func main() {
 	log.Debug("main: mining started")
 	config, err := configs.NewMining()
 	exitIfError(err)
-	log.Println(config)
 	prospector := domria.NewProspector(mining.Secondary, config.Prospectors.Domria)
 	exitIfError(prospector.Prospect())
 	log.Debug("main: mining finished")
