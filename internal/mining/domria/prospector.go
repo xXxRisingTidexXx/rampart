@@ -7,30 +7,29 @@ import (
 )
 
 func NewProspector(housing mining.Housing, config *configs.Domria) mining.Prospector {
-	return &prospector{housing, newFetcher(config.Fetcher), newValidator(config.Validator)}
+	return &prospector{
+		housing,
+		newFetcher(config.Fetcher),
+		newSanitizer(config.Sanitizer),
+		newValidator(config.Validator),
+	}
 }
 
 type prospector struct {
 	housing   mining.Housing
 	fetcher   *fetcher
+	sanitizer *sanitizer
 	validator *validator
 }
 
 func (prospector *prospector) Prospect() error {
-	log.Debugf("domria: %s housing prospector started", prospector.housing)
+	log.Debug("domria: prospector started")
 	flats, err := prospector.fetcher.fetchFlats(prospector.housing)
 	if err != nil {
 		return err
 	}
-	if len(flats) == 0 {
-		prospector.logFinish()
-		return nil
-	}
+	flats = prospector.sanitizer.sanitizeFlats(flats)
 	_ = prospector.validator.validateFlats(flats)
-	prospector.logFinish()
+	log.Debug("domria: prospector finished")
 	return nil
-}
-
-func (prospector *prospector) logFinish() {
-	log.Debugf("domria: %s housing prospector finished", prospector.housing)
 }

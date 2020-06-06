@@ -52,9 +52,7 @@ func (validator *validator) validateFlats(flats []*flat) []*flat {
 			newFlats = append(newFlats, flat)
 		}
 	}
-	if length := len(newFlats); length > 0 {
-		log.Debugf("domria: %s housing validator validated %d flats", newFlats[0].housing, length)
-	}
+	log.Debugf("domria: validator approved %d flats", len(newFlats))
 	return newFlats
 }
 

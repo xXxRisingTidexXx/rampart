@@ -46,10 +46,10 @@ func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
 		return nil, err
 	}
 	if length := len(flats); length > 0 {
-		log.Debugf("domria: %s housing fetcher on %d page fetched %d flats", housing, fetcher.page, length)
+		log.Debugf("domria: fetcher on %d page received %d flats", fetcher.page, length)
 		fetcher.page++
 	} else {
-		log.Debugf("domria: %s housing fetcher on %d page reset", housing, fetcher.page)
+		log.Debugf("domria: fetcher on %d page reset", fetcher.page)
 		fetcher.page = 0
 	}
 	return flats, nil
