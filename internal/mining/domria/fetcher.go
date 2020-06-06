@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"rampart/internal/mining"
 	"rampart/internal/mining/configs"
-	"strings"
 	"time"
 )
 
@@ -21,13 +20,6 @@ func newFetcher(config *configs.Fetcher) *fetcher {
 		config.Flags,
 		config.Headers,
 		config.SearchURL,
-		config.OriginURLPrefix,
-		config.ImageURLPrefix,
-		config.StateEnding,
-		config.StateSuffix,
-		config.DistrictLabel,
-		config.DistrictEnding,
-		config.DistrictSuffix,
 	}
 }
 
@@ -38,13 +30,6 @@ type fetcher struct {
 	flags           map[mining.Housing]string
 	headers         map[string]string
 	searchURL       string
-	originURLPrefix string
-	imageURLPrefix  string
-	stateEnding     string
-	stateSuffix     string
-	districtLabel   string
-	districtEnding  string
-	districtSuffix  string
 }
 
 func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
@@ -103,14 +88,6 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([
 	}
 	flats := make([]*flat, len(search.Items))
 	for i, item := range search.Items {
-		originURL := item.BeautifulURL
-		if originURL != "" {
-			originURL = fetcher.originURLPrefix + originURL
-		}
-		imageURL := item.MainPhoto
-		if imageURL != "" {
-			imageURL = fetcher.imageURLPrefix + imageURL
-		}
 		price := 0.0
 		if item.PriceArr != nil {
 			price = float64(item.PriceArr.USD)
@@ -119,23 +96,13 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([
 		if item.Longitude != 0 && item.Latitude != 0 {
 			point = geom.NewPointFlat(geom.XY, []float64{float64(item.Longitude), float64(item.Latitude)})
 		}
-		state := item.StateNameUK
-		if state != "" && strings.HasSuffix(state, fetcher.stateEnding) {
-			state += fetcher.stateSuffix
-		}
-		district := item.DistrictNameUK
-		if district != "" &&
-			item.DistrictTypeName == fetcher.districtLabel &&
-			strings.HasSuffix(district, fetcher.districtEnding) {
-			district += fetcher.districtSuffix
-		}
 		street := item.StreetNameUK
 		if street == "" && item.StreetName != "" {
 			street = item.StreetName
 		}
 		flats[i] = &flat{
-			originURL,
-			imageURL,
+			item.BeautifulURL,
+			item.MainPhoto,
 			(*time.Time)(item.UpdatedAt),
 			price,
 			item.TotalSquareMeters,
@@ -147,12 +114,13 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([
 			housing,
 			item.UserNewbuildNameUK,
 			point,
-			state,
+			item.StateNameUK,
 			item.CityNameUK,
-			district,
+			item.DistrictNameUK,
 			street,
 			item.BuildingNumberStr,
 		}
+		log.Info(flats[i])
 	}
 	return flats, nil
 }
