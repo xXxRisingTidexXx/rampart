@@ -24,12 +24,12 @@ func newFetcher(config *configs.Fetcher) *fetcher {
 }
 
 type fetcher struct {
-	client          *http.Client
-	page            int
-	portion         int
-	flags           map[mining.Housing]string
-	headers         map[string]string
-	searchURL       string
+	client    *http.Client
+	page      int
+	portion   int
+	flags     map[mining.Housing]string
+	headers   map[string]string
+	searchURL string
 }
 
 func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
@@ -120,7 +120,6 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([
 			street,
 			item.BuildingNumberStr,
 		}
-		log.Info(flats[i])
 	}
 	return flats, nil
 }
