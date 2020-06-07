@@ -504,8 +504,42 @@ func TestUnmarshalSearchTrashPricePriceArr(t *testing.T) {
 	}
 }
 
-//func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {}
-//
+func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("negative_price_price_arr"), mining.Primary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2020, time.June, 7, 7, 55, 45, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-ternopol-bam-saharova-andreya-akademika-ulitsa-16349831.html",
+			"dom/photo/10507/1050708/105070868/105070868.jpg",
+			&updateTime,
+			-38225,
+			73.2,
+			0,
+			7.57,
+			3,
+			9,
+			11,
+			mining.Primary,
+			"",
+			geom.NewPointFlat(geom.XY, []float64{25.644687974235, 49.550329822762}),
+			"Тернопільська",
+			"Тернопіль",
+			"Бам",
+			"Сахарова Андрія Академіка вулиця",
+			"10",
+		},
+	)
+}
+
 //func TestUnmarshalSearchTrashTotalSquareMeters(t *testing.T) {}
 
 // Living square meters are greater than the total square meters
