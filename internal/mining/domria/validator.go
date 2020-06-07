@@ -23,6 +23,7 @@ func newValidator(config *configs.Validator) *validator {
 		config.MaxLongitude,
 		config.MinLatitude,
 		config.MaxLatitude,
+		config.MinValidity,
 	}
 }
 
@@ -43,20 +44,30 @@ type validator struct {
 	maxLongitude    float64
 	minLatitude     float64
 	maxLatitude     float64
+	minValidity     float64
 }
 
 func (validator *validator) validateFlats(flats []*flat) []*flat {
-	newFlats := make([]*flat, 0, len(flats))
+	expectedLength := len(flats)
+	if expectedLength == 0 {
+		log.Debug("domria: validator skipped flats")
+		return flats
+	}
+	newFlats := make([]*flat, 0, expectedLength)
 	for _, flat := range flats {
 		if validator.validateFlat(flat) {
 			newFlats = append(newFlats, flat)
 		}
 	}
-	log.Debugf("domria: validator approved %d flats", len(newFlats))
+	actualLength := len(newFlats)
+	log.Debugf("domria: validator approved %d flats", actualLength)
+	if validity := float64(actualLength) / float64(expectedLength); validity < validator.minValidity {
+		log.Warningf("domria: validator met low validity (%.3f)", validity)
+	}
 	return newFlats
 }
 
-//nolint:gocognit
+//nolint:gocognit,gocyclo
 func (validator *validator) validateFlat(flat *flat) bool {
 	if flat == nil || flat.roomNumber == 0 {
 		return false
@@ -79,9 +90,10 @@ func (validator *validator) validateFlat(flat *flat) bool {
 		flat.floor <= flat.totalFloor &&
 		validator.minTotalFloor <= flat.totalFloor &&
 		flat.totalFloor <= validator.maxTotalFloor &&
+		flat.housing != "" &&
+		flat.state != "" &&
+		flat.city != "" &&
 		(flat.point == nil &&
-			flat.state != "" &&
-			flat.city != "" &&
 			flat.district != "" &&
 			flat.street != "" &&
 			flat.houseNumber != "" ||

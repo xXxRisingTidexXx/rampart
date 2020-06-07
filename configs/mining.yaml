@@ -34,3 +34,4 @@ prospectors:
       maxLongitude: 180
       minLatitude: -90
       maxLatitude: 90
+      minValidity: 0.7
