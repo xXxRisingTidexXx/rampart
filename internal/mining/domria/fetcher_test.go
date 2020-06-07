@@ -336,7 +336,41 @@ func TestFetcherUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {
 	}
 }
 
-//func TestFetcherUnmarshalSearch13MonthUpdatedAt(t *testing.T) {}
+func TestFetcherUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("13_month_updated_at"), mining.Secondary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2021, time.January, 7, 7, 7, 41, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-perevireno-prodaja-kvartira-vinnitsa-vishenka-vasiliya-porika-ulitsa-17073207.html",
+			"dom/photo/11162/1116219/111621990/111621990.jpg",
+			&updateTime,
+			27500,
+			32.9,
+			32.1,
+			6,
+			1,
+			4,
+			5,
+			mining.Secondary,
+			"",
+			geom.NewPointFlat(geom.XY, []float64{28.4247279, 49.2291492}),
+			"Вінницька",
+			"Вінниця",
+			"Вишенька",
+			"Василя Порика вулиця",
+			"1",
+		},
+	)
+}
 
 //func TestFetcherUnmarshalSearchJustDateUpdatedAt(t *testing.T) {}
 //
