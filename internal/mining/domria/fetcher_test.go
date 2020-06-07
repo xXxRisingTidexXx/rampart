@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func TestFetcherUnmarshalSearchEmptyString(t *testing.T) {
+func TestUnmarshalSearchEmptyString(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch([]byte(""), mining.Primary)
 	if err == nil || err.Error() != "domria: failed to unmarshal the search, unexpected end of JSON input" {
@@ -34,7 +34,7 @@ func newDefaultFetcher() *fetcher {
 	)
 }
 
-func TestFetcherUnmarshalSearchInvalidJSON(t *testing.T) {
+func TestUnmarshalSearchInvalidJSON(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch([]byte("{"), mining.Primary)
 	if err == nil || err.Error() != "domria: failed to unmarshal the search, unexpected end of JSON input" {
@@ -45,7 +45,7 @@ func TestFetcherUnmarshalSearchInvalidJSON(t *testing.T) {
 	}
 }
 
-func TestFetcherUnmarshalSearchArrayInsteadOfObject(t *testing.T) {
+func TestUnmarshalSearchArrayInsteadOfObject(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch([]byte("[]"), mining.Primary)
 	if err == nil || err.Error() != "domria: failed to unmarshal the search"+
@@ -57,7 +57,7 @@ func TestFetcherUnmarshalSearchArrayInsteadOfObject(t *testing.T) {
 	}
 }
 
-func TestFetcherUnmarshalSearchEmptyJSON(t *testing.T) {
+func TestUnmarshalSearchEmptyJSON(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch([]byte("{}"), mining.Primary)
 	if err != nil {
@@ -68,7 +68,7 @@ func TestFetcherUnmarshalSearchEmptyJSON(t *testing.T) {
 	}
 }
 
-func TestFetcherUnmarshalSearchWithoutItems(t *testing.T) {
+func TestUnmarshalSearchWithoutItems(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("without_items"), mining.Primary)
 	if err != nil {
@@ -94,7 +94,7 @@ func readAll(fixtureName string) []byte {
 	return bytes
 }
 
-func TestFetcherUnmarshalSearchEmptySearch(t *testing.T) {
+func TestUnmarshalSearchEmptySearch(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("empty_search"), mining.Primary)
 	if err != nil {
@@ -105,7 +105,7 @@ func TestFetcherUnmarshalSearchEmptySearch(t *testing.T) {
 	}
 }
 
-func TestFetcherUnmarshalSearchEmptyItem(t *testing.T) {
+func TestUnmarshalSearchEmptyItem(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("empty_item"), mining.Primary)
 	if err != nil {
@@ -192,7 +192,7 @@ func assertFlat(t *testing.T, actual *flat, expected *flat) {
 	}
 }
 
-func TestFetcherUnmarshalSearchValidItem(t *testing.T) {
+func TestUnmarshalSearchValidItem(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("valid_item"), mining.Primary)
 	if err != nil {
@@ -228,7 +228,7 @@ func TestFetcherUnmarshalSearchValidItem(t *testing.T) {
 	)
 }
 
-func TestFetcherUnmarshalSearchEmptyMainPhoto(t *testing.T) {
+func TestUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("empty_main_photo"), mining.Secondary)
 	if err != nil {
@@ -264,7 +264,7 @@ func TestFetcherUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 	)
 }
 
-func TestFetcherUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
+func TestUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("empty_updated_at"), mining.Secondary)
 	if err == nil || err.Error() != "domria: failed to unmarsh"+
@@ -276,7 +276,7 @@ func TestFetcherUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
 	}
 }
 
-func TestFetcherUnmarshalSearchTrashUpdatedAt(t *testing.T) {
+func TestUnmarshalSearchTrashUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("trash_updated_at"), mining.Secondary)
 	if err == nil || err.Error() != "domria: failed to unmarshal the search, domria: mom"+
@@ -288,7 +288,7 @@ func TestFetcherUnmarshalSearchTrashUpdatedAt(t *testing.T) {
 	}
 }
 
-func TestFetcherUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
+func TestUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("leading_zeros_updated_at"), mining.Primary)
 	if err != nil {
@@ -324,7 +324,7 @@ func TestFetcherUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 	)
 }
 
-func TestFetcherUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {
+func TestUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("missing_shapes_updated_at"), mining.Primary)
 	if err == nil || err.Error() != "domria: failed to unmarshal "+
@@ -336,7 +336,7 @@ func TestFetcherUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {
 	}
 }
 
-func TestFetcherUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
+func TestUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("13_month_updated_at"), mining.Secondary)
 	if err != nil {
@@ -372,7 +372,7 @@ func TestFetcherUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 	)
 }
 
-func TestFetcherUnmarshalSearchJustDateUpdatedAt(t *testing.T) {
+func TestUnmarshalSearchJustDateUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("just_date_updated_at"), mining.Secondary)
 	if err == nil || err.Error() != "domria: failed to unmarshal t"+
@@ -384,7 +384,7 @@ func TestFetcherUnmarshalSearchJustDateUpdatedAt(t *testing.T) {
 	}
 }
 
-func TestFetcherUnmarshalSearchJustTimeUpdatedAt(t *testing.T) {
+func TestUnmarshalSearchJustTimeUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("just_time_updated_at"), mining.Secondary)
 	if err == nil || err.Error() != "domria: failed to unmarshal"+
@@ -395,3 +395,59 @@ func TestFetcherUnmarshalSearchJustTimeUpdatedAt(t *testing.T) {
 		t.Errorf("domria: non-empty flats, %v", flats)
 	}
 }
+
+func TestUnmarshalSearchEmptyPriceArr(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("empty_price_arr"), mining.Primary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2020, time.May, 31, 12, 44, 7, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-chernovtsy-fastovskaya-ruska-17169204.html",
+			"dom/photo/11259/1125975/112597577/112597577.jpg",
+			&updateTime,
+			0,
+			86,
+			50,
+			15,
+			3,
+			6,
+			9,
+			mining.Primary,
+			"",
+			geom.NewPointFlat(geom.XY, []float64{25.9820274, 48.2831323}),
+			"Чернівецька",
+			"Чернівці",
+			"Фастівська",
+			"Руська",
+			"223Д",
+		},
+	)
+}
+
+//func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {}
+//
+//func TestUnmarshalSearchEmptyPricePriceArr(t *testing.T) {}
+//
+//func TestUnmarshalSearchWhitespacePricePriceArr(t *testing.T) {}
+//
+//func TestUnmarshalSearchTrashPricePriceArr(t *testing.T) {}
+//
+//func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {}
+//
+//func TestUnmarshalSearchTrashTotalSquareMeters(t *testing.T) {}
+
+// Living square meters are greater than the total square meters
+//func TestUnmarshalSearchSupremeLivingSquareMeters(t *testing.T) {}
+//
+//func TestUnmarshalSearchNegativeFloor(t *testing.T) {}
+
+// Floor is higher than the total floor
+//func TestUnmarshalSearchSupremeFloor(t *testing.T) {}
