@@ -372,6 +372,16 @@ func TestFetcherUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 	)
 }
 
-//func TestFetcherUnmarshalSearchJustDateUpdatedAt(t *testing.T) {}
-//
+func TestFetcherUnmarshalSearchJustDateUpdatedAt(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("just_date_updated_at"), mining.Primary)
+	if err == nil || err.Error() != "domria: failed to unmarshal t"+
+		"he search, domria: moment cannot split timing, 2020-06-07 " {
+		t.Fatalf("domria: absent or invalid error, %v", err)
+	}
+	if len(flats) != 0 {
+		t.Errorf("domria: non-empty flats, %v", flats)
+	}
+}
+
 //func TestFetcherUnmarshalSearchJustTimeUpdatedAt(t *testing.T) {}
