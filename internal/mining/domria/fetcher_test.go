@@ -201,14 +201,14 @@ func TestFetcherUnmarshalSearchValidItem(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updatedAt := time.Date(2020, time.June, 6, 14, 57, 18, 0, time.Local).UTC()
+	updateTime := time.Date(2020, time.June, 6, 14, 57, 18, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-rovno-schastlivoe-chernovola-vyacheslava-ulitsa-16818824.html",
 			"dom/photo/10925/1092575/109257503/109257503.jpg",
-			&updatedAt,
+			&updateTime,
 			27800,
 			45,
 			0,
@@ -237,14 +237,14 @@ func TestFetcherUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updatedAt := time.Date(2020, time.June, 3, 16, 16, 26, 0, time.Local).UTC()
+	updateTime := time.Date(2020, time.June, 3, 16, 16, 26, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-ternopol-bam-17186701.html",
 			"",
-			&updatedAt,
+			&updateTime,
 			20797,
 			53.1,
 			0,
@@ -288,8 +288,42 @@ func TestFetcherUnmarshalSearchTrashUpdatedAt(t *testing.T) {
 	}
 }
 
-//func TestFetcherUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {}
-//
+func TestFetcherUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("leading_zeros_updated_at"), mining.Primary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2020, time.June, 7, 7, 0, 4, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-harkov-elizavetinskaya-ulitsa-17180614.html",
+			"dom/photo/11270/1127013/112701340/112701340.jpg",
+			&updateTime,
+			23000,
+			42,
+			21,
+			12,
+			1,
+			7,
+			16,
+			mining.Primary,
+			"ЖК Левада 2",
+			geom.NewPointFlat(geom.XY, []float64{36.239501354492, 49.978100188645}),
+			"Харківська",
+			"Харків",
+			"",
+			"Лисаветинська вулиця",
+			"2б",
+		},
+	)
+}
+
 //func TestFetcherUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {}
 //
 //func TestFetcherUnmarshalSearch13MonthUpdatedAt(t *testing.T) {}
