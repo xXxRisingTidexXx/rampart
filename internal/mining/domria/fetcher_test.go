@@ -492,8 +492,18 @@ func TestUnmarshalSearchWhitespacePricePriceArr(t *testing.T) {
 	}
 }
 
-//func TestUnmarshalSearchTrashPricePriceArr(t *testing.T) {}
-//
+func TestUnmarshalSearchTrashPricePriceArr(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("trash_price_price_arr"), mining.Primary)
+	if err == nil || err.Error() != "domria: failed to unmarshal the "+
+		"search, strconv.ParseFloat: parsing \"Suck\": invalid syntax" {
+		t.Fatalf("domria: absent or invalid error, %v", err)
+	}
+	if len(flats) != 0 {
+		t.Errorf("domria: non-empty flats, %v", flats)
+	}
+}
+
 //func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {}
 //
 //func TestUnmarshalSearchTrashTotalSquareMeters(t *testing.T) {}
