@@ -543,7 +543,7 @@ func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 func TestUnmarshalSearchTrashTotalSquareMeters(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("trash_total_square_meters"), mining.Secondary)
-	if err == nil || err.Error() != "domria: failed to unmarshal the" +
+	if err == nil || err.Error() != "domria: failed to unmarshal the"+
 		" search, invalid character '-' after object key:value pair" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
@@ -552,9 +552,42 @@ func TestUnmarshalSearchTrashTotalSquareMeters(t *testing.T) {
 	}
 }
 
-// Living square meters are greater than the total square meters
-//func TestUnmarshalSearchSupremeLivingSquareMeters(t *testing.T) {}
-//
+func TestUnmarshalSearchSupremeKitchenSquareMeters(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("supreme_kitchen_square_meters"), mining.Secondary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2020, time.June, 7, 7, 43, 22, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-ujgorod-tsentr-voloshina-ulitsa-15559098.html",
+			"dom/photo/9751/975170/97517018/97517018.jpg",
+			&updateTime,
+			90000,
+			96,
+			0,
+			112,
+			4,
+			3,
+			3,
+			mining.Secondary,
+			"",
+			geom.NewPointFlat(geom.XY, []float64{22.301875199999998, 48.621579}),
+			"Закарпатська",
+			"Ужгород",
+			"Центр",
+			"Волошина вулиця",
+			"",
+		},
+	)
+}
+
 //func TestUnmarshalSearchNegativeFloor(t *testing.T) {}
 
 // Floor is higher than the total floor
