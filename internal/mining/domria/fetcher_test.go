@@ -117,7 +117,7 @@ func TestFetcherUnmarshalSearchEmptyItem(t *testing.T) {
 	assertFlat(t, flats[0], &flat{})
 }
 
-//nolint:gocognit
+//nolint:gocognit,gocyclo
 func assertFlat(t *testing.T, actual *flat, expected *flat) {
 	if actual == nil {
 		t.Fatal("domria: empty actual")
