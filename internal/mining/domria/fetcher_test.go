@@ -468,8 +468,18 @@ func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {
 	)
 }
 
-//func TestUnmarshalSearchEmptyPricePriceArr(t *testing.T) {}
-//
+func TestUnmarshalSearchEmptyPricePriceArr(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("empty_price_price_arr"), mining.Secondary)
+	if err == nil || err.Error() != "domria: failed to unmars" +
+		"hal the search, domria: price string is too short, 2" {
+		t.Fatalf("domria: absent or invalid error, %v", err)
+	}
+	if len(flats) != 0 {
+		t.Errorf("domria: non-empty flats, %v", flats)
+	}
+}
+
 //func TestUnmarshalSearchWhitespacePricePriceArr(t *testing.T) {}
 //
 //func TestUnmarshalSearchTrashPricePriceArr(t *testing.T) {}
