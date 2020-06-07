@@ -432,8 +432,42 @@ func TestUnmarshalSearchEmptyPriceArr(t *testing.T) {
 	)
 }
 
-//func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {}
-//
+func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("no_usd_price_arr"), mining.Primary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2020, time.June, 7, 7, 20, 30, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-harkov-shevchenkovskiy-16798175.html",
+			"dom/photo/10906/1090623/109062364/109062364.jpg",
+			&updateTime,
+			0,
+			51,
+			20,
+			12,
+			1,
+			14,
+			16,
+			mining.Primary,
+			"",
+			geom.NewPointFlat(geom.XY, []float64{36.2245388, 49.9974272}),
+			"Харківська",
+			"Харків",
+			"Шевченківський",
+			"пр Ботаническая",
+			"2",
+		},
+	)
+}
+
 //func TestUnmarshalSearchEmptyPricePriceArr(t *testing.T) {}
 //
 //func TestUnmarshalSearchWhitespacePricePriceArr(t *testing.T) {}
