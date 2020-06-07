@@ -269,10 +269,10 @@ func TestFetcherUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
 	flats, err := fetcher.unmarshalSearch(readAll("empty_updated_at"), mining.Secondary)
 	if err == nil || err.Error() != "domria: failed to unmarsh"+
 		"al the search, domria: moment string is too short, 2" {
-		t.Errorf("domria: absent or invalid error, %v", err)
+		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
 	if len(flats) != 0 {
-		t.Fatalf("domria: non-empty flats, %v", flats)
+		t.Errorf("domria: non-empty flats, %v", flats)
 	}
 }
 
@@ -281,10 +281,10 @@ func TestFetcherUnmarshalSearchTrashUpdatedAt(t *testing.T) {
 	flats, err := fetcher.unmarshalSearch(readAll("trash_updated_at"), mining.Secondary)
 	if err == nil || err.Error() != "domria: failed to unmarshal the search, domria: mom"+
 		"ent can't split date & timing, |@!|)  )0w23 8&Nu sho, pososesh huj?$@%@8182)( @" {
-		t.Errorf("domria: absent or invalid error, %v", err)
+		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
 	if len(flats) != 0 {
-		t.Fatalf("domria: non-empty flats, %v", flats)
+		t.Errorf("domria: non-empty flats, %v", flats)
 	}
 }
 
@@ -324,12 +324,20 @@ func TestFetcherUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 	)
 }
 
-//func TestFetcherUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {}
-//
+func TestFetcherUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("missing_shapes_updated_at"), mining.Primary)
+	if err == nil || err.Error() != "domria: failed to unmarshal "+
+		"the search, domria: moment cannot split date, 2020- 07:53" {
+		t.Fatalf("domria: absent or invalid error, %v", err)
+	}
+	if len(flats) != 0 {
+		t.Errorf("domria: non-empty flats, %v", flats)
+	}
+}
+
 //func TestFetcherUnmarshalSearch13MonthUpdatedAt(t *testing.T) {}
-//
+
 //func TestFetcherUnmarshalSearchJustDateUpdatedAt(t *testing.T) {}
 //
-//func TestFetcherUnmarshalSearchShortDateUpdatedAt(t *testing.T) {}
-//
-//func TestFetcherUnmarshalSearchLongTimeUpdatedAt(t *testing.T) {}
+//func TestFetcherUnmarshalSearchJustTimeUpdatedAt(t *testing.T) {}

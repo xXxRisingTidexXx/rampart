@@ -1,0 +1,244 @@
+{
+  "items": [
+    {
+      "lf_links_uk": [
+        {
+          "label": "куплю квартиру",
+          "url": "/uk/prodazha-kvartir/"
+        },
+        {
+          "label": "продаж квартир у Тернополі",
+          "url": "/uk/prodazha-kvartir/ternopol/"
+        },
+        {
+          "label": "продаж 1 кімнатної квартири у Тернополі",
+          "url": "/uk/prodazha-kvartir/ternopol-1k/"
+        },
+        {
+          "label": "продаж квартири вулиця Київська",
+          "url": "/uk/prodazha-kvartir/ternopol-ul-kyevskaia/"
+        },
+        {
+          "label": "продаж квартири в районі Бама",
+          "url": "/uk/prodazha-kvartir/ternopol-rayon-bam/"
+        },
+        {
+          "label": "вартість квартир в Тернополі",
+          "url": "/uk/продаж-квартири-тернопіль-ціни/"
+        },
+        {
+          "label": "ЖК ЕкоДім в Тернополі",
+          "url": "/uk/novostroyka-zhk-ekodim-6881/"
+        }
+      ],
+      "realty_type_parent_name_uk": "Житло",
+      "street_name": "Киевская улица",
+      "rooms_count": 1,
+      "advert_title": 1,
+      "type": "realty",
+      "wall_type_uk": "газоблок",
+      "is_commercial": 1,
+      "state_name": "Тернопольская",
+      "street_id": 2743,
+      "state_id": 3,
+      "moderated": 1,
+      "beautiful_url": "realty-prodaja-kvartira-ternopol-bam-kievskaya-ulitsa-16741499.html",
+      "levels": 17,
+      "district_type_name": "Район",
+      "description": "Долевое участие, сдача дома в 1 квартале 2020 года.\nСырая квартира, студия, под индивидуальное отопление. Дом утеплен, лифты американской фирмы OTIS, предусмотрены подземные парковковки.\nВ стоимость входит:\n- счетчики на воду, газ и свет;\n- раскинута проводка по квартире: 3-жильная медь;\n- входные бронированные двери;\n- металлопластиковые окна с энергосберегающим стеклом;\n- залита стяжка.  ",
+      "photos_count": 6,
+      "advert_publish_type": 1,
+      "currency_type": "грн",
+      "district_type_id": 1,
+      "longitude": 25.628465414728,
+      "levels_expired": "2020-06-08 04:55:52",
+      "web_id": "4df08da339e4f960",
+      "partner_id": 1,
+      "is_exchange": "нет",
+      "moderator_id": 4627389,
+      "district_id": "15247",
+      "complete_time": 207.941,
+      "wall_type": "газоблок",
+      "district_name_uk": "Бам",
+      "publishing_date": "2020-06-02 08:09:51",
+      "description_uk": "Дольова участь, здача будинку в 1 кварталі 2020 року.\nСира квартира, студія, під індивідуальне опалення. Будинок утеплений, ліфти від американської фірми OTIS, передбачено підземні парковковки.\nУ вартість входить:\n- лічильники на воду, газ і світло;\n- розкинута проводка по квартирі: 3-жильна мідь;\n- вхідні броньовані двері;\n- металопластикові вікна з енергозберігаючим склом;\n- залита стяжка.",
+      "_rev": "223-224458b65f5481c6772b0c9a1257101d",
+      "currency_type_uk": "грн",
+      "youtube_link": "",
+      "price_type": "за кв.м.",
+      "price": 368400,
+      "updated_at": "2020- 07:53",
+      "floor": 11,
+      "quality": 75,
+      "rangeFactorAuction": "00027618769303988828",
+      "moderation_date": "2020-02-12 16:51:45",
+      "latitude": 49.569202321456,
+      "price_total": 368400,
+      "main_photo": "dom/photo/10853/1085337/108533733/108533733.jpg",
+      "is_exchange_uk": "ні",
+      "price_item": 12000,
+      "realty_type_name": "Квартира",
+      "building_number_str": "",
+      "city_name": "Тернополь",
+      "realty_type_parent_id": 1,
+      "rangeFactor": "00171591074591",
+      "living_square_meters": 15.4,
+      "state_name_uk": "Тернопільська",
+      "advert_type_name_uk": "продаж",
+      "realty_type_id": 2,
+      "rangeFactorNew": "001701591074591",
+      "price_type_uk": "за кв.м.",
+      "realty_type_name_uk": "Квартира",
+      "user_ip": 0,
+      "city_id": 3,
+      "agency_id": 29185,
+      "characteristics_values": {
+        "118": 1616,
+        "209": 1,
+        "214": 30.7,
+        "216": 15.4,
+        "227": 11,
+        "228": 11,
+        "234": 12000,
+        "242": 240,
+        "247": 253,
+        "265": 257,
+        "443": 1471,
+        "480": 477,
+        "495": 486,
+        "505": 2.56,
+        "516": 511,
+        "629": 626,
+        "709": 704,
+        "806": 802,
+        "808": 808,
+        "830": 830,
+        "879": 876,
+        "892": 890,
+        "907": 902,
+        "940": 935,
+        "1001": 1001,
+        "1002": 1002,
+        "1003": 1003,
+        "1166": 1162,
+        "1169": 1168,
+        "1178": 1173,
+        "1181": 1179,
+        "1190": 1184,
+        "1193": 1191,
+        "1202": 1197,
+        "1206": 1204,
+        "1215": 1208,
+        "1219": 1216,
+        "1437": 1473,
+        "1501": 1501,
+        "1515": 1511,
+        "1524": 1521,
+        "1559": 1557,
+        "1563": 1561,
+        "1571": 1571,
+        "1577": 1577,
+        "1633": 1633,
+        "1650": 1653
+      },
+      "_id": "realty-16741499",
+      "floors_count": 11,
+      "created_at": "2020-02-12 16:30:25",
+      "user_id": 8968714,
+      "city_name_uk": "Тернопіль",
+      "user_package_id": 0,
+      "total_square_meters": 30.7,
+      "realty_id": 16741499,
+      "street_name_uk": "Київська вулиця",
+      "lf_links": [
+        {
+          "label": "купить квартиру",
+          "url": "/prodazha-kvartir/"
+        },
+        {
+          "label": "продажа квартир в Тернополе",
+          "url": "/prodazha-kvartir/ternopol/"
+        },
+        {
+          "label": "продажа 1-комнатной квартиры в Тернополе",
+          "url": "/prodazha-kvartir/ternopol-1k/"
+        },
+        {
+          "label": "продажа квартиры ул. Киевская",
+          "url": "/prodazha-kvartir/ternopol-ul-kyevskaia/"
+        },
+        {
+          "label": "продажа квартиры в районе Бама",
+          "url": "/prodazha-kvartir/ternopol-rayon-bam/"
+        },
+        {
+          "label": "стоимость квартир в Тернополе",
+          "url": "/ru/продажа-квартиры-тернополь-цены/"
+        },
+        {
+          "label": "ЖК ЕкоДом в Тернополе",
+          "url": "/novostroyka-zhk-ekodom-6881/"
+        }
+      ],
+      "date_end": "2020-08-12 16:35:44",
+      "realty_sale_type": 2,
+      "photos": {
+        "108533731": {
+          "id": 108533731,
+          "file": "dom/photo/10853/1085337/108533731/108533731.jpg",
+          "byRevisor": true
+        },
+        "108533733": {
+          "id": 108533733,
+          "file": "dom/photo/10853/1085337/108533733/108533733.jpg",
+          "is_main": 1,
+          "byRevisor": true
+        },
+        "108533734": {
+          "id": 108533734,
+          "file": "dom/photo/10853/1085337/108533734/108533734.jpg",
+          "byRevisor": true
+        },
+        "108533735": {
+          "id": 108533735,
+          "file": "dom/photo/10853/1085337/108533735/108533735.jpg",
+          "byRevisor": true
+        },
+        "108533755": {
+          "id": 108533755,
+          "file": "dom/photo/10853/1085337/108533755/108533755.jpg",
+          "byRevisor": true
+        },
+        "108533823": {
+          "id": 108533823,
+          "file": "dom/photo/10853/1085338/108533823/108533823.jpg",
+          "byRevisor": true
+        }
+      },
+      "is_calltracking": 1,
+      "district_name": "Бам",
+      "rangeFactorIns": "000171591074591",
+      "advert_type_id": 1,
+      "advert_type_name": "продажа",
+      "realty_type_parent_name": "Жилье",
+      "user": {
+        "name": "Андріяна Дацишин",
+        "image": "",
+        "good_partner_top": ""
+      },
+      "agency": {
+        "agency_id": 29185,
+        "name": "Андріяна Дацишин",
+        "logo": "",
+        "agency_type": 2,
+        "good_partner": "",
+        "user_id": 8968714
+      },
+      "priceArr": {
+        "1": "13 741",
+        "2": "12 120",
+        "3": "368 400"
+      }
+    }
+  ]
+}
