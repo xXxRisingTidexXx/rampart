@@ -588,7 +588,41 @@ func TestUnmarshalSearchSupremeKitchenSquareMeters(t *testing.T) {
 	)
 }
 
-//func TestUnmarshalSearchNegativeFloor(t *testing.T) {}
+func TestUnmarshalSearchNegativeFloor(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("negative_floor"), mining.Primary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2020, time.June, 7, 9, 49, 9, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-kiev-solomenskiy-petra-radchenko-ulitsa-16760338.html",
+			"dom/photo/10873/1087329/108732937/108732937.jpg",
+			&updateTime,
+			48510,
+			59.32,
+			0,
+			0,
+			2,
+			-1,
+			26,
+			mining.Primary,
+			"ЖК Медовий-2",
+			geom.NewPointFlat(geom.XY, []float64{30.4760253, 50.4128865}),
+			"Київська",
+			"Київ",
+			"Солом'янський",
+			"Петра Радченко улица",
+			"27",
+		},
+	)
+}
 
 // Floor is higher than the total floor
 //func TestUnmarshalSearchSupremeFloor(t *testing.T) {}
