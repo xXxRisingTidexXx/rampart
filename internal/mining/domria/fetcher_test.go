@@ -540,7 +540,17 @@ func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 	)
 }
 
-//func TestUnmarshalSearchTrashTotalSquareMeters(t *testing.T) {}
+func TestUnmarshalSearchTrashTotalSquareMeters(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("trash_total_square_meters"), mining.Secondary)
+	if err == nil || err.Error() != "domria: failed to unmarshal the" +
+		" search, invalid character '-' after object key:value pair" {
+		t.Fatalf("domria: absent or invalid error, %v", err)
+	}
+	if len(flats) != 0 {
+		t.Errorf("domria: non-empty flats, %v", flats)
+	}
+}
 
 // Living square meters are greater than the total square meters
 //func TestUnmarshalSearchSupremeLivingSquareMeters(t *testing.T) {}
