@@ -60,22 +60,22 @@ func TestFetcherUnmarshalSearchArrayInsteadOfObject(t *testing.T) {
 func TestFetcherUnmarshalSearchEmptyJSON(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch([]byte("{}"), mining.Primary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
 	if flats == nil || len(flats) != 0 {
 		t.Errorf("domria: nil/non-empty flats, %v", flats)
-	}
-	if err != nil {
-		t.Errorf("domria: unexpected error, %v", err)
 	}
 }
 
 func TestFetcherUnmarshalSearchWithoutItems(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("without_items"), mining.Primary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
 	if flats == nil || len(flats) != 0 {
 		t.Errorf("domria: nil/non-empty flats, %v", flats)
-	}
-	if err != nil {
-		t.Errorf("domria: unexpected error, %v", err)
 	}
 }
 
@@ -97,11 +97,11 @@ func readAll(fixtureName string) []byte {
 func TestFetcherUnmarshalSearchEmptySearch(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("empty_search"), mining.Primary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
 	if flats == nil || len(flats) != 0 {
 		t.Errorf("domria: nil/non-empty flats, %v", flats)
-	}
-	if err != nil {
-		t.Errorf("domria: unexpected error, %v", err)
 	}
 }
 
@@ -109,12 +109,12 @@ func TestFetcherUnmarshalSearchEmptyItem(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("empty_item"), mining.Primary)
 	if err != nil {
-		t.Errorf("domria: unexpected error, %v", err)
+		t.Fatalf("domria: unexpected error, %v", err)
 	}
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(t, flats[0], &flat{})
+	assertFlat(t, flats[0], &flat{housing: mining.Primary})
 }
 
 //nolint:gocognit,gocyclo
@@ -159,7 +159,7 @@ func assertFlat(t *testing.T, actual *flat, expected *flat) {
 	if actual.totalFloor != expected.totalFloor {
 		t.Errorf("domria: invalid total floor, %d != %d", actual.totalFloor, expected.totalFloor)
 	}
-	if actual.housing != mining.Primary {
+	if actual.housing != expected.housing {
 		t.Errorf("domria: invalid housing, %s != %s", actual.housing, expected.housing)
 	}
 	if actual.complex != expected.complex {
@@ -196,7 +196,7 @@ func TestFetcherUnmarshalSearchValidItem(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("valid_item"), mining.Primary)
 	if err != nil {
-		t.Errorf("domria: unexpected error, %v", err)
+		t.Fatalf("domria: unexpected error, %v", err)
 	}
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
@@ -227,3 +227,55 @@ func TestFetcherUnmarshalSearchValidItem(t *testing.T) {
 		},
 	)
 }
+
+func TestFetcherUnmarshalSearchEmptyMainPhoto(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("empty_main_photo"), mining.Secondary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updatedAt := time.Date(2020, time.June, 3, 16, 16, 26, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-ternopol-bam-17186701.html",
+			"",
+			&updatedAt,
+			20797,
+			53.1,
+			0,
+			12,
+			2,
+			2,
+			4,
+			mining.Secondary,
+			"",
+			geom.NewPointFlat(geom.XY, []float64{25.594767, 49.553517}),
+			"Тернопільська",
+			"Тернопіль",
+			"Бам",
+			"",
+			"",
+		},
+	)
+}
+
+//func TestFetcherUnmarshalSearchEmptyUpdatedAt(t *testing.T) {}
+//
+//func TestFetcherUnmarshalSearchTrashUpdatedAt(t *testing.T) {}
+//
+//func TestFetcherUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {}
+//
+//func TestFetcherUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {}
+//
+//func TestFetcherUnmarshalSearch13MonthUpdatedAt(t *testing.T) {}
+//
+//func TestFetcherUnmarshalSearchShortDateTimingUpdatedAt(t *testing.T) {}
+//
+//func TestFetcherUnmarshalSearchShortDateUpdatedAt(t *testing.T) {}
+//
+//func TestFetcherUnmarshalSearchLongTimeUpdatedAt(t *testing.T) {}
