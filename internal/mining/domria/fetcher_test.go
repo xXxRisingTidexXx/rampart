@@ -265,7 +265,15 @@ func TestFetcherUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 }
 
 func TestFetcherUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
-
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("empty_updated_at"), mining.Secondary)
+	if err == nil || err.Error() != "domria: failed to unmarsh" +
+		"al the search, domria: moment string is too short, 2" {
+		t.Errorf("domria: absent or invalid error, %v", err)
+	}
+	if len(flats) != 0 {
+		t.Fatalf("domria: non-empty flats, %v", flats)
+	}
 }
 
 //func TestFetcherUnmarshalSearchTrashUpdatedAt(t *testing.T) {}
@@ -276,7 +284,7 @@ func TestFetcherUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
 //
 //func TestFetcherUnmarshalSearch13MonthUpdatedAt(t *testing.T) {}
 //
-//func TestFetcherUnmarshalSearchShortDateTimingUpdatedAt(t *testing.T) {}
+//func TestFetcherUnmarshalSearchJustDateUpdatedAt(t *testing.T) {}
 //
 //func TestFetcherUnmarshalSearchShortDateUpdatedAt(t *testing.T) {}
 //
