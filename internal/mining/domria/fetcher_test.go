@@ -267,7 +267,7 @@ func TestFetcherUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 func TestFetcherUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll("empty_updated_at"), mining.Secondary)
-	if err == nil || err.Error() != "domria: failed to unmarsh" +
+	if err == nil || err.Error() != "domria: failed to unmarsh"+
 		"al the search, domria: moment string is too short, 2" {
 		t.Errorf("domria: absent or invalid error, %v", err)
 	}
@@ -276,8 +276,18 @@ func TestFetcherUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
 	}
 }
 
-//func TestFetcherUnmarshalSearchTrashUpdatedAt(t *testing.T) {}
-//
+func TestFetcherUnmarshalSearchTrashUpdatedAt(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("trash_updated_at"), mining.Secondary)
+	if err == nil || err.Error() != "domria: failed to unmarshal the search, domria: mom"+
+		"ent can't split date & timing, |@!|)  )0w23 8&Nu sho, pososesh huj?$@%@8182)( @" {
+		t.Errorf("domria: absent or invalid error, %v", err)
+	}
+	if len(flats) != 0 {
+		t.Fatalf("domria: non-empty flats, %v", flats)
+	}
+}
+
 //func TestFetcherUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {}
 //
 //func TestFetcherUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {}
