@@ -1,6 +1,7 @@
 package domria
 
 import (
+	"github.com/twpayne/go-geom"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -116,6 +117,7 @@ func TestFetcherUnmarshalSearchEmptyItem(t *testing.T) {
 	assertFlat(t, flats[0], &flat{})
 }
 
+//nolint:gocognit
 func assertFlat(t *testing.T, actual *flat, expected *flat) {
 	if actual == nil {
 		t.Fatal("domria: empty actual")
@@ -124,68 +126,69 @@ func assertFlat(t *testing.T, actual *flat, expected *flat) {
 		t.Fatal("domria: empty expected")
 	}
 	if actual.originURL != expected.originURL {
-		t.Errorf("domria: invalid origin url, %s", actual.originURL)
+		t.Errorf("domria: invalid origin url, %s != %s", actual.originURL, expected.originURL)
 	}
 	if actual.imageURL != expected.imageURL {
-		t.Errorf("domria: invalid image url, %s", actual.imageURL)
+		t.Errorf("domria: invalid image url, %s != %s", actual.imageURL, expected.imageURL)
 	}
 	if expected.updateTime == nil && actual.updateTime != nil {
 		t.Errorf("domria: non-nil update time, %v", actual.updateTime)
 	}
 	if expected.updateTime != nil &&
 		(actual.updateTime == nil || !actual.updateTime.Equal(*expected.updateTime)) {
-		t.Errorf("domria: invalid update time, %v", actual.updateTime)
+		t.Errorf("domria: invalid update time, %v != %v", actual.updateTime, expected.updateTime)
 	}
 	if actual.price != expected.price {
-		t.Errorf("domria: invalid price, %.1f", actual.price)
+		t.Errorf("domria: invalid price, %.1f != %.1f", actual.price, expected.price)
 	}
 	if actual.totalArea != expected.totalArea {
-		t.Errorf("domria: invalid total area, %1.f", actual.totalArea)
+		t.Errorf("domria: invalid total area, %1.f != %.1f", actual.totalArea, expected.totalArea)
 	}
 	if actual.livingArea != expected.livingArea {
-		t.Errorf("domria: invalid living area, %.1f", actual.livingArea)
+		t.Errorf("domria: invalid living area, %.1f != %.1f", actual.livingArea, expected.livingArea)
 	}
 	if actual.kitchenArea != expected.kitchenArea {
-		t.Errorf("domria: invalid kitchen area, %.1f", actual.kitchenArea)
+		t.Errorf("domria: invalid kitchen area, %.1f != %.1f", actual.kitchenArea, expected.kitchenArea)
 	}
 	if actual.roomNumber != expected.roomNumber {
-		t.Errorf("domria: invalid room number, %d", actual.roomNumber)
+		t.Errorf("domria: invalid room number, %d != %d", actual.roomNumber, expected.roomNumber)
 	}
 	if actual.floor != expected.floor {
-		t.Errorf("domria: invalid floor, %d", actual.floor)
+		t.Errorf("domria: invalid floor, %d != %d", actual.floor, expected.floor)
 	}
 	if actual.totalFloor != expected.totalFloor {
-		t.Errorf("domria: invalid total floor, %d", actual.totalFloor)
+		t.Errorf("domria: invalid total floor, %d != %d", actual.totalFloor, expected.totalFloor)
 	}
 	if actual.housing != mining.Primary {
-		t.Errorf("domria: invalid housing, %s", actual.housing)
+		t.Errorf("domria: invalid housing, %s != %s", actual.housing, expected.housing)
 	}
 	if actual.complex != expected.complex {
-		t.Errorf("domria: invalid complex, %s", actual.complex)
+		t.Errorf("domria: invalid complex, %s != %s", actual.complex, expected.complex)
 	}
 	if expected.point == nil && actual.point != nil {
 		t.Errorf("domria: non-nil point, %v", actual.point)
 	}
 	if expected.point != nil &&
 		(actual.point == nil ||
+			actual.point.Layout() != expected.point.Layout() ||
 			actual.point.X() != expected.point.X() ||
 			actual.point.Y() != expected.point.Y()) {
-		t.Errorf("domria: invalid point, %v", actual.point)
+		t.Errorf("domria: invalid point, %v != %v", actual.point, expected.point)
 	}
 	if actual.state != expected.state {
-		t.Errorf("domria: invalid state, %s", actual.state)
+		t.Errorf("domria: invalid state, %s != %s", actual.state, expected.state)
 	}
 	if actual.city != expected.city {
-		t.Errorf("domria: invalid city, %s", actual.city)
+		t.Errorf("domria: invalid city, %s != %s", actual.city, expected.city)
 	}
 	if actual.district != expected.district {
-		t.Errorf("domria: invalid district, %s", actual.district)
+		t.Errorf("domria: invalid district, %s != %s", actual.district, expected.district)
 	}
 	if actual.street != expected.street {
-		t.Errorf("domria: invalid street, %s", actual.street)
+		t.Errorf("domria: invalid street, %s != %s", actual.street, expected.street)
 	}
 	if actual.houseNumber != expected.houseNumber {
-		t.Errorf("domria: invalid house number, %s", actual.houseNumber)
+		t.Errorf("domria: invalid house number, %s != %s", actual.houseNumber, expected.houseNumber)
 	}
 }
 
@@ -198,66 +201,29 @@ func TestFetcherUnmarshalSearchValidItem(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
+	updatedAt := time.Date(2020, time.June, 6, 14, 57, 18, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
-			"realty-prodaja-kvartira-rovno-schastlivoe-chernovola-vyacheslava-ulitsa-16818824.html"
+			"realty-prodaja-kvartira-rovno-schastlivoe-chernovola-vyacheslava-ulitsa-16818824.html",
+			"dom/photo/10925/1092575/109257503/109257503.jpg",
+			&updatedAt,
+			27800,
+			45,
+			0,
+			0,
+			1,
+			2,
+			9,
+			mining.Primary,
+			"ЖК На Щасливому, будинок 27",
+			geom.NewPointFlat(geom.XY, []float64{26.267247115344, 50.59766586795}),
+			"Рівненська",
+			"Рівне",
+			"Щасливе",
+			"Черновола Вячеслава улица",
+			"91-Ф",
 		},
 	)
-	if flats[0].originURL != "realty-prodaja-kvartira-rovno-schastlivoe-chernovola-vyacheslava-ulitsa-16818824.html" {
-		t.Errorf("domria: invalid origin url, %v", flats[0])
-	}
-	if flats[0].imageURL != "dom/photo/10925/1092575/109257503/109257503.jpg" {
-		t.Errorf("domria: invalid image url, %v", flats[0])
-	}
-	if flats[0].updateTime == nil ||
-		flats[0].updateTime.Unix() != time.Date(2020, time.June, 6, 14, 57, 18, 0, time.Local).Unix() {
-		t.Errorf("domria: invalid update time, %v", flats[0])
-	}
-	if flats[0].price != 27800 {
-		t.Errorf("domria: invalid price, %v", flats[0])
-	}
-	if flats[0].totalArea != 45 {
-		t.Errorf("domria: invalid total area, %v", flats[0])
-	}
-	if flats[0].livingArea != 0 {
-		t.Errorf("domria: invalid living area, %v", flats[0])
-	}
-	if flats[0].kitchenArea != 0 {
-		t.Errorf("domria: invalid kitchen area, %v", flats[0])
-	}
-	if flats[0].roomNumber != 1 {
-		t.Errorf("domria: invalid room number, %v", flats[0])
-	}
-	if flats[0].floor != 2 {
-		t.Errorf("domria: invalid floor, %v", flats[0])
-	}
-	if flats[0].totalFloor != 9 {
-		t.Errorf("domria: invalid total floor, %v", flats[0])
-	}
-	if flats[0].housing != mining.Primary {
-		t.Errorf("domria: invalid housing, %v", flats[0])
-	}
-	if flats[0].complex != "ЖК На Щасливому, будинок 27" {
-		t.Errorf("domria: invalid complex, %v", flats[0])
-	}
-	if flats[0].point == nil || flats[0].point.X() != 26.267247115344 || flats[0].point.Y() != 50.59766586795 {
-		t.Errorf("domria: invalid point, %v", flats[0])
-	}
-	if flats[0].state != "Рівненська" {
-		t.Errorf("domria: invalid state, %v", flats[0])
-	}
-	if flats[0].city != "Рівне" {
-		t.Errorf("domria: invalid city, %v", flats[0])
-	}
-	if flats[0].district != "Щасливе" {
-		t.Errorf("domria: invalid district, %v", flats[0])
-	}
-	if flats[0].street != "Черновола Вячеслава улица" {
-		t.Errorf("domria: invalid street, %v", flats[0])
-	}
-	if flats[0].houseNumber != "91-Ф" {
-		t.Errorf("domria: invalid house number, %v", flats[0])
-	}
 }
