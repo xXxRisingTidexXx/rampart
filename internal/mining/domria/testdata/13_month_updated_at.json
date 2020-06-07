@@ -1,0 +1,359 @@
+{
+  "items": [
+    {
+      "rangeFactorNew": "001511590995717",
+      "total_square_meters": 32.9,
+      "deleted_by": "admin",
+      "floors_count": 5,
+      "wall_type_uk": "цегла",
+      "street_name_uk": "Василя Порика вулиця",
+      "type": "realty",
+      "photos": {
+        "111621990": {
+          "file": "dom/photo/11162/1116219/111621990/111621990.jpg",
+          "ordering": 16,
+          "is_main": 1,
+          "id": 111621990
+        },
+        "111622045": {
+          "file": "dom/photo/11162/1116220/111622045/111622045.jpg",
+          "ordering": 9,
+          "id": 111622045
+        },
+        "111622046": {
+          "file": "dom/photo/11162/1116220/111622046/111622046.jpg",
+          "ordering": 4,
+          "id": 111622046
+        },
+        "111622047": {
+          "file": "dom/photo/11162/1116220/111622047/111622047.jpg",
+          "ordering": 5,
+          "id": 111622047
+        },
+        "111622048": {
+          "file": "dom/photo/11162/1116220/111622048/111622048.jpg",
+          "ordering": 18,
+          "id": 111622048
+        },
+        "111622049": {
+          "file": "dom/photo/11162/1116220/111622049/111622049.jpg",
+          "ordering": 2,
+          "id": 111622049
+        },
+        "111622050": {
+          "file": "dom/photo/11162/1116220/111622050/111622050.jpg",
+          "ordering": 1,
+          "id": 111622050
+        },
+        "111622051": {
+          "file": "dom/photo/11162/1116220/111622051/111622051.jpg",
+          "ordering": 19,
+          "id": 111622051
+        },
+        "111622053": {
+          "file": "dom/photo/11162/1116220/111622053/111622053.jpg",
+          "ordering": 3,
+          "id": 111622053
+        },
+        "111966945": {
+          "file": "dom/photo/11196/1119669/111966945/111966945.jpg",
+          "ordering": 6,
+          "id": 111966945
+        },
+        "111966947": {
+          "file": "dom/photo/11196/1119669/111966947/111966947.jpg",
+          "ordering": 7,
+          "id": 111966947
+        },
+        "111966948": {
+          "file": "dom/photo/11196/1119669/111966948/111966948.jpg",
+          "ordering": 8,
+          "id": 111966948
+        },
+        "111966949": {
+          "file": "dom/photo/11196/1119669/111966949/111966949.jpg",
+          "ordering": 10,
+          "id": 111966949
+        },
+        "111966950": {
+          "file": "dom/photo/11196/1119669/111966950/111966950.jpg",
+          "ordering": 11,
+          "id": 111966950
+        },
+        "111966951": {
+          "file": "dom/photo/11196/1119669/111966951/111966951.jpg",
+          "ordering": 15,
+          "id": 111966951
+        },
+        "111966952": {
+          "file": "dom/photo/11196/1119669/111966952/111966952.jpg",
+          "ordering": 17,
+          "id": 111966952
+        },
+        "111966954": {
+          "file": "dom/photo/11196/1119669/111966954/111966954.jpg",
+          "ordering": 12,
+          "id": 111966954
+        },
+        "111966957": {
+          "file": "dom/photo/11196/1119669/111966957/111966957.jpg",
+          "ordering": 13,
+          "id": 111966957
+        },
+        "111966960": {
+          "file": "dom/photo/11196/1119669/111966960/111966960.jpg",
+          "ordering": 14,
+          "id": 111966960
+        },
+        "111966963": {
+          "file": "dom/photo/11196/1119669/111966963/111966963.jpg",
+          "ordering": 20,
+          "id": 111966963
+        }
+      },
+      "price_item": 836,
+      "district_type_id": 1,
+      "panoramas": [
+        {
+          "img": "dom/panoramas/170/17080/1708081/1708081.jpg?v=13569",
+          "panorama_id": 1708081,
+          "type_id": 17,
+          "type_uk": "Житлова кімната",
+          "type_ru": "Жилая комната"
+        },
+        {
+          "img": "dom/panoramas/170/17080/1708080/1708080.jpg?v=13569",
+          "panorama_id": 1708080,
+          "type_id": 10,
+          "type_uk": "Балкон",
+          "type_ru": "Балкон"
+        },
+        {
+          "img": "dom/panoramas/170/17080/1708082/1708082.jpg?v=13569",
+          "panorama_id": 1708082,
+          "type_id": 2,
+          "type_uk": "Кухня",
+          "type_ru": "Кухня"
+        },
+        {
+          "img": "dom/panoramas/170/17080/1708083/1708083.jpg?v=13569",
+          "panorama_id": 1708083,
+          "type_id": 115,
+          "type_uk": "Санвузол",
+          "type_ru": "Санузел"
+        }
+      ],
+      "youtube_link": "",
+      "currency_type_uk": "$",
+      "delete_reason": 14,
+      "description_uk": "Терміново продається 1к квартира на Вишенці 600 річчя на 5 поверсі 5 поверхового цегляного будинку не кутова. Вдале планування квартири,замінені вікна на МПВ, хороший житловий стан.Телефонуйте та дізнавайтесь більше,покажемо в зручний для вас час\nТакож є 1к квартира  на 3 поверсі  5 поверхового панельного будинку.Ваше АН Крепость",
+      "advert_type_name": "продажа",
+      "advert_type_id": 1,
+      "state_name": "Винницкая",
+      "flat_number": 42,
+      "complete_time": 5765.662,
+      "rangeFactor": "00151590995717",
+      "price": 27500,
+      "beautiful_url": "realty-perevireno-prodaja-kvartira-vinnitsa-vishenka-vasiliya-porika-ulitsa-17073207.html",
+      "state_id": 1,
+      "price_type_uk": "за об'єкт",
+      "photos_count": 20,
+      "longitude": 28.4247279,
+      "inspected_at": "2020-05-18 16:46:55",
+      "user_ip": 0,
+      "city_name_uk": "Вінниця",
+      "is_calltracking": 1,
+      "kitchen_square_meters": 6,
+      "agency_id": 23163,
+      "date_end": "2020-09-01 10:15:17",
+      "web_id": "40c436ad75e65e48",
+      "living_square_meters": 32.1,
+      "realty_type_parent_name": "Жилье",
+      "quality": 77,
+      "inspected": 1,
+      "realty_type_id": 2,
+      "building_number_str": "1",
+      "user_id": 5701833,
+      "currency_type": "$",
+      "is_exchange_uk": "ні",
+      "characteristics_values": {
+        "118": 108,
+        "209": 1,
+        "214": 32.9,
+        "216": 32.1,
+        "218": 6,
+        "227": 4,
+        "228": 5,
+        "234": 27500,
+        "242": 239,
+        "247": 252,
+        "265": 257,
+        "443": 442,
+        "475": 472,
+        "505": 2.8,
+        "516": 509,
+        "629": 626,
+        "686": 684,
+        "692": 688,
+        "709": 704,
+        "879": 872,
+        "892": 890,
+        "894": 1426,
+        "907": 902,
+        "941": 942,
+        "949": 1320,
+        "1141": 1137,
+        "1166": 1159,
+        "1169": 1168,
+        "1178": 1170,
+        "1181": 1179,
+        "1190": 1182,
+        "1193": 1191,
+        "1202": 1194,
+        "1206": 1204,
+        "1215": 1207,
+        "1219": 1216,
+        "1228": 1220,
+        "1232": 1229,
+        "1268": 1260,
+        "1272": 1269,
+        "1357": 1353,
+        "1437": 1434,
+        "1515": 1511,
+        "1524": 1517,
+        "1555": 1552,
+        "1559": 1557,
+        "1563": 1561,
+        "1567": 1565,
+        "1650": 1648
+      },
+      "price_type": "за объект",
+      "is_show_flat_no": 0,
+      "_id": "realty-17073207",
+      "realty_type_parent_name_uk": "Житло",
+      "street_id": 456,
+      "city_id": 1,
+      "price_total": 27500,
+      "realty_sale_type": 1,
+      "inspected_till": "2020-08-18 16:46:55",
+      "moderated": 1,
+      "realty_id": 17073207,
+      "latitude": 49.2291492,
+      "_rev": "105-2a5b5716d956f0a5c231a0399ca8ad84",
+      "created_at": "2020-05-08 13:27:21",
+      "description": "",
+      "levels_expired": "2020-06-08 04:07:41",
+      "is_commercial": 1,
+      "street_name": "Василия Порика улица",
+      "lf_links": [
+        {
+          "label": "купить квартиру",
+          "url": "/prodazha-kvartir/"
+        },
+        {
+          "label": "продажа квартир Винница",
+          "url": "/prodazha-kvartir/vinnitsa/"
+        },
+        {
+          "label": "продажа однокомнатной квартиры Винница",
+          "url": "/prodazha-kvartir/vinnitsa-1k/"
+        },
+        {
+          "label": "продажа квартиры улица Василия Порика",
+          "url": "/prodazha-kvartir/vinnitsa-ul-vasylyia-poryka/"
+        },
+        {
+          "label": "продажа квартиры Вишенка",
+          "url": "/prodazha-kvartir/vinnitsa-rayon-vyshenka/"
+        },
+        {
+          "label": "стоимость квартир в Виннице",
+          "url": "/ru/продажа-квартиры-винница-цены/"
+        },
+        {
+          "label": "Таунхаус Парковый городок в Виннице",
+          "url": "/novostroyka-taunkhaus-parkovyi-gorodok-6002/"
+        }
+      ],
+      "district_name": "Вишенка",
+      "is_exchange": "нет",
+      "return_on_moderation": 2,
+      "city_name": "Винница",
+      "partner_id": 1,
+      "updated_at": "2020-13-07 07:07:41",
+      "advert_publish_type": 1,
+      "realty_type_parent_id": 1,
+      "moderator_id": 5,
+      "disable_comments": 1,
+      "floor": 4,
+      "district_type_name": "Район",
+      "lf_links_uk": [
+        {
+          "label": "куплю квартиру",
+          "url": "/uk/prodazha-kvartir/"
+        },
+        {
+          "label": "продаж квартири Вінниця",
+          "url": "/uk/prodazha-kvartir/vinnitsa/"
+        },
+        {
+          "label": "продаж 1-кімнатних квартир Вінниця",
+          "url": "/uk/prodazha-kvartir/vinnitsa-1k/"
+        },
+        {
+          "label": "продаж квартир вулиця Василя Порика",
+          "url": "/uk/prodazha-kvartir/vinnitsa-ul-vasylyia-poryka/"
+        },
+        {
+          "label": "продаж квартир в районі Вишеньки",
+          "url": "/uk/prodazha-kvartir/vinnitsa-rayon-vyshenka/"
+        },
+        {
+          "label": "вартість квартир в Вінниці",
+          "url": "/uk/продаж-квартири-вінниця-ціни/"
+        },
+        {
+          "label": "ЖК Turkish City в Вінниці",
+          "url": "/uk/novostroyka-zhk-turkish-city-5176/"
+        }
+      ],
+      "main_photo": "dom/photo/11162/1116219/111621990/111621990.jpg",
+      "state_name_uk": "Вінницька",
+      "rooms_count": 1,
+      "advert_title": 1,
+      "district_name_uk": "Вишенька",
+      "rangeFactorAuction": "00033153187603988729",
+      "wall_type": "кирпич",
+      "moderation_date": "2020-05-26 12:25:53",
+      "is_bargain": 0,
+      "rangeFactorIns": "100151590995717",
+      "advert_type_name_uk": "продаж",
+      "realty_type_name": "Квартира",
+      "publishing_date": "2020-06-01 10:15:17",
+      "return_on_moderation_date": "2020-05-26 12:25:41",
+      "district_id": "15109",
+      "is_show_building_no": 1,
+      "user_package_id": 0,
+      "realty_type_name_uk": "Квартира",
+      "levels": 15,
+      "user": {
+        "name": "Артем",
+        "image": "avatars/all/570/57018/5701833/5701833.jpg?v=1554381200",
+        "good_partner_top": ""
+      },
+      "agency": {
+        "agency_id": 23163,
+        "name": "Крепость",
+        "logo": "dom/agence/2/231/23163/23163.jpg?v=1578860277911",
+        "agency_type": 1,
+        "good_partner": "",
+        "user_id": 486987
+      },
+      "priceArr": {
+        "1": "27 500",
+        "2": "24 256",
+        "3": "737 265"
+      }
+    }
+  ]
+}
