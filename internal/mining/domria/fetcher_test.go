@@ -624,5 +624,38 @@ func TestUnmarshalSearchNegativeFloor(t *testing.T) {
 	)
 }
 
-// Floor is higher than the total floor
-//func TestUnmarshalSearchSupremeFloor(t *testing.T) {}
+func TestUnmarshalSearchSupremeFloor(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("supreme_floor"), mining.Primary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2020, time.June, 1, 10, 42, 16, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-kiev-shevchenkovskiy-zlatoustovskaya-ulitsa-16489927.html",
+			"dom/photo/10621/1062170/106217048/106217048.jpg",
+			&updateTime,
+			159300,
+			114,
+			57,
+			16,
+			3,
+			116,
+			18,
+			mining.Primary,
+			"ЖК «Шевченківський»",
+			geom.NewPointFlat(geom.XY, []float64{30.487440507934, 50.450000744175}),
+			"Київська",
+			"Київ",
+			"Шевченківський",
+			"Золотоустівська вулиця",
+			"27",
+		},
+	)
+}
