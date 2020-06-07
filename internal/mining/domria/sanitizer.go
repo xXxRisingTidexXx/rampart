@@ -31,6 +31,10 @@ type sanitizer struct {
 
 func (sanitizer *sanitizer) sanitizeFlats(flats []*flat) []*flat {
 	length := len(flats)
+	if length == 0 {
+		log.Debug("domria: sanitizer skipped flats")
+		return flats
+	}
 	newFlats := make([]*flat, length)
 	for i := range flats {
 		originURL := flats[i].originURL
