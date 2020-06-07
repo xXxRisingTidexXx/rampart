@@ -14,11 +14,11 @@ import (
 func TestFetcherUnmarshalSearchEmptyString(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch([]byte(""), mining.Primary)
-	if flats != nil {
-		t.Errorf("domria: non-empty flats, %v", flats)
-	}
 	if err == nil || err.Error() != "domria: failed to unmarshal the search, unexpected end of JSON input" {
 		t.Errorf("domria: absent or invalid error, %v", err)
+	}
+	if flats != nil {
+		t.Errorf("domria: non-empty flats, %v", flats)
 	}
 }
 
@@ -37,23 +37,23 @@ func newDefaultFetcher() *fetcher {
 func TestFetcherUnmarshalSearchInvalidJSON(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch([]byte("{"), mining.Primary)
-	if flats != nil {
-		t.Errorf("domria: non-empty flats, %v", flats)
-	}
 	if err == nil || err.Error() != "domria: failed to unmarshal the search, unexpected end of JSON input" {
 		t.Errorf("domria: absent or invalid error, %v", err)
+	}
+	if flats != nil {
+		t.Errorf("domria: non-empty flats, %v", flats)
 	}
 }
 
 func TestFetcherUnmarshalSearchArrayInsteadOfObject(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch([]byte("[]"), mining.Primary)
-	if flats != nil {
-		t.Errorf("domria: non-empty flats, %v", flats)
-	}
 	if err == nil || err.Error() != "domria: failed to unmarshal the search"+
 		", json: cannot unmarshal array into Go value of type domria.search" {
 		t.Errorf("domria: absent or invalid error, %v", err)
+	}
+	if flats != nil {
+		t.Errorf("domria: non-empty flats, %v", flats)
 	}
 }
 
@@ -264,8 +264,10 @@ func TestFetcherUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 	)
 }
 
-//func TestFetcherUnmarshalSearchEmptyUpdatedAt(t *testing.T) {}
-//
+func TestFetcherUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
+
+}
+
 //func TestFetcherUnmarshalSearchTrashUpdatedAt(t *testing.T) {}
 //
 //func TestFetcherUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {}
