@@ -12,6 +12,7 @@ func NewProspector(housing mining.Housing, config *configs.Domria) mining.Prospe
 		newFetcher(config.Fetcher),
 		newSanitizer(config.Sanitizer),
 		newValidator(config.Validator),
+		newGeocoder(),
 	}
 }
 
@@ -20,6 +21,7 @@ type prospector struct {
 	fetcher   *fetcher
 	sanitizer *sanitizer
 	validator *validator
+	geocoder  *geocoder
 }
 
 func (prospector *prospector) Prospect() error {
@@ -29,7 +31,8 @@ func (prospector *prospector) Prospect() error {
 		return err
 	}
 	flats = prospector.sanitizer.sanitizeFlats(flats)
-	_ = prospector.validator.validateFlats(flats)
+	flats = prospector.validator.validateFlats(flats)
+	flats = prospector.geocoder.geocodeFlats(flats)
 	log.Debug("domria: prospector finished")
 	return nil
 }
