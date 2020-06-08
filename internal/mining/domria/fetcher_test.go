@@ -852,6 +852,40 @@ func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {
 	)
 }
 
-//func TestUnmarshalSearchEmptyStreets(t *testing.T) {}
+func TestUnmarshalSearchEmptyStreets(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("empty_streets"), mining.Secondary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2020, time.June, 8, 6, 7, 59, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-odessa-kievskiy-ilfa-i-petrova-ulitsa-17120761.html",
+			"dom/photo/11211/1121120/112112031/112112031.jpg",
+			&updateTime,
+			37500,
+			63,
+			38,
+			10,
+			3,
+			4,
+			9,
+			mining.Secondary,
+			"",
+			nil,
+			"Одеська",
+			"Одеса",
+			"Київський",
+			"",
+			"",
+		},
+	)
+}
 
 //func TestUnmarshalSearchJustRUStreet(t *testing.T) {}
