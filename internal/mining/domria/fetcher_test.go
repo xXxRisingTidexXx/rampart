@@ -816,8 +816,41 @@ func TestUnmarshalSearchTrashCoordinates(t *testing.T) {
 	}
 }
 
-// Coordinates are out of the allowed range.
-//func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {}
+func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("supreme_coordinates"), mining.Secondary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2020, time.June, 8, 10, 9, 58, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-herson-suvorovskiy-17165402.html",
+			"dom/photo/11256/1125653/112565321/112565321.jpg",
+			&updateTime,
+			55000,
+			72,
+			0,
+			0,
+			3,
+			2,
+			7,
+			mining.Secondary,
+			"",
+			geom.NewPointFlat(geom.XY, []float64{-183.839023, 2931.000183399}),
+			"Херсонська",
+			"Херсон",
+			"Суворовський",
+			"200 Лет Херсона пр.",
+			"",
+		},
+	)
+}
 
 //func TestUnmarshalSearchEmptyStreets(t *testing.T) {}
 

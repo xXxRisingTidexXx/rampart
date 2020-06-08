@@ -1,0 +1,157 @@
+{
+  "items": [
+    {
+      "realty_type_parent_name_uk": "Житло",
+      "street_name": "200 Лет Херсона пр.",
+      "rooms_count": 3,
+      "disable_comments": 1,
+      "advert_title": 1,
+      "type": "realty",
+      "is_commercial": 1,
+      "state_name": "Херсонская",
+      "return_on_moderation_date": "2020-05-29 21:57:15",
+      "state_id": 23,
+      "moderated": 1,
+      "beautiful_url": "realty-prodaja-kvartira-herson-suvorovskiy-17165402.html",
+      "levels": 15,
+      "district_type_name": "Район",
+      "description": "Трехкомнатная квартира 72 квадрата, продаётся с мебелью, хороший ремонт, пристройка балкона. Просторная, прекрасный район, 2 этаж. Есть детская. Недавно был сделан ремонт ванной, кухни и одной спальни. Рядом рынок, аптека, супермаркеты, школа, развлекательные центры.",
+      "advert_publish_type": 1,
+      "photos_count": 5,
+      "currency_type": "$",
+      "district_type_id": 1,
+      "web_id": "",
+      "levels_expired": "2020-06-09 03:57:01",
+      "ps_delete_views": 1,
+      "import_id": 76013648463,
+      "partner_id": 200,
+      "moderator_id": 5,
+      "district_id": 17235,
+      "wall_type": "кирпич",
+      "district_name_uk": "Суворовський",
+      "publishing_date": "2020-05-29 21:56:28",
+      "_rev": "147-5f6db89a57425b8e97eb31764e0cc9c4",
+      "price_type": "за объект",
+      "ps_auto_republish": 0,
+      "price": 55000,
+      "updated_at": "2020-06-08 10:09:58",
+      "floor": 2,
+      "longitude": -183.839023,
+      "latitude": 2931.000183399,
+      "return_on_moderation": 1,
+      "quality": 46,
+      "moderation_date": "2020-05-29 21:56:28",
+      "rangeFactorAuction": "00021196179003988457",
+      "price_total": 55000,
+      "main_photo": "dom/photo/11256/1125653/112565321/112565321.jpg",
+      "price_item": 764,
+      "realty_type_name": "Квартира",
+      "city_name": "Херсон",
+      "realty_type_parent_id": 1,
+      "rangeFactor": "00151590778588",
+      "state_name_uk": "Херсонська",
+      "advert_type_name_uk": "продаж",
+      "realty_type_id": 2,
+      "rangeFactorNew": "001501590778588",
+      "realty_type_name_uk": "Квартира",
+      "user_ip": 0,
+      "city_id": 23,
+      "agency_id": 24281,
+      "ps_delete_comments": 1,
+      "characteristics_values": {
+        "118": 108,
+        "209": 3,
+        "214": 72,
+        "227": 2,
+        "228": 7,
+        "234": 55000,
+        "242": 239,
+        "247": 252,
+        "1650": 1648
+      },
+      "_id": "realty-17165402",
+      "floors_count": 7,
+      "created_at": "2020-05-29 21:56:27",
+      "user_id": 2982634,
+      "city_name_uk": "Херсон",
+      "user_package_id": 0,
+      "total_square_meters": 72,
+      "realty_id": 17165402,
+      "lf_links": [
+        {
+          "label": "купить квартиру",
+          "url": "/prodazha-kvartir/"
+        },
+        {
+          "label": "продажа квартир в Херсоне",
+          "url": "/prodazha-kvartir/kherson/"
+        },
+        {
+          "label": "продажа 3-комнатной квартиры в Херсоне",
+          "url": "/prodazha-kvartir/kherson-3k/"
+        },
+        {
+          "label": "Суворовский район продажа квартиры",
+          "url": "/prodazha-kvartir/kherson-rayon-suvorovskyi/"
+        },
+        {
+          "label": "стоимость квартир в Херсоне",
+          "url": "/ru/продажа-квартиры-херсон-цены/"
+        }
+      ],
+      "realty_sale_type": 1,
+      "photos": {
+        "112565321": {
+          "id": 112565321,
+          "file": "dom/photo/11256/1125653/112565321/112565321.jpg",
+          "ordering": 6
+        },
+        "112565361": {
+          "id": 112565361,
+          "file": "dom/photo/11256/1125653/112565361/112565361.jpg",
+          "ordering": 7
+        },
+        "112565380": {
+          "id": 112565380,
+          "file": "dom/photo/11256/1125653/112565380/112565380.jpg",
+          "ordering": 8
+        },
+        "112565394": {
+          "id": 112565394,
+          "file": "dom/photo/11256/1125653/112565394/112565394.jpg",
+          "ordering": 9
+        },
+        "112565404": {
+          "id": 112565404,
+          "file": "dom/photo/11256/1125654/112565404/112565404.jpg",
+          "ordering": 10
+        }
+      },
+      "date_end": "2020-06-29 21:56:28",
+      "is_calltracking": 1,
+      "district_name": "Суворовский",
+      "rangeFactorIns": "000151590778588",
+      "advert_type_id": 1,
+      "advert_type_name": "продажа",
+      "realty_type_parent_name": "Жилье",
+      "user": {
+        "name": "Ева",
+        "image": "avatars/all/298/29826/2982634/2982634.jpg?v=1583401714",
+        "good_partner_top": ""
+      },
+      "agency": {
+        "agency_id": 24281,
+        "name": "Женева",
+        "logo": "dom/agence/2/242/24281/24281.jpg?v=1583336787891",
+        "agency_type": 1,
+        "good_partner": "",
+        "user_id": 2982634
+      },
+      "priceArr": {
+        "1": "55 000",
+        "2": "48 512",
+        "3": "1 474 531"
+      }
+    }
+  ]
+}
