@@ -888,4 +888,38 @@ func TestUnmarshalSearchEmptyStreets(t *testing.T) {
 	)
 }
 
-//func TestUnmarshalSearchJustRUStreet(t *testing.T) {}
+func TestUnmarshalSearchJustRUStreet(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("just_ru_street"), mining.Secondary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2020, time.June, 8, 7, 30, 43, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-lvov-galitskiy-17148133.html",
+			"dom/photo/11238/1123874/112387482/112387482.jpg",
+			&updateTime,
+			79000,
+			59,
+			41,
+			9,
+			2,
+			3,
+			3,
+			mining.Secondary,
+			"",
+			nil,
+			"Львівська",
+			"Львів",
+			"Галицький",
+			"С. Томашівського",
+			"",
+		},
+	)
+}
