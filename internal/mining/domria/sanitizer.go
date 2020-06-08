@@ -36,44 +36,48 @@ func (sanitizer *sanitizer) sanitizeFlats(flats []*flat) []*flat {
 		return flats
 	}
 	newFlats := make([]*flat, length)
-	for i := range flats {
-		originURL := flats[i].originURL
-		if originURL != "" {
-			originURL = sanitizer.originURLPrefix + originURL
-		}
-		imageURL := flats[i].imageURL
-		if imageURL != "" {
-			imageURL = sanitizer.imageURLPrefix + imageURL
-		}
-		state := flats[i].state
-		if strings.HasSuffix(state, sanitizer.stateEnding) {
-			state += sanitizer.stateSuffix
-		}
-		district := flats[i].district
-		if strings.HasSuffix(district, sanitizer.districtEnding) {
-			district += sanitizer.stateSuffix
-		}
-		newFlats[i] = &flat{
-			originURL,
-			imageURL,
-			flats[i].updateTime,
-			flats[i].price,
-			flats[i].totalArea,
-			flats[i].livingArea,
-			flats[i].kitchenArea,
-			flats[i].roomNumber,
-			flats[i].floor,
-			flats[i].totalFloor,
-			flats[i].housing,
-			flats[i].complex,
-			flats[i].point,
-			state,
-			flats[i].city,
-			district,
-			flats[i].street,
-			flats[i].houseNumber,
-		}
+	for i, flat := range flats {
+		newFlats[i] = sanitizer.sanitizeFlat(flat)
 	}
 	log.Debugf("domria: sanitizer beautified %d flats", length)
 	return newFlats
+}
+
+func (sanitizer *sanitizer) sanitizeFlat(f *flat) *flat {
+	originURL := f.originURL
+	if originURL != "" {
+		originURL = sanitizer.originURLPrefix + originURL
+	}
+	imageURL := f.imageURL
+	if imageURL != "" {
+		imageURL = sanitizer.imageURLPrefix + imageURL
+	}
+	state := f.state
+	if strings.HasSuffix(state, sanitizer.stateEnding) {
+		state += sanitizer.stateSuffix
+	}
+	district := f.district
+	if strings.HasSuffix(district, sanitizer.districtEnding) {
+		district += sanitizer.stateSuffix
+	}
+	return &flat{
+		originURL,
+		imageURL,
+		f.updateTime,
+		f.price,
+		f.totalArea,
+		f.livingArea,
+		f.kitchenArea,
+		f.roomNumber,
+		f.floor,
+		f.totalFloor,
+		f.housing,
+		f.complex,
+		f.point,
+		state,
+		f.city,
+		district,
+		f.street,
+		f.houseNumber,
+	}
 }
