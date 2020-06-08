@@ -73,6 +73,9 @@ func (fetcher *fetcher) getSearch(flag string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("domria: failed to perform a request, %v", err)
 	}
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("domria: got response with status %s", response.Status)
+	}
 	bytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		return nil, fmt.Errorf("domria: failed to read the response body, %v", err)

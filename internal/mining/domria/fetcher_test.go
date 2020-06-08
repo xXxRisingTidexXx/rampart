@@ -60,7 +60,7 @@ func newServerFetcher(server *httptest.Server) *fetcher {
 func newTestFetcher(searchURL string) *fetcher {
 	return newFetcher(
 		&configs.Fetcher{
-			Timeout:   100 * time.Millisecond,
+			Timeout:   50 * time.Millisecond,
 			Portion:   10,
 			Flags:     map[mining.Housing]string{mining.Primary: "pm_housing=1"},
 			Headers:   map[string]string{"User-Agent": "domria-test-bot/v1.0.0"},
@@ -73,7 +73,7 @@ func TestGetSearchWithTimeout(t *testing.T) {
 	server := newServer(
 		t,
 		func(_ http.ResponseWriter, _ *http.Request) {
-			time.Sleep(110 * time.Millisecond)
+			time.Sleep(60 * time.Millisecond)
 		},
 	)
 	fetcher := newServerFetcher(server)
@@ -90,14 +90,11 @@ func TestGetSearchWithTimeout(t *testing.T) {
 }
 
 func TestGetSearchNotFound(t *testing.T) {
-	server := newServer(
-		t,
-		http.NotFound,
-	)
+	server := newServer(t, http.NotFound)
 	fetcher := newServerFetcher(server)
 	bytes, err := fetcher.getSearch("pm_housing=1")
-	if err == nil || err.Error() != "" {
-		t.Fatalf("domria: absent or invalid error, %v", err)
+	if err == nil || err.Error() != "domria: got response with status 404 Not Found" {
+		t.Errorf("domria: absent or invalid error, %v", err)
 	}
 	if bytes != nil {
 		t.Errorf("domria: non-nil bytes, %v", bytes)
