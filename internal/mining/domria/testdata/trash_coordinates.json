@@ -1,0 +1,230 @@
+{
+  "items": [
+    {
+      "lf_links_uk": [
+        {
+          "label": "куплю квартиру",
+          "url": "/uk/prodazha-kvartir/"
+        },
+        {
+          "label": "продаж квартири Одеса",
+          "url": "/uk/prodazha-kvartir/odessa/"
+        },
+        {
+          "label": "продаж двокімнатних квартир Одеса",
+          "url": "/uk/prodazha-kvartir/odessa-2k/"
+        },
+        {
+          "label": "продаж квартир вулиця Балківська",
+          "url": "/uk/prodazha-kvartir/odessa-ul-balkovskaia/"
+        },
+        {
+          "label": "продаж квартир в районі Центра",
+          "url": "/uk/prodazha-kvartir/odessa-rayon-tsentr/"
+        },
+        {
+          "label": "вартість квартир в Одесі",
+          "url": "/uk/продаж-квартири-одеса-ціни/"
+        },
+        {
+          "label": "Башта CHKALOV в Центре районі",
+          "url": "/uk/novostroyka-bashta-chkalov-4568/"
+        }
+      ],
+      "realty_type_parent_name_uk": "Житло",
+      "street_name": "Балковская улица",
+      "rooms_count": 2,
+      "advert_title": 1,
+      "type": "realty",
+      "wall_type_uk": "цегла",
+      "is_commercial": 1,
+      "state_name": "Одесская",
+      "street_id": 3028,
+      "state_id": 12,
+      "beautiful_url": "realty-prodaja-kvartira-odessa-tsentr-balkovskaya-ulitsa-16409882.html",
+      "moderated": 1,
+      "district_type_name": "Район",
+      "levels": 15,
+      "description": "2 комнатная квартира в кирпичном доме. Жилое состояние,  с балконом.\nХотите узнать больше информации о квартире и посмотреть, тогда звоните ! Показы в удобное для Вас время!",
+      "photos_count": 9,
+      "advert_publish_type": 1,
+      "currency_type": "$",
+      "longitude": "982jd293jd)J",
+      "district_type_id": 1,
+      "web_id": "42e0c8dc310b5985",
+      "levels_expired": "2020-06-09 02:34:16",
+      "partner_id": 1,
+      "is_exchange": "нет",
+      "moderator_id": 5,
+      "district_id": "15815",
+      "complete_time": 536.215,
+      "wall_type": "кирпич",
+      "district_name_uk": "Центр",
+      "publishing_date": "2020-05-31 04:39:58",
+      "description_uk": "2 кімнатна квартира у цегляному будинку. Житловий стан, з балконом.\nХочете дізнатися більше інформації про квартирі і подивитися, тоді телефонуйте ! Покази у зручний для Вас час!  ",
+      "_rev": "341-0f36a305d11d707beccf53efc7746dd3",
+      "currency_type_uk": "$",
+      "youtube_link": "",
+      "price_type": "за объект",
+      "price": 32000,
+      "updated_at": "2020-06-08 05:34:16",
+      "floor": 4,
+      "quality": 68,
+      "rangeFactorAuction": "00026785545003988595",
+      "moderation_date": "2019-11-15 11:05:28",
+      "latitude": "02))jsw||ld",
+      "price_total": 32000,
+      "main_photo": "dom/photo/10557/1055718/105571804/105571804.jpg",
+      "is_exchange_uk": "ні",
+      "price_item": 667,
+      "realty_type_name": "Квартира",
+      "building_number_str": "199",
+      "city_name": "Одесса",
+      "rangeFactor": "00151590889198",
+      "realty_type_parent_id": 1,
+      "living_square_meters": 29,
+      "state_name_uk": "Одеська",
+      "advert_type_name_uk": "продаж",
+      "rangeFactorNew": "001501590889198",
+      "realty_type_id": 2,
+      "price_type_uk": "за об'єкт",
+      "deleted_by": "admin",
+      "user_ip": 0,
+      "realty_type_name_uk": "Квартира",
+      "city_id": 12,
+      "agency_id": 29082,
+      "floors_count": 9,
+      "characteristics_values": {
+        "118": 108,
+        "209": 2,
+        "214": 48,
+        "216": 29,
+        "218": 7,
+        "227": 4,
+        "228": 9,
+        "234": 32000,
+        "242": 239,
+        "247": 252,
+        "265": 257,
+        "443": 442,
+        "1437": 1434,
+        "1650": 1648
+      },
+      "_id": "realty-16409882",
+      "created_at": "2019-11-15 11:01:53",
+      "user_id": 3510909,
+      "kitchen_square_meters": 7,
+      "city_name_uk": "Одеса",
+      "total_square_meters": 48,
+      "user_package_id": 0,
+      "delete_reason": 14,
+      "realty_id": 16409882,
+      "street_name_uk": "Балківська вулиця",
+      "photos": {
+        "105571804": {
+          "id": 105571804,
+          "file": "dom/photo/10557/1055718/105571804/105571804.jpg",
+          "is_main": 1,
+          "byRevisor": true
+        },
+        "105571808": {
+          "id": 105571808,
+          "file": "dom/photo/10557/1055718/105571808/105571808.jpg",
+          "byRevisor": true
+        },
+        "105571814": {
+          "id": 105571814,
+          "file": "dom/photo/10557/1055718/105571814/105571814.jpg",
+          "byRevisor": true
+        },
+        "105571833": {
+          "id": 105571833,
+          "file": "dom/photo/10557/1055718/105571833/105571833.jpg",
+          "byRevisor": true
+        },
+        "105571838": {
+          "id": 105571838,
+          "file": "dom/photo/10557/1055718/105571838/105571838.jpg",
+          "byRevisor": true
+        },
+        "105571856": {
+          "id": 105571856,
+          "file": "dom/photo/10557/1055718/105571856/105571856.jpg",
+          "byRevisor": true
+        },
+        "105571860": {
+          "id": 105571860,
+          "file": "dom/photo/10557/1055718/105571860/105571860.jpg",
+          "byRevisor": true
+        },
+        "105571873": {
+          "id": 105571873,
+          "file": "dom/photo/10557/1055718/105571873/105571873.jpg",
+          "byRevisor": true
+        },
+        "105571880": {
+          "id": 105571880,
+          "file": "dom/photo/10557/1055718/105571880/105571880.jpg",
+          "byRevisor": true
+        }
+      },
+      "realty_sale_type": 1,
+      "date_end": "2020-08-10 10:20:12",
+      "lf_links": [
+        {
+          "label": "купить квартиру",
+          "url": "/prodazha-kvartir/"
+        },
+        {
+          "label": "продажа квартиры в Одессе",
+          "url": "/prodazha-kvartir/odessa/"
+        },
+        {
+          "label": "куплю двухкомнатную квартиру в Одессе",
+          "url": "/prodazha-kvartir/odessa-2k/"
+        },
+        {
+          "label": "куплю квартиру ул. Балковская",
+          "url": "/prodazha-kvartir/odessa-ul-balkovskaia/"
+        },
+        {
+          "label": "куплю квартиру в районе Центра",
+          "url": "/prodazha-kvartir/odessa-rayon-tsentr/"
+        },
+        {
+          "label": "стоимость квартир в Одессе",
+          "url": "/ru/продажа-квартиры-одесса-цены/"
+        },
+        {
+          "label": "Башня CHKALOV в Центре районе",
+          "url": "/novostroyka-bashnia-chkalov-4568/"
+        }
+      ],
+      "is_calltracking": 1,
+      "district_name": "Центр",
+      "rangeFactorIns": "000151590889198",
+      "advert_type_id": 1,
+      "advert_type_name": "продажа",
+      "is_show_building_no": 1,
+      "realty_type_parent_name": "Жилье",
+      "user": {
+        "name": "Недвижимость",
+        "image": "avatars/all/351/35109/3510909/3510909.jpg?v=1579619279",
+        "good_partner_top": ""
+      },
+      "agency": {
+        "agency_id": 29082,
+        "name": "Европа недвижимость, Одесса",
+        "logo": "dom/agence/2/290/29082/29082.jpg?v=1579341756686",
+        "agency_type": 1,
+        "good_partner": "",
+        "user_id": 3510909
+      },
+      "priceArr": {
+        "1": "32 000",
+        "2": "28 225",
+        "3": "857 909"
+      }
+    }
+  ]
+}

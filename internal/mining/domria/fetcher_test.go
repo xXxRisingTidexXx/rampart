@@ -804,11 +804,21 @@ func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {
 	)
 }
 
-//func TestUnmarshalSearchTrashCoordinates(t *testing.T) {}
-//
+func TestUnmarshalSearchTrashCoordinates(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("trash_coordinates"), mining.Secondary)
+	if err == nil || err.Error() != "domria: failed to unmarshal the sear"+
+		"ch, strconv.ParseFloat: parsing \"982jd293jd)J\": invalid syntax" {
+		t.Fatalf("domria: absent or invalid error, %v", err)
+	}
+	if len(flats) != 0 {
+		t.Errorf("domria: non-empty flats, %v", flats)
+	}
+}
+
 // Coordinates are out of the allowed range.
 //func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {}
-//
+
 //func TestUnmarshalSearchEmptyStreets(t *testing.T) {}
-//
+
 //func TestUnmarshalSearchJustRUStreet(t *testing.T) {}
