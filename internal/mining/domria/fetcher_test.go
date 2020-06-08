@@ -89,7 +89,20 @@ func TestGetSearchWithTimeout(t *testing.T) {
 	}
 }
 
-//func TestGetSearchNotFound(t *testing.T) {}
+func TestGetSearchNotFound(t *testing.T) {
+	server := newServer(
+		t,
+		http.NotFound,
+	)
+	fetcher := newServerFetcher(server)
+	bytes, err := fetcher.getSearch("pm_housing=1")
+	if err == nil || err.Error() != "" {
+		t.Fatalf("domria: absent or invalid error, %v", err)
+	}
+	if bytes != nil {
+		t.Errorf("domria: non-nil bytes, %v", bytes)
+	}
+}
 
 func TestUnmarshalSearchEmptyString(t *testing.T) {
 	fetcher := newDefaultFetcher()
