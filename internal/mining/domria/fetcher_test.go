@@ -696,7 +696,41 @@ func TestUnmarshalSearchJustLongitude(t *testing.T) {
 	)
 }
 
-//func TestUnmarshalSearchJustLatitude(t *testing.T) {}
+func TestUnmarshalSearchJustLatitude(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("just_latitude"), mining.Primary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2020, time.June, 5, 22, 36, 29, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-perevireno-prodaja-kvartira-hmelnitskiy-vyistavka-starokostyantinovskoe-shosse-16982542.html",
+			"dom/photo/11243/1124301/112430139/112430139.jpg",
+			&updateTime,
+			44000,
+			50,
+			0,
+			17.5,
+			1,
+			4,
+			10,
+			mining.Primary,
+			"",
+			geom.NewPointFlat(geom.XY, []float64{0, 49.431359}),
+			"Хмельницька",
+			"Хмельницький",
+			"Виставка",
+			"Старокостянтинівське шосе",
+			"20/7",
+		},
+	)
+}
 
 //func TestUnmarshalSearchStringCoordinates(t *testing.T) {}
 //
