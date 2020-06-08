@@ -659,3 +659,54 @@ func TestUnmarshalSearchSupremeFloor(t *testing.T) {
 		},
 	)
 }
+
+func TestUnmarshalSearchJustLongitude(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("just_longitude"), mining.Primary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2020, time.June, 7, 13, 8, 45, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-vinnitsa-tsentr-lva-tolstogo-ulitsa-17203089.html",
+			"dom/photo/11289/1128911/112891158/112891158.jpg",
+			&updateTime,
+			195000,
+			286,
+			0,
+			0,
+			5,
+			17,
+			17,
+			mining.Primary,
+			"",
+			geom.NewPointFlat(geom.XY, []float64{28.4607622, 0}),
+			"Вінницька",
+			"Вінниця",
+			"Центр",
+			"Льва Толстого вулиця",
+			"9",
+		},
+	)
+}
+
+//func TestUnmarshalSearchJustLatitude(t *testing.T) {}
+
+//func TestUnmarshalSearchStringCoordinates(t *testing.T) {}
+//
+//func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {}
+//
+//func TestUnmarshalSearchTrashCoordinates(t *testing.T) {}
+//
+// Coordinates are out of the allowed range.
+//func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {}
+//
+//func TestUnmarshalSearchEmptyStreets(t *testing.T) {}
+//
+//func TestUnmarshalSearchJustRUStreet(t *testing.T) {}

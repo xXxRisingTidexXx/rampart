@@ -95,7 +95,7 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([
 			price = float64(item.PriceArr.USD)
 		}
 		var point *geom.Point
-		if item.Longitude != 0 && item.Latitude != 0 {
+		if item.Longitude != 0 || item.Latitude != 0 {
 			point = geom.NewPointFlat(geom.XY, []float64{float64(item.Longitude), float64(item.Latitude)})
 		}
 		street := item.StreetNameUK
