@@ -1,0 +1,478 @@
+{
+  "items": [
+    {
+      "rangeFactorNew": "001101590112048",
+      "total_square_meters": 66.76,
+      "floors_count": 9,
+      "wall_type_uk": "цегла",
+      "type": "realty",
+      "photos": {
+        "109905464": {
+          "file": "dom/photo/10990/1099054/109905464/109905464.jpg",
+          "ordering": 11,
+          "id": 109905464
+        },
+        "109905465": {
+          "file": "dom/photo/10990/1099054/109905465/109905465.jpg",
+          "ordering": 12,
+          "id": 109905465
+        },
+        "109905466": {
+          "file": "dom/photo/10990/1099054/109905466/109905466.jpg",
+          "ordering": 13,
+          "id": 109905466
+        },
+        "109905467": {
+          "file": "dom/photo/10990/1099054/109905467/109905467.jpg",
+          "ordering": 14,
+          "is_main": 1,
+          "id": 109905467
+        },
+        "109905469": {
+          "file": "dom/photo/10990/1099054/109905469/109905469.jpg",
+          "ordering": 15,
+          "id": 109905469
+        },
+        "109905470": {
+          "file": "dom/photo/10990/1099054/109905470/109905470.jpg",
+          "ordering": 16,
+          "id": 109905470
+        },
+        "109905471": {
+          "file": "dom/photo/10990/1099054/109905471/109905471.jpg",
+          "ordering": 17,
+          "id": 109905471
+        },
+        "109905473": {
+          "file": "dom/photo/10990/1099054/109905473/109905473.jpg",
+          "ordering": 18,
+          "id": 109905473
+        },
+        "109905474": {
+          "file": "dom/photo/10990/1099054/109905474/109905474.jpg",
+          "ordering": 19,
+          "id": 109905474
+        },
+        "109905475": {
+          "file": "dom/photo/10990/1099054/109905475/109905475.jpg",
+          "ordering": 20,
+          "id": 109905475
+        }
+      },
+      "price_item": 17000,
+      "district_type_id": 1,
+      "youtube_link": "",
+      "currency_type_uk": "грн",
+      "description_uk": "",
+      "advert_type_name": "продажа",
+      "advert_type_id": 1,
+      "state_name": "Винницкая",
+      "flat_number": "",
+      "complete_time": 299.444,
+      "rangeFactor": "00111590112048",
+      "price": 1134920,
+      "beautiful_url": "realty-prodaja-kvartira-vinnitsa-blijnee-zamoste-16890016.html",
+      "state_id": 1,
+      "price_type_uk": "за кв.м.",
+      "longitude": "28.4962815",
+      "photos_count": 10,
+      "user_ip": 0,
+      "city_name_uk": "Вінниця",
+      "is_calltracking": 1,
+      "agency_id": 22188,
+      "date_end": "2020-07-13 12:41:31",
+      "web_id": "39e4e2f943e519cf",
+      "realty_type_parent_name": "Жилье",
+      "quality": 56,
+      "realty_type_id": 2,
+      "building_number_str": "",
+      "user_id": 8032650,
+      "currency_type": "грн",
+      "is_exchange_uk": "ні",
+      "characteristics_values": {
+        "118": 108,
+        "209": 3,
+        "214": 66.76,
+        "227": 8,
+        "228": 9,
+        "234": 17000,
+        "242": 240,
+        "247": 253,
+        "265": 257,
+        "443": 442,
+        "1437": 1434,
+        "1650": 1649
+      },
+      "price_type": "за кв.м.",
+      "_id": "realty-16890016",
+      "realty_type_parent_name_uk": "Житло",
+      "street_id": 0,
+      "city_id": 1,
+      "price_total": 1134920,
+      "realty_sale_type": 2,
+      "moderated": 1,
+      "realty_id": 16890016,
+      "latitude": "49.2410151",
+      "_rev": "136-ff8596787b2442f026539dceaa0b9c6c",
+      "created_at": "2020-03-13 12:41:19",
+      "description": "Двух ярусные квартиры в новом доме в центре города.Звоните.",
+      "levels_expired": "2020-06-09 03:59:06",
+      "is_commercial": 1,
+      "street_name": "вул.Острозького",
+      "lf_links": [
+        {
+          "label": "купить квартиру",
+          "url": "/prodazha-kvartir/"
+        },
+        {
+          "label": "продажа квартир Винница",
+          "url": "/prodazha-kvartir/vinnitsa/"
+        },
+        {
+          "label": "продажа 3 комнатной квартиры Винница",
+          "url": "/prodazha-kvartir/vinnitsa-3k/"
+        },
+        {
+          "label": "продажа квартиры в районе Ближнего замостья",
+          "url": "/prodazha-kvartir/vinnitsa-rayon-blyzhnee-zamoste/"
+        },
+        {
+          "label": "стоимость квартир в Виннице",
+          "url": "/ru/продажа-квартиры-винница-цены/"
+        },
+        {
+          "label": "ЖК Turkish City в Виннице",
+          "url": "/novostroyka-zhk-turkish-city-5176/"
+        }
+      ],
+      "district_name": "Ближнее замостье",
+      "is_exchange": "нет",
+      "return_on_moderation": 3,
+      "city_name": "Винница",
+      "partner_id": 1,
+      "updated_at": "2020-06-08 06:59:06",
+      "advert_publish_type": 1,
+      "realty_type_parent_id": 1,
+      "moderator_id": 5,
+      "disable_comments": 1,
+      "floor": 8,
+      "district_type_name": "Район",
+      "lf_links_uk": [
+        {
+          "label": "куплю квартиру",
+          "url": "/uk/prodazha-kvartir/"
+        },
+        {
+          "label": "продаж квартир у Вінниці",
+          "url": "/uk/prodazha-kvartir/vinnitsa/"
+        },
+        {
+          "label": "продаж трикімнатних квартир у Вінниці",
+          "url": "/uk/prodazha-kvartir/vinnitsa-3k/"
+        },
+        {
+          "label": "продаж квартир район Ближнє замостя",
+          "url": "/uk/prodazha-kvartir/vinnitsa-rayon-blyzhnee-zamoste/"
+        },
+        {
+          "label": "вартість квартир в Вінниці",
+          "url": "/uk/продаж-квартири-вінниця-ціни/"
+        },
+        {
+          "label": "ЖК Turkish City в Вінниці",
+          "url": "/uk/novostroyka-zhk-turkish-city-5176/"
+        }
+      ],
+      "main_photo": "dom/photo/10990/1099054/109905467/109905467.jpg",
+      "state_name_uk": "Вінницька",
+      "rooms_count": 3,
+      "advert_title": 1,
+      "district_name_uk": "Ближнє замостя",
+      "rangeFactorAuction": "00064274465203987621",
+      "wall_type": "кирпич",
+      "moderation_date": "2020-03-13 13:37:37",
+      "is_bargain": 0,
+      "rangeFactorIns": "000111590112048",
+      "advert_type_name_uk": "продаж",
+      "realty_type_name": "Квартира",
+      "publishing_date": "2020-05-22 04:47:28",
+      "return_on_moderation_date": "2020-03-13 13:37:37",
+      "district_id": "15107",
+      "user_package_id": 0,
+      "realty_type_name_uk": "Квартира",
+      "levels": 11,
+      "user": {
+        "name": "Андрей Устинов",
+        "image": "avatars/all/803/80326/8032650/8032650.jpg?v=1576845694",
+        "good_partner_top": ""
+      },
+      "agency": {
+        "agency_id": 22188,
+        "name": "Прометей",
+        "logo": "dom/agence/2/221/22188/22188.jpg?v=1558086720424",
+        "agency_type": 1,
+        "good_partner": "",
+        "user_id": 1677838
+      },
+      "priceArr": {
+        "1": "42 333",
+        "2": "37 339",
+        "3": "1 134 920"
+      }
+    },
+    {
+      "rangeFactorNew": "001101590025924",
+      "total_square_meters": 45.5,
+      "floors_count": 7,
+      "wall_type_uk": "цегла",
+      "type": "realty",
+      "photos": {
+        "109922114": {
+          "file": "dom/photo/10992/1099221/109922114/109922114.jpg",
+          "ordering": 8,
+          "id": 109922114
+        },
+        "109922115": {
+          "file": "dom/photo/10992/1099221/109922115/109922115.jpg",
+          "ordering": 9,
+          "id": 109922115
+        },
+        "109922116": {
+          "file": "dom/photo/10992/1099221/109922116/109922116.jpg",
+          "ordering": 10,
+          "id": 109922116
+        },
+        "109922117": {
+          "file": "dom/photo/10992/1099221/109922117/109922117.jpg",
+          "ordering": 11,
+          "id": 109922117
+        },
+        "109922118": {
+          "file": "dom/photo/10992/1099221/109922118/109922118.jpg",
+          "ordering": 12,
+          "id": 109922118
+        },
+        "109922119": {
+          "file": "dom/photo/10992/1099221/109922119/109922119.jpg",
+          "ordering": 13,
+          "id": 109922119
+        },
+        "109922120": {
+          "file": "dom/photo/10992/1099221/109922120/109922120.jpg",
+          "ordering": 14,
+          "is_main": 1,
+          "id": 109922120
+        }
+      },
+      "price_item": 791,
+      "district_type_id": 1,
+      "youtube_link": "",
+      "currency_type_uk": "$",
+      "description_uk": "Однокімнатна квартира від одного з кращих забудовників Вінниці! Квартира в чистовому вигляді (шпаклівка, стяжка), встановлені котел та радіатори, зроблена розводка електирики. Мікрорайон швидко розвивається! Поруч зупинки громадського транспорту, маршрутки та автобуси кожних 10 хвилин, поблизу магазини, Запрошуємо на перегляд!\n",
+      "advert_type_name": "продажа",
+      "advert_type_id": 1,
+      "state_name": "Винницкая",
+      "flat_number": "",
+      "complete_time": 166.55,
+      "rangeFactor": "00111590025924",
+      "price": 36000,
+      "beautiful_url": "realty-prodaja-kvartira-vinnitsa-akademicheskiy-16892143.html",
+      "state_id": 1,
+      "price_type_uk": "за об'єкт",
+      "longitude": "28.4269",
+      "photos_count": 7,
+      "user_ip": 0,
+      "city_name_uk": "Вінниця",
+      "is_calltracking": 1,
+      "agency_id": 22188,
+      "date_end": "2020-07-13 16:55:03",
+      "web_id": "502d303438a78aa7",
+      "realty_type_parent_name": "Жилье",
+      "quality": 79,
+      "realty_type_id": 2,
+      "building_number_str": "",
+      "user_id": 2541117,
+      "currency_type": "$",
+      "is_exchange_uk": "ні",
+      "characteristics_values": {
+        "118": 108,
+        "209": 1,
+        "214": 45.5,
+        "227": 7,
+        "228": 7,
+        "234": 36000,
+        "242": 239,
+        "247": 252,
+        "265": 257,
+        "443": 1471,
+        "467": 467,
+        "475": 473,
+        "516": 512,
+        "568": 563,
+        "576": 573,
+        "629": 626,
+        "686": 684,
+        "692": 688,
+        "777": 777,
+        "791": 791,
+        "806": 802,
+        "808": 808,
+        "830": 830,
+        "879": 873,
+        "892": 890,
+        "949": 1320,
+        "1001": 1001,
+        "1002": 1002,
+        "1003": 1003,
+        "1017": 1017,
+        "1020": 1022,
+        "1166": 1162,
+        "1169": 1168,
+        "1178": 1173,
+        "1181": 1180,
+        "1190": 1182,
+        "1193": 1191,
+        "1202": 1198,
+        "1206": 1204,
+        "1215": 1208,
+        "1219": 1216,
+        "1228": 1220,
+        "1232": 1229,
+        "1259": 1254,
+        "1268": 1262,
+        "1272": 1269,
+        "1283": 1281,
+        "1297": 1295,
+        "1437": 1434,
+        "1515": 1512,
+        "1524": 1521,
+        "1555": 1553,
+        "1559": 1557,
+        "1563": 1561,
+        "1567": 1565,
+        "1577": 1577,
+        "1579": 1579,
+        "1583": 1583,
+        "1647": 1647,
+        "1650": 1649
+      },
+      "price_type": "за объект",
+      "_id": "realty-16892143",
+      "realty_type_parent_name_uk": "Житло",
+      "street_id": 0,
+      "city_id": 1,
+      "price_total": 36000,
+      "realty_sale_type": 2,
+      "moderated": 1,
+      "realty_id": 16892143,
+      "latitude": "49.207109",
+      "_rev": "140-7a9dc7c3083988e0993fb5d9d87d5ad1",
+      "created_at": "2020-03-13 16:39:10",
+      "description": "Однокомнатная квартира от одного из лучших застройщиков Винницы! Квартира в чистовом виде (шпаклевка, стяжка), установлены котел и радиаторы, сделана разводка электрики. Микрорайон быстро развивается! Рядом остановки общественного транспорта, маршрутки и автобусы каждые 10 минут, поблизости магазины, Приглашаем на просмотр!\n ",
+      "levels_expired": "2020-06-09 03:58:48",
+      "is_commercial": 1,
+      "street_name": "вул. Миколаївська / вул. Тимофіївська",
+      "lf_links": [
+        {
+          "label": "куплю квартиру",
+          "url": "/prodazha-kvartir/"
+        },
+        {
+          "label": "продажа квартир в Виннице",
+          "url": "/prodazha-kvartir/vinnitsa/"
+        },
+        {
+          "label": "продажа 1-комнатной квартиры в Виннице",
+          "url": "/prodazha-kvartir/vinnitsa-1k/"
+        },
+        {
+          "label": "продажа квартиры в районе Академическом",
+          "url": "/prodazha-kvartir/vinnitsa-rayon-akademycheskyi/"
+        },
+        {
+          "label": "стоимость квартир в Виннице",
+          "url": "/ru/продажа-квартиры-винница-цены/"
+        },
+        {
+          "label": "КГ Green city в Виннице",
+          "url": "/novostroyka-kg-green-city-6792/"
+        }
+      ],
+      "district_name": "Академический",
+      "is_exchange": "нет",
+      "city_name": "Винница",
+      "partner_id": 1,
+      "updated_at": "2020-06-08 06:58:49",
+      "advert_publish_type": 1,
+      "realty_type_parent_id": 1,
+      "moderator_id": 5,
+      "user_newbuild_name": "Микрорайон «АКАДЕМИЧЕСКИЙ»",
+      "floor": -7,
+      "district_type_name": "Район",
+      "lf_links_uk": [
+        {
+          "label": "куплю квартиру",
+          "url": "/uk/prodazha-kvartir/"
+        },
+        {
+          "label": "продаж квартир Вінниця",
+          "url": "/uk/prodazha-kvartir/vinnitsa/"
+        },
+        {
+          "label": "продаж 1-кімнатної квартири Вінниця",
+          "url": "/uk/prodazha-kvartir/vinnitsa-1k/"
+        },
+        {
+          "label": "продаж квартири район Академічний",
+          "url": "/uk/prodazha-kvartir/vinnitsa-rayon-akademycheskyi/"
+        },
+        {
+          "label": "вартість квартир в Вінниці",
+          "url": "/uk/продаж-квартири-вінниця-ціни/"
+        },
+        {
+          "label": "ЖК Turkish City в Вінниці",
+          "url": "/uk/novostroyka-zhk-turkish-city-5176/"
+        }
+      ],
+      "main_photo": "dom/photo/10992/1099221/109922120/109922120.jpg",
+      "state_name_uk": "Вінницька",
+      "rooms_count": 1,
+      "advert_title": 1,
+      "district_name_uk": "Академічний",
+      "rangeFactorAuction": "00064504465203987513",
+      "wall_type": "кирпич",
+      "user_newbuild_id": 3888,
+      "moderation_date": "2020-03-13 16:55:10",
+      "rangeFactorIns": "000111590025924",
+      "advert_type_name_uk": "продаж",
+      "realty_type_name": "Квартира",
+      "user_newbuild_name_uk": "Микрорайон «АКАДЕМІЧНИЙ»",
+      "publishing_date": "2020-05-21 04:52:04",
+      "district_id": 17277,
+      "user_package_id": 0,
+      "realty_type_name_uk": "Квартира",
+      "levels": 11,
+      "user": {
+        "name": "Владислав Сыч",
+        "image": "avatars/all/254/25411/2541117/2541117.jpg?v=1564068408",
+        "good_partner_top": ""
+      },
+      "agency": {
+        "agency_id": 22188,
+        "name": "Прометей",
+        "logo": "dom/agence/2/221/22188/22188.jpg?v=1558086720424",
+        "agency_type": 1,
+        "good_partner": "",
+        "user_id": 1677838
+      },
+      "priceArr": {
+        "1": "36 000",
+        "2": "31 753",
+        "3": "965 147"
+      }
+    }
+  ],
+  "time": {},
+  "count": 2
+}
