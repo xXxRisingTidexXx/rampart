@@ -1,0 +1,215 @@
+{
+  "items": [
+    {
+      "rangeFactorNew": "001201589940113",
+      "total_square_meters": 55.6,
+      "floors_count": 16,
+      "wall_type_uk": "панель",
+      "type": "realty",
+      "photos": {
+        "109861670": {
+          "file": "dom/photo/10986/1098616/109861670/109861670.jpg",
+          "ordering": 7,
+          "id": 109861670
+        },
+        "109861673": {
+          "file": "dom/photo/10986/1098616/109861673/109861673.jpg",
+          "ordering": 8,
+          "id": 109861673
+        },
+        "109861674": {
+          "file": "dom/photo/10986/1098616/109861674/109861674.jpg",
+          "ordering": 9,
+          "is_main": 1,
+          "id": 109861674
+        },
+        "109861676": {
+          "file": "dom/photo/10986/1098616/109861676/109861676.jpg",
+          "ordering": 10,
+          "id": 109861676
+        },
+        "109861679": {
+          "file": "dom/photo/10986/1098616/109861679/109861679.jpg",
+          "ordering": 11,
+          "id": 109861679
+        },
+        "109861686": {
+          "file": "dom/photo/10986/1098616/109861686/109861686.jpg",
+          "ordering": 12,
+          "id": 109861686
+        }
+      },
+      "price_item": 432,
+      "district_type_id": 1,
+      "youtube_link": "",
+      "currency_type_uk": "$",
+      "description_uk": "Продам 2-х кімнатну квартиру (на даний момент в нежитловому фонді, колишнє приміщення Жеку). Загальна площа 55,6 кв. м, кімнати роздільні, 2 балкони, двостороння. Відмінне розташування, поруч садочки, школи, ринок, зупинка транспорту.\nЄ можливість перевести в статус квартири.  ",
+      "advert_type_name": "продажа",
+      "advert_type_id": 1,
+      "state_name": "Харьковская",
+      "flat_number": "",
+      "complete_time": 176.96,
+      "rangeFactor": "00121589940113",
+      "price": 24000,
+      "beautiful_url": "realty-prodaja-kvartira-harkov-severnaya-saltovka-natali-ujviy-16885878.html",
+      "state_id": 7,
+      "price_type_uk": "за об'єкт",
+      "photos_count": 6,
+      "longitude": 36.3599232,
+      "user_ip": 0,
+      "city_name_uk": "Харків",
+      "is_calltracking": 1,
+      "agency_id": 20888,
+      "date_end": "2020-07-12 15:23:05",
+      "web_id": "44b40c121666ce20",
+      "realty_type_parent_name": "Жилье",
+      "quality": 65,
+      "realty_type_id": 2,
+      "building_number_str": "82",
+      "user_id": 4714751,
+      "currency_type": "$",
+      "is_exchange_uk": "ні",
+      "characteristics_values": {
+        "118": 110,
+        "209": 2,
+        "214": 55.6,
+        "227": 1,
+        "228": 16,
+        "234": 24000,
+        "242": 239,
+        "247": 252,
+        "265": 257,
+        "443": 442,
+        "1437": 1434,
+        "1650": 1648
+      },
+      "price_type": "за объект",
+      "_id": "realty-16885878",
+      "realty_type_parent_name_uk": "Житло",
+      "street_id": 12815,
+      "city_id": 7,
+      "price_total": 24000,
+      "realty_sale_type": 1,
+      "moderated": 1,
+      "realty_id": 16885878,
+      "latitude": 50.04209,
+      "_rev": "186-99d849aaa71a79c23013a96e1366b9da",
+      "created_at": "2020-03-12 15:18:47",
+      "description": "Продам 2-х комнатую квартиру ( на данный момент в нежилом фонде, бывшее помещение ЖЭка). Общая площадь 55,6 кв.м.,  комнаты раздельные, 2 балкона, двухсторонняя. Отличное местоположение, рядом садики, школы, рынок, остановка транспорта.\nЕсть возможность перевести в статус квартиры.",
+      "levels_expired": "2020-06-08 04:20:15",
+      "metro_station_name": "Героев труда",
+      "is_commercial": 1,
+      "street_name": "Натальи Ужвий",
+      "lf_links": [
+        {
+          "label": "куплю квартиру",
+          "url": "/prodazha-kvartir/"
+        },
+        {
+          "label": "продажа квартир в Харькове",
+          "url": "/prodazha-kvartir/kharkov/"
+        },
+        {
+          "label": "продажа двухкомнатных квартир в Харькове",
+          "url": "/prodazha-kvartir/kharkov-2k/"
+        },
+        {
+          "label": "продажа квартир ул. Ужвий Натальи",
+          "url": "/prodazha-kvartir/kharkov-ul-uzhvyi-nataly/"
+        },
+        {
+          "label": "продажа квартир в районе Северной Салтовки",
+          "url": "/prodazha-kvartir/kharkov-rayon-severnaia-saltovka/"
+        },
+        {
+          "label": "стоимость квартир в Харькове",
+          "url": "/ru/продажа-квартиры-харьков-цены/"
+        },
+        {
+          "label": "ЖК Клеменова Дача в Харькове",
+          "url": "/novostroyka-zhk-klemenova-dacha-5718/"
+        }
+      ],
+      "district_name": "Северная Салтовка",
+      "is_exchange": "нет",
+      "return_on_moderation": 2,
+      "city_name": "Харьков",
+      "partner_id": 1,
+      "updated_at": "2020-06-07 07:20:15",
+      "advert_publish_type": 1,
+      "realty_type_parent_id": 1,
+      "moderator_id": 5,
+      "floor": 1,
+      "district_type_name": "Район",
+      "lf_links_uk": [
+        {
+          "label": "купити квартиру",
+          "url": "/uk/prodazha-kvartir/"
+        },
+        {
+          "label": "продаж квартир у Харкові",
+          "url": "/uk/prodazha-kvartir/kharkov/"
+        },
+        {
+          "label": "продаж двокімнатної квартири у Харкові",
+          "url": "/uk/prodazha-kvartir/kharkov-2k/"
+        },
+        {
+          "label": "продаж квартири вул. Ужвій Наталії",
+          "url": "/uk/prodazha-kvartir/kharkov-ul-uzhvyi-nataly/"
+        },
+        {
+          "label": "продаж квартири Північна Салтівка",
+          "url": "/uk/prodazha-kvartir/kharkov-rayon-severnaia-saltovka/"
+        },
+        {
+          "label": "вартість квартир в Харкові",
+          "url": "/uk/продаж-квартири-харків-ціни/"
+        },
+        {
+          "label": "ЖК Воробйові гори в Харкові",
+          "url": "/uk/novostroyka-zhk-vorobiovi-gory-3881/"
+        }
+      ],
+      "main_photo": "dom/photo/10986/1098616/109861674/109861674.jpg",
+      "state_name_uk": "Харківська",
+      "rooms_count": 2,
+      "advert_title": 1,
+      "district_name_uk": "Північна Салтівка",
+      "metro_station_id": "72",
+      "rangeFactorAuction": "00043111845003987405",
+      "metro_station_brunch": 2,
+      "wall_type": "панель",
+      "moderation_date": "2020-05-20 20:02:08",
+      "rangeFactorIns": "000121589940113",
+      "advert_type_name_uk": "продаж",
+      "realty_type_name": "Квартира",
+      "metro_station_name_uk": "Героїв праці",
+      "publishing_date": "2020-05-20 05:01:53",
+      "return_on_moderation_date": "2020-05-20 20:02:06",
+      "district_id": "17243",
+      "is_show_building_no": 1,
+      "user_package_id": 0,
+      "realty_type_name_uk": "Квартира",
+      "levels": 12,
+      "user": {
+        "name": "Елена Васильевна Федоряк",
+        "image": "avatars/all/471/47147/4714751/4714751.jpg?v=1571903032",
+        "good_partner_top": ""
+      },
+      "agency": {
+        "agency_id": 20888,
+        "name": "Магазин недвижимости ГОСТ",
+        "logo": "dom/agence/2/208/20888/20888.jpg?v=1554536283360",
+        "agency_type": 1,
+        "good_partner": "",
+        "user_id": 1029322
+      },
+      "priceArr": {
+        "1": "24 000",
+        "2": "21 169",
+        "3": ""
+      }
+    }
+  ]
+}

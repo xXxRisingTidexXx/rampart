@@ -3,6 +3,9 @@ commands:
   compile:
     description: Compile the source code
     cmd: go build -o mining cmd/mining/main.go
+  race:
+    description: Check the source code for race conditions
+    cmd: go build -race -o mining-race cmd/mining/main.go
   run:
     description: Execute the binary
     cmd: ./mining
@@ -14,7 +17,7 @@ commands:
     cmd: golangci-lint run
   test:
     description: Run test suites
-    cmd: go test -v
+    cmd: go test -v rampart/internal/mining/domria
   benchmark:
     description: Run benchmarking
     cmd: go test -bench=. -benchmem

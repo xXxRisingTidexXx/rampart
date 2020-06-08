@@ -1,0 +1,280 @@
+{
+  "items": [
+    {
+      "realty_type_parent_name_uk": "Житло",
+      "street_name": "Петра Радченко улица",
+      "metro_station_id": 15,
+      "rooms_count": 2,
+      "disable_comments": 1,
+      "advert_title": 1,
+      "type": "realty",
+      "is_commercial": 1,
+      "state_name": "Киевская",
+      "return_on_moderation_date": "2020-06-05 14:40:14",
+      "street_id": 5658,
+      "state_id": 10,
+      "moderated": 1,
+      "beautiful_url": "realty-prodaja-kvartira-kiev-solomenskiy-petra-radchenko-ulitsa-16760338.html",
+      "newbuildId": 6450,
+      "levels": 17,
+      "district_type_name": "Район",
+      "description": "Ищете квартиру на первичке - обратите внимание на ЖК Медовый-2.\n                    Это современная новостройка в районе с развитой инфраструктурой - Киев, р‑н Соломенский, ул. Петра Радченко, 27.\n                    Сейчас в продаже 2-комнатная квартира с современной комфортной планировкой на 24 этаже 26-и этажного дома.\n                    Заселится в ЖК Медовый-2 можно после заявленной даты сдачи - 4 квартал 2021 года.\n                    Застройщик - ЧАО ХК Киевгорстрой.",
+      "advert_publish_type": 1,
+      "photos_count": 9,
+      "user_newbuild_id": 6450,
+      "currency_type": "грн",
+      "district_type_id": 1,
+      "longitude": 30.4760253,
+      "web_id": "",
+      "levels_expired": "2020-06-08 03:27:19",
+      "ps_delete_views": 1,
+      "import_id": 67167666580,
+      "partner_id": 200,
+      "moderator_id": 5,
+      "district_id": 15185,
+      "metro_station_name": "Васильковская",
+      "wall_type": "кирпич",
+      "district_name_uk": "Солом'янський",
+      "publishing_date": "2020-05-07 12:15:47",
+      "description_uk": "Шукаєте квартиру на первинному ринку - зверніть увагу на ЖК Медовий-2.\n                    Це сучасна новобудова в районі з розвиненою інфраструктурою - Київ, р‑н Солом'янський, вул. Петра Радченка, 27.\n                    Зараз у продажі 2-кімнатна квартира з сучасним комфортним плануванням  на 24 поверсі 26-и поверхового будинку.\n                    Заселитися в ЖК Медовий-2 можна після заявленої дати здачі - 4 квартал 2021 року.\n                    Забудовник - ПрАТ ХК Київміськбуд.",
+      "_rev": "895-117f0ac0764704e132f74385f27476b5",
+      "price_type": "за объект",
+      "ps_auto_republish": 0,
+      "price": 1300532,
+      "updated_at": "2020-06-07 09:49:09",
+      "user_newbuild_name": "ЖК Медовый-2",
+      "floor": -1,
+      "return_on_moderation": 3,
+      "quality": 73,
+      "moderation_date": "2020-06-05 16:58:59",
+      "latitude": 50.4128865,
+      "price_total": 1300532,
+      "main_photo": "dom/photo/10873/1087329/108732937/108732937.jpg",
+      "price_item": 21924,
+      "realty_type_name": "Квартира",
+      "building_number_str": "27",
+      "city_name": "Киев",
+      "metro_station_brunch": 2,
+      "realty_type_parent_id": 1,
+      "rangeFactor": "00171588842947",
+      "state_name_uk": "Київська",
+      "advert_type_name_uk": "продаж",
+      "realty_type_id": 2,
+      "rangeFactorNew": "001701588842947",
+      "user_newbuild_name_uk": "ЖК Медовий-2",
+      "deleted_by": "cron",
+      "realty_type_name_uk": "Квартира",
+      "user_ip": 0,
+      "city_id": 10,
+      "agency_id": 24257,
+      "ps_delete_comments": 1,
+      "characteristics_values": {
+        "118": 108,
+        "209": 2,
+        "214": 59.32,
+        "227": 24,
+        "228": 26,
+        "234": 1300532,
+        "242": 240,
+        "247": 252,
+        "1650": 1648
+      },
+      "_id": "realty-16760338",
+      "floors_count": 26,
+      "map_type": 1,
+      "created_at": "2020-02-17 12:24:39",
+      "user_id": 5506087,
+      "city_name_uk": "Київ",
+      "geo_zoom": 15,
+      "user_package_id": 0,
+      "total_square_meters": 59.32,
+      "realty_id": 16760338,
+      "lf_links": [
+        {
+          "label": "куплю квартиру",
+          "url": "/prodazha-kvartir/"
+        },
+        {
+          "label": "продажа квартир в Киеве",
+          "url": "/prodazha-kvartir/kiev/"
+        },
+        {
+          "label": "куплю 2-комнатную квартиру в Киеве",
+          "url": "/prodazha-kvartir/kiev-2k/"
+        },
+        {
+          "label": "куплю квартиру ул. Петра Радченко",
+          "url": "/prodazha-kvartir/kiev-ul-petra-radchenko/"
+        },
+        {
+          "label": "куплю квартиру в районе Соломенском",
+          "url": "/prodazha-kvartir/kiev-rayon-solomenskyi/"
+        },
+        {
+          "label": "стоимость квартир в Киеве",
+          "url": "/ru/продажа-квартиры-киев-цены/"
+        },
+        {
+          "label": "ЖК по ул. Гарматная в Соломенском районе",
+          "url": "/novostroyka-zhk-po-ul-garmatnaia-4901/"
+        }
+      ],
+      "realty_sale_type": 2,
+      "photos": {
+        "108732937": {
+          "id": 108732937,
+          "file": "dom/photo/10873/1087329/108732937/108732937.jpg",
+          "ordering": 10
+        },
+        "108732977": {
+          "id": 108732977,
+          "file": "dom/photo/10873/1087329/108732977/108732977.jpg",
+          "ordering": 11
+        },
+        "108733023": {
+          "id": 108733023,
+          "file": "dom/photo/10873/1087330/108733023/108733023.jpg",
+          "ordering": 12
+        },
+        "108733052": {
+          "id": 108733052,
+          "file": "dom/photo/10873/1087330/108733052/108733052.jpg",
+          "ordering": 13
+        },
+        "108733075": {
+          "id": 108733075,
+          "file": "dom/photo/10873/1087330/108733075/108733075.jpg",
+          "ordering": 14
+        },
+        "112198999": {
+          "id": 112198999,
+          "file": "dom/photo/11219/1121989/112198999/112198999.jpg",
+          "ordering": 15
+        },
+        "112199021": {
+          "id": 112199021,
+          "file": "dom/photo/11219/1121990/112199021/112199021.jpg",
+          "ordering": 16
+        },
+        "112199046": {
+          "id": 112199046,
+          "file": "dom/photo/11219/1121990/112199046/112199046.jpg",
+          "ordering": 17
+        },
+        "112199064": {
+          "id": 112199064,
+          "file": "dom/photo/11219/1121990/112199064/112199064.jpg",
+          "ordering": 18
+        }
+      },
+      "date_end": "2020-06-07 12:15:47",
+      "is_calltracking": 1,
+      "metro_station_name_uk": "Васильківська",
+      "district_name": "Соломенский",
+      "rangeFactorIns": "000171588842947",
+      "advert_type_id": 1,
+      "advert_type_name": "продажа",
+      "is_show_building_no": 0,
+      "realty_type_parent_name": "Жилье",
+      "user": {
+        "name": "Киевгорстрой",
+        "image": "",
+        "good_partner_top": ""
+      },
+      "agency": {
+        "agency_id": 24257,
+        "name": "Киевгорстрой",
+        "logo": "dom/agence/2/242/24257/24257.jpg?v=1519037355",
+        "agency_type": 4,
+        "good_partner": 1,
+        "user_id": 5506087
+      },
+      "priceArr": {
+        "1": "48 510",
+        "2": "42 788",
+        "3": "1 300 532"
+      },
+      "newbuild": {
+        "newbuildId": 6450,
+        "withFlats": true,
+        "site": "http://dom.ria.com/secure_redirect/?url=https%3A%2F%2Fkmb.ua%2Fru%2Fobjects%2Fzhk-medovyj-2%2F%3Futm_source%3Ddomria%26utm_medium%3Dclick_on_banner%26utm_campaign%3Dnewbuildings_domria&hash=uxc9CTrQ4Qa5bWdTsQsXmg&newbuildId=6450&userId=5506087&commercial=1",
+        "priority": 111000031,
+        "commercial": 1,
+        "overclick": 0,
+        "calls": 1,
+        "promoUrl": "",
+        "promoStart": "2020-03-12T22:00:00.000Z",
+        "promoEnd": "2020-04-29T21:00:00.000Z",
+        "img": "https://cdn.riastatic.com/photos/dom/newbuild_photo/9/963/96365/96365d.jpg",
+        "img_620x460": "https://cdn.riastatic.com/photos/dom/newbuild_photo/8/824/82409/82409fl.jpg",
+        "video": "",
+        "developerId": 5239649,
+        "developerAddressId": 1583,
+        "exclusiveAgency": null,
+        "disableStreetView": null,
+        "flatCount": 0,
+        "plan": "http://dom.ria.com/secure_redirect/?url=https%3A%2F%2Fkmb.ua%2Fru%2Fobjects%2Fzhk-medovyj-2%2Fselection-by-parameters%3Futm_source%3Ddomria%26utm_medium%3Dclick_on_banner%26utm_campaign%3Dnewbuildings_domria&hash=hhGUt6BmxSQ3XtQ_t1FScQ&newbuildId=6450&userId=5506087&commercial=1",
+        "park": 1,
+        "school": 1,
+        "kindergarten": 1,
+        "hospital": 1,
+        "nearSea": null,
+        "veterinaryHospital": 0,
+        "stores": 1,
+        "transportation": 1,
+        "undergroundParking": 1,
+        "groundParking": null,
+        "twolayerParking": null,
+        "carpark": null,
+        "garageBox": null,
+        "paymentByInstallments": 1,
+        "renovated": null,
+        "constructionEnd": "2021-12-30T22:00:00.000Z",
+        "siteNotWork": null,
+        "sold": null,
+        "estateType": 1,
+        "buildClass": 6,
+        "price": 20559,
+        "priceUSD": "767",
+        "userId": 5506087,
+        "clickPrice": 13,
+        "callPrice": 800,
+        "cityId": 10,
+        "stateId": 10,
+        "districtId": 15185,
+        "districtId2": 0,
+        "areaMin": 31,
+        "areaMax": 201,
+        "callbackRequest": 2,
+        "consultationRequest": 2,
+        "reserveRequest": 0,
+        "createdAt": "2018-11-06T12:14:53.000Z",
+        "name_ru": "Медовый-2",
+        "name_uk": "Медовий-2",
+        "address": "",
+        "street": "ул. Петра Радченко, 27",
+        "infrastructure": "",
+        "promoText": "<p>Скидки:</p><p>Для 1-к квартир: При 100% оплате: - 5%</p><p>Для 2 +-к квартир: При 100% оплате: - 10% При 50% оплате: - 5%</p>",
+        "estateTypeShort": "",
+        "newbuildingId": 6450,
+        "name": "ЖК Медовый-2",
+        "promo": 0,
+        "img_704x213": "https://cdn.riastatic.com/photos/dom/newbuild_photo/9/963/96365/96365d.jpg",
+        "img_300x300": "https://cdn.riastatic.com/photos/dom/newbuild_photo/9/963/96365/96365d.jpg",
+        "buildReady": false,
+        "hostName": "kmb.ua",
+        "metroId": 15,
+        "constructionProgressUrl": "",
+        "countImpressionUrl": "https://dom.ria.com/count-impression/?commercial=1&userId=5506087&newbuildId=6450",
+        "planImg": "",
+        "priceFormated": "20 559",
+        "release": {
+          "quarter": "4",
+          "year": 2021
+        },
+        "buildClassText": "Комфорт",
+        "finalUrl": "/novostroyka-zhk-medovyi-2-6450/"
+      }
+    }
+  ]
+}

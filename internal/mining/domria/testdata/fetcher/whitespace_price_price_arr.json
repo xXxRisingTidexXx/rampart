@@ -1,0 +1,239 @@
+{
+  "shit": "no",
+  "items": [
+    {
+      "rangeFactorNew": "001201589681366",
+      "total_square_meters": 50,
+      "floors_count": 9,
+      "wall_type_uk": "цегла",
+      "street_name_uk": "Дачна вулиця",
+      "type": "realty",
+      "photos": {
+        "108803595": {
+          "byRevisor": true,
+          "file": "dom/photo/10880/1088035/108803595/108803595.jpg",
+          "is_main": 1,
+          "id": 108803595
+        },
+        "108803598": {
+          "byRevisor": true,
+          "file": "dom/photo/10880/1088035/108803598/108803598.jpg",
+          "id": 108803598
+        },
+        "108803609": {
+          "byRevisor": true,
+          "file": "dom/photo/10880/1088036/108803609/108803609.jpg",
+          "id": 108803609
+        },
+        "108803617": {
+          "byRevisor": true,
+          "file": "dom/photo/10880/1088036/108803617/108803617.jpg",
+          "id": 108803617
+        },
+        "108803624": {
+          "byRevisor": true,
+          "file": "dom/photo/10880/1088036/108803624/108803624.jpg",
+          "id": 108803624
+        },
+        "108803637": {
+          "byRevisor": true,
+          "file": "dom/photo/10880/1088036/108803637/108803637.jpg",
+          "id": 108803637
+        },
+        "108803662": {
+          "byRevisor": true,
+          "file": "dom/photo/10880/1088036/108803662/108803662.jpg",
+          "id": 108803662
+        },
+        "108803663": {
+          "byRevisor": true,
+          "file": "dom/photo/10880/1088036/108803663/108803663.jpg",
+          "id": 108803663
+        },
+        "108803667": {
+          "byRevisor": true,
+          "file": "dom/photo/10880/1088036/108803667/108803667.jpg",
+          "id": 108803667
+        },
+        "108803700": {
+          "byRevisor": true,
+          "file": "dom/photo/10880/1088037/108803700/108803700.jpg",
+          "id": 108803700
+        },
+        "108803707": {
+          "byRevisor": true,
+          "file": "dom/photo/10880/1088037/108803707/108803707.jpg",
+          "id": 108803707
+        }
+      },
+      "price_item": 840,
+      "district_type_id": 1,
+      "youtube_link": "",
+      "currency_type_uk": "$",
+      "description_uk": "Гарний жилий стан, балкон засклений, домофон. ",
+      "advert_type_name": "продажа",
+      "advert_type_id": 1,
+      "state_name": "Винницкая",
+      "flat_number": "",
+      "complete_time": 105.509,
+      "rangeFactor": "00121589681366",
+      "price": 42000,
+      "beautiful_url": "realty-prodaja-kvartira-vinnitsa-slavyanka-dachnaya-ulitsa-16769126.html",
+      "state_id": 1,
+      "price_type_uk": "за об'єкт",
+      "photos_count": 11,
+      "user_ip": 0,
+      "city_name_uk": "Вінниця",
+      "is_calltracking": 0,
+      "kitchen_square_meters": 8,
+      "agency_id": 438,
+      "date_end": "2020-07-18 15:28:03",
+      "web_id": "49fff2b26344222e",
+      "living_square_meters": 30,
+      "realty_type_parent_name": "Жилье",
+      "quality": 55,
+      "realty_type_id": 2,
+      "building_number_str": "",
+      "user_id": 491490,
+      "currency_type": "$",
+      "is_exchange_uk": "ні",
+      "characteristics_values": {
+        "118": 108,
+        "209": 2,
+        "214": 50,
+        "216": 30,
+        "218": 8,
+        "227": 7,
+        "228": 9,
+        "234": 42000,
+        "242": 239,
+        "247": 252,
+        "265": 257,
+        "273": 273,
+        "443": 442,
+        "1437": 1434,
+        "1650": 1648
+      },
+      "price_type": "за объект",
+      "_id": "realty-16769126",
+      "realty_type_parent_name_uk": "Житло",
+      "street_id": 117,
+      "city_id": 1,
+      "price_total": 42000,
+      "realty_sale_type": 1,
+      "moderated": 1,
+      "realty_id": 16769126,
+      "_rev": "112-885a15b480ee921f41870ef0321e9049",
+      "created_at": "2020-02-18 15:24:23",
+      "description": "",
+      "levels_expired": "2020-06-08 04:05:52",
+      "is_commercial": 1,
+      "street_name": "Дачная улица",
+      "lf_links": [
+        {
+          "label": "куплю квартиру",
+          "url": "/prodazha-kvartir/"
+        },
+        {
+          "label": "продажа квартир в Виннице",
+          "url": "/prodazha-kvartir/vinnitsa/"
+        },
+        {
+          "label": "продажа -комнатных квартир в Виннице",
+          "url": "/prodazha-kvartir/vinnitsa-2k/"
+        },
+        {
+          "label": "продажа квартир ул. Дачная",
+          "url": "/prodazha-kvartir/vinnitsa-ul-dachnaia/"
+        },
+        {
+          "label": "продажа квартир район Славянка",
+          "url": "/prodazha-kvartir/vinnitsa-rayon-slavianka/"
+        },
+        {
+          "label": "стоимость квартир в Виннице",
+          "url": "/ru/продажа-квартиры-винница-цены/"
+        },
+        {
+          "label": "ЖК Родинний Маєток в Виннице",
+          "url": "/novostroyka-zhk-rodynnyi-maietok-6937/"
+        }
+      ],
+      "district_name": "Славянка",
+      "is_exchange": "нет",
+      "city_name": "Винница",
+      "partner_id": 7777,
+      "updated_at": "2020-06-07 07:05:53",
+      "advert_publish_type": 1,
+      "realty_type_parent_id": 1,
+      "moderator_id": 5,
+      "floor": 7,
+      "district_type_name": "Район",
+      "lf_links_uk": [
+        {
+          "label": "куплю квартиру",
+          "url": "/uk/prodazha-kvartir/"
+        },
+        {
+          "label": "продаж квартир Вінниця",
+          "url": "/uk/prodazha-kvartir/vinnitsa/"
+        },
+        {
+          "label": "продаж 2 кімнатної квартири Вінниця",
+          "url": "/uk/prodazha-kvartir/vinnitsa-2k/"
+        },
+        {
+          "label": "продаж квартири вул. Дачна",
+          "url": "/uk/prodazha-kvartir/vinnitsa-ul-dachnaia/"
+        },
+        {
+          "label": "продаж квартири в районі Слов'янки",
+          "url": "/uk/prodazha-kvartir/vinnitsa-rayon-slavianka/"
+        },
+        {
+          "label": "вартість квартир в Вінниці",
+          "url": "/uk/продаж-квартири-вінниця-ціни/"
+        },
+        {
+          "label": "КМ Green city в Вінниці",
+          "url": "/uk/novostroyka-km-green-city-6792/"
+        }
+      ],
+      "main_photo": "dom/photo/10880/1088035/108803595/108803595.jpg",
+      "state_name_uk": "Вінницька",
+      "rooms_count": 2,
+      "advert_title": 1,
+      "district_name_uk": "Слов'янка",
+      "rangeFactorAuction": "00032852044203987081",
+      "wall_type": "кирпич",
+      "moderation_date": "2020-02-18 15:28:06",
+      "is_bargain": 273,
+      "rangeFactorIns": "000121589681366",
+      "advert_type_name_uk": "продаж",
+      "realty_type_name": "Квартира",
+      "publishing_date": "2020-05-17 05:09:26",
+      "district_id": "15104",
+      "user_package_id": 0,
+      "realty_type_name_uk": "Квартира",
+      "levels": 12,
+      "user": {
+        "name": "Тетяна Миколаївна Томіна",
+        "image": "avatars/all/49/4914/491490/491490.jpg?v=1583235919",
+        "good_partner_top": ""
+      },
+      "agency": {
+        "agency_id": 438,
+        "name": "Букет",
+        "logo": "dom/agence/0/4/438/438.jpg?v=1583238029716",
+        "agency_type": 1,
+        "good_partner": "",
+        "user_id": 99263
+      },
+      "priceArr": {
+        "1": "42 000",
+        "2": "     ",
+        "3": "1 126 005"
+      }
+    }
+  ]
+}

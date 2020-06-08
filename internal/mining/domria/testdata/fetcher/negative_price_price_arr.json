@@ -1,0 +1,339 @@
+{
+  "items": [
+    {
+      "lf_links_uk": [
+        {
+          "label": "купити квартиру",
+          "url": "/uk/prodazha-kvartir/"
+        },
+        {
+          "label": "продаж квартир у Тернополі",
+          "url": "/uk/prodazha-kvartir/ternopol/"
+        },
+        {
+          "label": "купити 3 кімнатну квартиру у Тернополі",
+          "url": "/uk/prodazha-kvartir/ternopol-3k/"
+        },
+        {
+          "label": "купити квартиру вулиця Сахарова Андрія Академіка",
+          "url": "/uk/prodazha-kvartir/ternopol-ul-sakharova-andreia-akademyka/"
+        },
+        {
+          "label": "купити квартиру район Бам",
+          "url": "/uk/prodazha-kvartir/ternopol-rayon-bam/"
+        },
+        {
+          "label": "вартість квартир в Тернополі",
+          "url": "/uk/продаж-квартири-тернопіль-ціни/"
+        },
+        {
+          "label": "ЖК ЕкоДім в Тернополі",
+          "url": "/uk/novostroyka-zhk-ekodim-6881/"
+        }
+      ],
+      "realty_type_parent_name_uk": "Житло",
+      "street_name": "Сахарова Андрея Академика улица",
+      "inspected_till": "2020-01-31 17:30:58",
+      "rooms_count": 3,
+      "advert_title": 1,
+      "type": "realty",
+      "is_commercial": 1,
+      "state_name": "Тернопольская",
+      "wall_type_uk": "монолітно-каркасний",
+      "street_id": 2861,
+      "state_id": 3,
+      "moderated": 1,
+      "beautiful_url": "realty-prodaja-kvartira-ternopol-bam-saharova-andreya-akademika-ulitsa-16349831.html",
+      "levels": 17,
+      "district_type_name": "Район",
+      "description": "",
+      "advert_publish_type": 1,
+      "photos_count": 13,
+      "currency_type": "грн",
+      "district_type_id": 1,
+      "longitude": 25.644687974235,
+      "inspected_at": "2019-10-31 17:30:58",
+      "levels_expired": "2020-06-08 04:55:45",
+      "web_id": "4585ee7f35b21700",
+      "partner_id": 1,
+      "is_exchange": "нет",
+      "district_id": "15247",
+      "moderator_id": 5,
+      "wall_type": "монолитно-каркасный",
+      "district_name_uk": "Бам",
+      "complete_time": 481.862,
+      "publishing_date": "2020-05-27 17:15:14",
+      "description_uk": "",
+      "_rev": "246-c1c33e68710f2adfbb641f341a88ffcf",
+      "youtube_link": "",
+      "currency_type_uk": "грн",
+      "price_type": "за кв.м.",
+      "updated_at": "2020-06-07 07:55:45",
+      "price": 1024800,
+      "floor": 9,
+      "panoramas": [
+        {
+          "type_ru": "Прихожая",
+          "img": "dom/panoramas/159/15987/1598737/1598737.jpg?v=18763",
+          "type_uk": "Передпокій",
+          "panorama_id": 1598737,
+          "type_id": 27
+        },
+        {
+          "type_ru": "Жилая комната",
+          "img": "dom/panoramas/159/15987/1598735/1598735.jpg?v=18763",
+          "type_uk": "Житлова кімната",
+          "panorama_id": 1598735,
+          "type_id": 17
+        },
+        {
+          "type_ru": "Жилая комната",
+          "img": "dom/panoramas/159/15987/1598736/1598736.jpg?v=18763",
+          "type_uk": "Житлова кімната",
+          "panorama_id": 1598736,
+          "type_id": 17
+        },
+        {
+          "type_ru": "Кухня",
+          "img": "dom/panoramas/159/15987/1598738/1598738.jpg?v=18763",
+          "type_uk": "Кухня",
+          "panorama_id": 1598738,
+          "type_id": 2
+        },
+        {
+          "type_ru": "Ванная",
+          "img": "dom/panoramas/159/15987/1598734/1598734.jpg?v=18763",
+          "type_uk": "Ванна",
+          "panorama_id": 1598734,
+          "type_id": 16
+        },
+        {
+          "type_ru": "Уборная",
+          "img": "dom/panoramas/159/15987/1598739/1598739.jpg?v=18763",
+          "type_uk": "Вбиральня",
+          "panorama_id": 1598739,
+          "type_id": 3
+        }
+      ],
+      "quality": 66,
+      "moderation_date": "2019-10-31 17:28:17",
+      "rangeFactorAuction": "00036146119803988219",
+      "latitude": 49.550329822762,
+      "price_total": 1024800,
+      "main_photo": "dom/photo/10507/1050708/105070868/105070868.jpg",
+      "price_item": 14000,
+      "is_exchange_uk": "ні",
+      "realty_type_name": "Квартира",
+      "building_number_str": "10",
+      "city_name": "Тернополь",
+      "realty_type_parent_id": 1,
+      "rangeFactor": "00171590588914",
+      "state_name_uk": "Тернопільська",
+      "advert_type_name_uk": "продаж",
+      "rangeFactorNew": "001701590588914",
+      "realty_type_id": 2,
+      "price_type_uk": "за кв.м.",
+      "deleted_by": "admin",
+      "realty_type_name_uk": "Квартира",
+      "user_ip": 0,
+      "city_id": 3,
+      "agency_id": 24978,
+      "_id": "realty-16349831",
+      "floors_count": 11,
+      "characteristics_values": {
+        "118": 1467,
+        "209": 3,
+        "214": 73.2,
+        "218": 7.57,
+        "227": 9,
+        "228": 11,
+        "234": 14000,
+        "242": 240,
+        "247": 253,
+        "265": 257,
+        "443": 442,
+        "475": 473,
+        "480": 476,
+        "495": 486,
+        "879": 873,
+        "892": 890,
+        "907": 902,
+        "941": 942,
+        "1001": 1001,
+        "1002": 1002,
+        "1003": 1003,
+        "1017": 1017,
+        "1020": 1022,
+        "1141": 1139,
+        "1166": 1161,
+        "1169": 1168,
+        "1178": 1171,
+        "1181": 1179,
+        "1190": 1183,
+        "1193": 1191,
+        "1202": 1194,
+        "1206": 1203,
+        "1215": 1207,
+        "1219": 1216,
+        "1228": 1220,
+        "1232": 1229,
+        "1268": 1261,
+        "1272": 1269,
+        "1357": 1353,
+        "1437": 1473,
+        "1515": 1510,
+        "1524": 1520,
+        "1559": 1557,
+        "1563": 1561,
+        "1650": 1653
+      },
+      "created_at": "2019-10-31 17:23:55",
+      "user_id": 3484178,
+      "city_name_uk": "Тернопіль",
+      "kitchen_square_meters": 7.57,
+      "user_package_id": 0,
+      "total_square_meters": 73.2,
+      "delete_reason": 14,
+      "realty_id": 16349831,
+      "street_name_uk": "Сахарова Андрія Академіка вулиця",
+      "lf_links": [
+        {
+          "label": "куплю квартиру",
+          "url": "/prodazha-kvartir/"
+        },
+        {
+          "label": "продажа квартир в Тернополе",
+          "url": "/prodazha-kvartir/ternopol/"
+        },
+        {
+          "label": "куплю 3 комнатную квартиру в Тернополе",
+          "url": "/prodazha-kvartir/ternopol-3k/"
+        },
+        {
+          "label": "куплю квартиру ул. Сахарова Андрея Академика",
+          "url": "/prodazha-kvartir/ternopol-ul-sakharova-andreia-akademyka/"
+        },
+        {
+          "label": "куплю квартиру район Бам",
+          "url": "/prodazha-kvartir/ternopol-rayon-bam/"
+        },
+        {
+          "label": "стоимость квартир в Тернополе",
+          "url": "/ru/продажа-квартиры-тернополь-цены/"
+        },
+        {
+          "label": "ЖК ЕкоДом в Тернополе",
+          "url": "/novostroyka-zhk-ekodom-6881/"
+        }
+      ],
+      "realty_sale_type": 2,
+      "photos": {
+        "105070838": {
+          "id": 105070838,
+          "file": "dom/photo/10507/1050708/105070838/105070838.jpg",
+          "ordering": 4,
+          "byRevisor": true
+        },
+        "105070839": {
+          "id": 105070839,
+          "file": "dom/photo/10507/1050708/105070839/105070839.jpg",
+          "ordering": 5,
+          "byRevisor": true
+        },
+        "105070840": {
+          "id": 105070840,
+          "file": "dom/photo/10507/1050708/105070840/105070840.jpg",
+          "ordering": 6,
+          "byRevisor": true
+        },
+        "105070842": {
+          "id": 105070842,
+          "file": "dom/photo/10507/1050708/105070842/105070842.jpg",
+          "ordering": 7,
+          "byRevisor": true
+        },
+        "105070843": {
+          "id": 105070843,
+          "file": "dom/photo/10507/1050708/105070843/105070843.jpg",
+          "ordering": 8,
+          "byRevisor": true
+        },
+        "105070857": {
+          "id": 105070857,
+          "file": "dom/photo/10507/1050708/105070857/105070857.jpg",
+          "ordering": 9,
+          "byRevisor": true
+        },
+        "105070862": {
+          "id": 105070862,
+          "file": "dom/photo/10507/1050708/105070862/105070862.jpg",
+          "ordering": 2,
+          "byRevisor": true
+        },
+        "105070865": {
+          "id": 105070865,
+          "file": "dom/photo/10507/1050708/105070865/105070865.jpg",
+          "ordering": 3,
+          "byRevisor": true
+        },
+        "105070866": {
+          "id": 105070866,
+          "file": "dom/photo/10507/1050708/105070866/105070866.jpg",
+          "ordering": 10,
+          "byRevisor": true
+        },
+        "105070868": {
+          "id": 105070868,
+          "file": "dom/photo/10507/1050708/105070868/105070868.jpg",
+          "ordering": 1,
+          "is_main": 1,
+          "byRevisor": true
+        },
+        "105070870": {
+          "id": 105070870,
+          "file": "dom/photo/10507/1050708/105070870/105070870.jpg",
+          "ordering": 11,
+          "byRevisor": true
+        },
+        "105070871": {
+          "id": 105070871,
+          "file": "dom/photo/10507/1050708/105070871/105070871.jpg",
+          "ordering": 12,
+          "byRevisor": true
+        },
+        "105070903": {
+          "id": 105070903,
+          "file": "dom/photo/10507/1050709/105070903/105070903.jpg",
+          "ordering": 13,
+          "byRevisor": true
+        }
+      },
+      "date_end": "2020-06-27 17:15:14",
+      "is_calltracking": 1,
+      "district_name": "Бам",
+      "rangeFactorIns": "000171590588914",
+      "advert_type_id": 1,
+      "advert_type_name": "продажа",
+      "is_show_building_no": 0,
+      "realty_type_parent_name": "Жилье",
+      "user": {
+        "name": "Юрій Ігорович Стойко",
+        "image": "avatars/all/348/34841/3484178/3484178.jpg?v=1585143061",
+        "good_partner_top": ""
+      },
+      "agency": {
+        "agency_id": 24978,
+        "name": "Центр продажу НЕРУХОМОСТІ",
+        "logo": "dom/agence/2/249/24978/24978.jpg?v=1551371884067",
+        "agency_type": 1,
+        "good_partner": "",
+        "user_id": 3484178
+      },
+      "priceArr": {
+        "1": "  -  38     225        ",
+        "2": "33 716",
+        "3": "1 024 800"
+      }
+    }
+  ]
+}

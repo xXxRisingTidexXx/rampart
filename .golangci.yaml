@@ -1,9 +1,6 @@
 run:
   concurrency: 4
   timeout: 30s
-linters-settings:
-  funlen:
-    lines: 70
 linters:
   enable-all: true
   disable:
@@ -11,3 +8,4 @@ linters:
     - gochecknoglobals
     - goimports
     - goerr113
+    - testpackage

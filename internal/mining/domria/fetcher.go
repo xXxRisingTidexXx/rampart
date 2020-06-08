@@ -7,44 +7,29 @@ import (
 	"github.com/twpayne/go-geom"
 	"io/ioutil"
 	"net/http"
-	"rampart/pkg/mining"
-	"rampart/pkg/mining/configs"
-	"strings"
+	"rampart/internal/mining"
+	"rampart/internal/mining/configs"
 	"time"
 )
 
-func newFetcher(userAgent string, config *configs.Fetcher) *fetcher {
+func newFetcher(config *configs.Fetcher) *fetcher {
 	return &fetcher{
-		userAgent,
 		&http.Client{Timeout: config.Timeout},
 		0,
 		config.Portion,
 		config.Flags,
+		config.Headers,
 		config.SearchURL,
-		config.OriginURLPrefix,
-		config.ImageURLPrefix,
-		config.StateEnding,
-		config.StateSuffix,
-		config.DistrictLabel,
-		config.DistrictEnding,
-		config.DistrictSuffix,
 	}
 }
 
 type fetcher struct {
-	userAgent       string
-	client          *http.Client
-	page            int
-	portion         int
-	flags           map[mining.Housing]string
-	searchURL       string
-	originURLPrefix string
-	imageURLPrefix  string
-	stateEnding     string
-	stateSuffix     string
-	districtLabel   string
-	districtEnding  string
-	districtSuffix  string
+	client    *http.Client
+	page      int
+	portion   int
+	flags     map[mining.Housing]string
+	headers   map[string]string
+	searchURL string
 }
 
 func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
@@ -52,19 +37,21 @@ func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
 	if !ok {
 		return nil, fmt.Errorf("domria: %v housing isn't acceptable", housing)
 	}
+	start := time.Now()
 	bytes, err := fetcher.getSearch(flag)
 	if err != nil {
 		return nil, err
 	}
+	duration := time.Since(start).Seconds()
 	flats, err := fetcher.unmarshalSearch(bytes, housing)
 	if err != nil {
 		return nil, err
 	}
 	if length := len(flats); length > 0 {
-		log.Debugf("domria: %s housing fetcher on %d page fetched %d flats", housing, fetcher.page, length)
+		log.Debugf("domria: fetcher on %d page received %d flats (%.3fs)", fetcher.page, length, duration)
 		fetcher.page++
 	} else {
-		log.Debugf("domria: %s housing fetcher on %d page reset", housing, fetcher.page)
+		log.Debugf("domria: fetcher on %d page reset (%.3fs)", fetcher.page, duration)
 		fetcher.page = 0
 	}
 	return flats, nil
@@ -79,10 +66,15 @@ func (fetcher *fetcher) getSearch(flag string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("domria: failed to construct a request, %v", err)
 	}
-	request.Header.Set("User-Agent", fetcher.userAgent)
+	for key, value := range fetcher.headers {
+		request.Header.Set(key, value)
+	}
 	response, err := fetcher.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("domria: failed to perform a request, %v", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("domria: got response with status %s", response.Status)
 	}
 	bytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -101,37 +93,23 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([
 	}
 	flats := make([]*flat, len(search.Items))
 	for i, item := range search.Items {
-		originURL := item.BeautifulURL
-		if originURL != "" {
-			originURL = fetcher.originURLPrefix + originURL
-		}
-		imageURL := item.MainPhoto
-		if imageURL != "" {
-			imageURL = fetcher.imageURLPrefix + imageURL
+		price := 0.0
+		if item.PriceArr != nil {
+			price = float64(item.PriceArr.USD)
 		}
 		var point *geom.Point
-		if item.Longitude != 0 && item.Latitude != 0 {
+		if item.Longitude != 0 || item.Latitude != 0 {
 			point = geom.NewPointFlat(geom.XY, []float64{float64(item.Longitude), float64(item.Latitude)})
-		}
-		state := item.StateNameUK
-		if state != "" && strings.HasSuffix(state, fetcher.stateEnding) {
-			state += fetcher.stateSuffix
-		}
-		district := item.DistrictNameUK
-		if district != "" &&
-			item.DistrictTypeName == fetcher.districtLabel &&
-			strings.HasSuffix(district, fetcher.districtEnding) {
-			district += fetcher.districtSuffix
 		}
 		street := item.StreetNameUK
 		if street == "" && item.StreetName != "" {
 			street = item.StreetName
 		}
 		flats[i] = &flat{
-			originURL,
-			imageURL,
+			item.BeautifulURL,
+			item.MainPhoto,
 			(*time.Time)(item.UpdatedAt),
-			float64(item.PriceArr.USD),
+			price,
 			item.TotalSquareMeters,
 			item.LivingSquareMeters,
 			item.KitchenSquareMeters,
@@ -141,9 +119,9 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([
 			housing,
 			item.UserNewbuildNameUK,
 			point,
-			state,
+			item.StateNameUK,
 			item.CityNameUK,
-			district,
+			item.DistrictNameUK,
 			street,
 			item.BuildingNumberStr,
 		}

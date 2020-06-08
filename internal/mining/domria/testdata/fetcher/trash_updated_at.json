@@ -1,0 +1,237 @@
+{
+  "items": [
+    {
+      "rangeFactorNew": "002501591021182",
+      "total_square_meters": 81,
+      "deleted_by": "admin",
+      "wall_type_uk": "цегла",
+      "floors_count": 10,
+      "street_name_uk": "Костанді вулиця",
+      "type": "realty",
+      "district_type_id": 1,
+      "price_item": 1173,
+      "photos": {
+        "75937577": {
+          "file": "dom/photo/7593/759375/75937577/75937577.jpg",
+          "id": 75937577,
+          "o": "v"
+        },
+        "75937579": {
+          "file": "dom/photo/7593/759375/75937579/75937579.jpg",
+          "id": 75937579,
+          "o": "v"
+        },
+        "75937580": {
+          "file": "dom/photo/7593/759375/75937580/75937580.jpg",
+          "id": 75937580,
+          "o": "v"
+        },
+        "75937581": {
+          "file": "dom/photo/7593/759375/75937581/75937581.jpg",
+          "id": 75937581,
+          "o": "v"
+        },
+        "75937582": {
+          "file": "dom/photo/7593/759375/75937582/75937582.jpg",
+          "id": 75937582,
+          "o": "v"
+        },
+        "75937584": {
+          "file": "dom/photo/7593/759375/75937584/75937584.jpg",
+          "is_main": 1,
+          "id": 75937584,
+          "o": "h"
+        },
+        "75937585": {
+          "file": "dom/photo/7593/759375/75937585/75937585.jpg",
+          "id": 75937585,
+          "o": "h"
+        },
+        "75937587": {
+          "file": "dom/photo/7593/759375/75937587/75937587.jpg",
+          "id": 75937587,
+          "o": "v"
+        },
+        "75937590": {
+          "file": "dom/photo/7593/759375/75937590/75937590.jpg",
+          "id": 75937590,
+          "o": "v"
+        }
+      },
+      "currency_type_uk": "$",
+      "youtube_link": "",
+      "delete_reason": 14,
+      "description_uk": "ЖК &quot;Вернісаж&quot;. Двокімнатна квартира для комфортного життя, дизайнерський ремонтом, АГВ, додаткова звукоізоляція стін, кондиціонер, вбудовані меблі та техніка, є все що потрібно для життя в тихому районі. . Територія закритого типу Відеодомофон.  ",
+      "advert_type_name": "продажа",
+      "advert_type_id": 1,
+      "state_name": "Одесская",
+      "price": 95000,
+      "rangeFactor": "00251591021182",
+      "beautiful_url": "realty-prodaja-kvartira-odessa-kievskiy-kostandi-ulitsa-13338871.html",
+      "state_id": 12,
+      "price_type_uk": "за об'єкт",
+      "longitude": "",
+      "photos_count": 9,
+      "user_ip": 0,
+      "city_name_uk": "Одеса",
+      "is_calltracking": 1,
+      "kitchen_square_meters": 18,
+      "agency_id": 17211,
+      "date_end": "2020-07-01 17:19:42",
+      "living_square_meters": 47,
+      "realty_type_parent_name": "Квартиры",
+      "quality": 69,
+      "realty_type_id": 2,
+      "building_number_str": "",
+      "currency_type": "$",
+      "user_id": 1118793,
+      "is_exchange_uk": "ні",
+      "price_type": "за объект",
+      "characteristics_values": {
+        "118": 108,
+        "209": 2,
+        "214": 81,
+        "216": 47,
+        "218": 18,
+        "227": 4,
+        "228": 10,
+        "234": 95000,
+        "242": 239,
+        "247": 252,
+        "265": 257,
+        "273": 273,
+        "443": 442,
+        "709": 705,
+        "1018": 1018,
+        "1141": 1139,
+        "1437": 1434,
+        "1569": 1569,
+        "1650": 1648
+      },
+      "_id": "realty-13338871",
+      "realty_type_parent_name_uk": "Квартири",
+      "street_id": 3466,
+      "price_total": 95000,
+      "city_id": 12,
+      "realty_sale_type": 1,
+      "moderated": 1,
+      "realty_id": 13338871,
+      "latitude": "",
+      "_rev": "452-733947b26818f720371ef86cf2c603a3",
+      "description": "ЖК &quot;Вернисаж&quot;. Двухкомнатная квартира для комфортной жизни, дизайнерский ремонтом, АГВ, дополнительная звукоизоляция стен, кондиционер, встроенная мебель и техника, есть  все что нужно для жизни в тихом районе. . Территория закрытого типа Видеодомофон.",
+      "created_at": "2017-05-12 13:21:14",
+      "levels_expired": "2020-06-08 02:36:43",
+      "is_commercial": 1,
+      "street_name": "Костанди улица",
+      "lf_links": [
+        {
+          "label": "купить квартиру",
+          "url": "/prodazha-kvartir/"
+        },
+        {
+          "label": "продажа квартиры в Одессе",
+          "url": "/prodazha-kvartir/odessa/"
+        },
+        {
+          "label": "продажа двухкомнатных квартир в Одессе",
+          "url": "/prodazha-kvartir/odessa-2k/"
+        },
+        {
+          "label": "продажа квартир ул. Костанди",
+          "url": "/prodazha-kvartir/odessa-ul-kostandy/"
+        },
+        {
+          "label": "продажа квартир район Киевский",
+          "url": "/prodazha-kvartir/odessa-rayon-kyevskyi/"
+        },
+        {
+          "label": "стоимость квартир в Одессе",
+          "url": "/ru/продажа-квартиры-одесса-цены/"
+        },
+        {
+          "label": "КБ Garden House Repino в Киевском районе",
+          "url": "/novostroyka-kb-garden-house-repino-6740/"
+        }
+      ],
+      "is_exchange": "нет",
+      "return_on_moderation": 2,
+      "district_name": "Киевский",
+      "city_name": "Одесса",
+      "partner_id": 1,
+      "updated_at": "|@!|)  )0w23 8&Nu sho, pososesh huj?$@%@8182)( @",
+      "advert_publish_type": 1,
+      "moderator_id": 5,
+      "realty_type_parent_id": 1,
+      "district_type_name": "Район",
+      "floor": 4,
+      "lf_links_uk": [
+        {
+          "label": "куплю квартиру",
+          "url": "/uk/prodazha-kvartir/"
+        },
+        {
+          "label": "продаж квартир у Одесі",
+          "url": "/uk/prodazha-kvartir/odessa/"
+        },
+        {
+          "label": "продаж 2-кімнатних квартир у Одесі",
+          "url": "/uk/prodazha-kvartir/odessa-2k/"
+        },
+        {
+          "label": "продаж квартир вул. Костанді",
+          "url": "/uk/prodazha-kvartir/odessa-ul-kostandy/"
+        },
+        {
+          "label": "Київський район продаж квартир",
+          "url": "/uk/prodazha-kvartir/odessa-rayon-kyevskyi/"
+        },
+        {
+          "label": "вартість квартир в Одесі",
+          "url": "/uk/продаж-квартири-одеса-ціни/"
+        },
+        {
+          "label": "ЖК Manhattan в Київському районі",
+          "url": "/uk/novostroyka-zhk-manhattan-5774/"
+        }
+      ],
+      "main_photo": "dom/photo/7593/759375/75937584/75937584.jpg",
+      "state_name_uk": "Одеська",
+      "rooms_count": 2,
+      "advert_title": 1,
+      "district_name_uk": "Київський",
+      "rangeFactorAuction": "00026469930703988761",
+      "wall_type": "кирпич",
+      "moderation_date": "2019-09-27 13:24:00",
+      "is_bargain": 273,
+      "rangeFactorIns": "000251591021182",
+      "advert_type_name_uk": "продаж",
+      "realty_type_name": "Квартира",
+      "return_on_moderation_date": "2019-09-27 13:23:38",
+      "publishing_date": "2020-06-01 17:19:42",
+      "district_id": "15536",
+      "user_package_id": 0,
+      "levels": 25,
+      "realty_type_name_uk": "Квартира",
+      "user": {
+        "name": "Приморский",
+        "image": "avatars/all/111/11187/1118793/1118793.jpg?v=1558436026",
+        "good_partner_top": ""
+      },
+      "agency": {
+        "agency_id": 17211,
+        "name": "АН Президент",
+        "logo": "dom/agence/1/172/17211/17211.jpg",
+        "agency_type": 1,
+        "good_partner": 1,
+        "user_id": 1118741
+      },
+      "priceArr": {
+        "1": "95 000",
+        "2": "83 794",
+        "3": "2 546 917"
+      }
+    }
+  ],
+  "time": {},
+  "count": -3
+}

@@ -1,0 +1,246 @@
+{
+  "items": [
+    {
+      "lf_links_uk": [
+        {
+          "label": "куплю квартиру",
+          "url": "/uk/prodazha-kvartir/"
+        },
+        {
+          "label": "продаж квартири Львів",
+          "url": "/uk/prodazha-kvartir/lvov/"
+        },
+        {
+          "label": "продаж двокімнатних квартир Львів",
+          "url": "/uk/prodazha-kvartir/lvov-2k/"
+        },
+        {
+          "label": "Галицький район продаж квартир",
+          "url": "/uk/prodazha-kvartir/lvov-rayon-galytskyi/"
+        },
+        {
+          "label": "вартість квартир в Львові",
+          "url": "/uk/продаж-квартири-львів-ціни/"
+        },
+        {
+          "label": "ТЖК по Героїв УПА в Львові",
+          "url": "/uk/novostroyka-tzhk-po-geroiv-upa-5134/"
+        }
+      ],
+      "realty_type_parent_name_uk": "Житло",
+      "street_name": "С. Томашівського",
+      "rooms_count": 2,
+      "advert_title": 1,
+      "type": "realty",
+      "wall_type_uk": "цегла",
+      "is_commercial": 1,
+      "state_name": "Львовская",
+      "street_id": 0,
+      "state_id": 5,
+      "moderated": 1,
+      "beautiful_url": "realty-prodaja-kvartira-lvov-galitskiy-17148133.html",
+      "levels": 15,
+      "district_type_name": "Район",
+      "description": "",
+      "advert_publish_type": 1,
+      "photos_count": 10,
+      "currency_type": "$",
+      "district_type_id": 1,
+      "levels_expired": "2020-06-09 04:30:43",
+      "web_id": "4cf7d3863c8336cb",
+      "partner_id": 1,
+      "is_exchange": "нет",
+      "moderator_id": 5,
+      "district_id": "15087",
+      "complete_time": 156.914,
+      "wall_type": "кирпич",
+      "district_name_uk": "Галицький",
+      "publishing_date": "2020-05-26 18:43:12",
+      "description_uk": "Продається 2-кімнатна квартира на вулиці С. Томашівського. Площа: загальна 59 м2, житлова 41 м2, кухня 9 м2\nПоверховість: 3/3. Стіни: цегла. Квартира у польському будинку з фасадним балконом. Вікна розташовані як з фасадної сторони, так і внтурішньої. Також є балкон, що виходить у внутрішній двір. Гарний житловий стан, паркет збережений. Зручна локація у самому центрі міста.\n \nВартість: 79 000 $\nДізнатись деталі або домовитись про перегляд можливо за телефоном.\nКомпанія Рентком, з любов'ю до Клієнтів.",
+      "_rev": "33-bb1ad485f626c60d3e0cb8fc14aad226",
+      "currency_type_uk": "$",
+      "youtube_link": "https://youtu.be/AJHTQ-fiX5M",
+      "price_type": "за объект",
+      "price": 79000,
+      "updated_at": "2020-06-08 07:30:43",
+      "floor": 3,
+      "quality": 76,
+      "rangeFactorAuction": "00029675412203988117",
+      "moderation_date": "2020-05-26 18:43:12",
+      "price_total": 79000,
+      "main_photo": "dom/photo/11238/1123874/112387482/112387482.jpg",
+      "is_exchange_uk": "ні",
+      "price_item": 1339,
+      "realty_type_name": "Квартира",
+      "building_number_str": "",
+      "city_name": "Львов",
+      "realty_type_parent_id": 1,
+      "rangeFactor": "00151590507792",
+      "living_square_meters": 41,
+      "state_name_uk": "Львівська",
+      "advert_type_name_uk": "продаж",
+      "realty_type_id": 2,
+      "rangeFactorNew": "001501590507792",
+      "price_type_uk": "за об'єкт",
+      "realty_type_name_uk": "Квартира",
+      "user_ip": 0,
+      "city_id": 5,
+      "agency_id": 23348,
+      "characteristics_values": {
+        "118": 108,
+        "209": 2,
+        "214": 59,
+        "216": 41,
+        "218": 9,
+        "227": 3,
+        "228": 3,
+        "234": 79000,
+        "242": 239,
+        "247": 252,
+        "265": 257,
+        "305": 305,
+        "396": 389,
+        "443": 1791,
+        "475": 472,
+        "480": 478,
+        "495": 491,
+        "516": 507,
+        "560": 560,
+        "586": 582,
+        "629": 626,
+        "813": 813,
+        "879": 872,
+        "907": 902,
+        "989": 989,
+        "1131": 3,
+        "1136": 1134,
+        "1141": 1139,
+        "1166": 1158,
+        "1169": 1167,
+        "1357": 1354,
+        "1437": 1434,
+        "1571": 1571,
+        "1581": 1581,
+        "1628": 1628,
+        "1636": 1636,
+        "1650": 1649
+      },
+      "_id": "realty-17148133",
+      "floors_count": 3,
+      "created_at": "2020-05-26 18:38:32",
+      "user_id": 8050454,
+      "city_name_uk": "Львів",
+      "kitchen_square_meters": 9,
+      "flat_number": "",
+      "user_package_id": 0,
+      "total_square_meters": 59,
+      "realty_id": 17148133,
+      "lf_links": [
+        {
+          "label": "куплю квартиру",
+          "url": "/prodazha-kvartir/"
+        },
+        {
+          "label": "продажа квартиры Львов",
+          "url": "/prodazha-kvartir/lvov/"
+        },
+        {
+          "label": "продажа 2-комнатной квартиры Львов",
+          "url": "/prodazha-kvartir/lvov-2k/"
+        },
+        {
+          "label": "продажа квартиры Галицкий",
+          "url": "/prodazha-kvartir/lvov-rayon-galytskyi/"
+        },
+        {
+          "label": "стоимость квартир в Львове",
+          "url": "/ru/продажа-квартиры-львов-цены/"
+        },
+        {
+          "label": "ТЖК по Героев УПА в Львове",
+          "url": "/novostroyka-tzhk-po-geroev-upa-5134/"
+        }
+      ],
+      "date_end": "2020-06-26 18:43:12",
+      "realty_sale_type": 1,
+      "photos": {
+        "112387482": {
+          "id": 112387482,
+          "file": "dom/photo/11238/1123874/112387482/112387482.jpg",
+          "ordering": 11,
+          "is_main": 1
+        },
+        "112387484": {
+          "id": 112387484,
+          "file": "dom/photo/11238/1123874/112387484/112387484.jpg",
+          "ordering": 12
+        },
+        "112387485": {
+          "id": 112387485,
+          "file": "dom/photo/11238/1123874/112387485/112387485.jpg",
+          "ordering": 13
+        },
+        "112387486": {
+          "id": 112387486,
+          "file": "dom/photo/11238/1123874/112387486/112387486.jpg",
+          "ordering": 14
+        },
+        "112387487": {
+          "id": 112387487,
+          "file": "dom/photo/11238/1123874/112387487/112387487.jpg",
+          "ordering": 15
+        },
+        "112387488": {
+          "id": 112387488,
+          "file": "dom/photo/11238/1123874/112387488/112387488.jpg",
+          "ordering": 16
+        },
+        "112387490": {
+          "id": 112387490,
+          "file": "dom/photo/11238/1123874/112387490/112387490.jpg",
+          "ordering": 17
+        },
+        "112387492": {
+          "id": 112387492,
+          "file": "dom/photo/11238/1123874/112387492/112387492.jpg",
+          "ordering": 18
+        },
+        "112387493": {
+          "id": 112387493,
+          "file": "dom/photo/11238/1123874/112387493/112387493.jpg",
+          "ordering": 19
+        },
+        "112387495": {
+          "id": 112387495,
+          "file": "dom/photo/11238/1123874/112387495/112387495.jpg",
+          "ordering": 20
+        }
+      },
+      "is_calltracking": 1,
+      "district_name": "Галицкий",
+      "rangeFactorIns": "000151590507792",
+      "advert_type_id": 1,
+      "advert_type_name": "продажа",
+      "realty_type_parent_name": "Жилье",
+      "user": {
+        "name": "Марія",
+        "image": "avatars/all/805/80504/8050454/8050454.jpg?v=1591269767",
+        "good_partner_top": ""
+      },
+      "agency": {
+        "agency_id": 23348,
+        "name": "Агентство Нерухомості \"Рентком\"",
+        "logo": "dom/agence/2/233/23348/23348.jpg?v=1541756118455",
+        "agency_type": 1,
+        "good_partner": "",
+        "user_id": 5183170
+      },
+      "priceArr": {
+        "1": "79 000",
+        "2": "69 681",
+        "3": "2 117 962"
+      }
+    }
+  ],
+  "count": 103
+}

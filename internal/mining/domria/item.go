@@ -1,6 +1,5 @@
 package domria
 
-// TODO: easyjson from mailru.
 type item struct {
 	BeautifulURL        string     `json:"beautiful_url"`
 	MainPhoto           string     `json:"main_photo"`
@@ -18,7 +17,6 @@ type item struct {
 	StateNameUK         string     `json:"state_name_uk"`
 	CityNameUK          string     `json:"city_name_uk"`
 	DistrictNameUK      string     `json:"district_name_uk"`
-	DistrictTypeName    string     `json:"district_type_name"`
 	StreetNameUK        string     `json:"street_name_uk"`
 	StreetName          string     `json:"street_name"`
 	BuildingNumberStr   string     `json:"building_number_str"`

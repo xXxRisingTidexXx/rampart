@@ -39,11 +39,10 @@ func NewMining() (*Mining, error) {
 }
 
 type Mining struct {
-	UserAgent   string       `yaml:"userAgent"`
 	SRID        int          `yaml:"srid"`
 	Prospectors *Prospectors `yaml:"prospectors"`
 }
 
 func (mining *Mining) String() string {
-	return fmt.Sprintf("{%s %d %v}", mining.UserAgent, mining.SRID, mining.Prospectors)
+	return fmt.Sprintf("{%d %v}", mining.SRID, mining.Prospectors)
 }
