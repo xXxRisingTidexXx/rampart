@@ -732,8 +732,42 @@ func TestUnmarshalSearchJustLatitude(t *testing.T) {
 	)
 }
 
-//func TestUnmarshalSearchStringCoordinates(t *testing.T) {}
-//
+func TestUnmarshalSearchStringCoordinates(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("string_coordinates"), mining.Secondary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 1 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2020, time.June, 2, 9, 38, 5, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-vinnitsa-podole-17135787.html",
+			"dom/photo/11226/1122631/112263193/112263193.jpg",
+			&updateTime,
+			129000,
+			108,
+			62,
+			13.4,
+			4,
+			3,
+			9,
+			mining.Secondary,
+			"Микрорайон Поділля",
+			geom.NewPointFlat(geom.XY, []float64{28.4489892, 49.2173192}),
+			"Вінницька",
+			"Вінниця",
+			"Поділля",
+			"вул. Зодчих / вул. Бортняка",
+			"1",
+		},
+	)
+}
+
 //func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {}
 //
 //func TestUnmarshalSearchTrashCoordinates(t *testing.T) {}
