@@ -1,8 +1,11 @@
 package domria
 
 import (
+	"fmt"
 	"github.com/twpayne/go-geom"
 	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"rampart/internal/mining"
@@ -10,6 +13,67 @@ import (
 	"testing"
 	"time"
 )
+
+func TestGetSearchEmptySearch(t *testing.T) {
+	expected := "{\"count\":0,\"items\":[]}\n"
+	server := newServer(
+		t,
+		func(writer http.ResponseWriter, _ *http.Request) {
+			if _, err := fmt.Fprint(writer, expected); err != nil {
+				t.Fatalf("domria: unexpected error, %v", err)
+			}
+		},
+	)
+	fetcher := newServerFetcher(server)
+	bytes, err := fetcher.getSearch("pm_housing=1")
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if actual := string(bytes); actual != expected {
+		t.Errorf("domria: invalid search, %s != %s", actual, expected)
+	}
+	server.Close()
+}
+
+func newServer(t *testing.T, handler func(http.ResponseWriter, *http.Request)) *httptest.Server {
+	return httptest.NewServer(
+		http.HandlerFunc(
+			func(writer http.ResponseWriter, request *http.Request) {
+				expected := "domria-test-bot/v1.0.0"
+				if actual := request.Header.Get("User-Agent"); actual != expected {
+					t.Fatalf("domria: invalid user-agent, %s != %s", actual, expected)
+				}
+				expected = "/?pm_housing=1&page=0&limit=10"
+				if actual := request.URL.String(); actual != expected {
+					t.Fatalf("domria: invalid url, %s != %s", actual, expected)
+				}
+				handler(writer, request)
+			},
+		),
+	)
+}
+
+func newServerFetcher(server *httptest.Server) *fetcher {
+	return newTestFetcher(server.URL + "/?%s&page=%d&limit=%d")
+}
+
+func newTestFetcher(searchURL string) *fetcher {
+	return newFetcher(
+		&configs.Fetcher{
+			Timeout:   500 * time.Millisecond,
+			Portion:   10,
+			Flags:     map[mining.Housing]string{mining.Primary: "pm_housing=1"},
+			Headers:   map[string]string{"User-Agent": "domria-test-bot/v1.0.0"},
+			SearchURL: searchURL,
+		},
+	)
+}
+
+//func TestGetSearchWithTimeout(t *testing.T) {}
+//
+//func TestGetSearchNotFound(t *testing.T) {}
+//
+//func TestGetSearchMultipleItems(t *testing.T) {}
 
 func TestUnmarshalSearchEmptyString(t *testing.T) {
 	fetcher := newDefaultFetcher()
@@ -23,15 +87,7 @@ func TestUnmarshalSearchEmptyString(t *testing.T) {
 }
 
 func newDefaultFetcher() *fetcher {
-	return newFetcher(
-		&configs.Fetcher{
-			Timeout:   2 * time.Second,
-			Portion:   10,
-			Flags:     map[mining.Housing]string{mining.Primary: "pm_housing=1"},
-			Headers:   map[string]string{"User-Agent": "domria-test-bot/v1.0.0"},
-			SearchURL: "https://domria.ua/search/",
-		},
-	)
+	return newTestFetcher("https://domria.ua/search/")
 }
 
 func TestUnmarshalSearchInvalidJSON(t *testing.T) {
