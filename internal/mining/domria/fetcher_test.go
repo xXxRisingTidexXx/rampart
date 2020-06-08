@@ -117,7 +117,7 @@ func TestUnmarshalSearchEmptyItem(t *testing.T) {
 	assertFlat(t, flats[0], &flat{housing: mining.Primary})
 }
 
-//nolint:gocognit,gocyclo
+//nolint:gocognit,gocyclo,funlen
 func assertFlat(t *testing.T, actual *flat, expected *flat) {
 	if actual == nil {
 		t.Fatal("domria: empty actual")
@@ -919,6 +919,93 @@ func TestUnmarshalSearchJustRUStreet(t *testing.T) {
 			"Львів",
 			"Галицький",
 			"С. Томашівського",
+			"",
+		},
+	)
+}
+
+//nolint:funlen
+func TestUnmarshalSearchMultipleItems(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.unmarshalSearch(readAll("multiple_items"), mining.Primary)
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if len(flats) != 3 {
+		t.Fatalf("domria: corrupted flats, %v", flats)
+	}
+	updateTime := time.Date(2020, time.June, 8, 6, 59, 13, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[0],
+		&flat{
+			"realty-prodaja-kvartira-vinnitsa-podole-generala-yakova-gandzyuka-ulitsa-17150263.html",
+			"dom/photo/11241/1124150/112415070/112415070.jpg",
+			&updateTime,
+			42000,
+			63,
+			0,
+			10,
+			2,
+			2,
+			9,
+			mining.Primary,
+			"ЖК Перлина Поділля",
+			geom.NewPointFlat(geom.XY, []float64{28.437752173707, 49.214143792302}),
+			"Вінницька",
+			"Вінниця",
+			"Поділля",
+			"генерала Якова Гандзюка вулиця",
+			"6",
+		},
+	)
+	updateTime = time.Date(2018, time.June, 8, 10, 7, 18, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[1],
+		&flat{
+			"realty-prodaja-kvartira-dnepr-slobojanskoe-slobojanskiy-prospekt-16927270.html",
+			"dom/photo/11025/1102580/110258034/110258034.jpg",
+			&updateTime,
+			31928,
+			67.4,
+			0,
+			0,
+			1,
+			8,
+			10,
+			mining.Primary,
+			"ЖК Дніпровська Брама 2",
+			geom.NewPointFlat(geom.XY, []float64{35.085059977507, 48.536070034556}),
+			"Дніпропетровська",
+			"Дніпро",
+			"Слобожанське",
+			"Слобожанский проспект",
+			"",
+		},
+	)
+	updateTime = time.Date(2020, time.June, 8, 10, 7, 18, 0, time.Local).UTC()
+	assertFlat(
+		t,
+		flats[2],
+		&flat{
+			"realty-prodaja-kvartira-dnepr-slobojanskoe-slobojanskiy-prospekt-16927282.html",
+			"dom/photo/11025/1102580/110258071/110258071.jpg",
+			&updateTime,
+			21168,
+			45.4,
+			0,
+			0,
+			1,
+			6,
+			10,
+			mining.Primary,
+			"ЖК Дніпровська Брама 2",
+			geom.NewPointFlat(geom.XY, []float64{35.085059977507, 48.536070034556}),
+			"Дніпропетровська",
+			"Дніпро",
+			"Слобожанське",
+			"Слобожанский проспект",
 			"",
 		},
 	)
