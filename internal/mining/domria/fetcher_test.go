@@ -14,23 +14,52 @@ import (
 	"time"
 )
 
-func TestGetSearchEmptySearch(t *testing.T) {
-	expected := "{\"count\":0,\"items\":[]}\n"
+func TestFetchSearchInvalidHousing(t *testing.T) {
+	fetcher := newDefaultFetcher()
+	flats, err := fetcher.fetchFlats(mining.Secondary)
+	if err == nil || err.Error() != "domria: secondary housing isn't acceptable" {
+		t.Fatalf("domria: absent or invalid error, %v", err)
+	}
+	if flats != nil {
+		t.Errorf("domria: non-nil flats, %v", flats)
+	}
+}
+
+func newDefaultFetcher() *fetcher {
+	return newTestFetcher("https://domria.ua/search/")
+}
+
+func newTestFetcher(searchURL string) *fetcher {
+	return newFetcher(
+		&configs.Fetcher{
+			Timeout:   50 * time.Millisecond,
+			Portion:   10,
+			Flags:     map[mining.Housing]string{mining.Primary: "pm_housing=1"},
+			Headers:   map[string]string{"User-Agent": "domria-test-bot/v1.0.0"},
+			SearchURL: searchURL,
+		},
+	)
+}
+
+func TestFetchSearchWithReset(t *testing.T) {
 	server := newServer(
 		t,
 		func(writer http.ResponseWriter, _ *http.Request) {
-			if _, err := fmt.Fprint(writer, expected); err != nil {
+			if _, err := fmt.Fprint(writer, "{\"count\":0,\"items\":[]}\n"); err != nil {
 				t.Fatalf("domria: unexpected error, %v", err)
 			}
 		},
 	)
 	fetcher := newServerFetcher(server)
-	bytes, err := fetcher.getSearch("pm_housing=1")
+	flats, err := fetcher.fetchFlats(mining.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
-	if actual := string(bytes); actual != expected {
-		t.Errorf("domria: invalid search, %s != %s", actual, expected)
+	if fetcher.page != 0 {
+		t.Errorf("domria: fetcher left on page %d", fetcher.page)
+	}
+	if flats == nil || len(flats) != 0 {
+		t.Errorf("domria: corrupted flats, %v", flats)
 	}
 	server.Close()
 }
@@ -57,16 +86,27 @@ func newServerFetcher(server *httptest.Server) *fetcher {
 	return newTestFetcher(server.URL + "/?%s&page=%d&limit=%d")
 }
 
-func newTestFetcher(searchURL string) *fetcher {
-	return newFetcher(
-		&configs.Fetcher{
-			Timeout:   50 * time.Millisecond,
-			Portion:   10,
-			Flags:     map[mining.Housing]string{mining.Primary: "pm_housing=1"},
-			Headers:   map[string]string{"User-Agent": "domria-test-bot/v1.0.0"},
-			SearchURL: searchURL,
+func TestFetchSearchMultipleFlats(t *testing.T) {}
+
+func TestGetSearchEmptySearch(t *testing.T) {
+	expected := "{\"count\":0,\"items\":[]}\n"
+	server := newServer(
+		t,
+		func(writer http.ResponseWriter, _ *http.Request) {
+			if _, err := fmt.Fprint(writer, expected); err != nil {
+				t.Fatalf("domria: unexpected error, %v", err)
+			}
 		},
 	)
+	fetcher := newServerFetcher(server)
+	bytes, err := fetcher.getSearch("pm_housing=1")
+	if err != nil {
+		t.Fatalf("domria: unexpected error, %v", err)
+	}
+	if actual := string(bytes); actual != expected {
+		t.Errorf("domria: invalid search, %s != %s", actual, expected)
+	}
+	server.Close()
 }
 
 func TestGetSearchWithTimeout(t *testing.T) {
@@ -87,6 +127,7 @@ func TestGetSearchWithTimeout(t *testing.T) {
 	if bytes != nil {
 		t.Errorf("domria: non-nil bytes, %v", bytes)
 	}
+	server.Close()
 }
 
 func TestGetSearchNotFound(t *testing.T) {
@@ -99,6 +140,7 @@ func TestGetSearchNotFound(t *testing.T) {
 	if bytes != nil {
 		t.Errorf("domria: non-nil bytes, %v", bytes)
 	}
+	server.Close()
 }
 
 func TestUnmarshalSearchEmptyString(t *testing.T) {
@@ -110,10 +152,6 @@ func TestUnmarshalSearchEmptyString(t *testing.T) {
 	if flats != nil {
 		t.Errorf("domria: non-empty flats, %v", flats)
 	}
-}
-
-func newDefaultFetcher() *fetcher {
-	return newTestFetcher("https://domria.ua/search/")
 }
 
 func TestUnmarshalSearchInvalidJSON(t *testing.T) {
