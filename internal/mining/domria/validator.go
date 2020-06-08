@@ -2,6 +2,7 @@ package domria
 
 import (
 	log "github.com/sirupsen/logrus"
+	"rampart/internal/mining"
 	"rampart/internal/mining/configs"
 )
 
@@ -90,7 +91,8 @@ func (validator *validator) validateFlat(flat *flat) bool {
 		flat.floor <= flat.totalFloor &&
 		validator.minTotalFloor <= flat.totalFloor &&
 		flat.totalFloor <= validator.maxTotalFloor &&
-		flat.housing != "" &&
+		(flat.housing == mining.Primary ||
+			flat.housing == mining.Secondary) &&
 		flat.state != "" &&
 		flat.city != "" &&
 		(flat.point == nil &&
