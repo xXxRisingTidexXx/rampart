@@ -172,7 +172,7 @@ func newServer(t *testing.T, handler func(http.ResponseWriter, *http.Request)) *
 }
 
 func readAll(t *testing.T, fixtureName string) []byte {
-	file, err := os.Open(filepath.Join("testdata", fixtureName+".json"))
+	file, err := os.Open(filepath.Join("testdata", "fetcher", fixtureName+".json"))
 	if err != nil {
 		t.Fatalf("domria: failed to open the file, %v", err)
 	}
