@@ -17,7 +17,7 @@ import (
 func TestFetchSearchInvalidHousing(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.fetchFlats(mining.Secondary)
-	if err == nil || err.Error() != "domria: secondary housing isn't acceptable" {
+	if err == nil || err.Error() != "domria: fetcher doesn't accept secondary housing" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
 	if flats != nil {
@@ -291,7 +291,7 @@ func TestGetSearchWithTimeout(t *testing.T) {
 	)
 	fetcher := newServerFetcher(server)
 	bytes, err := fetcher.getSearch("pm_housing=1")
-	if err == nil || err.Error() != "domria: failed to perform a request, Get \""+
+	if err == nil || err.Error() != "domria: fetcher failed to perform a request, Get \""+
 		server.URL+
 		"/?pm_housing=1&page=0&limit=10\": context deadline exc"+
 		"eeded (Client.Timeout exceeded while awaiting headers)" {
@@ -307,7 +307,7 @@ func TestGetSearchNotFound(t *testing.T) {
 	server := newServer(t, http.NotFound)
 	fetcher := newServerFetcher(server)
 	bytes, err := fetcher.getSearch("pm_housing=1")
-	if err == nil || err.Error() != "domria: got response with status 404 Not Found" {
+	if err == nil || err.Error() != "domria: fetcher got response with status 404 Not Found" {
 		t.Errorf("domria: absent or invalid error, %v", err)
 	}
 	if bytes != nil {
@@ -319,7 +319,8 @@ func TestGetSearchNotFound(t *testing.T) {
 func TestUnmarshalSearchEmptyString(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch([]byte(""), mining.Primary)
-	if err == nil || err.Error() != "domria: failed to unmarshal the search, unexpected end of JSON input" {
+	if err == nil || err.Error() != "domria: fetcher failed t" +
+		"o unmarshal the search, unexpected end of JSON input" {
 		t.Errorf("domria: absent or invalid error, %v", err)
 	}
 	if flats != nil {
@@ -330,7 +331,8 @@ func TestUnmarshalSearchEmptyString(t *testing.T) {
 func TestUnmarshalSearchInvalidJSON(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch([]byte("{"), mining.Primary)
-	if err == nil || err.Error() != "domria: failed to unmarshal the search, unexpected end of JSON input" {
+	if err == nil || err.Error() != "domria: fetcher failed t" +
+		"o unmarshal the search, unexpected end of JSON input" {
 		t.Errorf("domria: absent or invalid error, %v", err)
 	}
 	if flats != nil {
@@ -341,7 +343,7 @@ func TestUnmarshalSearchInvalidJSON(t *testing.T) {
 func TestUnmarshalSearchArrayInsteadOfObject(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch([]byte("[]"), mining.Primary)
-	if err == nil || err.Error() != "domria: failed to unmarshal the search"+
+	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the search"+
 		", json: cannot unmarshal array into Go value of type domria.search" {
 		t.Errorf("domria: absent or invalid error, %v", err)
 	}
@@ -470,7 +472,7 @@ func TestUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 func TestUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_updated_at"), mining.Secondary)
-	if err == nil || err.Error() != "domria: failed to unmarsh"+
+	if err == nil || err.Error() != "domria: fetcher failed to unmarsh"+
 		"al the search, domria: moment string is too short, 2" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
@@ -482,7 +484,7 @@ func TestUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
 func TestUnmarshalSearchTrashUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_updated_at"), mining.Secondary)
-	if err == nil || err.Error() != "domria: failed to unmarshal the search, domria: mom"+
+	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the search, domria: mom"+
 		"ent can't split date & timing, |@!|)  )0w23 8&Nu sho, pososesh huj?$@%@8182)( @" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
@@ -530,7 +532,7 @@ func TestUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 func TestUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll(t, "missing_shapes_updated_at"), mining.Primary)
-	if err == nil || err.Error() != "domria: failed to unmarshal "+
+	if err == nil || err.Error() != "domria: fetcher failed to unmarshal "+
 		"the search, domria: moment cannot split date, 2020- 07:53" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
@@ -578,7 +580,7 @@ func TestUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 func TestUnmarshalSearchJustDateUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll(t, "just_date_updated_at"), mining.Secondary)
-	if err == nil || err.Error() != "domria: failed to unmarshal t"+
+	if err == nil || err.Error() != "domria: fetcher failed to unmarshal t"+
 		"he search, domria: moment cannot split timing, 2020-06-07 " {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
@@ -590,7 +592,7 @@ func TestUnmarshalSearchJustDateUpdatedAt(t *testing.T) {
 func TestUnmarshalSearchJustTimeUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll(t, "just_time_updated_at"), mining.Secondary)
-	if err == nil || err.Error() != "domria: failed to unmarshal"+
+	if err == nil || err.Error() != "domria: fetcher failed to unmarshal"+
 		" the search, domria: moment cannot split date,  07:47:11" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
@@ -674,7 +676,7 @@ func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {
 func TestUnmarshalSearchEmptyPricePriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_price_price_arr"), mining.Secondary)
-	if err == nil || err.Error() != "domria: failed to unmars"+
+	if err == nil || err.Error() != "domria: fetcher failed to unmars"+
 		"hal the search, domria: price string is too short, 2" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
@@ -686,7 +688,7 @@ func TestUnmarshalSearchEmptyPricePriceArr(t *testing.T) {
 func TestUnmarshalSearchWhitespacePricePriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll(t, "whitespace_price_price_arr"), mining.Secondary)
-	if err == nil || err.Error() != "domria: failed to unmarshal th"+
+	if err == nil || err.Error() != "domria: fetcher failed to unmarshal th"+
 		"e search, strconv.ParseFloat: parsing \"\": invalid syntax" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
@@ -698,7 +700,7 @@ func TestUnmarshalSearchWhitespacePricePriceArr(t *testing.T) {
 func TestUnmarshalSearchTrashPricePriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_price_price_arr"), mining.Primary)
-	if err == nil || err.Error() != "domria: failed to unmarshal the "+
+	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the "+
 		"search, strconv.ParseFloat: parsing \"Suck\": invalid syntax" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
@@ -746,7 +748,7 @@ func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 func TestUnmarshalSearchTrashTotalSquareMeters(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_total_square_meters"), mining.Secondary)
-	if err == nil || err.Error() != "domria: failed to unmarshal the"+
+	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the"+
 		" search, invalid character '-' after object key:value pair" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
@@ -1010,7 +1012,7 @@ func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {
 func TestUnmarshalSearchTrashCoordinates(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_coordinates"), mining.Secondary)
-	if err == nil || err.Error() != "domria: failed to unmarshal the sear"+
+	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the sear"+
 		"ch, strconv.ParseFloat: parsing \"982jd293jd)J\": invalid syntax" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}

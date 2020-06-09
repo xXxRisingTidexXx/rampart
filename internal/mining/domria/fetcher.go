@@ -35,7 +35,7 @@ type fetcher struct {
 func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
 	flag, ok := fetcher.flags[housing]
 	if !ok {
-		return nil, fmt.Errorf("domria: %v housing isn't acceptable", housing)
+		return nil, fmt.Errorf("domria: fetcher doesn't accept %v housing", housing)
 	}
 	start := time.Now()
 	bytes, err := fetcher.getSearch(flag)
@@ -64,24 +64,24 @@ func (fetcher *fetcher) getSearch(flag string) ([]byte, error) {
 		nil,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("domria: failed to construct a request, %v", err)
+		return nil, fmt.Errorf("domria: fetcher failed to construct a request, %v", err)
 	}
 	for key, value := range fetcher.headers {
 		request.Header.Set(key, value)
 	}
 	response, err := fetcher.client.Do(request)
 	if err != nil {
-		return nil, fmt.Errorf("domria: failed to perform a request, %v", err)
+		return nil, fmt.Errorf("domria: fetcher failed to perform a request, %v", err)
 	}
 	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("domria: got response with status %s", response.Status)
+		return nil, fmt.Errorf("domria: fetcher got response with status %s", response.Status)
 	}
 	bytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return nil, fmt.Errorf("domria: failed to read the response body, %v", err)
+		return nil, fmt.Errorf("domria: fetcher failed to read the response body, %v", err)
 	}
 	if err = response.Body.Close(); err != nil {
-		return nil, fmt.Errorf("domria: failed to close the response body, %v", err)
+		return nil, fmt.Errorf("domria: fetcher failed to close the response body, %v", err)
 	}
 	return bytes, nil
 }
@@ -89,7 +89,7 @@ func (fetcher *fetcher) getSearch(flag string) ([]byte, error) {
 func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([]*flat, error) {
 	var search search
 	if err := json.Unmarshal(bytes, &search); err != nil {
-		return nil, fmt.Errorf("domria: failed to unmarshal the search, %v", err)
+		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the search, %v", err)
 	}
 	flats := make([]*flat, len(search.Items))
 	for i, item := range search.Items {
