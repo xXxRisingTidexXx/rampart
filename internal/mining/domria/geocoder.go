@@ -24,7 +24,7 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 		log.Debug("domria: geocoder skipped flats")
 		return flats
 	}
-	geocodedNumber, locatedNumber, duration := 0, 0, 0.0
+	geocodedNumber, duration := 0, 0.0
 	newFlats := make([]*flat, 0, expectedLength)
 	for i := range flats {
 		var newFlat *flat
@@ -38,14 +38,16 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 			if err == nil {
 				newFlat, err = geocoder.locateFlat(flats[i], bytes)
 			}
+			if err != nil {
+				log.Error(err)
+			}
 		}
 		if newFlat != nil {
-			locatedNumber++
 			newFlats = append(newFlats, newFlat)
-			newFlat = nil // TODO: is redundant?
 		}
 	}
 	actualLength := len(newFlats)
+	locatedNumber := actualLength - expectedLength + geocodedNumber
 	log.Debugf(
 		"domria: geocoder passed %d flats; %d geocoded, %d located (%.3fs)",
 		actualLength,
@@ -64,5 +66,5 @@ func (geocoder *geocoder) getLocations(flat *flat) ([]byte, error) {
 }
 
 func (geocoder *geocoder) locateFlat(f *flat, bytes []byte) (*flat, error) {
-	return nil, nil
+	return f, nil
 }
