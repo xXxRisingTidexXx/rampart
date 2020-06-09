@@ -26,21 +26,23 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 	}
 	geocodedNumber, locatedNumber, duration := 0, 0, 0.0
 	newFlats := make([]*flat, 0, expectedLength)
-	for _, flat := range flats {
-		if flat.point != nil {
-			newFlats = append(newFlats, flat)
+	for i := range flats {
+		var newFlat *flat
+		if flats[i].point != nil {
+			newFlat = flats[i]
 		} else {
 			geocodedNumber++
 			start := time.Now()
-			newFlat, err := geocoder.geocodeFlat(flat)
+			bytes, err := geocoder.getLocations(flats[i])
 			duration += time.Since(start).Seconds()
-			if err != nil {
-				log.Error(err)
+			if err == nil {
+				newFlat, err = geocoder.locateFlat(flats[i], bytes)
 			}
-			if newFlat != nil {
-				locatedNumber++
-				newFlats = append(newFlats, newFlat)
-			}
+		}
+		if newFlat != nil {
+			locatedNumber++
+			newFlats = append(newFlats, newFlat)
+			newFlat = nil // TODO: is redundant?
 		}
 	}
 	actualLength := len(newFlats)
@@ -57,6 +59,10 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 	return newFlats
 }
 
-func (geocoder *geocoder) geocodeFlat(f *flat) (*flat, error) {
-	return f, nil
+func (geocoder *geocoder) getLocations(flat *flat) ([]byte, error) {
+	return nil, nil
+}
+
+func (geocoder *geocoder) locateFlat(f *flat, bytes []byte) (*flat, error) {
+	return nil, nil
 }
