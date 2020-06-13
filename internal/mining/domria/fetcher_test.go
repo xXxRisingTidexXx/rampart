@@ -319,7 +319,7 @@ func TestGetSearchNotFound(t *testing.T) {
 func TestUnmarshalSearchEmptyString(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch([]byte(""), mining.Primary)
-	if err == nil || err.Error() != "domria: fetcher failed t" +
+	if err == nil || err.Error() != "domria: fetcher failed t"+
 		"o unmarshal the search, unexpected end of JSON input" {
 		t.Errorf("domria: absent or invalid error, %v", err)
 	}
@@ -331,7 +331,7 @@ func TestUnmarshalSearchEmptyString(t *testing.T) {
 func TestUnmarshalSearchInvalidJSON(t *testing.T) {
 	fetcher := newDefaultFetcher()
 	flats, err := fetcher.unmarshalSearch([]byte("{"), mining.Primary)
-	if err == nil || err.Error() != "domria: fetcher failed t" +
+	if err == nil || err.Error() != "domria: fetcher failed t"+
 		"o unmarshal the search, unexpected end of JSON input" {
 		t.Errorf("domria: absent or invalid error, %v", err)
 	}
