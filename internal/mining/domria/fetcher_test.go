@@ -177,12 +177,14 @@ func readAll(t *testing.T, fixtureName string) []byte {
 	if err != nil {
 		t.Fatalf("domria: failed to open the file, %v", err)
 	}
+	defer func() {
+		if err = file.Close(); err != nil {
+			t.Fatalf("domria: failed to close the file, %v", err)
+		}
+	}()
 	bytes, err := ioutil.ReadAll(file)
 	if err != nil {
 		t.Fatalf("domria: failed to read the file, %v", err)
-	}
-	if err = file.Close(); err != nil {
-		t.Fatalf("domria: failed to close the file, %v", err)
 	}
 	return bytes
 }
