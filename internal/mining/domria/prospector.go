@@ -11,7 +11,7 @@ func NewProspector(housing mining.Housing, config *configs.Domria) mining.Prospe
 		housing,
 		newFetcher(config.Fetcher),
 		newSanitizer(config.Sanitizer),
-		newGeocoder(),
+		newGeocoder(config.Geocoder),
 		newValidator(config.Validator),
 	}
 }
@@ -28,6 +28,7 @@ func (prospector *prospector) Prospect() error {
 	log.Debug("domria: prospector started")
 	flats, err := prospector.fetcher.fetchFlats(prospector.housing)
 	if err != nil {
+		log.Debug("domria: prospector terminated")
 		return err
 	}
 	flats = prospector.sanitizer.sanitizeFlats(flats)
