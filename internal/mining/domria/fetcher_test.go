@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"rampart/internal/mining"
 	"rampart/internal/mining/configs"
+	"rampart/internal/mining/util"
 	"testing"
 	"time"
 )
@@ -32,10 +33,10 @@ func newDefaultFetcher() *fetcher {
 func newTestFetcher(searchURL string) *fetcher {
 	return newFetcher(
 		&configs.Fetcher{
-			Timeout:   100 * time.Millisecond,
+			Timeout:   util.Timeout(100 * time.Millisecond),
 			Portion:   10,
 			Flags:     map[mining.Housing]string{mining.Primary: "pm_housing=1"},
-			Headers:   map[string]string{"User-Agent": "domria-test-bot/v1.0.0"},
+			Headers:   map[string]string{"User-Agent": "domria-test-bot/1.0.0"},
 			SearchURL: searchURL,
 		},
 	)
@@ -45,7 +46,7 @@ func TestFetchSearchWithReset(t *testing.T) {
 	server := httptest.NewServer(
 		http.HandlerFunc(
 			func(writer http.ResponseWriter, request *http.Request) {
-				expected := "domria-test-bot/v1.0.0"
+				expected := "domria-test-bot/1.0.0"
 				if actual := request.Header.Get("User-Agent"); actual != expected {
 					t.Fatalf("domria: invalid user-agent, %s != %s", actual, expected)
 				}
@@ -157,7 +158,7 @@ func newServer(t *testing.T, handler func(http.ResponseWriter, *http.Request)) *
 	return httptest.NewServer(
 		http.HandlerFunc(
 			func(writer http.ResponseWriter, request *http.Request) {
-				expected := "domria-test-bot/v1.0.0"
+				expected := "domria-test-bot/1.0.0"
 				if actual := request.Header.Get("User-Agent"); actual != expected {
 					t.Fatalf("domria: invalid user-agent, %s != %s", actual, expected)
 				}
