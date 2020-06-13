@@ -84,11 +84,16 @@ func (geocoder *geocoder) getLocations(flat *flat) (bytes []byte, err error) {
 		return nil, fmt.Errorf("domria: geocoder failed to perform a request, %v", err)
 	}
 	defer func() {
-		if err == nil {
-			if err = response.Body.Close(); err != nil {
-				bytes = nil
-				err = fmt.Errorf("domria: geocoder failed to close the response body, %v", err)
+		if closingErr := response.Body.Close(); closingErr != nil {
+			closingErr = fmt.Errorf("domria: geocoder failed to close the response body, %v", closingErr)
+			if err == nil {
+				err = closingErr
+			} else {
+				log.Error(closingErr)
 			}
+		}
+		if err != nil {
+			bytes = nil
 		}
 	}()
 	if response.StatusCode != http.StatusOK {

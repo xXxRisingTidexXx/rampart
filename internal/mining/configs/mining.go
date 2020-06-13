@@ -2,6 +2,7 @@ package configs
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
@@ -25,11 +26,16 @@ func NewMining() (mining *Mining, err error) {
 		return nil, fmt.Errorf("configs: mining failed to open the config file, %v", err)
 	}
 	defer func() {
-		if err == nil {
-			if err = file.Close(); err != nil {
-				mining = nil
-				err = fmt.Errorf("configs: mining failed to close the config file, %v", err)
+		if closingErr := file.Close(); closingErr != nil {
+			closingErr = fmt.Errorf("configs: mining failed to close the config file, %v", closingErr)
+			if err == nil {
+				err = closingErr
+			} else {
+				log.Error(closingErr)
 			}
+		}
+		if err != nil {
+			mining = nil
 		}
 	}()
 	bytes, err := ioutil.ReadAll(file)

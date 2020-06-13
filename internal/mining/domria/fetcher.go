@@ -74,11 +74,16 @@ func (fetcher *fetcher) getSearch(flag string) (bytes []byte, err error) {
 		return nil, fmt.Errorf("domria: fetcher failed to perform a request, %v", err)
 	}
 	defer func() {
-		if err == nil {
-			if err = response.Body.Close(); err != nil {
-				bytes = nil
-				err = fmt.Errorf("domria: fetcher failed to close the response body, %v", err)
+		if closingErr := response.Body.Close(); closingErr != nil {
+			closingErr = fmt.Errorf("domria: fetcher failed to close the response body, %v", closingErr)
+			if err == nil {
+				err = closingErr
+			} else {
+				log.Error(closingErr)
 			}
+		}
+		if err != nil {
+			bytes = nil
 		}
 	}()
 	if response.StatusCode != http.StatusOK {
