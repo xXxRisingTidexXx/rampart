@@ -9,7 +9,7 @@ import (
 	"runtime"
 )
 
-func NewMining() (*Mining, error) {
+func NewMining() (mining *Mining, err error) {
 	_, filePath, _, ok := runtime.Caller(0)
 	if !ok {
 		return nil, fmt.Errorf("configs: mining failed to find the caller path")
@@ -24,18 +24,21 @@ func NewMining() (*Mining, error) {
 	if err != nil {
 		return nil, fmt.Errorf("configs: mining failed to open the config file, %v", err)
 	}
+	defer func() {
+		if err = file.Close(); err != nil {
+			mining = nil
+			err = fmt.Errorf("configs: mining failed to close the config file, %v", err)
+		}
+	}()
 	bytes, err := ioutil.ReadAll(file)
 	if err != nil {
 		return nil, fmt.Errorf("configs: mining failed to read the config file, %v", err)
 	}
-	if err = file.Close(); err != nil {
-		return nil, fmt.Errorf("configs: mining failed to close the config file, %v", err)
-	}
-	var mining Mining
-	if err = yaml.Unmarshal(bytes, &mining); err != nil {
+	var config Mining
+	if err = yaml.Unmarshal(bytes, &config); err != nil {
 		return nil, fmt.Errorf("configs: mining failed to unmarshal the config file, %v", err)
 	}
-	return &mining, nil
+	return &config, nil
 }
 
 type Mining struct {
