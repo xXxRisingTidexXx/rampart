@@ -57,7 +57,7 @@ func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
 	return flats, nil
 }
 
-func (fetcher *fetcher) getSearch(flag string) ([]byte, error) {
+func (fetcher *fetcher) getSearch(flag string) (bytes []byte, err error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf(fetcher.searchURL, flag, fetcher.page, fetcher.portion),
@@ -73,17 +73,16 @@ func (fetcher *fetcher) getSearch(flag string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to perform a request, %v", err)
 	}
+	defer func() {
+		if err = response.Body.Close(); err != nil {
+			bytes = nil
+			err = fmt.Errorf("domria: fetcher failed to close the response body, %v", err)
+		}
+	}()
 	if response.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("domria: fetcher got response with status %s", response.Status)
 	}
-	bytes, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		return nil, fmt.Errorf("domria: fetcher failed to read the response body, %v", err)
-	}
-	if err = response.Body.Close(); err != nil {
-		return nil, fmt.Errorf("domria: fetcher failed to close the response body, %v", err)
-	}
-	return bytes, nil
+	return ioutil.ReadAll(response.Body)
 }
 
 func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([]*flat, error) {
