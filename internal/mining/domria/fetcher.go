@@ -14,7 +14,7 @@ import (
 
 func newFetcher(config *configs.Fetcher) *fetcher {
 	return &fetcher{
-		&http.Client{Timeout: config.Timeout},
+		&http.Client{Timeout: time.Duration(config.Timeout)},
 		0,
 		config.Portion,
 		config.Flags,
