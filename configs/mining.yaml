@@ -17,6 +17,14 @@ prospectors:
       stateSuffix: ' область'
       districtEnding: ий
       districtSuffix: ' район'
+    geocoder:
+      timeout: 5s
+      headers:
+        User-Agent: rampart-mining-bot/v1.0.0
+      stateless:
+        - Київ
+      searchURL: https://nominatim.openstreetmap.org/search?state=%s&city=%s&county=%s&street=%s+%s&format=json&countrycodes=ua
+      minLookup: 0.7
     validator:
       minPrice: 1
       minTotalArea: 12
