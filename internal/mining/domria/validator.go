@@ -68,7 +68,7 @@ func (validator *validator) validateFlats(flats []*flat) []*flat {
 	return newFlats
 }
 
-//nolint:gocognit,gocyclo
+//nolint:gocognit
 func (validator *validator) validateFlat(flat *flat) bool {
 	if flat == nil || flat.roomNumber == 0 {
 		return false
