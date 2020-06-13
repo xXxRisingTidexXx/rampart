@@ -58,7 +58,7 @@ func (sanitizer *sanitizer) sanitizeFlat(f *flat) *flat {
 	}
 	district := f.district
 	if strings.HasSuffix(district, sanitizer.districtEnding) {
-		district += sanitizer.stateSuffix
+		district += sanitizer.districtSuffix
 	}
 	return &flat{
 		originURL,

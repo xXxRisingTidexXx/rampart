@@ -2,10 +2,10 @@ shell: bash
 commands:
   compile:
     description: Compile the source code
-    cmd: go build -o mining cmd/mining/main.go
+    cmd: rm -f mining && go build -o mining cmd/mining/main.go
   race:
     description: Check the source code for race conditions
-    cmd: go build -race -o mining-race cmd/mining/main.go
+    cmd: rm -f mining-race && go build -race -o mining-race cmd/mining/main.go
   run:
     description: Execute the binary
     cmd: ./mining
