@@ -7,27 +7,28 @@ import (
 	"github.com/twpayne/go-geom"
 	"io/ioutil"
 	"net/http"
+	"rampart/internal/mining/configs"
+	"rampart/internal/mining/util"
 	"strings"
 	"time"
 )
 
-func newGeocoder() *geocoder {
+func newGeocoder(config *configs.Geocoder) *geocoder {
 	return &geocoder{
-		&http.Client{Timeout: 5 * time.Second},
-		map[string]string{"UserAgent": "piece-of-shit"},
-		map[string]struct{}{"Київ": {}},
-		"https://nominatim.openstreetmap.org/search?state=%s&city=" +
-			"%s&county=%s&street=%s+%s&format=json&countrycodes=ua",
-		0.7,
+		&http.Client{Timeout: time.Duration(config.Timeout)},
+		config.Headers,
+		config.StatelessCities,
+		config.SearchURL,
+		config.MinLookup,
 	}
 }
 
 type geocoder struct {
-	client    *http.Client
-	headers   map[string]string
-	noStates  map[string]struct{}
-	searchURL string
-	minLookup float64
+	client          *http.Client
+	headers         map[string]string
+	statelessCities *util.Set
+	searchURL       string
+	minLookup       float64
 }
 
 func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
@@ -72,7 +73,7 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 
 func (geocoder *geocoder) getLocations(flat *flat) ([]byte, error) {
 	state := ""
-	if _, ok := geocoder.noStates[flat.city]; !ok {
+	if !geocoder.statelessCities.Contains(flat.city) {
 		state = geocoder.encode(flat.state)
 	}
 	request, err := http.NewRequest(

@@ -21,10 +21,10 @@ prospectors:
       timeout: 5s
       headers:
         User-Agent: rampart-mining-bot/v1.0.0
-      stateless:
+      statelessCities:
         - Київ
       searchURL: https://nominatim.openstreetmap.org/search?state=%s&city=%s&county=%s&street=%s+%s&format=json&countrycodes=ua
-      minLookup: 0.7
+      minLookup: 0.6
     validator:
       minPrice: 1
       minTotalArea: 12

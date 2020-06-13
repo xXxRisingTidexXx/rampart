@@ -6,11 +6,11 @@ import (
 )
 
 type Geocoder struct {
-	Timeout   util.Timeout      `yaml:"timeout"`
-	Headers   map[string]string `yaml:"headers"`
-	Stateless *util.Set         `yaml:"stateless"`
-	SearchURL string            `yaml:"searchURL"`
-	MinLookup float64           `yaml:"minLookup"`
+	Timeout         util.Timeout      `yaml:"timeout"`
+	Headers         map[string]string `yaml:"headers"`
+	StatelessCities *util.Set         `yaml:"statelessCities"`
+	SearchURL       string            `yaml:"searchURL"`
+	MinLookup       float64           `yaml:"minLookup"`
 }
 
 func (geocoder *Geocoder) String() string {
@@ -18,7 +18,7 @@ func (geocoder *Geocoder) String() string {
 		"{%s %v %v %s %.2f}",
 		geocoder.Timeout,
 		geocoder.Headers,
-		geocoder.Stateless,
+		geocoder.StatelessCities,
 		geocoder.SearchURL,
 		geocoder.MinLookup,
 	)
