@@ -93,15 +93,9 @@ func (validator *validator) validateFlat(flat *flat) bool {
 		flat.totalFloor <= validator.maxTotalFloor &&
 		(flat.housing == mining.Primary ||
 			flat.housing == mining.Secondary) &&
-		flat.state != "" &&
-		flat.city != "" &&
-		(flat.point == nil &&
-			flat.district != "" &&
-			flat.street != "" &&
-			flat.houseNumber != "" ||
-			flat.point != nil &&
-				validator.minLongitude <= flat.point.X() &&
-				flat.point.X() <= validator.maxLongitude &&
-				validator.minLatitude <= flat.point.Y() &&
-				flat.point.Y() <= validator.maxLatitude)
+		flat.point != nil &&
+		validator.minLongitude <= flat.point.X() &&
+		flat.point.X() <= validator.maxLongitude &&
+		validator.minLatitude <= flat.point.Y() &&
+		flat.point.Y() <= validator.maxLatitude
 }
