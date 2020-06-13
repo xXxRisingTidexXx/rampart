@@ -25,9 +25,11 @@ func NewMining() (mining *Mining, err error) {
 		return nil, fmt.Errorf("configs: mining failed to open the config file, %v", err)
 	}
 	defer func() {
-		if err = file.Close(); err != nil {
-			mining = nil
-			err = fmt.Errorf("configs: mining failed to close the config file, %v", err)
+		if err == nil {
+			if err = file.Close(); err != nil {
+				mining = nil
+				err = fmt.Errorf("configs: mining failed to close the config file, %v", err)
+			}
 		}
 	}()
 	bytes, err := ioutil.ReadAll(file)
