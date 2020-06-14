@@ -20,9 +20,9 @@ commands:
   generate:
     description: Generate a new SQL migration file
     cmd: mkdir -p internal/migrations/versions && touch internal/migrations/versions/$(date +"%s").sql && sleep 1
-  upgrade:
+  migrate:
     description: Upgrade the DB schema to the newest version
-    cmd: ./migrations upgrade
+    cmd: ./migrations
   psql:
     description: Run PostgreSQL CLI
     depends:

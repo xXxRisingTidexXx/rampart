@@ -2,24 +2,28 @@ package migrations
 
 import (
 	"database/sql"
-	log "github.com/sirupsen/logrus"
+	"fmt"
 	"os"
 )
 
-func Run() error {
+func Run() (err error) {
 	//"postgres://postgres:postgres@localhost:5432/rampart?sslmode=disable&connect_timeout=10"
-	db, err := sql.Open("postgres", os.Getenv("RAMPART_DSN"))
+	dsn := os.Getenv("RAMPART_DSN")
+	if dsn == "" {
+		return fmt.Errorf("migrations: dsn isn't configured")
+	}
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		log.Fatalf("cmd: upgrade failed to connect to the db, %v", err)
+		return fmt.Errorf("migrations: failed to connect to the db, %v", err)
 	}
 	defer func() {
-		if err = db.Close(); err != nil {
-			log.Fatalf("main: upgrade failed to close the db, %v", err)
+		if closingErr := db.Close(); closingErr != nil && err == nil {
+			err = fmt.Errorf("migrations: failed to close the db, %v", closingErr)
 		}
-		log.Debug("main: migrations finished")
 	}()
 	if err = db.Ping(); err != nil {
-		log.Fatalf("cmd: upgrade failed to ping the db, %v", err)
+		return fmt.Errorf("migrations: failed to ping the db, %v", err)
 	}
+	
 	return nil
 }
