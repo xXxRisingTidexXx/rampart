@@ -19,7 +19,7 @@ commands:
     cmd: ./mining
   generate:
     description: Generate a new SQL migration file
-    cmd: ./migrations generate
+    cmd: mkdir -p internal/migrations/versions && touch internal/migrations/versions/$(date +"%s").sql && sleep 1
   upgrade:
     description: Upgrade the DB schema to the newest version
     cmd: ./migrations upgrade
