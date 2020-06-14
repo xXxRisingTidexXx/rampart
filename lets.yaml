@@ -2,13 +2,27 @@ shell: bash
 commands:
   compile:
     description: Compile the source code
-    cmd: rm -f mining && go build -o mining cmd/mining/main.go
+    cmd: |
+      rm -f mining
+      go build -o mining cmd/mining/main.go
+      rm -f migrations
+      go build -o migrations cmd/migrations/main.go
   race:
     description: Check the source code for race conditions
-    cmd: rm -f mining-race && go build -race -o mining-race cmd/mining/main.go
-  run:
-    description: Execute the binary
+    cmd: |
+      rm -f mining-race
+      go build -race -o mining-race cmd/mining/main.go
+      rm -f migrations-race
+      go build -race -o migrations-race cmd/migrations/main.go
+  mining:
+    description: Run the data mining app
     cmd: ./mining
+  generate:
+    description: Generate a new SQL migration file
+    cmd: ./migrations generate
+  upgrade:
+    description: Upgrade the DB schema to the newest version
+    cmd: ./migrations upgrade
   psql:
     description: Run PostgreSQL CLI
     depends:
