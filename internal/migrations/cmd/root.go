@@ -12,9 +12,8 @@ func init() {
 
 var rootCommand = &cobra.Command{
 	Use:   "migrations",
-	Short: "Migrations is the CLI for Rampart project DB migrations",
-	Long: "Quick and dirty PostgreSQL migration executor. Capable of an automatic SQL-template gene" +
-		"ration and forward DB schema upgrade.",
+	Short: "Rampart DB migration tool",
+	Long:  "Quick and dirty PostgreSQL DB migration CLI.",
 }
 
 func Execute() {
