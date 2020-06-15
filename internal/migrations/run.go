@@ -24,6 +24,6 @@ func Run() (err error) {
 	if err = db.Ping(); err != nil {
 		return fmt.Errorf("migrations: failed to ping the db, %v", err)
 	}
-	
+
 	return nil
 }
