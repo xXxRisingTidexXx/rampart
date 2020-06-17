@@ -9,3 +9,4 @@ linters:
     - goimports
     - goerr113
     - testpackage
+    - gochecknoinits
