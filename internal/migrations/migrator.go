@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"time"
 )
 
 func newMigrator(db *sql.DB) *migrator {
@@ -15,20 +16,33 @@ type migrator struct {
 }
 
 func (migrator *migrator) ensureVersions() error {
-	log.Debug("migrations: migrator started versions transaction")
+	start := time.Now()
 	tx, err := migrator.db.Begin()
 	if err != nil {
-		return fmt.Errorf("migrations: migrator failed to init the versions transaction, %v", err)
+		return fmt.Errorf("migrations: migrator failed to init versions, %v", err)
 	}
-	_, err = tx.Exec("create table if not exists versions(version bigint not null default 0)")
-	if err != nil {
+	if _, err = tx.Exec("create table if not exists versions(id bigint not null)"); err != nil {
 		_ = tx.Rollback()
 		return fmt.Errorf("migrations: migrator failed to create versions, %v", err)
 	}
-
-	if err = tx.Commit(); err != nil {
-		return fmt.Errorf("migrations: migrator failed to commit the versions transaction, %v", err)
+	count := 0
+	if err = tx.QueryRow("select count(*) from versions").Scan(&count); err != nil {
+		_ = tx.Rollback()
+		return fmt.Errorf("migrations: migrator failed to read versions, %v", err)
 	}
-	log.Debug("migrations: migrator finished versions transaction")
+	if 1 < count {
+		_ = tx.Rollback()
+		return fmt.Errorf("migrations: migrator got multiple rows in versions, %d", count)
+	}
+	if count == 0 {
+		if _, err = tx.Exec("insert into versions values (0)"); err != nil {
+			_ = tx.Rollback()
+			return fmt.Errorf("migrations: migrator failed to set zero version, %v", err)
+		}
+	}
+	if err = tx.Commit(); err != nil {
+		return fmt.Errorf("migrations: migrator failed to commit versions, %v", err)
+	}
+	log.Debugf("migrations: migrator committed versions (%.3fs)", time.Since(start).Seconds())
 	return nil
 }
