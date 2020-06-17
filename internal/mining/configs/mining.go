@@ -18,7 +18,7 @@ func NewMining() (mining *Mining, err error) {
 	file, err := os.Open(
 		filepath.Join(
 			filepath.Dir(filepath.Dir(filepath.Dir(filepath.Dir(filePath)))),
-			"configs",
+			"config",
 			"mining.yaml",
 		),
 	)
