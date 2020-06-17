@@ -7,13 +7,13 @@ import (
 	"github.com/twpayne/go-geom"
 	"io/ioutil"
 	"net/http"
-	"rampart/internal/mining/configs"
+	"rampart/internal/mining/config"
 	"rampart/internal/mining/util"
 	"strings"
 	"time"
 )
 
-func newGeocoder(config *configs.Geocoder) *geocoder {
+func newGeocoder(config *config.Geocoder) *geocoder {
 	return &geocoder{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		config.Headers,

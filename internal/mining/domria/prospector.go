@@ -3,10 +3,10 @@ package domria
 import (
 	log "github.com/sirupsen/logrus"
 	"rampart/internal/mining"
-	"rampart/internal/mining/configs"
+	"rampart/internal/mining/config"
 )
 
-func NewProspector(housing mining.Housing, config *configs.Domria) mining.Prospector {
+func NewProspector(housing mining.Housing, config *config.Domria) mining.Prospector {
 	return &prospector{
 		housing,
 		newFetcher(config.Fetcher),

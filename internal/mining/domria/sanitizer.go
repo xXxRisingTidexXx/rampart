@@ -2,11 +2,11 @@ package domria
 
 import (
 	log "github.com/sirupsen/logrus"
-	"rampart/internal/mining/configs"
+	"rampart/internal/mining/config"
 	"strings"
 )
 
-func newSanitizer(config *configs.Sanitizer) *sanitizer {
+func newSanitizer(config *config.Sanitizer) *sanitizer {
 	return &sanitizer{
 		config.OriginURLPrefix,
 		config.ImageURLPrefix,

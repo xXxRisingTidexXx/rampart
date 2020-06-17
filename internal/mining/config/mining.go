@@ -1,4 +1,4 @@
-package configs
+package config
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ import (
 func NewMining() (mining *Mining, err error) {
 	_, filePath, _, ok := runtime.Caller(0)
 	if !ok {
-		return nil, fmt.Errorf("configs: mining failed to find the caller path")
+		return nil, fmt.Errorf("config: mining failed to find the caller path")
 	}
 	file, err := os.Open(
 		filepath.Join(
@@ -23,11 +23,11 @@ func NewMining() (mining *Mining, err error) {
 		),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("configs: mining failed to open the config file, %v", err)
+		return nil, fmt.Errorf("config: mining failed to open the config file, %v", err)
 	}
 	defer func() {
 		if closingErr := file.Close(); closingErr != nil {
-			closingErr = fmt.Errorf("configs: mining failed to close the config file, %v", closingErr)
+			closingErr = fmt.Errorf("config: mining failed to close the config file, %v", closingErr)
 			if err == nil {
 				err = closingErr
 			} else {
@@ -40,11 +40,11 @@ func NewMining() (mining *Mining, err error) {
 	}()
 	bytes, err := ioutil.ReadAll(file)
 	if err != nil {
-		return nil, fmt.Errorf("configs: mining failed to read the config file, %v", err)
+		return nil, fmt.Errorf("config: mining failed to read the config file, %v", err)
 	}
 	var config Mining
 	if err = yaml.Unmarshal(bytes, &config); err != nil {
-		return nil, fmt.Errorf("configs: mining failed to unmarshal the config file, %v", err)
+		return nil, fmt.Errorf("config: mining failed to unmarshal the config file, %v", err)
 	}
 	return &config, nil
 }

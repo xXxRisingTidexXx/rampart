@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"rampart/internal/mining"
-	"rampart/internal/mining/configs"
+	"rampart/internal/mining/config"
 	"rampart/internal/mining/util"
 	"testing"
 	"time"
@@ -32,7 +32,7 @@ func newDefaultFetcher() *fetcher {
 
 func newTestFetcher(searchURL string) *fetcher {
 	return newFetcher(
-		&configs.Fetcher{
+		&config.Fetcher{
 			Timeout:   util.Timeout(100 * time.Millisecond),
 			Portion:   10,
 			Flags:     map[mining.Housing]string{mining.Primary: "pm_housing=1"},

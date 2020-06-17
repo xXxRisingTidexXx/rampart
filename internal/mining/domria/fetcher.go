@@ -8,11 +8,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"rampart/internal/mining"
-	"rampart/internal/mining/configs"
+	"rampart/internal/mining/config"
 	"time"
 )
 
-func newFetcher(config *configs.Fetcher) *fetcher {
+func newFetcher(config *config.Fetcher) *fetcher {
 	return &fetcher{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		0,
