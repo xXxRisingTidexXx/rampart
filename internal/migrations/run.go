@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func Run() (err error) {
+func Run() error {
 	//"postgres://postgres:postgres@localhost:5432/rampart?sslmode=disable&connect_timeout=10"
 	dsn := os.Getenv("RAMPART_DSN")
 	if dsn == "" {
@@ -14,16 +14,20 @@ func Run() (err error) {
 	}
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		return fmt.Errorf("migrations: failed to connect to the db, %v", err)
+		return fmt.Errorf("migrations: failed to open the db, %v", err)
 	}
-	defer func() {
-		if closingErr := db.Close(); closingErr != nil && err == nil {
-			err = fmt.Errorf("migrations: failed to close the db, %v", closingErr)
-		}
-	}()
 	if err = db.Ping(); err != nil {
+		_ = db.Close()
 		return fmt.Errorf("migrations: failed to ping the db, %v", err)
 	}
+	migrator := newMigrator(db)
+	if err = migrator.ensureVersions(); err != nil {
+		_ = db.Close()
+		return err
+	}
 
+	if err = db.Close(); err != nil {
+		return fmt.Errorf("migrations: failed to close the db, %v", err)
+	}
 	return nil
 }
