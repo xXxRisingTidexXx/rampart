@@ -10,7 +10,7 @@ import (
 type flat struct {
 	originURL   string
 	imageURL    string
-	updateTime  *time.Time  // TODO: use time value, not pointer
+	updateTime  *time.Time // TODO: use time value, not pointer
 	price       float64
 	totalArea   float64
 	livingArea  float64

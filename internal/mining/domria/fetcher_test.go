@@ -171,7 +171,7 @@ func newServer(t *testing.T, handler func(http.ResponseWriter, *http.Request)) *
 }
 
 func readAll(t *testing.T, fixtureName string) []byte {
-	bytes, err := ioutil.ReadFile("testdata/fetcher/"+fixtureName+".json")
+	bytes, err := ioutil.ReadFile("testdata/fetcher/" + fixtureName + ".json")
 	if err != nil {
 		t.Fatalf("domria: failed to read the file, %v", err)
 	}
