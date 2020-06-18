@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"rampart/internal/mining"
 	"rampart/internal/mining/config"
-	"rampart/internal/mining/util"
+	"rampart/internal/util"
 	"testing"
 	"time"
 )

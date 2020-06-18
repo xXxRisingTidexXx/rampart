@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 	"rampart/internal/mining"
-	"rampart/internal/mining/util"
+	"rampart/internal/util"
 )
 
 type Fetcher struct {

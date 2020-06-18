@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"rampart/internal/mining/util"
+	"rampart/internal/util"
 )
 
 type Geocoder struct {
