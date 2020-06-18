@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"rampart/internal/mining"
 	"rampart/internal/mining/config"
 	"rampart/internal/mining/util"
@@ -173,16 +171,7 @@ func newServer(t *testing.T, handler func(http.ResponseWriter, *http.Request)) *
 }
 
 func readAll(t *testing.T, fixtureName string) []byte {
-	file, err := os.Open(filepath.Join("testdata", "fetcher", fixtureName+".json"))
-	if err != nil {
-		t.Fatalf("domria: failed to open the file, %v", err)
-	}
-	defer func() {
-		if err = file.Close(); err != nil {
-			t.Fatalf("domria: failed to close the file, %v", err)
-		}
-	}()
-	bytes, err := ioutil.ReadAll(file)
+	bytes, err := ioutil.ReadFile("testdata/fetcher/"+fixtureName+".json")
 	if err != nil {
 		t.Fatalf("domria: failed to read the file, %v", err)
 	}
