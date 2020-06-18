@@ -43,6 +43,6 @@ func (migrator *migrator) ensureVersions() error {
 	if err = tx.Commit(); err != nil {
 		return fmt.Errorf("migrations: migrator failed to commit the versions, %v", err)
 	}
-	log.Debugf("migrations: migrator committed the versions (%.3fs)", time.Since(start).Seconds())
+	log.Debugf("migrations: migrator ensured the versions (%.3fs)", time.Since(start).Seconds())
 	return nil
 }
