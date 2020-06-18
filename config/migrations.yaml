@@ -1,0 +1,2 @@
+sslMode: disable
+connectionTimeout: 10s
