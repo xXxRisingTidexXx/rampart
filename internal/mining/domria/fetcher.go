@@ -8,11 +8,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"rampart/internal/mining"
-	"rampart/internal/mining/configs"
+	"rampart/internal/mining/config"
 	"time"
 )
 
-func newFetcher(config *configs.Fetcher) *fetcher {
+func newFetcher(config *config.Fetcher) *fetcher {
 	return &fetcher{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		0,
@@ -74,10 +74,12 @@ func (fetcher *fetcher) getSearch(flag string) ([]byte, error) {
 		return nil, fmt.Errorf("domria: fetcher failed to perform a request, %v", err)
 	}
 	if response.StatusCode != http.StatusOK {
+		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: fetcher got response with status %s", response.Status)
 	}
 	bytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
+		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: fetcher failed to read the response body, %v", err)
 	}
 	if err = response.Body.Close(); err != nil {
@@ -108,7 +110,7 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([
 		flats[i] = &flat{
 			item.BeautifulURL,
 			item.MainPhoto,
-			(*time.Time)(item.UpdatedAt),
+			time.Time(item.UpdatedAt),
 			price,
 			item.TotalSquareMeters,
 			item.LivingSquareMeters,

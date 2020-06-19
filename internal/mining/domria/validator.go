@@ -3,10 +3,10 @@ package domria
 import (
 	log "github.com/sirupsen/logrus"
 	"rampart/internal/mining"
-	"rampart/internal/mining/configs"
+	"rampart/internal/mining/config"
 )
 
-func newValidator(config *configs.Validator) *validator {
+func newValidator(config *config.Validator) *validator {
 	return &validator{
 		config.MinPrice,
 		config.MinTotalArea,
@@ -75,7 +75,6 @@ func (validator *validator) validateFlat(flat *flat) bool {
 	}
 	specificArea := flat.totalArea / float64(flat.roomNumber)
 	return flat.originURL != "" &&
-		flat.updateTime != nil &&
 		validator.minPrice <= flat.price &&
 		validator.minTotalArea <= flat.totalArea &&
 		flat.totalArea <= validator.maxTotalArea &&

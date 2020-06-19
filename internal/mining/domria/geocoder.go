@@ -7,13 +7,13 @@ import (
 	"github.com/twpayne/go-geom"
 	"io/ioutil"
 	"net/http"
-	"rampart/internal/mining/configs"
+	"rampart/internal/mining/config"
 	"rampart/internal/mining/util"
 	"strings"
 	"time"
 )
 
-func newGeocoder(config *configs.Geocoder) *geocoder {
+func newGeocoder(config *config.Geocoder) *geocoder {
 	return &geocoder{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		config.Headers,
@@ -72,22 +72,7 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 }
 
 func (geocoder *geocoder) getLocations(flat *flat) ([]byte, error) {
-	state := ""
-	if !geocoder.statelessCities.Contains(flat.city) {
-		state = geocoder.encode(flat.state)
-	}
-	request, err := http.NewRequest(
-		http.MethodGet,
-		fmt.Sprintf(
-			geocoder.searchURL,
-			state,
-			geocoder.encode(flat.city),
-			geocoder.encode(flat.district),
-			geocoder.encode(flat.street),
-			geocoder.encode(flat.houseNumber),
-		),
-		nil,
-	)
+	request, err := http.NewRequest(http.MethodGet, geocoder.getSearchURL(flat), nil)
 	if err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to construct a request, %v", err)
 	}
@@ -99,10 +84,12 @@ func (geocoder *geocoder) getLocations(flat *flat) ([]byte, error) {
 		return nil, fmt.Errorf("domria: geocoder failed to perform a request, %v", err)
 	}
 	if response.StatusCode != http.StatusOK {
+		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: geocoder got response with status %s", response.Status)
 	}
 	bytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
+		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: geocoder failed to read the response body, %v", err)
 	}
 	if err = response.Body.Close(); err != nil {
@@ -111,8 +98,20 @@ func (geocoder *geocoder) getLocations(flat *flat) ([]byte, error) {
 	return bytes, nil
 }
 
-func (geocoder *geocoder) encode(s string) string {
-	return strings.ReplaceAll(s, " ", "+")
+func (geocoder *geocoder) getSearchURL(flat *flat) string {
+	state := ""
+	whitespace, plus := " ", "+"
+	if !geocoder.statelessCities.Contains(flat.city) {
+		state = strings.ReplaceAll(flat.state, whitespace, plus)
+	}
+	return fmt.Sprintf(
+		geocoder.searchURL,
+		state,
+		strings.ReplaceAll(flat.city, whitespace, plus),
+		strings.ReplaceAll(flat.district, whitespace, plus),
+		strings.ReplaceAll(flat.street, whitespace, plus),
+		strings.ReplaceAll(flat.houseNumber, whitespace, plus),
+	)
 }
 
 func (geocoder *geocoder) locateFlat(f *flat, bytes []byte) (*flat, error) {

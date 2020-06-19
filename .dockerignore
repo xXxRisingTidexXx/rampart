@@ -6,13 +6,12 @@
 *.test
 *.out
 .idea
-*.iml
 out
 gen
-node_modules
-venv
 /mining
 /mining-race
 /migrations
 /migrations-race
 .lets
+node_modules
+venv

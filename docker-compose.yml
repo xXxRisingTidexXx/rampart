@@ -1,0 +1,17 @@
+version: '3.7'
+services:
+  database:
+    image: postgis/postgis:12-master
+    container_name: database
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - database:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: rampart
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data
+volumes:
+  database:

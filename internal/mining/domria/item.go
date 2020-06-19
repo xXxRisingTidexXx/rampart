@@ -3,7 +3,7 @@ package domria
 type item struct {
 	BeautifulURL        string     `json:"beautiful_url"`
 	MainPhoto           string     `json:"main_photo"`
-	UpdatedAt           *moment    `json:"updated_at"`
+	UpdatedAt           moment    `json:"updated_at"`
 	PriceArr            *prices    `json:"priceArr"`
 	TotalSquareMeters   float64    `json:"total_square_meters"`
 	LivingSquareMeters  float64    `json:"living_square_meters"`

@@ -2,13 +2,43 @@ shell: bash
 commands:
   compile:
     description: Compile the source code
-    cmd: rm -f mining && go build -o mining cmd/mining/main.go
+    cmd: |
+      rm -f mining
+      go build -o mining cmd/mining/main.go
+      rm -f migrations
+      go build -o migrations cmd/migrations/main.go
   race:
     description: Check the source code for race conditions
-    cmd: rm -f mining-race && go build -race -o mining-race cmd/mining/main.go
-  run:
-    description: Execute the binary
+    cmd: |
+      rm -f mining-race
+      go build -race -o mining-race cmd/mining/main.go
+      rm -f migrations-race
+      go build -race -o migrations-race cmd/migrations/main.go
+  database:
+    description: Run the DB server
+    cmd: docker-compose up -d database
+  mining:
+    description: Run the data mining app
     cmd: ./mining
+  generate:
+    description: Generate a new SQL migration file
+    cmd: |
+      mkdir -p internal/migrations/versions && \
+      VERSION=$(date +"%s") && \
+      touch internal/migrations/versions/$VERSION.sql && \
+      echo "migrations: generated version $VERSION" && \
+      sleep 1
+  migrate:
+    description: Upgrade the DB schema to the newest version
+    cmd: ./migrations
+  psql:
+    description: Run PostgreSQL CLI
+    cmd: |
+      sleep 2
+      docker exec -it database psql rampart postgres
+  stop:
+    description: Dispose all docker stuff
+    cmd: docker-compose down
   format:
     description: Format the source code
     cmd: gofmt -w -s .

@@ -10,7 +10,7 @@ import (
 type flat struct {
 	originURL   string
 	imageURL    string
-	updateTime  *time.Time
+	updateTime  time.Time
 	price       float64
 	totalArea   float64
 	livingArea  float64
@@ -30,7 +30,7 @@ type flat struct {
 
 func (flat *flat) String() string {
 	return fmt.Sprintf(
-		"{%s %s %v %.2f %.1f %.1f %.1f %d %d %d %s %s %v %s %s %s %s %s}",
+		"{%s %s %s %.2f %.1f %.1f %.1f %d %d %d %s %s %v %s %s %s %s %s}",
 		flat.originURL,
 		flat.imageURL,
 		flat.updateTime,
