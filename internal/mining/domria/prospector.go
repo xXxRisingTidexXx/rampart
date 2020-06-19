@@ -1,12 +1,13 @@
 package domria
 
 import (
+	"database/sql"
 	log "github.com/sirupsen/logrus"
 	"rampart/internal/mining/config"
 	"rampart/internal/mining/misc"
 )
 
-func NewProspector(housing misc.Housing, config *config.Domria) *Prospector {
+func NewProspector(housing misc.Housing, config *config.Domria, db *sql.DB) *Prospector {
 	return &Prospector{
 		housing,
 		newFetcher(config.Fetcher),

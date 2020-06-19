@@ -17,7 +17,7 @@ func Run() error {
 	if err != nil {
 		return err
 	}
-	prospector := domria.NewProspector(misc.Secondary, cfg.Prospectors.Domria)
+	prospector := domria.NewProspector(misc.Secondary, cfg.Prospectors.Domria, db)
 	if err = prospector.Prospect(); err != nil {
 		_ = db.Close()
 		return err
