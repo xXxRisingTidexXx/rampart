@@ -14,6 +14,7 @@ func NewProspector(housing misc.Housing, config *config.Domria, db *sql.DB) *Pro
 		newSanitizer(config.Sanitizer),
 		newGeocoder(config.Geocoder),
 		newValidator(config.Validator),
+		newSifter(db),
 	}
 }
 
@@ -23,6 +24,7 @@ type Prospector struct {
 	sanitizer *sanitizer
 	geocoder  *geocoder
 	validator *validator
+	sifter    *sifter
 }
 
 func (prospector *Prospector) Prospect() error {
@@ -35,6 +37,7 @@ func (prospector *Prospector) Prospect() error {
 	flats = prospector.sanitizer.sanitizeFlats(flats)
 	flats = prospector.geocoder.geocodeFlats(flats)
 	flats = prospector.validator.validateFlats(flats)
+	flats = prospector.sifter.siftFlats(flats)
 	log.Debug("domria: prospector finished")
 	return nil
 }
