@@ -5,7 +5,6 @@ import (
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"rampart/internal/homedir"
-	"rampart/internal/util"
 )
 
 func newMigrations() (*migrations, error) {
@@ -21,10 +20,9 @@ func newMigrations() (*migrations, error) {
 }
 
 type migrations struct {
-	SSLMode           string       `yaml:"sslMode"`
-	ConnectionTimeout util.Timeout `yaml:"connectionTimeout"`
+	QueryParams map[string]string `yaml:"queryParams"`
 }
 
 func (migrations *migrations) String() string {
-	return fmt.Sprintf("{%s %s}", migrations.SSLMode, migrations.ConnectionTimeout)
+	return fmt.Sprintf("{%v}", migrations.QueryParams)
 }

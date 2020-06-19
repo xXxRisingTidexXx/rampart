@@ -3,20 +3,17 @@ package migrations
 import (
 	"database/sql"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"os"
 )
 
+// TODO: postgres://postgres:postgres@localhost:5432/rampart
 func Run() error {
-	//"postgres://postgres:postgres@localhost:5432/rampart?sslmode=disable&connect_timeout=10"
 	migrations, err := newMigrations()
 	if err != nil {
 		return err
 	}
-	log.Debug(migrations)
-	dsn := os.Getenv("RAMPART_DSN")
-	if dsn == "" {
-		return fmt.Errorf("migrations: dsn isn't configured")
+	dsn, err := getDSN(migrations.QueryParams)
+	if err != nil {
+		return err
 	}
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
