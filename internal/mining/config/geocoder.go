@@ -2,13 +2,13 @@ package config
 
 import (
 	"fmt"
-	"rampart/internal/mining/util"
+	"rampart/internal/mining/misc"
 )
 
 type Geocoder struct {
-	Timeout         util.Timeout      `yaml:"timeout"`
+	Timeout         misc.Timeout      `yaml:"timeout"`
 	Headers         map[string]string `yaml:"headers"`
-	StatelessCities *util.Set         `yaml:"statelessCities"`
+	StatelessCities *misc.Set         `yaml:"statelessCities"`
 	SearchURL       string            `yaml:"searchURL"`
 	MinLookup       float64           `yaml:"minLookup"`
 }

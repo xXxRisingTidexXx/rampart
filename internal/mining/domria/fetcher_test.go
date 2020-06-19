@@ -6,16 +6,15 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"rampart/internal/mining"
 	"rampart/internal/mining/config"
-	"rampart/internal/mining/util"
+	"rampart/internal/mining/misc"
 	"testing"
 	"time"
 )
 
 func TestFetchSearchInvalidHousing(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.fetchFlats(mining.Secondary)
+	flats, err := fetcher.fetchFlats(misc.Secondary)
 	if err == nil || err.Error() != "domria: fetcher doesn't accept secondary housing" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
@@ -31,9 +30,9 @@ func newDefaultFetcher() *fetcher {
 func newTestFetcher(searchURL string) *fetcher {
 	return newFetcher(
 		&config.Fetcher{
-			Timeout:   util.Timeout(100 * time.Millisecond),
+			Timeout:   misc.Timeout(100 * time.Millisecond),
 			Portion:   10,
-			Flags:     map[mining.Housing]string{mining.Primary: "pm_housing=1"},
+			Flags:     map[misc.Housing]string{misc.Primary: "pm_housing=1"},
 			Headers:   map[string]string{"User-Agent": "domria-test-bot/1.0.0"},
 			SearchURL: searchURL,
 		},
@@ -60,7 +59,7 @@ func TestFetchSearchWithReset(t *testing.T) {
 	)
 	fetcher := newServerFetcher(server)
 	fetcher.page = 2
-	flats, err := fetcher.fetchFlats(mining.Primary)
+	flats, err := fetcher.fetchFlats(misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -89,7 +88,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 		},
 	)
 	fetcher := newServerFetcher(server)
-	flats, err := fetcher.fetchFlats(mining.Primary)
+	flats, err := fetcher.fetchFlats(misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -113,7 +112,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 			3,
 			8,
 			9,
-			mining.Primary,
+			misc.Primary,
 			"",
 			geom.NewPointFlat(geom.XY, []float64{28.4962815, 49.2410151}),
 			"Вінницька",
@@ -137,7 +136,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 			1,
 			-7,
 			7,
-			mining.Primary,
+			misc.Primary,
 			"Микрорайон «АКАДЕМІЧНИЙ»",
 			geom.NewPointFlat(geom.XY, []float64{28.4269, 49.207109}),
 			"Вінницька",
@@ -304,7 +303,7 @@ func TestGetSearchNotFound(t *testing.T) {
 
 func TestUnmarshalSearchEmptyString(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch([]byte(""), mining.Primary)
+	flats, err := fetcher.unmarshalSearch([]byte(""), misc.Primary)
 	if err == nil || err.Error() != "domria: fetcher failed t"+
 		"o unmarshal the search, unexpected end of JSON input" {
 		t.Errorf("domria: absent or invalid error, %v", err)
@@ -316,7 +315,7 @@ func TestUnmarshalSearchEmptyString(t *testing.T) {
 
 func TestUnmarshalSearchInvalidJSON(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch([]byte("{"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch([]byte("{"), misc.Primary)
 	if err == nil || err.Error() != "domria: fetcher failed t"+
 		"o unmarshal the search, unexpected end of JSON input" {
 		t.Errorf("domria: absent or invalid error, %v", err)
@@ -328,7 +327,7 @@ func TestUnmarshalSearchInvalidJSON(t *testing.T) {
 
 func TestUnmarshalSearchArrayInsteadOfObject(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch([]byte("[]"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch([]byte("[]"), misc.Primary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the search"+
 		", json: cannot unmarshal array into Go value of type domria.search" {
 		t.Errorf("domria: absent or invalid error, %v", err)
@@ -340,7 +339,7 @@ func TestUnmarshalSearchArrayInsteadOfObject(t *testing.T) {
 
 func TestUnmarshalSearchEmptyJSON(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch([]byte("{}"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch([]byte("{}"), misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -351,7 +350,7 @@ func TestUnmarshalSearchEmptyJSON(t *testing.T) {
 
 func TestUnmarshalSearchWithoutItems(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "without_items"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "without_items"), misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -362,7 +361,7 @@ func TestUnmarshalSearchWithoutItems(t *testing.T) {
 
 func TestUnmarshalSearchEmptySearch(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_search"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_search"), misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -373,19 +372,19 @@ func TestUnmarshalSearchEmptySearch(t *testing.T) {
 
 func TestUnmarshalSearchEmptyItem(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_item"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_item"), misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(t, flats[0], &flat{housing: mining.Primary})
+	assertFlat(t, flats[0], &flat{housing: misc.Primary})
 }
 
 func TestUnmarshalSearchValidItem(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "valid_item"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "valid_item"), misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -406,7 +405,7 @@ func TestUnmarshalSearchValidItem(t *testing.T) {
 			1,
 			2,
 			9,
-			mining.Primary,
+			misc.Primary,
 			"ЖК На Щасливому, будинок 27",
 			geom.NewPointFlat(geom.XY, []float64{26.267247115344, 50.59766586795}),
 			"Рівненська",
@@ -420,7 +419,7 @@ func TestUnmarshalSearchValidItem(t *testing.T) {
 
 func TestUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_main_photo"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_main_photo"), misc.Secondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -441,7 +440,7 @@ func TestUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 			2,
 			2,
 			4,
-			mining.Secondary,
+			misc.Secondary,
 			"",
 			geom.NewPointFlat(geom.XY, []float64{25.594767, 49.553517}),
 			"Тернопільська",
@@ -455,7 +454,7 @@ func TestUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 
 func TestUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_updated_at"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_updated_at"), misc.Secondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarsh"+
 		"al the search, domria: moment string is too short, 2" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -467,7 +466,7 @@ func TestUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
 
 func TestUnmarshalSearchTrashUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_updated_at"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_updated_at"), misc.Secondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the search, domria: mom"+
 		"ent can't split date & timing, |@!|)  )0w23 8&Nu sho, pososesh huj?$@%@8182)( @" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -479,7 +478,7 @@ func TestUnmarshalSearchTrashUpdatedAt(t *testing.T) {
 
 func TestUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "leading_zeros_updated_at"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "leading_zeros_updated_at"), misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -500,7 +499,7 @@ func TestUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 			1,
 			7,
 			16,
-			mining.Primary,
+			misc.Primary,
 			"ЖК Левада 2",
 			geom.NewPointFlat(geom.XY, []float64{36.239501354492, 49.978100188645}),
 			"Харківська",
@@ -514,7 +513,7 @@ func TestUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 
 func TestUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "missing_shapes_updated_at"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "missing_shapes_updated_at"), misc.Primary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal "+
 		"the search, domria: moment cannot split date, 2020- 07:53" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -526,7 +525,7 @@ func TestUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {
 
 func TestUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "13_month_updated_at"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "13_month_updated_at"), misc.Secondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -547,7 +546,7 @@ func TestUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 			1,
 			4,
 			5,
-			mining.Secondary,
+			misc.Secondary,
 			"",
 			geom.NewPointFlat(geom.XY, []float64{28.4247279, 49.2291492}),
 			"Вінницька",
@@ -561,7 +560,7 @@ func TestUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 
 func TestUnmarshalSearchJustDateUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "just_date_updated_at"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "just_date_updated_at"), misc.Secondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal t"+
 		"he search, domria: moment cannot split timing, 2020-06-07 " {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -573,7 +572,7 @@ func TestUnmarshalSearchJustDateUpdatedAt(t *testing.T) {
 
 func TestUnmarshalSearchJustTimeUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "just_time_updated_at"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "just_time_updated_at"), misc.Secondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal"+
 		" the search, domria: moment cannot split date,  07:47:11" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -585,7 +584,7 @@ func TestUnmarshalSearchJustTimeUpdatedAt(t *testing.T) {
 
 func TestUnmarshalSearchEmptyPriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_price_arr"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_price_arr"), misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -606,7 +605,7 @@ func TestUnmarshalSearchEmptyPriceArr(t *testing.T) {
 			3,
 			6,
 			9,
-			mining.Primary,
+			misc.Primary,
 			"",
 			geom.NewPointFlat(geom.XY, []float64{25.9820274, 48.2831323}),
 			"Чернівецька",
@@ -620,7 +619,7 @@ func TestUnmarshalSearchEmptyPriceArr(t *testing.T) {
 
 func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "no_usd_price_arr"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "no_usd_price_arr"), misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -641,7 +640,7 @@ func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {
 			1,
 			14,
 			16,
-			mining.Primary,
+			misc.Primary,
 			"",
 			geom.NewPointFlat(geom.XY, []float64{36.2245388, 49.9974272}),
 			"Харківська",
@@ -655,7 +654,7 @@ func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {
 
 func TestUnmarshalSearchEmptyPricePriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_price_price_arr"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_price_price_arr"), misc.Secondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmars"+
 		"hal the search, domria: price string is too short, 2" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -667,7 +666,7 @@ func TestUnmarshalSearchEmptyPricePriceArr(t *testing.T) {
 
 func TestUnmarshalSearchWhitespacePricePriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "whitespace_price_price_arr"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "whitespace_price_price_arr"), misc.Secondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal th"+
 		"e search, strconv.ParseFloat: parsing \"\": invalid syntax" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -679,7 +678,7 @@ func TestUnmarshalSearchWhitespacePricePriceArr(t *testing.T) {
 
 func TestUnmarshalSearchTrashPricePriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_price_price_arr"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_price_price_arr"), misc.Primary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the "+
 		"search, strconv.ParseFloat: parsing \"Suck\": invalid syntax" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -691,7 +690,7 @@ func TestUnmarshalSearchTrashPricePriceArr(t *testing.T) {
 
 func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "negative_price_price_arr"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "negative_price_price_arr"), misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -712,7 +711,7 @@ func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 			3,
 			9,
 			11,
-			mining.Primary,
+			misc.Primary,
 			"",
 			geom.NewPointFlat(geom.XY, []float64{25.644687974235, 49.550329822762}),
 			"Тернопільська",
@@ -726,7 +725,7 @@ func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 
 func TestUnmarshalSearchTrashTotalSquareMeters(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_total_square_meters"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_total_square_meters"), misc.Secondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the"+
 		" search, invalid character '-' after object key:value pair" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -738,7 +737,7 @@ func TestUnmarshalSearchTrashTotalSquareMeters(t *testing.T) {
 
 func TestUnmarshalSearchSupremeKitchenSquareMeters(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "supreme_kitchen_square_meters"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "supreme_kitchen_square_meters"), misc.Secondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -759,7 +758,7 @@ func TestUnmarshalSearchSupremeKitchenSquareMeters(t *testing.T) {
 			4,
 			3,
 			3,
-			mining.Secondary,
+			misc.Secondary,
 			"",
 			geom.NewPointFlat(geom.XY, []float64{22.301875199999998, 48.621579}),
 			"Закарпатська",
@@ -773,7 +772,7 @@ func TestUnmarshalSearchSupremeKitchenSquareMeters(t *testing.T) {
 
 func TestUnmarshalSearchNegativeFloor(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "negative_floor"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "negative_floor"), misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -794,7 +793,7 @@ func TestUnmarshalSearchNegativeFloor(t *testing.T) {
 			2,
 			-1,
 			26,
-			mining.Primary,
+			misc.Primary,
 			"ЖК Медовий-2",
 			geom.NewPointFlat(geom.XY, []float64{30.4760253, 50.4128865}),
 			"Київська",
@@ -808,7 +807,7 @@ func TestUnmarshalSearchNegativeFloor(t *testing.T) {
 
 func TestUnmarshalSearchSupremeFloor(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "supreme_floor"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "supreme_floor"), misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -829,7 +828,7 @@ func TestUnmarshalSearchSupremeFloor(t *testing.T) {
 			3,
 			116,
 			18,
-			mining.Primary,
+			misc.Primary,
 			"ЖК «Шевченківський»",
 			geom.NewPointFlat(geom.XY, []float64{30.487440507934, 50.450000744175}),
 			"Київська",
@@ -843,7 +842,7 @@ func TestUnmarshalSearchSupremeFloor(t *testing.T) {
 
 func TestUnmarshalSearchJustLongitude(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "just_longitude"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "just_longitude"), misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -864,7 +863,7 @@ func TestUnmarshalSearchJustLongitude(t *testing.T) {
 			5,
 			17,
 			17,
-			mining.Primary,
+			misc.Primary,
 			"",
 			geom.NewPointFlat(geom.XY, []float64{28.4607622, 0}),
 			"Вінницька",
@@ -878,7 +877,7 @@ func TestUnmarshalSearchJustLongitude(t *testing.T) {
 
 func TestUnmarshalSearchJustLatitude(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "just_latitude"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "just_latitude"), misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -899,7 +898,7 @@ func TestUnmarshalSearchJustLatitude(t *testing.T) {
 			1,
 			4,
 			10,
-			mining.Primary,
+			misc.Primary,
 			"",
 			geom.NewPointFlat(geom.XY, []float64{0, 49.431359}),
 			"Хмельницька",
@@ -913,7 +912,7 @@ func TestUnmarshalSearchJustLatitude(t *testing.T) {
 
 func TestUnmarshalSearchStringCoordinates(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "string_coordinates"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "string_coordinates"), misc.Secondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -934,7 +933,7 @@ func TestUnmarshalSearchStringCoordinates(t *testing.T) {
 			4,
 			3,
 			9,
-			mining.Secondary,
+			misc.Secondary,
 			"Микрорайон Поділля",
 			geom.NewPointFlat(geom.XY, []float64{28.4489892, 49.2173192}),
 			"Вінницька",
@@ -948,7 +947,7 @@ func TestUnmarshalSearchStringCoordinates(t *testing.T) {
 
 func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_string_coordinates"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_string_coordinates"), misc.Secondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -969,7 +968,7 @@ func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {
 			4,
 			2,
 			2,
-			mining.Secondary,
+			misc.Secondary,
 			"",
 			nil,
 			"Одеська",
@@ -983,7 +982,7 @@ func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {
 
 func TestUnmarshalSearchTrashCoordinates(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_coordinates"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_coordinates"), misc.Secondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the sear"+
 		"ch, strconv.ParseFloat: parsing \"982jd293jd)J\": invalid syntax" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -995,7 +994,7 @@ func TestUnmarshalSearchTrashCoordinates(t *testing.T) {
 
 func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "supreme_coordinates"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "supreme_coordinates"), misc.Secondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -1016,7 +1015,7 @@ func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {
 			3,
 			2,
 			7,
-			mining.Secondary,
+			misc.Secondary,
 			"",
 			geom.NewPointFlat(geom.XY, []float64{-183.839023, 2931.000183399}),
 			"Херсонська",
@@ -1030,7 +1029,7 @@ func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {
 
 func TestUnmarshalSearchEmptyStreets(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_streets"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_streets"), misc.Secondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -1051,7 +1050,7 @@ func TestUnmarshalSearchEmptyStreets(t *testing.T) {
 			3,
 			4,
 			9,
-			mining.Secondary,
+			misc.Secondary,
 			"",
 			nil,
 			"Одеська",
@@ -1065,7 +1064,7 @@ func TestUnmarshalSearchEmptyStreets(t *testing.T) {
 
 func TestUnmarshalSearchJustRUStreet(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "just_ru_street"), mining.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "just_ru_street"), misc.Secondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -1086,7 +1085,7 @@ func TestUnmarshalSearchJustRUStreet(t *testing.T) {
 			2,
 			3,
 			3,
-			mining.Secondary,
+			misc.Secondary,
 			"",
 			nil,
 			"Львівська",
@@ -1101,7 +1100,7 @@ func TestUnmarshalSearchJustRUStreet(t *testing.T) {
 //nolint:funlen
 func TestUnmarshalSearchMultipleItems(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "multiple_items"), mining.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "multiple_items"), misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -1122,7 +1121,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			2,
 			2,
 			9,
-			mining.Primary,
+			misc.Primary,
 			"ЖК Перлина Поділля",
 			geom.NewPointFlat(geom.XY, []float64{28.437752173707, 49.214143792302}),
 			"Вінницька",
@@ -1146,7 +1145,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			1,
 			8,
 			10,
-			mining.Primary,
+			misc.Primary,
 			"ЖК Дніпровська Брама 2",
 			geom.NewPointFlat(geom.XY, []float64{35.085059977507, 48.536070034556}),
 			"Дніпропетровська",
@@ -1170,7 +1169,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			1,
 			6,
 			10,
-			mining.Primary,
+			misc.Primary,
 			"ЖК Дніпровська Брама 2",
 			geom.NewPointFlat(geom.XY, []float64{35.085059977507, 48.536070034556}),
 			"Дніпропетровська",

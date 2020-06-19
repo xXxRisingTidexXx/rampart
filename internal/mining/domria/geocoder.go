@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"rampart/internal/mining/config"
-	"rampart/internal/mining/util"
+	"rampart/internal/mining/misc"
 	"strings"
 	"time"
 )
@@ -26,7 +26,7 @@ func newGeocoder(config *config.Geocoder) *geocoder {
 type geocoder struct {
 	client          *http.Client
 	headers         map[string]string
-	statelessCities *util.Set
+	statelessCities *misc.Set
 	searchURL       string
 	minLookup       float64
 }

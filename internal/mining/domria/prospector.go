@@ -2,12 +2,12 @@ package domria
 
 import (
 	log "github.com/sirupsen/logrus"
-	"rampart/internal/mining"
 	"rampart/internal/mining/config"
+	"rampart/internal/mining/misc"
 )
 
-func NewProspector(housing mining.Housing, config *config.Domria) mining.Prospector {
-	return &prospector{
+func NewProspector(housing misc.Housing, config *config.Domria) *Prospector {
+	return &Prospector{
 		housing,
 		newFetcher(config.Fetcher),
 		newSanitizer(config.Sanitizer),
@@ -16,15 +16,15 @@ func NewProspector(housing mining.Housing, config *config.Domria) mining.Prospec
 	}
 }
 
-type prospector struct {
-	housing   mining.Housing
+type Prospector struct {
+	housing   misc.Housing
 	fetcher   *fetcher
 	sanitizer *sanitizer
 	geocoder  *geocoder
 	validator *validator
 }
 
-func (prospector *prospector) Prospect() error {
+func (prospector *Prospector) Prospect() error {
 	log.Debug("domria: prospector started")
 	flats, err := prospector.fetcher.fetchFlats(prospector.housing)
 	if err != nil {

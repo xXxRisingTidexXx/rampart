@@ -2,16 +2,15 @@ package config
 
 import (
 	"fmt"
-	"rampart/internal/mining"
-	"rampart/internal/mining/util"
+	"rampart/internal/mining/misc"
 )
 
 type Fetcher struct {
-	Timeout   util.Timeout              `yaml:"timeout"`
-	Portion   int                       `yaml:"portion"`
-	Flags     map[mining.Housing]string `yaml:"flags"`
-	Headers   map[string]string         `yaml:"headers"`
-	SearchURL string                    `yaml:"searchURL"`
+	Timeout   misc.Timeout            `yaml:"timeout"`
+	Portion   int                     `yaml:"portion"`
+	Flags     map[misc.Housing]string `yaml:"flags"`
+	Headers   map[string]string       `yaml:"headers"`
+	SearchURL string                  `yaml:"searchURL"`
 }
 
 func (fetcher *Fetcher) String() string {

@@ -7,8 +7,8 @@ import (
 	"github.com/twpayne/go-geom"
 	"io/ioutil"
 	"net/http"
-	"rampart/internal/mining"
 	"rampart/internal/mining/config"
+	"rampart/internal/mining/misc"
 	"time"
 )
 
@@ -27,12 +27,12 @@ type fetcher struct {
 	client    *http.Client
 	page      int
 	portion   int
-	flags     map[mining.Housing]string
+	flags     map[misc.Housing]string
 	headers   map[string]string
 	searchURL string
 }
 
-func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
+func (fetcher *fetcher) fetchFlats(housing misc.Housing) ([]*flat, error) {
 	flag, ok := fetcher.flags[housing]
 	if !ok {
 		return nil, fmt.Errorf("domria: fetcher doesn't accept %v housing", housing)
@@ -88,7 +88,7 @@ func (fetcher *fetcher) getSearch(flag string) ([]byte, error) {
 	return bytes, nil
 }
 
-func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([]*flat, error) {
+func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing misc.Housing) ([]*flat, error) {
 	var search search
 	if err := json.Unmarshal(bytes, &search); err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the search, %v", err)
