@@ -33,9 +33,7 @@ commands:
     cmd: ./migrations
   psql:
     description: Run PostgreSQL CLI
-    cmd: |
-      sleep 2
-      docker exec -it database psql rampart postgres
+    cmd: docker exec -it database psql rampart postgres
   stop:
     description: Dispose all docker stuff
     cmd: docker-compose down
