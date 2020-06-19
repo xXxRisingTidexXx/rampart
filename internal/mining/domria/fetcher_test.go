@@ -99,14 +99,13 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 	if len(flats) != 2 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 8, 6, 59, 6, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-vinnitsa-blijnee-zamoste-16890016.html",
 			"dom/photo/10990/1099054/109905467/109905467.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 8, 6, 59, 6, 0, time.Local).UTC(),
 			42333,
 			66.76,
 			0,
@@ -124,14 +123,13 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 			"",
 		},
 	)
-	updateTime = time.Date(2020, time.June, 8, 6, 58, 49, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[1],
 		&flat{
 			"realty-prodaja-kvartira-vinnitsa-akademicheskiy-16892143.html",
 			"dom/photo/10992/1099221/109922120/109922120.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 8, 6, 58, 49, 0, time.Local).UTC(),
 			36000,
 			45.5,
 			0,
@@ -192,11 +190,7 @@ func assertFlat(t *testing.T, actual *flat, expected *flat) {
 	if actual.imageURL != expected.imageURL {
 		t.Errorf("domria: invalid image url, %s != %s", actual.imageURL, expected.imageURL)
 	}
-	if expected.updateTime == nil && actual.updateTime != nil {
-		t.Errorf("domria: non-nil update time, %v", actual.updateTime)
-	}
-	if expected.updateTime != nil &&
-		(actual.updateTime == nil || !actual.updateTime.Equal(*expected.updateTime)) {
+	if !actual.updateTime.Equal(expected.updateTime) {
 		t.Errorf("domria: invalid update time, %v != %v", actual.updateTime, expected.updateTime)
 	}
 	if actual.price != expected.price {
@@ -398,14 +392,13 @@ func TestUnmarshalSearchValidItem(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 6, 14, 57, 18, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-rovno-schastlivoe-chernovola-vyacheslava-ulitsa-16818824.html",
 			"dom/photo/10925/1092575/109257503/109257503.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 6, 14, 57, 18, 0, time.Local).UTC(),
 			27800,
 			45,
 			0,
@@ -434,14 +427,13 @@ func TestUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 3, 16, 16, 26, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-ternopol-bam-17186701.html",
 			"",
-			&updateTime,
+			time.Date(2020, time.June, 3, 16, 16, 26, 0, time.Local).UTC(),
 			20797,
 			53.1,
 			0,
@@ -494,14 +486,13 @@ func TestUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 7, 7, 0, 4, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-harkov-elizavetinskaya-ulitsa-17180614.html",
 			"dom/photo/11270/1127013/112701340/112701340.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 7, 7, 0, 4, 0, time.Local).UTC(),
 			23000,
 			42,
 			21,
@@ -542,14 +533,13 @@ func TestUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2021, time.January, 7, 7, 7, 41, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-perevireno-prodaja-kvartira-vinnitsa-vishenka-vasiliya-porika-ulitsa-17073207.html",
 			"dom/photo/11162/1116219/111621990/111621990.jpg",
-			&updateTime,
+			time.Date(2021, time.January, 7, 7, 7, 41, 0, time.Local).UTC(),
 			27500,
 			32.9,
 			32.1,
@@ -602,14 +592,13 @@ func TestUnmarshalSearchEmptyPriceArr(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.May, 31, 12, 44, 7, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-chernovtsy-fastovskaya-ruska-17169204.html",
 			"dom/photo/11259/1125975/112597577/112597577.jpg",
-			&updateTime,
+			time.Date(2020, time.May, 31, 12, 44, 7, 0, time.Local).UTC(),
 			0,
 			86,
 			50,
@@ -638,14 +627,13 @@ func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 7, 7, 20, 30, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-harkov-shevchenkovskiy-16798175.html",
 			"dom/photo/10906/1090623/109062364/109062364.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 7, 7, 20, 30, 0, time.Local).UTC(),
 			0,
 			51,
 			20,
@@ -710,14 +698,13 @@ func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 7, 7, 55, 45, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-ternopol-bam-saharova-andreya-akademika-ulitsa-16349831.html",
 			"dom/photo/10507/1050708/105070868/105070868.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 7, 7, 55, 45, 0, time.Local).UTC(),
 			-38225,
 			73.2,
 			0,
@@ -758,14 +745,13 @@ func TestUnmarshalSearchSupremeKitchenSquareMeters(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 7, 7, 43, 22, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-ujgorod-tsentr-voloshina-ulitsa-15559098.html",
 			"dom/photo/9751/975170/97517018/97517018.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 7, 7, 43, 22, 0, time.Local).UTC(),
 			90000,
 			96,
 			0,
@@ -794,14 +780,13 @@ func TestUnmarshalSearchNegativeFloor(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 7, 9, 49, 9, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-kiev-solomenskiy-petra-radchenko-ulitsa-16760338.html",
 			"dom/photo/10873/1087329/108732937/108732937.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 7, 9, 49, 9, 0, time.Local).UTC(),
 			48510,
 			59.32,
 			0,
@@ -830,14 +815,13 @@ func TestUnmarshalSearchSupremeFloor(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 1, 10, 42, 16, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-kiev-shevchenkovskiy-zlatoustovskaya-ulitsa-16489927.html",
 			"dom/photo/10621/1062170/106217048/106217048.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 1, 10, 42, 16, 0, time.Local).UTC(),
 			159300,
 			114,
 			57,
@@ -866,14 +850,13 @@ func TestUnmarshalSearchJustLongitude(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 7, 13, 8, 45, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-vinnitsa-tsentr-lva-tolstogo-ulitsa-17203089.html",
 			"dom/photo/11289/1128911/112891158/112891158.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 7, 13, 8, 45, 0, time.Local).UTC(),
 			195000,
 			286,
 			0,
@@ -902,14 +885,13 @@ func TestUnmarshalSearchJustLatitude(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 5, 22, 36, 29, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-perevireno-prodaja-kvartira-hmelnitskiy-vyistavka-starokostyantinovskoe-shosse-16982542.html",
 			"dom/photo/11243/1124301/112430139/112430139.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 5, 22, 36, 29, 0, time.Local).UTC(),
 			44000,
 			50,
 			0,
@@ -938,14 +920,13 @@ func TestUnmarshalSearchStringCoordinates(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 2, 9, 38, 5, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-vinnitsa-podole-17135787.html",
 			"dom/photo/11226/1122631/112263193/112263193.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 2, 9, 38, 5, 0, time.Local).UTC(),
 			129000,
 			108,
 			62,
@@ -974,14 +955,13 @@ func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 8, 5, 39, 24, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-odessa-primorskiy-nekrasova-pereulok-16179973.html",
 			"dom/photo/10370/1037099/103709962/103709962.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 8, 5, 39, 24, 0, time.Local).UTC(),
 			199000,
 			145,
 			78,
@@ -1022,14 +1002,13 @@ func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 8, 10, 9, 58, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-herson-suvorovskiy-17165402.html",
 			"dom/photo/11256/1125653/112565321/112565321.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 8, 10, 9, 58, 0, time.Local).UTC(),
 			55000,
 			72,
 			0,
@@ -1058,14 +1037,13 @@ func TestUnmarshalSearchEmptyStreets(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 8, 6, 7, 59, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-odessa-kievskiy-ilfa-i-petrova-ulitsa-17120761.html",
 			"dom/photo/11211/1121120/112112031/112112031.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 8, 6, 7, 59, 0, time.Local).UTC(),
 			37500,
 			63,
 			38,
@@ -1094,14 +1072,13 @@ func TestUnmarshalSearchJustRUStreet(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 8, 7, 30, 43, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-lvov-galitskiy-17148133.html",
 			"dom/photo/11238/1123874/112387482/112387482.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 8, 7, 30, 43, 0, time.Local).UTC(),
 			79000,
 			59,
 			41,
@@ -1131,14 +1108,13 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 	if len(flats) != 3 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	updateTime := time.Date(2020, time.June, 8, 6, 59, 13, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[0],
 		&flat{
 			"realty-prodaja-kvartira-vinnitsa-podole-generala-yakova-gandzyuka-ulitsa-17150263.html",
 			"dom/photo/11241/1124150/112415070/112415070.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 8, 6, 59, 13, 0, time.Local).UTC(),
 			42000,
 			63,
 			0,
@@ -1156,14 +1132,13 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			"6",
 		},
 	)
-	updateTime = time.Date(2018, time.June, 8, 10, 7, 18, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[1],
 		&flat{
 			"realty-prodaja-kvartira-dnepr-slobojanskoe-slobojanskiy-prospekt-16927270.html",
 			"dom/photo/11025/1102580/110258034/110258034.jpg",
-			&updateTime,
+			time.Date(2018, time.June, 8, 10, 7, 18, 0, time.Local).UTC(),
 			31928,
 			67.4,
 			0,
@@ -1181,14 +1156,13 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			"",
 		},
 	)
-	updateTime = time.Date(2020, time.June, 8, 10, 7, 18, 0, time.Local).UTC()
 	assertFlat(
 		t,
 		flats[2],
 		&flat{
 			"realty-prodaja-kvartira-dnepr-slobojanskoe-slobojanskiy-prospekt-16927282.html",
 			"dom/photo/11025/1102580/110258071/110258071.jpg",
-			&updateTime,
+			time.Date(2020, time.June, 8, 10, 7, 18, 0, time.Local).UTC(),
 			21168,
 			45.4,
 			0,

@@ -61,3 +61,7 @@ func (m *moment) UnmarshalJSON(bytes []byte) error {
 	*m = moment(time.Date(year, time.Month(month), day, hours, minutes, seconds, 0, time.Local).UTC())
 	return nil
 }
+
+func (m moment) String() string {
+	return time.Time(m).String()
+}

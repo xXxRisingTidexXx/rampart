@@ -110,7 +110,7 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([
 		flats[i] = &flat{
 			item.BeautifulURL,
 			item.MainPhoto,
-			(*time.Time)(item.UpdatedAt),
+			time.Time(item.UpdatedAt),
 			price,
 			item.TotalSquareMeters,
 			item.LivingSquareMeters,

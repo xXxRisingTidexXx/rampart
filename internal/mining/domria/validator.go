@@ -75,7 +75,6 @@ func (validator *validator) validateFlat(flat *flat) bool {
 	}
 	specificArea := flat.totalArea / float64(flat.roomNumber)
 	return flat.originURL != "" &&
-		flat.updateTime != nil &&
 		validator.minPrice <= flat.price &&
 		validator.minTotalArea <= flat.totalArea &&
 		flat.totalArea <= validator.maxTotalArea &&
