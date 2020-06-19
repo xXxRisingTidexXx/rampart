@@ -20,9 +20,9 @@ func newMigrations() (*migrations, error) {
 }
 
 type migrations struct {
-	QueryParams map[string]string `yaml:"queryParams"`
+	Params map[string]string `yaml:"params"`
 }
 
 func (migrations *migrations) String() string {
-	return fmt.Sprintf("{%v}", migrations.QueryParams)
+	return fmt.Sprintf("{%v}", migrations.Params)
 }

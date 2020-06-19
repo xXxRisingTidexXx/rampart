@@ -1,3 +1,6 @@
+params:
+  sslmode: disable
+  connect_timeout: '10'
 srid: 4326
 prospectors:
   domria:

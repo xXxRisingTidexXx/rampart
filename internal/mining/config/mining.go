@@ -20,10 +20,11 @@ func NewMining() (*Mining, error) {
 }
 
 type Mining struct {
-	SRID        int          `yaml:"srid"`
-	Prospectors *Prospectors `yaml:"prospectors"`
+	Params      map[string]string `yaml:"params"`
+	SRID        int               `yaml:"srid"`
+	Prospectors *Prospectors      `yaml:"prospectors"`
 }
 
 func (mining *Mining) String() string {
-	return fmt.Sprintf("{%d %v}", mining.SRID, mining.Prospectors)
+	return fmt.Sprintf("{%v %d %v}", mining.Params, mining.SRID, mining.Prospectors)
 }
