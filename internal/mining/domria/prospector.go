@@ -16,6 +16,7 @@ func NewProspector(housing misc.Housing, config *config.Domria, db *sql.DB) *Pro
 		newGeocoder(config.Geocoder),
 		newValidator(config.Validator),
 		newSifter(db, config.Sifter),
+		newStorer(db),
 	}
 }
 
@@ -26,6 +27,7 @@ type Prospector struct {
 	geocoder  *geocoder
 	validator *validator
 	sifter    *sifter
+	storer    *storer
 }
 
 func (prospector *Prospector) Prospect() error {
@@ -37,8 +39,10 @@ func (prospector *Prospector) Prospect() error {
 	flats = prospector.sanitizer.sanitizeFlats(flats)
 	flats = prospector.geocoder.geocodeFlats(flats)
 	flats = prospector.validator.validateFlats(flats)
-	flats, err = prospector.sifter.siftFlats(flats)
-	if err != nil {
+	if flats, err = prospector.sifter.siftFlats(flats); err != nil {
+		return err
+	}
+	if err = prospector.storer.storeFlats(flats); err != nil {
 		return err
 	}
 	log.Debugf("domria: prospector prospected (%.3fs)", time.Since(start).Seconds())

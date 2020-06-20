@@ -37,8 +37,7 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 		log.Debug("domria: geocoder skipped flats")
 		return flats
 	}
-	geocodedNumber, duration := 0.0, 0.0
-	newFlats := make([]*flat, 0, expectedLength)
+	geocodedNumber, duration, newFlats := 0.0, 0.0, make([]*flat, 0, expectedLength)
 	for i := range flats {
 		if flats[i].point != nil {
 			newFlats = append(newFlats, flats[i])
