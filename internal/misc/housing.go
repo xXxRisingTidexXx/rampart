@@ -1,4 +1,4 @@
-package mining
+package misc
 
 type Housing string
 

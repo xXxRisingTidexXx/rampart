@@ -2,8 +2,8 @@ package domria
 
 import (
 	log "github.com/sirupsen/logrus"
-	"rampart/internal/mining"
-	"rampart/internal/mining/config"
+	"rampart/internal/config"
+	"rampart/internal/misc"
 )
 
 func newValidator(config *config.Validator) *validator {
@@ -24,7 +24,6 @@ func newValidator(config *config.Validator) *validator {
 		config.MaxLongitude,
 		config.MinLatitude,
 		config.MaxLatitude,
-		config.MinValidity,
 	}
 }
 
@@ -45,7 +44,6 @@ type validator struct {
 	maxLongitude    float64
 	minLatitude     float64
 	maxLatitude     float64
-	minValidity     float64
 }
 
 func (validator *validator) validateFlats(flats []*flat) []*flat {
@@ -60,11 +58,7 @@ func (validator *validator) validateFlats(flats []*flat) []*flat {
 			newFlats = append(newFlats, flat)
 		}
 	}
-	actualLength := len(newFlats)
-	log.Debugf("domria: validator approved %d flats", actualLength)
-	if validity := float64(actualLength) / float64(expectedLength); validity < validator.minValidity {
-		log.Warningf("domria: validator met low validity (%.3f)", validity)
-	}
+	log.Debugf("domria: validator validated %d flats", len(newFlats))
 	return newFlats
 }
 
@@ -90,8 +84,8 @@ func (validator *validator) validateFlat(flat *flat) bool {
 		flat.floor <= flat.totalFloor &&
 		validator.minTotalFloor <= flat.totalFloor &&
 		flat.totalFloor <= validator.maxTotalFloor &&
-		(flat.housing == mining.Primary ||
-			flat.housing == mining.Secondary) &&
+		(flat.housing == misc.Primary ||
+			flat.housing == misc.Secondary) &&
 		flat.point != nil &&
 		validator.minLongitude <= flat.point.X() &&
 		flat.point.X() <= validator.maxLongitude &&

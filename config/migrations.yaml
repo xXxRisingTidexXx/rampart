@@ -1,3 +1,0 @@
-queryParams:
-  sslmode: disable
-  connect_timeout: '10'

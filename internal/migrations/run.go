@@ -1,27 +1,24 @@
 package migrations
 
 import (
-	"database/sql"
 	"fmt"
+	"rampart/internal/config"
+	"rampart/internal/database"
+	"rampart/internal/secrets"
 )
 
-// TODO: postgres://postgres:postgres@localhost:5432/rampart
 func Run() error {
-	migrations, err := newMigrations()
+	scr, err := secrets.NewSecrets()
 	if err != nil {
 		return err
 	}
-	dsn, err := getDSN(migrations.QueryParams)
+	cfg, err := config.NewConfig()
 	if err != nil {
 		return err
 	}
-	db, err := sql.Open("postgres", dsn)
+	db, err := database.Setup(scr.DSN, cfg.Migrations.DSNParams)
 	if err != nil {
-		return fmt.Errorf("migrations: failed to open the db, %v", err)
-	}
-	if err = db.Ping(); err != nil {
-		_ = db.Close()
-		return fmt.Errorf("migrations: failed to ping the db, %v", err)
+		return err
 	}
 	versions, err := listVersions()
 	if err != nil {

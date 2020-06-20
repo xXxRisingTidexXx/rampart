@@ -2,24 +2,24 @@ package config
 
 import (
 	"fmt"
-	"rampart/internal/mining/util"
+	"rampart/internal/misc"
 )
 
 type Geocoder struct {
-	Timeout         util.Timeout      `yaml:"timeout"`
+	Timeout         misc.Timing       `yaml:"timeout"`
 	Headers         map[string]string `yaml:"headers"`
-	StatelessCities *util.Set         `yaml:"statelessCities"`
+	StatelessCities *misc.Set         `yaml:"statelessCities"`
 	SearchURL       string            `yaml:"searchURL"`
-	MinLookup       float64           `yaml:"minLookup"`
+	SRID            int               `yaml:"srid"`
 }
 
 func (geocoder *Geocoder) String() string {
 	return fmt.Sprintf(
-		"{%s %v %v %s %.2f}",
+		"{%s %v %v %s %d}",
 		geocoder.Timeout,
 		geocoder.Headers,
 		geocoder.StatelessCities,
 		geocoder.SearchURL,
-		geocoder.MinLookup,
+		geocoder.SRID,
 	)
 }

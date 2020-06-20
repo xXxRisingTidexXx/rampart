@@ -7,8 +7,8 @@ import (
 	"github.com/twpayne/go-geom"
 	"io/ioutil"
 	"net/http"
-	"rampart/internal/mining"
-	"rampart/internal/mining/config"
+	"rampart/internal/config"
+	"rampart/internal/misc"
 	"time"
 )
 
@@ -20,6 +20,7 @@ func newFetcher(config *config.Fetcher) *fetcher {
 		config.Flags,
 		config.Headers,
 		config.SearchURL,
+		config.SRID,
 	}
 }
 
@@ -27,12 +28,13 @@ type fetcher struct {
 	client    *http.Client
 	page      int
 	portion   int
-	flags     map[mining.Housing]string
+	flags     map[misc.Housing]string
 	headers   map[string]string
 	searchURL string
+	srid      int
 }
 
-func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
+func (fetcher *fetcher) fetchFlats(housing misc.Housing) ([]*flat, error) {
 	flag, ok := fetcher.flags[housing]
 	if !ok {
 		return nil, fmt.Errorf("domria: fetcher doesn't accept %v housing", housing)
@@ -48,10 +50,10 @@ func (fetcher *fetcher) fetchFlats(housing mining.Housing) ([]*flat, error) {
 		return nil, err
 	}
 	if length := len(flats); length > 0 {
-		log.Debugf("domria: fetcher on %d page received %d flats (%.3fs)", fetcher.page, length, duration)
+		log.Debugf("domria: fetcher fetched %d flats on %d page (%.3fs)", length, fetcher.page, duration)
 		fetcher.page++
 	} else {
-		log.Debugf("domria: fetcher on %d page reset (%.3fs)", fetcher.page, duration)
+		log.Debugf("domria: fetcher reset on %d page (%.3fs)", fetcher.page, duration)
 		fetcher.page = 0
 	}
 	return flats, nil
@@ -88,7 +90,7 @@ func (fetcher *fetcher) getSearch(flag string) ([]byte, error) {
 	return bytes, nil
 }
 
-func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([]*flat, error) {
+func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing misc.Housing) ([]*flat, error) {
 	var search search
 	if err := json.Unmarshal(bytes, &search); err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the search, %v", err)
@@ -101,7 +103,10 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing mining.Housing) ([
 		}
 		var point *geom.Point
 		if item.Longitude != 0 || item.Latitude != 0 {
-			point = geom.NewPointFlat(geom.XY, []float64{float64(item.Longitude), float64(item.Latitude)})
+			point = geom.NewPointFlat(
+				geom.XY,
+				[]float64{float64(item.Longitude), float64(item.Latitude)},
+			).SetSRID(fetcher.srid)
 		}
 		street := item.StreetNameUK
 		if street == "" && item.StreetName != "" {

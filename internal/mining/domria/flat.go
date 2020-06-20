@@ -3,7 +3,7 @@ package domria
 import (
 	"fmt"
 	"github.com/twpayne/go-geom"
-	"rampart/internal/mining"
+	"rampart/internal/misc"
 	"time"
 )
 
@@ -18,7 +18,7 @@ type flat struct {
 	roomNumber  int
 	floor       int
 	totalFloor  int
-	housing     mining.Housing
+	housing     misc.Housing
 	complex     string
 	point       *geom.Point
 	state       string

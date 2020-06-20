@@ -2,7 +2,7 @@ package domria
 
 import (
 	log "github.com/sirupsen/logrus"
-	"rampart/internal/mining/config"
+	"rampart/internal/config"
 	"strings"
 )
 
@@ -39,7 +39,7 @@ func (sanitizer *sanitizer) sanitizeFlats(flats []*flat) []*flat {
 	for i, flat := range flats {
 		newFlats[i] = sanitizer.sanitizeFlat(flat)
 	}
-	log.Debugf("domria: sanitizer beautified %d flats", length)
+	log.Debugf("domria: sanitizer sanitized %d flats", length)
 	return newFlats
 }
 
