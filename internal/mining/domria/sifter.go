@@ -31,6 +31,7 @@ type sifter struct {
 	updateTiming   time.Duration
 }
 
+// TODO: add 1 flat sifting duration.
 func (sifter *sifter) siftFlats(flats []*flat) ([]*flat, error) {
 	expectedLength := len(flats)
 	if expectedLength == 0 {
