@@ -1,0 +1,61 @@
+dsnParams: &dsnParams
+  sslmode: disable
+  connect_timeout: '10'
+  binary_parameters: yes
+userAgent: &userAgent rampart-mining-bot/1.0.0
+srid: &srid 4326
+mining:
+  dsnParams: *dsnParams
+  prospectors:
+    domria:
+      fetcher:
+        timeout: 30s
+        portion: 100
+        flags:
+          primary: newbuildings=1
+          secondary: secondary=1
+        headers:
+          User-Agent: *userAgent
+        searchURL: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d
+        srid: *srid
+      sanitizer:
+        originURLPrefix: https://dom.ria.com/uk/
+        imageURLPrefix: https://cdn.riastatic.com/photos/
+        stateEnding: ька
+        stateSuffix: ' область'
+        districtEnding: ий
+        districtSuffix: ' район'
+      geocoder:
+        timeout: 5s
+        headers:
+          User-Agent: *userAgent
+        statelessCities:
+          - Київ
+        searchURL: https://nominatim.openstreetmap.org/search?state=%s&city=%s&county=%s&street=%s+%s&format=json&countrycodes=ua
+        srid: *srid
+      validator:
+        minPrice: 1
+        minTotalArea: 12
+        maxTotalArea: 560
+        minLivingArea: 0
+        minKitchenArea: 0
+        minRoomNumber: 1
+        maxRoomNumber: 9
+        minSpecificArea: 12
+        maxSpecificArea: 130
+        minFloor: 1
+        minTotalFloor: 2
+        maxTotalFloor: 50
+        minLongitude: -180
+        maxLongitude: 180
+        minLatitude: -90
+        maxLatitude: 90
+      sifter:
+        totalAreaBias: 3
+        roomNumberBias: 1
+        floorBias: 1
+        totalFloorBias: 1
+        distanceBias: 0.001161854
+        updateSpan: 168h
+migrations:
+  dsnParams: *dsnParams
