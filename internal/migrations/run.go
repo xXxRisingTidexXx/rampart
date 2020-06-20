@@ -2,16 +2,17 @@ package migrations
 
 import (
 	"fmt"
+	"rampart/internal/config"
 	"rampart/internal/database"
 )
 
-// TODO: postgres://postgres:postgres@localhost:5432/rampart
+// TODO: postgres://postgres:postgres@localhost:5432/rampart .
 func Run() error {
-	migrations, err := newMigrations()
+	rampart, err := config.NewRampart()
 	if err != nil {
 		return err
 	}
-	db, err := database.Setup(migrations.Params)
+	db, err := database.Setup(rampart.Migrations.DSNParams)
 	if err != nil {
 		return err
 	}
