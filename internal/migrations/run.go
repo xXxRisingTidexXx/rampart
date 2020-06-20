@@ -7,11 +7,11 @@ import (
 )
 
 func Run() error {
-	rampart, err := config.NewRampart()
+	cfg, err := config.NewConfig()
 	if err != nil {
 		return err
 	}
-	db, err := database.Setup(rampart.Migrations.DSNParams)
+	db, err := database.Setup(cfg.Migrations.DSNParams)
 	if err != nil {
 		return err
 	}

@@ -9,15 +9,15 @@ import (
 )
 
 func Run() error {
-	rampart, err := config.NewRampart()
+	cfg, err := config.NewConfig()
 	if err != nil {
 		return err
 	}
-	db, err := database.Setup(rampart.Mining.DSNParams)
+	db, err := database.Setup(cfg.Mining.DSNParams)
 	if err != nil {
 		return err
 	}
-	prospector := domria.NewProspector(misc.Secondary, rampart.Mining.Prospectors.Domria, db)
+	prospector := domria.NewProspector(misc.Secondary, cfg.Mining.Prospectors.Domria, db)
 	if err = prospector.Prospect(); err != nil {
 		_ = db.Close()
 		return err
