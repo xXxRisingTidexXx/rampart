@@ -32,7 +32,6 @@ func (prospector *Prospector) Prospect() error {
 	start := time.Now()
 	flats, err := prospector.fetcher.fetchFlats(prospector.housing)
 	if err != nil {
-		log.Debug("domria: prospector terminated")
 		return err
 	}
 	flats = prospector.sanitizer.sanitizeFlats(flats)
@@ -40,7 +39,6 @@ func (prospector *Prospector) Prospect() error {
 	flats = prospector.validator.validateFlats(flats)
 	flats, err = prospector.sifter.siftFlats(flats)
 	if err != nil {
-		log.Debug("domria: prospector terminated")
 		return err
 	}
 	log.Debugf("domria: prospector prospected (%.3fs)", time.Since(start).Seconds())
