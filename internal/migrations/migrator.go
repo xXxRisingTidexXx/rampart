@@ -19,7 +19,6 @@ type migrator struct {
 	tx *sql.Tx
 }
 
-// TODO: add switch and sql.ErrNoRows .
 func (migrator *migrator) ensureVersions() (int64, error) {
 	start := time.Now()
 	_, err := migrator.tx.Exec("create table if not exists versions(id bigint not null)")
