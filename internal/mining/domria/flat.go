@@ -3,7 +3,7 @@ package domria
 import (
 	"fmt"
 	"github.com/twpayne/go-geom"
-	"rampart/internal/mining/misc"
+	"rampart/internal/misc"
 	"time"
 )
 

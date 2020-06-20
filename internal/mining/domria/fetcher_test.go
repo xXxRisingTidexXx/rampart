@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"rampart/internal/mining/config"
-	"rampart/internal/mining/misc"
+	"rampart/internal/misc"
 	"testing"
 	"time"
 )
@@ -30,7 +30,7 @@ func newDefaultFetcher() *fetcher {
 func newTestFetcher(searchURL string) *fetcher {
 	return newFetcher(
 		&config.Fetcher{
-			Timeout:   misc.Timeout(100 * time.Millisecond),
+			Timeout:   misc.Timing(100 * time.Millisecond),
 			Portion:   10,
 			Flags:     map[misc.Housing]string{misc.Primary: "pm_housing=1"},
 			Headers:   map[string]string{"User-Agent": "domria-test-bot/1.0.0"},

@@ -56,6 +56,6 @@ mining:
         floorBias: 1
         totalFloorBias: 1
         distanceBias: 0.001161854
-        updateSpan: 168h
+        updateTiming: 168h
 migrations:
   dsnParams: *dsnParams

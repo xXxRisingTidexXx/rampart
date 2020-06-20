@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"rampart/internal/mining/config"
-	"rampart/internal/mining/misc"
+	"rampart/internal/misc"
 	"strings"
 	"time"
 )

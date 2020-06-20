@@ -5,7 +5,7 @@ import (
 	"rampart/internal/database"
 	"rampart/internal/mining/config"
 	"rampart/internal/mining/domria"
-	"rampart/internal/mining/misc"
+	"rampart/internal/misc"
 )
 
 func Run() error {

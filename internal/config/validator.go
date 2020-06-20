@@ -21,12 +21,11 @@ type Validator struct {
 	MaxLongitude    float64 `yaml:"maxLongitude"`
 	MinLatitude     float64 `yaml:"minLatitude"`
 	MaxLatitude     float64 `yaml:"maxLatitude"`
-	MinValidity     float64 `yaml:"minValidity"`
 }
 
 func (validator *Validator) String() string {
 	return fmt.Sprintf(
-		"{%.1f %.1f %.1f %.1f %.1f %d %d %.1f %.1f %d %d %d %.1f %.1f %.1f %.1f %.3f}",
+		"{%.1f %.1f %.1f %.1f %.1f %d %d %.1f %.1f %d %d %d %.1f %.1f %.1f %.1f}",
 		validator.MinPrice,
 		validator.MinTotalArea,
 		validator.MaxTotalArea,
@@ -43,6 +42,5 @@ func (validator *Validator) String() string {
 		validator.MaxLongitude,
 		validator.MinLatitude,
 		validator.MaxLatitude,
-		validator.MinValidity,
 	)
 }

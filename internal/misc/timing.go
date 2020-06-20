@@ -5,9 +5,9 @@ import (
 	"time"
 )
 
-type Timeout time.Duration
+type Timing time.Duration
 
-func (timeout *Timeout) UnmarshalYAML(node *yaml.Node) error {
+func (timing *Timing) UnmarshalYAML(node *yaml.Node) error {
 	s := ""
 	if err := node.Decode(&s); err != nil {
 		return err
@@ -16,10 +16,10 @@ func (timeout *Timeout) UnmarshalYAML(node *yaml.Node) error {
 	if err != nil {
 		return err
 	}
-	*timeout = Timeout(duration)
+	*timing = Timing(duration)
 	return nil
 }
 
-func (timeout Timeout) String() string {
-	return time.Duration(timeout).String()
+func (timing Timing) String() string {
+	return time.Duration(timing).String()
 }

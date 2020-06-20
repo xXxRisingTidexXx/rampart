@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	log "github.com/sirupsen/logrus"
 	"rampart/internal/mining/config"
-	"rampart/internal/mining/misc"
+	"rampart/internal/misc"
 )
 
 func NewProspector(housing misc.Housing, config *config.Domria, db *sql.DB) *Prospector {
