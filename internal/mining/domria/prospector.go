@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"rampart/internal/config"
 	"rampart/internal/misc"
+	"time"
 )
 
 func NewProspector(housing misc.Housing, config *config.Domria, db *sql.DB) *Prospector {
@@ -28,7 +29,7 @@ type Prospector struct {
 }
 
 func (prospector *Prospector) Prospect() error {
-	log.Debug("domria: prospector started")
+	start := time.Now()
 	flats, err := prospector.fetcher.fetchFlats(prospector.housing)
 	if err != nil {
 		log.Debug("domria: prospector terminated")
@@ -42,6 +43,6 @@ func (prospector *Prospector) Prospect() error {
 		log.Debug("domria: prospector terminated")
 		return err
 	}
-	log.Debug("domria: prospector finished")
+	log.Debugf("domria: prospector prospected (%.3fs)", time.Since(start).Seconds())
 	return nil
 }
