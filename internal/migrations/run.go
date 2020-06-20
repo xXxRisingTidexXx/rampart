@@ -6,7 +6,6 @@ import (
 	"rampart/internal/database"
 )
 
-// TODO: postgres://postgres:postgres@localhost:5432/rampart .
 func Run() error {
 	rampart, err := config.NewRampart()
 	if err != nil {
