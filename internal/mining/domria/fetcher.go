@@ -7,7 +7,7 @@ import (
 	"github.com/twpayne/go-geom"
 	"io/ioutil"
 	"net/http"
-	"rampart/internal/mining/config"
+	"rampart/internal/config"
 	"rampart/internal/misc"
 	"time"
 )
@@ -20,6 +20,7 @@ func newFetcher(config *config.Fetcher) *fetcher {
 		config.Flags,
 		config.Headers,
 		config.SearchURL,
+		config.SRID,
 	}
 }
 
@@ -30,6 +31,7 @@ type fetcher struct {
 	flags     map[misc.Housing]string
 	headers   map[string]string
 	searchURL string
+	srid      int
 }
 
 func (fetcher *fetcher) fetchFlats(housing misc.Housing) ([]*flat, error) {
@@ -48,10 +50,10 @@ func (fetcher *fetcher) fetchFlats(housing misc.Housing) ([]*flat, error) {
 		return nil, err
 	}
 	if length := len(flats); length > 0 {
-		log.Debugf("domria: fetcher on %d page received %d flats (%.3fs)", fetcher.page, length, duration)
+		log.Debugf("domria: fetcher fetched %d flats on %d page (%.3fs)", length, fetcher.page, duration)
 		fetcher.page++
 	} else {
-		log.Debugf("domria: fetcher on %d page reset (%.3fs)", fetcher.page, duration)
+		log.Debugf("domria: fetcher reset on %d page (%.3fs)", fetcher.page, duration)
 		fetcher.page = 0
 	}
 	return flats, nil
@@ -104,7 +106,7 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing misc.Housing) ([]*
 			point = geom.NewPointFlat(
 				geom.XY,
 				[]float64{float64(item.Longitude), float64(item.Latitude)},
-			).SetSRID(4326)
+			).SetSRID(fetcher.srid)
 		}
 		street := item.StreetNameUK
 		if street == "" && item.StreetName != "" {

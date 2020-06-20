@@ -7,7 +7,7 @@ import (
 	"github.com/twpayne/go-geom"
 	"io/ioutil"
 	"net/http"
-	"rampart/internal/mining/config"
+	"rampart/internal/config"
 	"rampart/internal/misc"
 	"strings"
 	"time"
@@ -19,7 +19,7 @@ func newGeocoder(config *config.Geocoder) *geocoder {
 		config.Headers,
 		config.StatelessCities,
 		config.SearchURL,
-		config.MinLookup,
+		config.SRID,
 	}
 }
 
@@ -28,7 +28,7 @@ type geocoder struct {
 	headers         map[string]string
 	statelessCities *misc.Set
 	searchURL       string
-	minLookup       float64
+	srid            int
 }
 
 func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
@@ -37,7 +37,7 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 		log.Debug("domria: geocoder skipped flats")
 		return flats
 	}
-	geocodedNumber, locatedNumber, duration := 0.0, 0.0, 0.0
+	geocodedNumber, duration := 0.0, 0.0
 	newFlats := make([]*flat, 0, expectedLength)
 	for i := range flats {
 		if flats[i].point != nil {
@@ -54,20 +54,14 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 			if err != nil {
 				log.Error(err)
 			} else if newFlat != nil {
-				locatedNumber++
 				newFlats = append(newFlats, newFlat)
 			}
 		}
 	}
-	lookup := 0.0
 	if geocodedNumber != 0 {
 		duration /= geocodedNumber
-		lookup = locatedNumber / geocodedNumber
 	}
-	log.Debugf("domria: geocoder passed %d flats (%.3fs)", len(newFlats), duration)
-	if lookup < geocoder.minLookup {
-		log.Warningf("domria: geocoder met low lookup (%.3f)", lookup)
-	}
+	log.Debugf("domria: geocoder geocoded %d flats (%.3fs)", len(newFlats), duration)
 	return newFlats
 }
 
@@ -138,7 +132,7 @@ func (geocoder *geocoder) locateFlat(f *flat, bytes []byte) (*flat, error) {
 		geom.NewPointFlat(
 			geom.XY,
 			[]float64{float64(locations[0].Lon), float64(locations[0].Lat)},
-		).SetSRID(4326),
+		).SetSRID(geocoder.srid),
 		f.state,
 		f.city,
 		f.district,

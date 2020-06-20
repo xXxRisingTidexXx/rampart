@@ -3,7 +3,7 @@ package domria
 import (
 	"database/sql"
 	log "github.com/sirupsen/logrus"
-	"rampart/internal/mining/config"
+	"rampart/internal/config"
 	"rampart/internal/misc"
 )
 
@@ -14,7 +14,7 @@ func NewProspector(housing misc.Housing, config *config.Domria, db *sql.DB) *Pro
 		newSanitizer(config.Sanitizer),
 		newGeocoder(config.Geocoder),
 		newValidator(config.Validator),
-		newSifter(db),
+		newSifter(db, config.Sifter),
 	}
 }
 

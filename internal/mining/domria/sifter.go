@@ -5,15 +5,30 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/twpayne/go-geom/encoding/ewkb"
+	"rampart/internal/config"
 	"time"
 )
 
-func newSifter(db *sql.DB) *sifter {
-	return &sifter{db}
+func newSifter(db *sql.DB, config *config.Sifter) *sifter {
+	return &sifter{
+		db,
+		config.TotalAreaBias,
+		config.RoomNumberBias,
+		config.FloorBias,
+		config.TotalFloorBias,
+		config.DistanceBias,
+		time.Duration(config.UpdateTiming),
+	}
 }
 
 type sifter struct {
-	db *sql.DB
+	db             *sql.DB
+	totalAreaBias  float64
+	roomNumberBias int
+	floorBias      int
+	totalFloorBias int
+	distanceBias   float64
+	updateTiming   time.Duration
 }
 
 func (sifter *sifter) siftFlats(flats []*flat) ([]*flat, error) {
@@ -52,7 +67,7 @@ func (sifter *sifter) siftFlats(flats []*flat) ([]*flat, error) {
 	if err = updateStmt.Close(); err != nil {
 		return nil, fmt.Errorf("domria: sifter failed to close the update stmt, %v", err)
 	}
-	log.Debugf("domria: sifter filtered %d flats", len(newFlats))
+	log.Debugf("domria: sifter sifted %d flats", len(newFlats))
 	return newFlats, nil
 }
 
@@ -107,15 +122,15 @@ func (sifter *sifter) readFlat(stmt *sql.Stmt, flat *flat) (*similarity, error) 
 	row := stmt.QueryRow(
 		flat.originURL,
 		flat.totalArea,
-		3,
+		sifter.totalAreaBias,
 		flat.roomNumber,
-		1,
+		sifter.roomNumberBias,
 		flat.floor,
-		1,
+		sifter.floorBias,
 		flat.totalFloor,
-		1,
+		sifter.totalFloorBias,
 		&ewkb.Point{Point: flat.point},
-		0.001161854552002067,
+		sifter.distanceBias,
 	)
 	var similarity similarity
 	switch err := row.Scan(&similarity.id, &similarity.updateTime, &similarity.price); err {
@@ -129,7 +144,7 @@ func (sifter *sifter) readFlat(stmt *sql.Stmt, flat *flat) (*similarity, error) 
 }
 
 func (sifter *sifter) isUpdatable(similarity *similarity, flat *flat) bool {
-	isNewer := flat.updateTime.Sub(similarity.updateTime) >= time.Hour*24*7
+	isNewer := flat.updateTime.Sub(similarity.updateTime) >= sifter.updateTiming
 	return isNewer || !isNewer && flat.price < similarity.price
 }
 
