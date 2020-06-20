@@ -175,7 +175,8 @@ func readAll(t *testing.T, fixtureName string) []byte {
 	return bytes
 }
 
-//nolint:gocognit,gocyclo,funlen
+// TODO: add srid comparison.
+//nolint:gocognit,funlen
 func assertFlat(t *testing.T, actual *flat, expected *flat) {
 	if actual == nil {
 		t.Fatal("domria: empty actual")

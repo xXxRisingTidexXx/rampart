@@ -13,6 +13,7 @@ import (
 	"time"
 )
 
+// TODO: add set srid
 func newGeocoder(config *config.Geocoder) *geocoder {
 	return &geocoder{
 		&http.Client{Timeout: time.Duration(config.Timeout)},

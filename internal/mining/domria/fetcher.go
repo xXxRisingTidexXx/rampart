@@ -12,6 +12,7 @@ import (
 	"time"
 )
 
+// TODO: add set srid
 func newFetcher(config *config.Fetcher) *fetcher {
 	return &fetcher{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
