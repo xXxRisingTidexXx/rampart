@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"github.com/twpayne/go-geom/encoding/ewkb"
 	"time"
 )
 
@@ -51,6 +52,7 @@ func (sifter *sifter) siftFlats(flats []*flat) ([]*flat, error) {
 	if err = updateStmt.Close(); err != nil {
 		return nil, fmt.Errorf("domria: sifter failed to close the update stmt, %v", err)
 	}
+	log.Debugf("domria: sifter filtered %d flats", len(newFlats))
 	return newFlats, nil
 }
 
@@ -112,7 +114,7 @@ func (sifter *sifter) readFlat(stmt *sql.Stmt, flat *flat) (*similarity, error) 
 		1,
 		flat.totalFloor,
 		1,
-		flat.point,
+		&ewkb.Point{Point: flat.point.SetSRID(4326)},
 		0.001161854552002067,
 	)
 	var similarity similarity
@@ -145,7 +147,7 @@ func (sifter *sifter) updateFlat(stmt *sql.Stmt, similarity *similarity, flat *f
 		flat.totalFloor,
 		flat.housing.String(),
 		flat.complex,
-		flat.point,
+		&ewkb.Point{Point: flat.point.SetSRID(4326)},
 		flat.state,
 		flat.city,
 		flat.district,
