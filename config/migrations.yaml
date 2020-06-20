@@ -1,3 +1,4 @@
 params:
   sslmode: disable
-  connect_timeout: '7'
+  connect_timeout: '10'
+  binary_parameters: yes
