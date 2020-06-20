@@ -6,14 +6,19 @@ import (
 	"rampart/internal/database"
 	"rampart/internal/mining/domria"
 	"rampart/internal/misc"
+	"rampart/internal/secrets"
 )
 
 func Run() error {
+	scr, err := secrets.NewSecrets()
+	if err != nil {
+		return err
+	}
 	cfg, err := config.NewConfig()
 	if err != nil {
 		return err
 	}
-	db, err := database.Setup(cfg.Mining.DSNParams)
+	db, err := database.Setup(scr.DSN, cfg.Mining.DSNParams)
 	if err != nil {
 		return err
 	}

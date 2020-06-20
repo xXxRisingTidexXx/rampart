@@ -4,14 +4,19 @@ import (
 	"fmt"
 	"rampart/internal/config"
 	"rampart/internal/database"
+	"rampart/internal/secrets"
 )
 
 func Run() error {
+	scr, err := secrets.NewSecrets()
+	if err != nil {
+		return err
+	}
 	cfg, err := config.NewConfig()
 	if err != nil {
 		return err
 	}
-	db, err := database.Setup(cfg.Migrations.DSNParams)
+	db, err := database.Setup(scr.DSN, cfg.Migrations.DSNParams)
 	if err != nil {
 		return err
 	}

@@ -4,14 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	gourl "net/url"
-	"os"
 )
 
-func Setup(params map[string]string) (*sql.DB, error) {
-	dsn := os.Getenv("RAMPART_DSN")
-	if dsn == "" {
-		return nil, fmt.Errorf("database: dsn env not configured")
-	}
+func Setup(dsn string, params map[string]string) (*sql.DB, error) {
 	url, err := gourl.Parse(dsn)
 	if err != nil {
 		return nil, fmt.Errorf("database: invalid dsn %s, %v", dsn, err)
