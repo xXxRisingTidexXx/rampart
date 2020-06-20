@@ -31,10 +31,9 @@ type sifter struct {
 	updateTiming   time.Duration
 }
 
-// TODO: add 1 flat sifting duration.
 func (sifter *sifter) siftFlats(flats []*flat) ([]*flat, error) {
-	expectedLength := len(flats)
-	if expectedLength == 0 {
+	length := len(flats)
+	if length == 0 {
 		log.Debug("domria: sifter skipped flats")
 		return flats, nil
 	}
@@ -47,8 +46,9 @@ func (sifter *sifter) siftFlats(flats []*flat) ([]*flat, error) {
 		_ = readingStmt.Close()
 		return nil, err
 	}
-	newFlats := make([]*flat, 0, expectedLength)
+	duration, newFlats := 0.0, make([]*flat, 0, length)
 	for _, flat := range flats {
+		start := time.Now()
 		similarity, err := sifter.readFlat(readingStmt, flat)
 		if err == nil {
 			if similarity == nil {
@@ -57,6 +57,7 @@ func (sifter *sifter) siftFlats(flats []*flat) ([]*flat, error) {
 				err = sifter.updateFlat(updateStmt, similarity, flat)
 			}
 		}
+		duration += time.Since(start).Seconds()
 		if err != nil {
 			log.Error(err)
 		}
@@ -68,7 +69,7 @@ func (sifter *sifter) siftFlats(flats []*flat) ([]*flat, error) {
 	if err = updateStmt.Close(); err != nil {
 		return nil, fmt.Errorf("domria: sifter failed to close the update stmt, %v", err)
 	}
-	log.Debugf("domria: sifter sifted %d flats", len(newFlats))
+	log.Debugf("domria: sifter sifted %d flats (%.3fs)", len(newFlats), duration/float64(length))
 	return newFlats, nil
 }
 
