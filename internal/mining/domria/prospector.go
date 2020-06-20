@@ -37,7 +37,11 @@ func (prospector *Prospector) Prospect() error {
 	flats = prospector.sanitizer.sanitizeFlats(flats)
 	flats = prospector.geocoder.geocodeFlats(flats)
 	flats = prospector.validator.validateFlats(flats)
-	flats = prospector.sifter.siftFlats(flats)
+	flats, err = prospector.sifter.siftFlats(flats)
+	if err != nil {
+		log.Debug("domria: prospector terminated")
+		return err
+	}
 	log.Debug("domria: prospector finished")
 	return nil
 }
