@@ -13,7 +13,6 @@ import (
 	"time"
 )
 
-// TODO: add set srid.
 func newGeocoder(config *config.Geocoder) *geocoder {
 	return &geocoder{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
@@ -136,7 +135,10 @@ func (geocoder *geocoder) locateFlat(f *flat, bytes []byte) (*flat, error) {
 		f.totalFloor,
 		f.housing,
 		f.complex,
-		geom.NewPointFlat(geom.XY, []float64{float64(locations[0].Lon), float64(locations[0].Lat)}),
+		geom.NewPointFlat(
+			geom.XY,
+			[]float64{float64(locations[0].Lon), float64(locations[0].Lat)},
+		).SetSRID(4326),
 		f.state,
 		f.city,
 		f.district,

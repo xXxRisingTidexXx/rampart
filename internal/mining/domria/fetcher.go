@@ -12,7 +12,6 @@ import (
 	"time"
 )
 
-// TODO: add set srid.
 func newFetcher(config *config.Fetcher) *fetcher {
 	return &fetcher{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
@@ -102,7 +101,10 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing misc.Housing) ([]*
 		}
 		var point *geom.Point
 		if item.Longitude != 0 || item.Latitude != 0 {
-			point = geom.NewPointFlat(geom.XY, []float64{float64(item.Longitude), float64(item.Latitude)})
+			point = geom.NewPointFlat(
+				geom.XY,
+				[]float64{float64(item.Longitude), float64(item.Latitude)},
+			).SetSRID(4326)
 		}
 		street := item.StreetNameUK
 		if street == "" && item.StreetName != "" {

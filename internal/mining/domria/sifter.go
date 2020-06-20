@@ -114,7 +114,7 @@ func (sifter *sifter) readFlat(stmt *sql.Stmt, flat *flat) (*similarity, error) 
 		1,
 		flat.totalFloor,
 		1,
-		&ewkb.Point{Point: flat.point.SetSRID(4326)},
+		&ewkb.Point{Point: flat.point},
 		0.001161854552002067,
 	)
 	var similarity similarity
@@ -147,7 +147,7 @@ func (sifter *sifter) updateFlat(stmt *sql.Stmt, similarity *similarity, flat *f
 		flat.totalFloor,
 		flat.housing.String(),
 		flat.complex,
-		&ewkb.Point{Point: flat.point.SetSRID(4326)},
+		&ewkb.Point{Point: flat.point},
 		flat.state,
 		flat.city,
 		flat.district,
