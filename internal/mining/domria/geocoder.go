@@ -38,23 +38,18 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 		return flats
 	}
 	geocodedNumber, duration, newFlats := 0.0, 0.0, make([]*flat, 0, expectedLength)
-	for i := range flats {
-		if flats[i].point != nil {
-			newFlats = append(newFlats, flats[i])
-		} else if flats[i].district != "" && flats[i].street != "" && flats[i].houseNumber != "" {
-			geocodedNumber++
+	for _, flat := range flats {
+		if flat.point != nil {
+			newFlats = append(newFlats, flat)
+		} else if flat.district != "" && flat.street != "" && flat.houseNumber != "" {
 			start := time.Now()
-			bytes, err := geocoder.getLocations(flats[i])
-			duration += time.Since(start).Seconds()
-			var newFlat *flat
-			if err == nil {
-				newFlat, err = geocoder.locateFlat(flats[i], bytes)
-			}
-			if err != nil {
+			geocodedNumber++
+			if newFlat, err := geocoder.geocodeFlat(flat); err != nil {
 				log.Error(err)
 			} else if newFlat != nil {
 				newFlats = append(newFlats, newFlat)
 			}
+			duration += time.Since(start).Seconds()
 		}
 	}
 	if geocodedNumber != 0 {
@@ -62,6 +57,14 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 	}
 	log.Debugf("domria: geocoder geocoded %d flats (%.3fs)", len(newFlats), duration)
 	return newFlats
+}
+
+func (geocoder *geocoder) geocodeFlat(flat *flat) (*flat, error) {
+	bytes, err := geocoder.getLocations(flat)
+	if err != nil {
+		return nil, err
+	}
+	return geocoder.locateFlat(flat, bytes)
 }
 
 func (geocoder *geocoder) getLocations(flat *flat) ([]byte, error) {
