@@ -8,9 +8,9 @@ import (
 	"time"
 )
 
-func NewRunner(housing misc.Housing, config *config.Domria, db *sql.DB) *Runner {
+func NewRunner(config *config.Domria, db *sql.DB) *Runner {
 	return &Runner{
-		housing,
+		config.Housing,
 		newFetcher(config.Fetcher),
 		newSanitizer(config.Sanitizer),
 		newGeocoder(config.Geocoder),

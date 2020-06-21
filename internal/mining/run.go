@@ -5,7 +5,6 @@ import (
 	"rampart/internal/config"
 	"rampart/internal/database"
 	"rampart/internal/mining/domria"
-	"rampart/internal/misc"
 	"rampart/internal/secrets"
 )
 
@@ -22,7 +21,7 @@ func Run() error {
 	if err != nil {
 		return err
 	}
-	domria.NewRunner(misc.Secondary, cfg.Mining.Runners.Domria, db).Run()
+	domria.NewRunner(cfg.Mining.Runners.DomriaPrimary, db).Run()
 	if err = db.Close(); err != nil {
 		return fmt.Errorf("mining: failed to close the db, %v", err)
 	}

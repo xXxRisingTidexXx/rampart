@@ -6,7 +6,6 @@ import (
 	"rampart/internal/config"
 	"rampart/internal/database"
 	"rampart/internal/mining/domria"
-	"rampart/internal/misc"
 	"rampart/internal/secrets"
 )
 
@@ -24,12 +23,18 @@ func Schedule() error {
 		return err
 	}
 	scheduler := cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
-	_, err = scheduler.AddJob("* * * * *", domria.NewRunner(misc.Primary, cfg.Mining.Runners.Domria, db))
+	_, err = scheduler.AddJob(
+		cfg.Mining.Runners.DomriaPrimary.Spec,
+		domria.NewRunner(cfg.Mining.Runners.DomriaPrimary, db),
+	)
 	if err != nil {
 		_ = db.Close()
 		return fmt.Errorf("mining: failed to run domria primary runner, %v", err)
 	}
-	_, err = scheduler.AddJob("* * * * *", domria.NewRunner(misc.Secondary, cfg.Mining.Runners.Domria, db))
+	_, err = scheduler.AddJob(
+		cfg.Mining.Runners.DomriaSecondary.Spec,
+		domria.NewRunner(cfg.Mining.Runners.DomriaSecondary, db),
+	)
 	if err != nil {
 		_ = db.Close()
 		return fmt.Errorf("mining: failed to run domria secondary runner, %v", err)

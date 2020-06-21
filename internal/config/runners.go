@@ -5,9 +5,10 @@ import (
 )
 
 type Runners struct {
-	Domria *Domria `yaml:"domria"`
+	DomriaPrimary   *Domria `yaml:"domriaPrimary"`
+	DomriaSecondary *Domria `yaml:"domriaSecondary"`
 }
 
 func (runners *Runners) String() string {
-	return fmt.Sprintf("{%v}", runners.Domria)
+	return fmt.Sprintf("{%v %v}", runners.DomriaPrimary, runners.DomriaSecondary)
 }
