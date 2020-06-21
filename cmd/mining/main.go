@@ -9,7 +9,7 @@ import (
 func main() {
 	log.SetLevel(log.DebugLevel)
 	log.Debug("main: mining started")
-	if err := mining.Run(); err != nil {
+	if err := mining.Schedule(); err != nil {
 		log.Fatal(err)
 	}
 	log.Debug("main: mining finished")
