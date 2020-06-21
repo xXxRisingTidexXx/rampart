@@ -6,7 +6,7 @@ import (
 	gourl "net/url"
 )
 
-func Setup(dsn string, params map[string]string) (*sql.DB, error) {
+func NewDatabase(dsn string, params map[string]string) (*sql.DB, error) {
 	url, err := gourl.Parse(dsn)
 	if err != nil {
 		return nil, fmt.Errorf("database: invalid dsn %s, %v", dsn, err)

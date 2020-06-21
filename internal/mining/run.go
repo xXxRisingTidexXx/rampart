@@ -18,7 +18,7 @@ func Run() error {
 	if err != nil {
 		return err
 	}
-	db, err := database.Setup(scr.DSN, cfg.Mining.DSNParams)
+	db, err := database.NewDatabase(scr.DSN, cfg.Mining.DSNParams)
 	if err != nil {
 		return err
 	}

@@ -16,7 +16,7 @@ func Run() error {
 	if err != nil {
 		return err
 	}
-	db, err := database.Setup(scr.DSN, cfg.Migrations.DSNParams)
+	db, err := database.NewDatabase(scr.DSN, cfg.Migrations.DSNParams)
 	if err != nil {
 		return err
 	}
