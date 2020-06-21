@@ -5,11 +5,12 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/twpayne/go-geom/encoding/ewkb"
+	"rampart/internal/config"
 	"time"
 )
 
-func newStorer(db *sql.DB) *storer {
-	return &storer{db, time.Hour}
+func newStorer(db *sql.DB, config *config.Storer) *storer {
+	return &storer{db, time.Duration(config.UpdateTiming)}
 }
 
 type storer struct {

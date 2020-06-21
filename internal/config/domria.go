@@ -10,7 +10,7 @@ type Domria struct {
 	Sanitizer *Sanitizer   `yaml:"sanitizer"`
 	Geocoder  *Geocoder    `yaml:"geocoder"`
 	Validator *Validator   `yaml:"validator"`
-	Sifter    *Sifter      `yaml:"sifter"`
+	Storer    *Storer      `yaml:"storer"`
 	Housing   misc.Housing `yaml:"housing"`
 	Spec      string       `yaml:"spec"`
 }
@@ -22,7 +22,7 @@ func (domria *Domria) String() string {
 		domria.Sanitizer,
 		domria.Geocoder,
 		domria.Validator,
-		domria.Sifter,
+		domria.Storer,
 		domria.Housing,
 		domria.Spec,
 	)

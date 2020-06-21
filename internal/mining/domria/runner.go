@@ -15,7 +15,7 @@ func NewRunner(config *config.Domria, db *sql.DB) *Runner {
 		newSanitizer(config.Sanitizer),
 		newGeocoder(config.Geocoder),
 		newValidator(config.Validator),
-		newStorer(db),
+		newStorer(db, config.Storer),
 	}
 }
 

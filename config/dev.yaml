@@ -51,12 +51,7 @@ mining:
         maxLongitude: 180
         minLatitude: -90
         maxLatitude: 90
-      sifter:
-        totalAreaBias: 3
-        roomNumberBias: 1
-        floorBias: 1
-        totalFloorBias: 1
-        distanceBias: 0.001161854
+      storer:
         updateTiming: 168h
     domriaPrimary:
       <<: *domria
