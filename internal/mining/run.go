@@ -2,6 +2,7 @@ package mining
 
 import (
 	"fmt"
+	"github.com/robfig/cron/v3"
 	"rampart/internal/config"
 	"rampart/internal/database"
 	"rampart/internal/mining/domria"
@@ -22,11 +23,18 @@ func Run() error {
 	if err != nil {
 		return err
 	}
-	prospector := domria.NewProspector(misc.Secondary, cfg.Mining.Runners.Domria, db)
-	if err = prospector.Prospect(); err != nil {
+	scheduler := cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
+	_, err = scheduler.AddJob("* * * * *", domria.NewRunner(misc.Primary, cfg.Mining.Runners.Domria, db))
+	if err != nil {
 		_ = db.Close()
-		return err
+		return fmt.Errorf("mining: failed to run domria primary housing runner, %v", err)
 	}
+	_, err = scheduler.AddJob("* * * * *", domria.NewRunner(misc.Secondary, cfg.Mining.Runners.Domria, db))
+	if err != nil {
+		_ = db.Close()
+		return fmt.Errorf("mining: failed to run domria secondary housing runner, %v", err)
+	}
+	scheduler.Run()
 	if err = db.Close(); err != nil {
 		return fmt.Errorf("mining: failed to close the db, %v", err)
 	}
