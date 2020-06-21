@@ -124,7 +124,7 @@ func (sifter *sifter) prepareUpdate() (*sql.Stmt, error) {
 	return stmt, nil
 }
 
-func (sifter *sifter) readFlat(stmt *sql.Stmt, flat *flat) (*similarity, error) {
+func (sifter *sifter) readFlat(stmt *sql.Stmt, flat *flat) (*origin, error) {
 	row := stmt.QueryRow(
 		flat.originURL,
 		flat.housing.String(),
@@ -139,7 +139,7 @@ func (sifter *sifter) readFlat(stmt *sql.Stmt, flat *flat) (*similarity, error) 
 		&ewkb.Point{Point: flat.point},
 		sifter.distanceBias,
 	)
-	var similarity similarity
+	var similarity origin
 	switch err := row.Scan(&similarity.id, &similarity.updateTime, &similarity.price); err {
 	case sql.ErrNoRows:
 		return nil, nil
@@ -150,12 +150,12 @@ func (sifter *sifter) readFlat(stmt *sql.Stmt, flat *flat) (*similarity, error) 
 	}
 }
 
-func (sifter *sifter) isUpdatable(similarity *similarity, flat *flat) bool {
+func (sifter *sifter) isUpdatable(similarity *origin, flat *flat) bool {
 	isNewer := flat.updateTime.Sub(similarity.updateTime) >= sifter.updateTiming
 	return isNewer || !isNewer && flat.price < similarity.price
 }
 
-func (sifter *sifter) updateFlat(stmt *sql.Stmt, similarity *similarity, flat *flat) error {
+func (sifter *sifter) updateFlat(stmt *sql.Stmt, similarity *origin, flat *flat) error {
 	_, err := stmt.Exec(
 		flat.originURL,
 		flat.imageURL,
