@@ -17,8 +17,11 @@ commands:
   database:
     description: Run the DB server
     cmd: docker-compose up -d database
-  mining:
-    description: Run the data mining app
+  run:
+    description: Run the data mining app single workflow
+    cmd: ./mining -once
+  schedule:
+    description: Run the data mining app in a periodical manner
     cmd: ./mining
   generate:
     description: Generate a new SQL migration file
@@ -28,7 +31,7 @@ commands:
       touch internal/migrations/versions/$VERSION.sql && \
       echo "migrations: generated version $VERSION" && \
       sleep 1
-  migrations:
+  migrate:
     description: Upgrade the DB schema to the newest version
     cmd: ./migrations
   psql:
