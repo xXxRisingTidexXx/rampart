@@ -15,7 +15,6 @@ func NewRunner(config *config.Domria, db *sql.DB) *Runner {
 		newSanitizer(config.Sanitizer),
 		newGeocoder(config.Geocoder),
 		newValidator(config.Validator),
-		newSifter(db, config.Sifter),
 		newStorer(db),
 	}
 }
@@ -26,7 +25,6 @@ type Runner struct {
 	sanitizer *sanitizer
 	geocoder  *geocoder
 	validator *validator
-	sifter    *sifter
 	storer    *storer
 }
 
@@ -40,13 +38,6 @@ func (runner *Runner) Run() {
 	flats = runner.sanitizer.sanitizeFlats(flats)
 	flats = runner.geocoder.geocodeFlats(flats)
 	flats = runner.validator.validateFlats(flats)
-	if flats, err = runner.sifter.siftFlats(flats); err != nil {
-		log.Error(err)
-		return
-	}
-	if err = runner.storer.storeFlats(flats); err != nil {
-		log.Error(err)
-	} else {
-		log.Debugf("domria: runner run (%.3fs)", time.Since(start).Seconds())
-	}
+	runner.storer.storeFlats(flats)
+	log.Debugf("domria: runner run (%.3fs)", time.Since(start).Seconds())
 }
