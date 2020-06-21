@@ -21,6 +21,9 @@ func newSifter(db *sql.DB, config *config.Sifter) *sifter {
 	}
 }
 
+// TODO: merge sifter and storer to avoid duplicates.
+// https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-solomenskiy-vozduhoflotskiy-prospekt-17132091.html
+// https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-solomenskiy-vozduhoflotskiy-prospekt-16595570.html
 type sifter struct {
 	db             *sql.DB
 	totalAreaBias  float64
@@ -77,12 +80,13 @@ func (sifter *sifter) prepareReading() (*sql.Stmt, error) {
 	stmt, err := sifter.db.Prepare(
 		`select id, update_time, price 
 		from flats 
-		where origin_url = $1 or 
-		      abs(total_area - $2) <= $3 and 
-		      abs(room_number - $4) <= $5 and 
-		      abs(floor - $6) <= $7 and 
-		      abs(total_floor - $8) <= $9 and 
-		      st_distance(point, $10) <= $11`,
+		where origin_url = $1 or
+		      housing = $2 and
+		      abs(total_area - $3) <= $4 and 
+		      abs(room_number - $5) <= $6 and 
+		      abs(floor - $7) <= $8 and 
+		      abs(total_floor - $9) <= $10 and 
+		      st_distance(point, $11) <= $12`,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("domria: sifter failed to prepare the reading stmt, %v", err)
@@ -123,6 +127,7 @@ func (sifter *sifter) prepareUpdate() (*sql.Stmt, error) {
 func (sifter *sifter) readFlat(stmt *sql.Stmt, flat *flat) (*similarity, error) {
 	row := stmt.QueryRow(
 		flat.originURL,
+		flat.housing.String(),
 		flat.totalArea,
 		sifter.totalAreaBias,
 		flat.roomNumber,
@@ -173,7 +178,12 @@ func (sifter *sifter) updateFlat(stmt *sql.Stmt, similarity *similarity, flat *f
 		similarity.id,
 	)
 	if err != nil {
-		return fmt.Errorf("domria: sifter failed to update a flat %s, %v", flat.originURL, err)
+		return fmt.Errorf(
+			"domria: sifter failed to update flat %d to %s, %v",
+			similarity.id,
+			flat.originURL,
+			err,
+		)
 	}
 	return nil
 }
