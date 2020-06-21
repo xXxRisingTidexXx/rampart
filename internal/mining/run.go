@@ -22,7 +22,7 @@ func Run() error {
 	if err != nil {
 		return err
 	}
-	prospector := domria.NewProspector(misc.Secondary, cfg.Mining.Prospectors.Domria, db)
+	prospector := domria.NewProspector(misc.Secondary, cfg.Mining.Runners.Domria, db)
 	if err = prospector.Prospect(); err != nil {
 		_ = db.Close()
 		return err

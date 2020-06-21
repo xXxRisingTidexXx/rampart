@@ -5,10 +5,10 @@ import (
 )
 
 type Mining struct {
-	DSNParams   map[string]string `yaml:"dsnParams"`
-	Prospectors *Prospectors      `yaml:"prospectors"`
+	DSNParams map[string]string `yaml:"dsnParams"`
+	Runners   *Runners          `yaml:"runners"`
 }
 
 func (mining *Mining) String() string {
-	return fmt.Sprintf("{%v %v}", mining.DSNParams, mining.Prospectors)
+	return fmt.Sprintf("{%v %v}", mining.DSNParams, mining.Runners)
 }

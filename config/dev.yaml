@@ -6,7 +6,7 @@ userAgent: &userAgent rampart-mining-bot/1.0.0
 srid: &srid 4326
 mining:
   dsnParams: *dsnParams
-  prospectors:
+  runners:
     domria:
       fetcher:
         timeout: 30s
