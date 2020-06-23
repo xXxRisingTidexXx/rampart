@@ -28,7 +28,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	runner := domria.NewRunner(cfg.Mining.Runners.DomriaPrimary, db)
+	runner := domria.NewRunner(cfg.Mining.Miners.DomriaPrimary, db)
 	if *isOnce {
 		runner.Run()
 	} else {

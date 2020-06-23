@@ -6,9 +6,9 @@ import (
 
 type Mining struct {
 	DSNParams map[string]string `yaml:"dsnParams"`
-	Runners   *Runners          `yaml:"runners"`
+	Miners    *Miners           `yaml:"miners"`
 }
 
 func (mining *Mining) String() string {
-	return fmt.Sprintf("{%v %v}", mining.DSNParams, mining.Runners)
+	return fmt.Sprintf("{%v %v}", mining.DSNParams, mining.Miners)
 }
