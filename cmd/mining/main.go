@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"rampart/internal/config"
 	"rampart/internal/database"
-	"rampart/internal/mining/domria"
+	"rampart/internal/mining"
 	"rampart/internal/secrets"
 )
 
@@ -29,7 +29,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	miner := domria.NewMiner(cfg.Mining.Miners.DomriaPrimary, db)
+	miner, err := mining.Recognize("", cfg.Mining.Miners, db)
+	if err != nil {
+		_ = db.Close()
+		log.Fatal(err)
+	}
 	if *isOnce {
 		miner.Run()
 	} else {
