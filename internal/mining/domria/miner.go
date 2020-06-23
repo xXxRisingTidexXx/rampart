@@ -11,6 +11,7 @@ import (
 func NewMiner(config *config.Domria, db *sql.DB) *Miner {
 	return &Miner{
 		config.Housing,
+		config.Spec,
 		newFetcher(config.Fetcher),
 		newSanitizer(config.Sanitizer),
 		newGeocoder(config.Geocoder),
@@ -21,6 +22,7 @@ func NewMiner(config *config.Domria, db *sql.DB) *Miner {
 
 type Miner struct {
 	housing   misc.Housing
+	spec      string
 	fetcher   *fetcher
 	sanitizer *sanitizer
 	geocoder  *geocoder
@@ -43,5 +45,5 @@ func (miner *Miner) Run() {
 }
 
 func (miner *Miner) Spec() string {
-	return ""
+	return miner.spec
 }
