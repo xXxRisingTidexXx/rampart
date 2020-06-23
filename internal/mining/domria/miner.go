@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func NewRunner(config *config.Domria, db *sql.DB) *Miner {
+func NewMiner(config *config.Domria, db *sql.DB) *Miner {
 	return &Miner{
 		config.Housing,
 		newFetcher(config.Fetcher),

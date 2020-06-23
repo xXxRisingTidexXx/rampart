@@ -13,6 +13,7 @@ import (
 
 func main() {
 	isOnce := flag.Bool("once", false, "Execute a single workflow instead of the whole schedule")
+
 	flag.Parse()
 	log.SetLevel(log.DebugLevel)
 	log.Debug("main: mining started")
@@ -28,12 +29,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	runner := domria.NewRunner(cfg.Mining.Miners.DomriaPrimary, db)
+	miner := domria.NewMiner(cfg.Mining.Miners.DomriaPrimary, db)
 	if *isOnce {
-		runner.Run()
+		miner.Run()
 	} else {
 		scheduler := cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
-		if _, err = scheduler.AddJob(runner.Spec(), runner); err != nil {
+		if _, err = scheduler.AddJob(miner.Spec(), miner); err != nil {
 			_ = db.Close()
 			log.Fatalf("main: mining failed to schedule, %v", err)
 		}
