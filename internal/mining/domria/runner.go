@@ -41,3 +41,7 @@ func (runner *Runner) Run() {
 	runner.storer.storeFlats(flats)
 	log.Debugf("domria: runner run (%.3fs)", time.Since(start).Seconds())
 }
+
+func (runner *Runner) Spec() string {
+	return ""
+}
