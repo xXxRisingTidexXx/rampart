@@ -29,3 +29,10 @@ func NewDatabase(dsn string, params map[string]string) (*sql.DB, error) {
 	}
 	return db, nil
 }
+
+func Close(db *sql.DB) error {
+	if err := db.Close(); err != nil {
+		return fmt.Errorf("database: failed to close the db, %v", err)
+	}
+	return nil
+}

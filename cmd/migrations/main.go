@@ -28,8 +28,8 @@ func main() {
 		_ = db.Close()
 		log.Fatal(err)
 	}
-	if err = db.Close(); err != nil {
-		log.Fatalf("main: failed to close the db, %v", err)
+	if err = database.Close(db); err != nil {
+		log.Fatal(err)
 	}
 	log.Debug("main: migrations finished")
 }
