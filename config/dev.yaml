@@ -55,10 +55,12 @@ mining:
         updateTiming: 168h
     domriaPrimary:
       <<: *domria
+      alias: domria-primary
       housing: primary
       spec: '@every 1h'
     domriaSecondary:
       <<: *domria
+      alias: domria-secondary
       housing: secondary
       spec: '@every 20m'
 migrations:

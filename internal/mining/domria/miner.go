@@ -10,6 +10,7 @@ import (
 
 func NewMiner(config *config.Domria, db *sql.DB) *Miner {
 	return &Miner{
+		config.Alias,
 		config.Housing,
 		config.Spec,
 		newFetcher(config.Fetcher),
@@ -21,6 +22,7 @@ func NewMiner(config *config.Domria, db *sql.DB) *Miner {
 }
 
 type Miner struct {
+	alias     string
 	housing   misc.Housing
 	spec      string
 	fetcher   *fetcher
@@ -28,6 +30,14 @@ type Miner struct {
 	geocoder  *geocoder
 	validator *validator
 	storer    *storer
+}
+
+func (miner *Miner) Alias() string {
+	return miner.alias
+}
+
+func (miner *Miner) Spec() string {
+	return miner.spec
 }
 
 func (miner *Miner) Run() {
@@ -42,8 +52,4 @@ func (miner *Miner) Run() {
 	flats = miner.validator.validateFlats(flats)
 	miner.storer.storeFlats(flats)
 	log.Debugf("domria: miner run (%.3fs)", time.Since(start).Seconds())
-}
-
-func (miner *Miner) Spec() string {
-	return miner.spec
 }
