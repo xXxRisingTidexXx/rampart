@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-func NewRunner(config *config.Domria, db *sql.DB) *Runner {
-	return &Runner{
+func NewRunner(config *config.Domria, db *sql.DB) *Miner {
+	return &Miner{
 		config.Housing,
 		newFetcher(config.Fetcher),
 		newSanitizer(config.Sanitizer),
@@ -19,7 +19,7 @@ func NewRunner(config *config.Domria, db *sql.DB) *Runner {
 	}
 }
 
-type Runner struct {
+type Miner struct {
 	housing   misc.Housing
 	fetcher   *fetcher
 	sanitizer *sanitizer
@@ -28,20 +28,20 @@ type Runner struct {
 	storer    *storer
 }
 
-func (runner *Runner) Run() {
+func (miner *Miner) Run() {
 	start := time.Now()
-	flats, err := runner.fetcher.fetchFlats(runner.housing)
+	flats, err := miner.fetcher.fetchFlats(miner.housing)
 	if err != nil {
 		log.Error(err)
 		return
 	}
-	flats = runner.sanitizer.sanitizeFlats(flats)
-	flats = runner.geocoder.geocodeFlats(flats)
-	flats = runner.validator.validateFlats(flats)
-	runner.storer.storeFlats(flats)
-	log.Debugf("domria: runner run (%.3fs)", time.Since(start).Seconds())
+	flats = miner.sanitizer.sanitizeFlats(flats)
+	flats = miner.geocoder.geocodeFlats(flats)
+	flats = miner.validator.validateFlats(flats)
+	miner.storer.storeFlats(flats)
+	log.Debugf("domria: miner run (%.3fs)", time.Since(start).Seconds())
 }
 
-func (runner *Runner) Spec() string {
+func (miner *Miner) Spec() string {
 	return ""
 }

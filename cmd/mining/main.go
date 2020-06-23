@@ -35,7 +35,7 @@ func main() {
 		scheduler := cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
 		if _, err = scheduler.AddJob(runner.Spec(), runner); err != nil {
 			_ = db.Close()
-			log.Fatal("main: mining failed to schedule, %v", err)
+			log.Fatalf("main: mining failed to schedule, %v", err)
 		}
 		scheduler.Run()
 	}
