@@ -29,7 +29,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	miner, err := mining.Recognize("", cfg.Mining.Miners, db)
+	miner, err := mining.Find("", cfg.Mining.Miners, db)
 	if err != nil {
 		_ = db.Close()
 		log.Fatal(err)
@@ -44,8 +44,6 @@ func main() {
 		}
 		scheduler.Run()
 	}
-	if err = database.Close(db); err != nil {
-		log.Fatal(db)
-	}
+	database.CloseDatabase(db)
 	log.Debug("main: mining finished")
 }
