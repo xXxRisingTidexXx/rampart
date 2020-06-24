@@ -7,7 +7,7 @@ import (
 	"rampart/internal/mining/domria"
 )
 
-func Recognize(alias string, config *config.Miners, db *sql.DB) (Miner, error) {
+func Find(alias string, config *config.Miners, db *sql.DB) (Miner, error) {
 	miners := []Miner{
 		domria.NewMiner(config.DomriaPrimary, db),
 		domria.NewMiner(config.DomriaSecondary, db),
@@ -17,5 +17,5 @@ func Recognize(alias string, config *config.Miners, db *sql.DB) (Miner, error) {
 			return miner, nil
 		}
 	}
-	return nil, fmt.Errorf("mining: failed to recognize the miner with the alias %s", alias)
+	return nil, fmt.Errorf("mining: failed to find the miner with the alias %s", alias)
 }
