@@ -10,7 +10,7 @@ import (
 func newMigrator(db *sql.DB) (*migrator, error) {
 	tx, err := db.Begin()
 	if err != nil {
-		return nil, fmt.Errorf("migrations: failed to acquire a transaction, %v", err)
+		return nil, fmt.Errorf("migrations: failed to begin a transaction, %v", err)
 	}
 	return &migrator{tx}, nil
 }
@@ -73,7 +73,7 @@ func (migrator *migrator) applyVersion(version *version) error {
 func (migrator *migrator) commit() error {
 	start := time.Now()
 	if err := migrator.tx.Commit(); err != nil {
-		return fmt.Errorf("migrations: migrator failed to commit the changes, %v", err)
+		return fmt.Errorf("migrations: migrator failed to commit a transaction, %v", err)
 	}
 	log.Debugf("migrations: migrator committed (%.3fs)", time.Since(start).Seconds())
 	return nil

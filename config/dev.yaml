@@ -1,13 +1,14 @@
 dsnParams: &dsnParams
   sslmode: disable
-  connect_timeout: '10'
   binary_parameters: yes
 userAgent: &userAgent rampart-mining-bot/1.0.0
 srid: &srid 4326
 mining:
-  dsnParams: *dsnParams
-  prospectors:
-    domria:
+  dsnParams:
+    <<: *dsnParams
+    connect_timeout: '10'
+  miners:
+    domria: &domria
       fetcher:
         timeout: 30s
         portion: 100
@@ -50,12 +51,19 @@ mining:
         maxLongitude: 180
         minLatitude: -90
         maxLatitude: 90
-      sifter:
-        totalAreaBias: 3
-        roomNumberBias: 1
-        floorBias: 1
-        totalFloorBias: 1
-        distanceBias: 0.001161854
+      storer:
         updateTiming: 168h
+    domriaPrimary:
+      <<: *domria
+      alias: domria-primary
+      housing: primary
+      spec: '@every 2m'
+    domriaSecondary:
+      <<: *domria
+      alias: domria-secondary
+      housing: secondary
+      spec: '@every 2m'
 migrations:
-  dsnParams: *dsnParams
+  dsnParams:
+    <<: *dsnParams
+    connect_timeout: '15'

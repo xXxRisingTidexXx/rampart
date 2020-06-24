@@ -3,10 +3,11 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	gourl "net/url"
 )
 
-func Setup(dsn string, params map[string]string) (*sql.DB, error) {
+func NewDatabase(dsn string, params map[string]string) (*sql.DB, error) {
 	url, err := gourl.Parse(dsn)
 	if err != nil {
 		return nil, fmt.Errorf("database: invalid dsn %s, %v", dsn, err)
@@ -28,4 +29,11 @@ func Setup(dsn string, params map[string]string) (*sql.DB, error) {
 		return nil, fmt.Errorf("database: failed to ping the db, %v", err)
 	}
 	return db, nil
+}
+
+//nolint:interfacer
+func CloseDatabase(db *sql.DB) {
+	if err := db.Close(); err != nil {
+		log.Fatalf("database: failed to close the db, %v", err)
+	}
 }
