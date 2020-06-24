@@ -57,12 +57,12 @@ mining:
       <<: *domria
       alias: domria-primary
       housing: primary
-      spec: '@every 1h'
+      spec: '@every 2m'
     domriaSecondary:
       <<: *domria
       alias: domria-secondary
       housing: secondary
-      spec: '@every 20m'
+      spec: '@every 2m'
 migrations:
   dsnParams:
     <<: *dsnParams
