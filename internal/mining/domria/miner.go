@@ -51,5 +51,5 @@ func (miner *Miner) Run() {
 	flats = miner.geocoder.geocodeFlats(flats)
 	flats = miner.validator.validateFlats(flats)
 	miner.storer.storeFlats(flats)
-	log.Debugf("domria: miner run (%.3fs)", time.Since(start).Seconds())
+	log.Debugf("domria: %s miner run (%.3fs)", miner.alias, time.Since(start).Seconds())
 }
