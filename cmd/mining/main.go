@@ -13,7 +13,7 @@ import (
 
 func main() {
 	isOnce := flag.Bool("once", false, "Execute a single workflow instead of the whole schedule")
-
+	alias := flag.String("miner", "", "Desired miner alias")
 	flag.Parse()
 	log.SetLevel(log.DebugLevel)
 	log.Debug("main: mining started")
@@ -29,7 +29,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	miner, err := mining.Find("", cfg.Mining.Miners, db)
+	miner, err := mining.Find(*alias, cfg.Mining.Miners, db)
 	if err != nil {
 		_ = db.Close()
 		log.Fatal(err)

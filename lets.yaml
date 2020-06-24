@@ -19,10 +19,10 @@ commands:
     cmd: docker-compose up -d database
   run:
     description: Run the data mining app single workflow
-    cmd: ./mining -once
+    cmd: ./mining -once -miner domria-secondary
   schedule:
     description: Run the data mining app in a periodical manner
-    cmd: ./mining
+    cmd: ./mining -miner domria-secondary
   generate:
     description: Generate a new SQL migration file
     cmd: |
