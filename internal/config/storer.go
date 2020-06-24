@@ -6,7 +6,7 @@ import (
 )
 
 type Storer struct {
-	UpdateTiming   misc.Timing `yaml:"updateTiming"`
+	UpdateTiming misc.Timing `yaml:"updateTiming"`
 }
 
 func (storer *Storer) String() string {
