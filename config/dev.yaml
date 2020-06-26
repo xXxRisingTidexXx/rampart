@@ -7,6 +7,12 @@ mining:
   dsnParams:
     <<: *dsnParams
     connect_timeout: '10'
+  metrics:
+    server:
+      port: 9050
+      readTimeout: 5s
+      writeTimeout: 5s
+      maxHeaderBytes: 1048576
   miners:
     domria: &domria
       fetcher:

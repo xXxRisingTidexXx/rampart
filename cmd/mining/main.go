@@ -8,6 +8,7 @@ import (
 	"rampart/internal/config"
 	"rampart/internal/database"
 	"rampart/internal/mining"
+	"rampart/internal/mining/metrics"
 	"rampart/internal/secrets"
 )
 
@@ -42,6 +43,7 @@ func main() {
 			_ = db.Close()
 			log.Fatalf("main: mining failed to schedule, %v", err)
 		}
+		metrics.Run(cfg.Mining.Metrics.Server)
 		scheduler.Run()
 	}
 	database.CloseDatabase(db)
