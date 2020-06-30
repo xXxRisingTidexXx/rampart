@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func Run(config *config.Server) {
+func RunServer(config *config.Server) {
 	server := &http.Server{
 		Addr:           ":" + strconv.Itoa(config.Port),
 		ReadTimeout:    time.Duration(config.ReadTimeout),

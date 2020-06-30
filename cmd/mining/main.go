@@ -43,7 +43,7 @@ func main() {
 			_ = db.Close()
 			log.Fatalf("main: mining failed to schedule, %v", err)
 		}
-		metrics.Run(cfg.Mining.Metrics.Server)
+		metrics.RunServer(cfg.Mining.Metrics.Server)
 		scheduler.Run()
 	}
 	database.CloseDatabase(db)
