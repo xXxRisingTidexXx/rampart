@@ -30,9 +30,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	gatherer := metrics.NewGatherer(*alias)
 	miner, err := mining.FindMiner(*alias, cfg.Mining.Miners, db)
 	if err != nil {
 		_ = db.Close()
+		_ = gatherer.Unregister()
 		log.Fatal(err)
 	}
 	if *isOnce {
@@ -41,10 +43,15 @@ func main() {
 		scheduler := cron.New(cron.WithChain(cron.Recover(cron.DefaultLogger)))
 		if _, err = scheduler.AddJob(miner.Spec(), miner); err != nil {
 			_ = db.Close()
+			_ = gatherer.Unregister()
 			log.Fatalf("main: mining failed to schedule, %v", err)
 		}
 		metrics.RunServer(cfg.Mining.Metrics.Server)
 		scheduler.Run()
+	}
+	if err = gatherer.Unregister(); err != nil {
+		_ = db.Close()
+		log.Fatal(err)
 	}
 	database.CloseDatabase(db)
 	log.Debug("main: mining finished")
