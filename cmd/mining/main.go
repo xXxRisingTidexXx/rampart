@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	miner, err := mining.Find(*alias, cfg.Mining.Miners, db)
+	miner, err := mining.FindMiner(*alias, cfg.Mining.Miners, db)
 	if err != nil {
 		_ = db.Close()
 		log.Fatal(err)

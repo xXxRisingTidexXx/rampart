@@ -7,7 +7,7 @@ import (
 	"rampart/internal/mining/domria"
 )
 
-func Find(alias string, config *config.Miners, db *sql.DB) (Miner, error) {
+func FindMiner(alias string, config *config.Miners, db *sql.DB) (Miner, error) {
 	miners := []Miner{
 		domria.NewMiner(config.DomriaPrimary, db),
 		domria.NewMiner(config.DomriaSecondary, db),
