@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	log "github.com/sirupsen/logrus"
 	"rampart/internal/config"
+	"rampart/internal/mining/metrics"
 	"rampart/internal/misc"
 	"time"
 )
 
-func NewMiner(config *config.Domria, db *sql.DB) *Miner {
+func NewMiner(config *config.Domria, db *sql.DB, gatherer *metrics.Gatherer) *Miner {
 	return &Miner{
 		config.Alias,
 		config.Housing,
@@ -18,6 +19,7 @@ func NewMiner(config *config.Domria, db *sql.DB) *Miner {
 		newGeocoder(config.Geocoder),
 		newValidator(config.Validator),
 		newStorer(db, config.Storer),
+		gatherer,
 	}
 }
 
@@ -30,6 +32,7 @@ type Miner struct {
 	geocoder  *geocoder
 	validator *validator
 	storer    *storer
+	gatherer  *metrics.Gatherer
 }
 
 func (miner *Miner) Alias() string {
@@ -51,5 +54,7 @@ func (miner *Miner) Run() {
 	flats = miner.geocoder.geocodeFlats(flats)
 	flats = miner.validator.validateFlats(flats)
 	miner.storer.storeFlats(flats)
-	log.Debugf("domria: miner run (%.3fs)", time.Since(start).Seconds())
+	duration := time.Since(start).Seconds()
+	miner.gatherer.GatherMiningDuration(duration)
+	log.Debugf("domria: miner run (%.3fs)", duration)
 }

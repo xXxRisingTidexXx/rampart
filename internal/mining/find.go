@@ -5,12 +5,18 @@ import (
 	"fmt"
 	"rampart/internal/config"
 	"rampart/internal/mining/domria"
+	"rampart/internal/mining/metrics"
 )
 
-func FindMiner(alias string, config *config.Miners, db *sql.DB) (Miner, error) {
+func FindMiner(
+	alias string,
+	config *config.Miners,
+	db *sql.DB,
+	gatherer *metrics.Gatherer,
+) (Miner, error) {
 	miners := []Miner{
-		domria.NewMiner(config.DomriaPrimary, db),
-		domria.NewMiner(config.DomriaSecondary, db),
+		domria.NewMiner(config.DomriaPrimary, db, gatherer),
+		domria.NewMiner(config.DomriaSecondary, db, gatherer),
 	}
 	for _, miner := range miners {
 		if miner.Alias() == alias {
