@@ -2,14 +2,13 @@ package config
 
 import (
 	"fmt"
-	"rampart/internal/misc"
 )
 
 type Server struct {
-	Port int `yaml:"port"`
-	ReadTimeout misc.Timing `yaml:"readTimeout"`
-	WriteTimeout misc.Timing `yaml:"writeTimeout"`
-	MaxHeaderBytes int `yaml:"maxHeaderBytes"`
+	Port           int    `yaml:"port"`
+	ReadTimeout    Timing `yaml:"readTimeout"`
+	WriteTimeout   Timing `yaml:"writeTimeout"`
+	MaxHeaderBytes int    `yaml:"maxHeaderBytes"`
 }
 
 func (server *Server) String() string {

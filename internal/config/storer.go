@@ -2,11 +2,10 @@ package config
 
 import (
 	"fmt"
-	"rampart/internal/misc"
 )
 
 type Storer struct {
-	UpdateTiming misc.Timing `yaml:"updateTiming"`
+	UpdateTiming Timing `yaml:"updateTiming"`
 }
 
 func (storer *Storer) String() string {
