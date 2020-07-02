@@ -5,11 +5,14 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
+	"os"
+	"os/signal"
 	"rampart/internal/config"
 	"rampart/internal/database"
 	"rampart/internal/mining"
 	"rampart/internal/mining/metrics"
 	"rampart/internal/secrets"
+	"syscall"
 )
 
 func main() {
@@ -46,7 +49,11 @@ func main() {
 			log.Fatalf("main: mining failed to schedule, %v", err)
 		}
 		metrics.RunServer(cfg.Mining.Server)
-		scheduler.Run()
+		scheduler.Start()
+		signalChannel := make(chan os.Signal, 1)
+		signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)
+		<-signalChannel
+		scheduler.Stop()
 	}
 	if err = gatherer.Unregister(); err != nil {
 		_ = db.Close()
