@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	gatherer := metrics.NewGatherer(*alias, cfg.Mining.Metrics.Gatherer)
+	gatherer := metrics.NewGatherer(*alias, cfg.Mining.Gatherer)
 	miner, err := mining.FindMiner(*alias, cfg.Mining.Miners, db, gatherer)
 	if err != nil {
 		_ = db.Close()
@@ -46,7 +46,7 @@ func main() {
 			_ = gatherer.Unregister()
 			log.Fatalf("main: mining failed to schedule, %v", err)
 		}
-		metrics.RunServer(cfg.Mining.Metrics.Server)
+		metrics.RunServer(cfg.Mining.Server)
 		scheduler.Run()
 	}
 	if err = gatherer.Unregister(); err != nil {

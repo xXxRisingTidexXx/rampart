@@ -7,26 +7,25 @@ mining:
   dsnParams:
     <<: *dsnParams
     connect_timeout: '10'
-  metrics:
-    server:
-      port: 9050
-      readTimeout: 5s
-      writeTimeout: 5s
-      maxHeaderBytes: 1048576
-    gatherer:
-      miningDurationTracker:
-        name: rampart_mining_duration
-        help: Total elapsed time of a single miner execution in seconds
-        buckets:
-          - 1
-          - 2
-          - 4
-          - 10
-          - 15
-          - 30
-          - 60
-        labels:
-          - miner
+  gatherer:
+    miningDurationTracker:
+      name: rampart_mining_duration
+      help: Total elapsed time of a single miner execution in seconds
+      buckets:
+        - 1
+        - 2
+        - 4
+        - 10
+        - 15
+        - 30
+        - 60
+      labels:
+        - miner
+  server:
+    port: 9050
+    readTimeout: 5s
+    writeTimeout: 5s
+    maxHeaderBytes: 1048576
   miners:
     domria: &domria
       fetcher:
