@@ -17,7 +17,6 @@ func main() {
 	alias := flag.String("miner", "", "Desired miner alias")
 	flag.Parse()
 	log.SetLevel(log.DebugLevel)
-	log.Debug("main: mining started")
 	scr, err := secrets.NewSecrets()
 	if err != nil {
 		log.Fatal(err)
@@ -56,5 +55,4 @@ func main() {
 	if err = database.CloseDatabase(db); err != nil {
 		log.Fatal(err)
 	}
-	log.Debug("main: mining finished")
 }

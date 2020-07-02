@@ -11,7 +11,6 @@ import (
 
 func main() {
 	log.SetLevel(log.DebugLevel)
-	log.Debug("main: migrations started")
 	scr, err := secrets.NewSecrets()
 	if err != nil {
 		log.Fatal(err)
@@ -31,5 +30,4 @@ func main() {
 	if err = database.CloseDatabase(db); err != nil {
 		log.Fatal(err)
 	}
-	log.Debug("main: migrations finished")
 }
