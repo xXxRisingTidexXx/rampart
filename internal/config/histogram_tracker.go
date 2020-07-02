@@ -5,10 +5,10 @@ import (
 )
 
 type HistogramTracker struct {
-	Name    string   `yaml:"name"`
-	Help    string   `yaml:"help"`
-	Buckets Buckets  `yaml:"buckets"`
-	Labels  []string `yaml:"labels"`
+	Name    string    `yaml:"name"`
+	Help    string    `yaml:"help"`
+	Buckets []float64 `yaml:"buckets"`
+	Labels  []string  `yaml:"labels"`
 }
 
 func (tracker *HistogramTracker) String() string {

@@ -13,6 +13,20 @@ mining:
       readTimeout: 5s
       writeTimeout: 5s
       maxHeaderBytes: 1048576
+    gatherer:
+      miningDurationTracker:
+        name: rampart_mining_duration
+        help: Total elapsed time of a single miner execution in seconds
+        buckets:
+          - 1
+          - 2
+          - 4
+          - 10
+          - 15
+          - 30
+          - 60
+        labels:
+          - miner
   miners:
     domria: &domria
       fetcher:

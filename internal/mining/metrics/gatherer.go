@@ -1,6 +1,10 @@
 package metrics
 
-func NewGatherer(miner string) *Gatherer {
+import (
+	"rampart/internal/config"
+)
+
+func NewGatherer(miner string, config *config.Gatherer) *Gatherer {
 	return &Gatherer{newTracker(miner)}
 }
 

@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	gatherer := metrics.NewGatherer(*alias)
+	gatherer := metrics.NewGatherer(*alias, cfg.Mining.Metrics.Gatherer)
 	miner, err := mining.FindMiner(*alias, cfg.Mining.Miners, db, gatherer)
 	if err != nil {
 		_ = db.Close()
