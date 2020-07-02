@@ -5,11 +5,11 @@ import (
 )
 
 func NewGatherer(miner string, config *config.Gatherer) *Gatherer {
-	return &Gatherer{newTracker(miner)}
+	return &Gatherer{newHistogramTracker(miner, config.MiningDurationTracker)}
 }
 
 type Gatherer struct {
-	miningDurationTracker *tracker
+	miningDurationTracker *histogramTracker
 }
 
 func (gatherer *Gatherer) GatherMiningDuration(miningDuration float64) {
