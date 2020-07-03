@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	log.SetLevel(log.DebugLevel)
+	log.SetLevel(log.InfoLevel)
 	scr, err := secrets.NewSecrets()
 	if err != nil {
 		log.Fatal(err)

@@ -19,7 +19,7 @@ func main() {
 	isOnce := flag.Bool("once", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
 	flag.Parse()
-	log.SetLevel(log.DebugLevel)
+	log.SetLevel(log.InfoLevel)
 	scr, err := secrets.NewSecrets()
 	if err != nil {
 		log.Fatal(err)
