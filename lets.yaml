@@ -35,9 +35,14 @@ commands:
     description: Run the data mining app single workflow
     cmd: ./mining -once -miner domria-secondary
   run:
-    description: Run rampart mining app in a periodical manner
-    cmd: ./mining -miner domria-secondary
+    description: Run rampart ecosystem
+    cmd: |
+      ./mining -miner domria-primary &
+      ./mining -miner domria-secondary &
   stop:
+    description: Stop all rampart apps
+    cmd: pkill mining
+  down:
     description: Dispose all docker stuff
     cmd: docker-compose down
   format:
