@@ -22,7 +22,6 @@ mining:
       labels:
         - miner
   server:
-    port: 9050
     readTimeout: 5s
     writeTimeout: 5s
     maxHeaderBytes: 1048576
@@ -77,11 +76,13 @@ mining:
       alias: domria-primary
       housing: primary
       spec: '@every 2m'
+      port: 9001
     domriaSecondary:
       <<: *domria
       alias: domria-secondary
       housing: secondary
       spec: '@every 2m'
+      port: 9002
 migrations:
   dsnParams:
     <<: *dsnParams
