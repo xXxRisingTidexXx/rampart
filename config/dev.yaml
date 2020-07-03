@@ -8,6 +8,48 @@ mining:
     <<: *dsnParams
     connect_timeout: '10'
   gatherer:
+    failedFetchingTracker:
+      name: rampart_failed_fetching
+      help: Total number of failed flat fetching attempts
+      labels:
+        - miner
+    fetchingDurationTracker:
+      name: rampart_fetching_duration
+      help: Total elapsed time of a single flat API call in seconds
+      buckets:
+        - 0.1
+        - 0.5
+        - 1
+        - 1.5
+        - 2
+        - 5
+        - 10
+      labels:
+        - miner
+    fetchedFlatsTracker:
+      name: rampart_fetched_flats
+      help: Total amount of fetched flats
+      labels:
+        - miner
+    pointlessFlatsTracker:
+      name: rampart_pointless_flats
+      help: Total count of flats without distinct points
+      labels:
+        - miner
+    geocodingDurationTracker:
+      name: rampart_geocoding_duration
+      help: Total elapsed time of a single Nominatim API call in seconds
+      buckets:
+        - 0.5
+        - 1
+        - 1.5
+        - 2
+        - 5
+      labels:
+        - miner
+
+
+
     miningDurationTracker:
       name: rampart_mining_duration
       help: Total elapsed time of a single miner execution in seconds
