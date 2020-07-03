@@ -3,7 +3,6 @@ package domria
 import (
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"github.com/twpayne/go-geom"
 	"io/ioutil"
 	"net/http"
@@ -39,21 +38,17 @@ func (fetcher *fetcher) fetchFlats(housing misc.Housing) ([]*flat, error) {
 	if !ok {
 		return nil, fmt.Errorf("domria: fetcher doesn't accept %v housing", housing)
 	}
-	start := time.Now()
 	bytes, err := fetcher.getSearch(flag)
 	if err != nil {
 		return nil, err
 	}
-	duration := time.Since(start).Seconds()
 	flats, err := fetcher.unmarshalSearch(bytes, housing)
 	if err != nil {
 		return nil, err
 	}
 	if length := len(flats); length > 0 {
-		log.Debugf("domria: fetcher fetched %d flats on %d page (%.3fs)", length, fetcher.page, duration)
 		fetcher.page++
 	} else {
-		log.Debugf("domria: fetcher reset on %d page (%.3fs)", fetcher.page, duration)
 		fetcher.page = 0
 	}
 	return flats, nil
