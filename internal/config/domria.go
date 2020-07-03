@@ -6,9 +6,10 @@ import (
 )
 
 type Domria struct {
-	Alias     string
+	Alias     string       `yaml:"alias"`
 	Housing   misc.Housing `yaml:"housing"`
 	Spec      string       `yaml:"spec"`
+	Port      int          `yaml:"port"`
 	Fetcher   *Fetcher     `yaml:"fetcher"`
 	Sanitizer *Sanitizer   `yaml:"sanitizer"`
 	Geocoder  *Geocoder    `yaml:"geocoder"`
@@ -18,10 +19,11 @@ type Domria struct {
 
 func (domria *Domria) String() string {
 	return fmt.Sprintf(
-		"{%s %s %s %v %v %v %v %v}",
+		"{%s %s %s %d %v %v %v %v %v}",
 		domria.Alias,
 		domria.Housing,
 		domria.Spec,
+		domria.Port,
 		domria.Fetcher,
 		domria.Sanitizer,
 		domria.Geocoder,

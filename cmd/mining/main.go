@@ -48,7 +48,7 @@ func main() {
 			_ = gatherer.Unregister()
 			log.Fatalf("main: mining failed to schedule, %v", err)
 		}
-		metrics.RunServer(cfg.Mining.Server)
+		metrics.RunServer(miner.Port(), cfg.Mining.Server)
 		scheduler.Start()
 		signalChannel := make(chan os.Signal, 1)
 		signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)

@@ -11,9 +11,9 @@ import (
 
 func NewMiner(config *config.Domria, db *sql.DB, gatherer *metrics.Gatherer) *Miner {
 	return &Miner{
-		config.Alias,
 		config.Housing,
 		config.Spec,
+		config.Port,
 		newFetcher(config.Fetcher),
 		newSanitizer(config.Sanitizer),
 		newGeocoder(config.Geocoder),
@@ -24,23 +24,15 @@ func NewMiner(config *config.Domria, db *sql.DB, gatherer *metrics.Gatherer) *Mi
 }
 
 type Miner struct {
-	alias     string
 	housing   misc.Housing
 	spec      string
+	port      int
 	fetcher   *fetcher
 	sanitizer *sanitizer
 	geocoder  *geocoder
 	validator *validator
 	storer    *storer
 	gatherer  *metrics.Gatherer
-}
-
-func (miner *Miner) Alias() string {
-	return miner.alias
-}
-
-func (miner *Miner) Spec() string {
-	return miner.spec
 }
 
 func (miner *Miner) Run() {
@@ -57,4 +49,12 @@ func (miner *Miner) Run() {
 	duration := time.Since(start).Seconds()
 	miner.gatherer.GatherMiningDuration(duration)
 	log.Debugf("domria: miner run (%.3fs)", duration)
+}
+
+func (miner *Miner) Spec() string {
+	return miner.spec
+}
+
+func (miner *Miner) Port() int {
+	return miner.port
 }
