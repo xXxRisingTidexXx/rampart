@@ -46,9 +46,7 @@ func (miner *Miner) Run() {
 	flats = miner.geocoder.geocodeFlats(flats)
 	flats = miner.validator.validateFlats(flats)
 	miner.storer.storeFlats(flats)
-	duration := time.Since(start).Seconds()
-	miner.gatherer.GatherMiningDuration(duration)
-	log.Debugf("domria: miner run (%.3fs)", duration)
+	miner.gatherer.GatherMiningDuration(time.Since(start).Seconds())
 }
 
 func (miner *Miner) Spec() string {
