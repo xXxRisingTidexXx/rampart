@@ -19,22 +19,11 @@ type storer struct {
 }
 
 func (storer *storer) storeFlats(flats []*flat) {
-	length := len(flats)
-	if length == 0 {
-		log.Debug("domria: storer skipped flats")
-		return
-	}
-	storedNumber, duration := 0.0, 0.0
 	for _, flat := range flats {
-		start := time.Now()
 		if err := storer.storeFlat(flat); err != nil {
 			log.Error(err)
-		} else {
-			storedNumber++
 		}
-		duration += time.Since(start).Seconds()
 	}
-	log.Debugf("domria: storer stored %.0f flats (%.3fs)", storedNumber, duration/float64(length))
 }
 
 func (storer *storer) storeFlat(flat *flat) error {
