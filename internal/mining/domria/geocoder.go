@@ -32,30 +32,18 @@ type geocoder struct {
 }
 
 func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
-	expectedLength := len(flats)
-	if expectedLength == 0 {
-		log.Debug("domria: geocoder skipped flats")
-		return flats
-	}
-	geocodedNumber, duration, newFlats := 0.0, 0.0, make([]*flat, 0, expectedLength)
+	newFlats := make([]*flat, 0, len(flats))
 	for _, flat := range flats {
 		if flat.point != nil {
 			newFlats = append(newFlats, flat)
 		} else if flat.district != "" && flat.street != "" && flat.houseNumber != "" {
-			start := time.Now()
-			geocodedNumber++
 			if newFlat, err := geocoder.geocodeFlat(flat); err != nil {
 				log.Error(err)
 			} else if newFlat != nil {
 				newFlats = append(newFlats, newFlat)
 			}
-			duration += time.Since(start).Seconds()
 		}
 	}
-	if geocodedNumber != 0 {
-		duration /= geocodedNumber
-	}
-	log.Debugf("domria: geocoder geocoded %d flats (%.3fs)", len(newFlats), duration)
 	return newFlats
 }
 
