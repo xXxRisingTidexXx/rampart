@@ -46,7 +46,7 @@ func main() {
 		if _, err = cron.AddJob(miner.Spec(), miner); err != nil {
 			_ = db.Close()
 			_ = gatherer.Unregister()
-			log.Fatalf("main: mining failed to schedule, %v", err)
+			log.Fatalf("main: mining failed to run, %v", err)
 		}
 		metrics.RunServer(miner.Port(), cfg.Mining.Server)
 		cron.Start()
