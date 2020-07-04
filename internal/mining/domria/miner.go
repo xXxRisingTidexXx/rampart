@@ -37,15 +37,15 @@ type Miner struct {
 
 func (miner *Miner) Run() {
 	start := time.Now()
-	flats, err := miner.fetcher.fetchFlats(miner.housing)
-	if err != nil {
+	if flats, err := miner.fetcher.fetchFlats(miner.housing); err != nil {
+		miner.gatherer.GatherFailedFetching()
 		log.Error(err)
-		return
+	} else {
+		flats = miner.sanitizer.sanitizeFlats(flats)
+		flats = miner.geocoder.geocodeFlats(flats)
+		flats = miner.validator.validateFlats(flats)
+		miner.storer.storeFlats(flats)
 	}
-	flats = miner.sanitizer.sanitizeFlats(flats)
-	flats = miner.geocoder.geocodeFlats(flats)
-	flats = miner.validator.validateFlats(flats)
-	miner.storer.storeFlats(flats)
 	miner.gatherer.GatherMiningDuration(time.Since(start).Seconds())
 }
 
