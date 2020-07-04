@@ -5,7 +5,7 @@ import (
 	"rampart/internal/misc"
 )
 
-type Domria struct {
+type DomriaMiner struct {
 	Alias     string       `yaml:"alias"`
 	Housing   misc.Housing `yaml:"housing"`
 	Spec      string       `yaml:"spec"`
@@ -17,7 +17,7 @@ type Domria struct {
 	Storer    *Storer      `yaml:"storer"`
 }
 
-func (domria *Domria) String() string {
+func (domria *DomriaMiner) String() string {
 	return fmt.Sprintf(
 		"{%s %s %s %d %v %v %v %v %v}",
 		domria.Alias,

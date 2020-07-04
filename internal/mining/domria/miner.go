@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func NewMiner(config *config.Domria, db *sql.DB, gatherer *metrics.Gatherer) *Miner {
+func NewMiner(config *config.DomriaMiner, db *sql.DB, gatherer *metrics.Gatherer) *Miner {
 	return &Miner{
 		config.Housing,
 		config.Spec,
