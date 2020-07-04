@@ -1,9 +1,7 @@
 package domria
 
 import (
-	log "github.com/sirupsen/logrus"
 	"rampart/internal/config"
-	"rampart/internal/misc"
 )
 
 func newValidator(config *config.Validator) *validator {
@@ -47,24 +45,18 @@ type validator struct {
 }
 
 func (validator *validator) validateFlats(flats []*flat) []*flat {
-	expectedLength := len(flats)
-	if expectedLength == 0 {
-		log.Debug("domria: validator skipped flats")
-		return flats
-	}
-	newFlats := make([]*flat, 0, expectedLength)
+	newFlats := make([]*flat, 0, len(flats))
 	for _, flat := range flats {
 		if validator.validateFlat(flat) {
 			newFlats = append(newFlats, flat)
 		}
 	}
-	log.Debugf("domria: validator validated %d flats", len(newFlats))
 	return newFlats
 }
 
 //nolint:gocognit
 func (validator *validator) validateFlat(flat *flat) bool {
-	if flat == nil || flat.roomNumber == 0 {
+	if flat.roomNumber == 0 {
 		return false
 	}
 	specificArea := flat.totalArea / float64(flat.roomNumber)
@@ -84,9 +76,6 @@ func (validator *validator) validateFlat(flat *flat) bool {
 		flat.floor <= flat.totalFloor &&
 		validator.minTotalFloor <= flat.totalFloor &&
 		flat.totalFloor <= validator.maxTotalFloor &&
-		(flat.housing == misc.Primary ||
-			flat.housing == misc.Secondary) &&
-		flat.point != nil &&
 		validator.minLongitude <= flat.point.X() &&
 		flat.point.X() <= validator.maxLongitude &&
 		validator.minLatitude <= flat.point.Y() &&
