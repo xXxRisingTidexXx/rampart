@@ -199,13 +199,13 @@ mining:
       <<: *domria
       alias: domria-primary
       housing: primary
-      spec: '@every 2m'
+      spec: '@every 30s'
       port: 9001
     domriaSecondary:
       <<: *domria
       alias: domria-secondary
       housing: secondary
-      spec: '@every 2m'
+      spec: '@every 30s'
       port: 9002
 migrations:
   dsnParams:
