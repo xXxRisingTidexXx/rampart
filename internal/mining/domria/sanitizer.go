@@ -1,7 +1,6 @@
 package domria
 
 import (
-	log "github.com/sirupsen/logrus"
 	"rampart/internal/config"
 	"strings"
 )
@@ -33,14 +32,12 @@ type sanitizer struct {
 func (sanitizer *sanitizer) sanitizeFlats(flats []*flat) []*flat {
 	length := len(flats)
 	if length == 0 {
-		log.Debug("domria: sanitizer skipped flats")
 		return flats
 	}
 	newFlats := make([]*flat, length)
 	for i, flat := range flats {
 		newFlats[i] = sanitizer.sanitizeFlat(flat)
 	}
-	log.Debugf("domria: sanitizer sanitized %d flats", length)
 	return newFlats
 }
 
