@@ -30,11 +30,7 @@ type sanitizer struct {
 }
 
 func (sanitizer *sanitizer) sanitizeFlats(flats []*flat) []*flat {
-	length := len(flats)
-	if length == 0 {
-		return flats
-	}
-	newFlats := make([]*flat, length)
+	newFlats := make([]*flat, len(flats))
 	for i, flat := range flats {
 		newFlats[i] = sanitizer.sanitizeFlat(flat)
 	}
