@@ -36,8 +36,8 @@ mining:
       help: Total amount of flats with accurate geo coordinates
       labels:
         - miner
-    insufficientAddressFlatsTracker:
-      name: rampart_insufficient_address_flats
+    unlocatedFlatsTracker:
+      name: rampart_unlocated_flats
       help: Total quantity of flats without distinct points and addresses
       labels:
         - miner
