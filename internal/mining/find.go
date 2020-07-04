@@ -15,7 +15,7 @@ func FindMiner(
 	gatherer *metrics.Gatherer,
 ) (Miner, error) {
 	miners := map[string]Miner{
-		config.DomriaPrimary.Alias: domria.NewMiner(config.DomriaPrimary, db, gatherer),
+		config.DomriaPrimary.Alias:   domria.NewMiner(config.DomriaPrimary, db, gatherer),
 		config.DomriaSecondary.Alias: domria.NewMiner(config.DomriaSecondary, db, gatherer),
 	}
 	if miner, ok := miners[alias]; ok {
