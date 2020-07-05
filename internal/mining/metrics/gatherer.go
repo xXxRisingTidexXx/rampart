@@ -24,7 +24,7 @@ func NewGatherer(miner string, config *config.Gatherer) *Gatherer {
 		newHistogramTracker(miner, config.ReadingDurationTracker),
 		newHistogramTracker(miner, config.CreationDurationTracker),
 		newHistogramTracker(miner, config.UpdateDurationTracker),
-		newHistogramTracker(miner, config.MiningDurationTracker),
+		newHistogramTracker(miner, config.RunDurationTracker),
 	}
 }
 
@@ -47,7 +47,7 @@ type Gatherer struct {
 	readingDurationTracker     *histogramTracker
 	creationDurationTracker    *histogramTracker
 	updateDurationTracker      *histogramTracker
-	miningDurationTracker      *histogramTracker
+	runDurationTracker         *histogramTracker
 }
 
 func (gatherer *Gatherer) GatherFailedFetching() {
@@ -122,10 +122,10 @@ func (gatherer *Gatherer) GatherUpdateDuration(updateDuration float64) {
 	gatherer.updateDurationTracker.track(updateDuration)
 }
 
-func (gatherer *Gatherer) GatherMiningDuration(miningDuration float64) {
-	gatherer.miningDurationTracker.track(miningDuration)
+func (gatherer *Gatherer) GatherRunDuration(runDuration float64) {
+	gatherer.runDurationTracker.track(runDuration)
 }
 
 func (gatherer *Gatherer) Unregister() error {
-	return gatherer.miningDurationTracker.unregister()
+	return gatherer.runDurationTracker.unregister()
 }

@@ -23,7 +23,7 @@ type Gatherer struct {
 	ReadingDurationTracker     *HistogramTracker `yaml:"readingDurationTracker"`
 	CreationDurationTracker    *HistogramTracker `yaml:"creationDurationTracker"`
 	UpdateDurationTracker      *HistogramTracker `yaml:"updateDurationTracker"`
-	MiningDurationTracker      *HistogramTracker `yaml:"miningDurationTracker"`
+	RunDurationTracker         *HistogramTracker `yaml:"runDurationTracker"`
 }
 
 func (gatherer *Gatherer) String() string {
@@ -47,6 +47,6 @@ func (gatherer *Gatherer) String() string {
 		gatherer.ReadingDurationTracker,
 		gatherer.CreationDurationTracker,
 		gatherer.UpdateDurationTracker,
-		gatherer.MiningDurationTracker,
+		gatherer.RunDurationTracker,
 	)
 }

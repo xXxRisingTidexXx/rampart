@@ -46,7 +46,7 @@ func (miner *Miner) Run() {
 		flats = miner.validator.validateFlats(flats)
 		miner.storer.storeFlats(flats)
 	}
-	miner.gatherer.GatherMiningDuration(time.Since(start).Seconds())
+	miner.gatherer.GatherRunDuration(time.Since(start).Seconds())
 }
 
 func (miner *Miner) Spec() string {

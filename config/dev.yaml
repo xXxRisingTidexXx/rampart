@@ -27,17 +27,17 @@ mining:
       labels:
         - miner
     fetchedFlatsTracker:
-      name: rampart_mining_fetched_flats
+      name: rampart_mining_fetched_flats_total
       help: Total amount of fetched flats
       labels:
         - miner
     locatedFlatsTracker:
-      name: rampart_mining_located_flats
+      name: rampart_mining_located_flats_total
       help: Total amount of flats with accurate geo coordinates
       labels:
         - miner
     unlocatedFlatsTracker:
-      name: rampart_mining_unlocated_flats
+      name: rampart_mining_unlocated_flats_total
       help: Total quantity of flats without distinct points and addresses
       labels:
         - miner
@@ -68,27 +68,27 @@ mining:
       labels:
         - miner
     validatedFlatsTracker:
-      name: rampart_mining_validated_flats
+      name: rampart_mining_validated_flats_total
       help: Total quantity of valid flats
       labels:
         - miner
     invalidatedFlatsTracker:
-      name: rampart_mining_invalidated_flats
+      name: rampart_mining_invalidated_flats_total
       help: Total amount of invalid flats
       labels:
         - miner
     createdFlatsTracker:
-      name: rampart_mining_created_flats
+      name: rampart_mining_created_flats_total
       help: Total count of inserted to the DB flats
       labels:
         - miner
     updatedFlatsTracker:
-      name: rampart_mining_updated_flats
+      name: rampart_mining_updated_flats_total
       help: Total count of modified flats
       labels:
         - miner
     unalteredFlatsTracker:
-      name: rampart_mining_unaltered_flats
+      name: rampart_mining_unaltered_flats_total
       help: Total count of flats without content changes
       labels:
         - miner
