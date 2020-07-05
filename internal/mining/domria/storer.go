@@ -21,7 +21,7 @@ type storer struct {
 func (storer *storer) storeFlats(flats []*flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {
-			log.Error(err)
+			log.Error(err)  // TODO: add log with field "origin_url"
 		}
 	}
 }

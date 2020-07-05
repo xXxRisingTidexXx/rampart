@@ -38,7 +38,7 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 			newFlats = append(newFlats, flat)
 		} else if flat.district != "" && flat.street != "" && flat.houseNumber != "" {
 			if newFlat, err := geocoder.geocodeFlat(flat); err != nil {
-				log.Error(err)
+				log.Error(err)  // TODO: add log with field "origin_url"
 			} else if newFlat != nil {
 				newFlats = append(newFlats, newFlat)
 			}
