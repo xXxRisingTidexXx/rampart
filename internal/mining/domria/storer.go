@@ -6,22 +6,25 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/twpayne/go-geom/encoding/ewkb"
 	"rampart/internal/config"
+	"rampart/internal/mining/metrics"
 	"time"
 )
 
-func newStorer(db *sql.DB, config *config.Storer) *storer {
-	return &storer{db, time.Duration(config.UpdateTiming)}
+func newStorer(db *sql.DB, config *config.Storer, gatherer *metrics.Gatherer) *storer {
+	return &storer{db, time.Duration(config.UpdateTiming), gatherer}
 }
 
 type storer struct {
 	db           *sql.DB
 	updateTiming time.Duration
+	gatherer     *metrics.Gatherer
 }
 
 func (storer *storer) storeFlats(flats []*flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {
 			log.Error(err)  // TODO: add log with field "origin_url"
+			storer.gatherer.GatherFailedStoring()
 		}
 	}
 }
@@ -31,7 +34,9 @@ func (storer *storer) storeFlat(flat *flat) error {
 	if err != nil {
 		return fmt.Errorf("domria: storer failed to begin a transaction, %v", err)
 	}
+	start := time.Now()
 	origin, err := storer.readFlat(tx, flat)
+	storer.gatherer.GatherReadingDuration(time.Since(start).Seconds())
 	if err != nil {
 		_ = tx.Rollback()
 		return err
