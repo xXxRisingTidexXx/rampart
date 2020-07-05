@@ -17,7 +17,7 @@ func NewMiner(config *config.DomriaMiner, db *sql.DB, gatherer *metrics.Gatherer
 		newFetcher(config.Fetcher, gatherer),
 		newSanitizer(config.Sanitizer),
 		newGeocoder(config.Geocoder, gatherer),
-		newValidator(config.Validator),
+		newValidator(config.Validator, gatherer),
 		newStorer(db, config.Storer),
 		gatherer,
 	}

@@ -2,9 +2,10 @@ package domria
 
 import (
 	"rampart/internal/config"
+	"rampart/internal/mining/metrics"
 )
 
-func newValidator(config *config.Validator) *validator {
+func newValidator(config *config.Validator, gatherer *metrics.Gatherer) *validator {
 	return &validator{
 		config.MinPrice,
 		config.MinTotalArea,
@@ -22,6 +23,7 @@ func newValidator(config *config.Validator) *validator {
 		config.MaxLongitude,
 		config.MinLatitude,
 		config.MaxLatitude,
+		gatherer,
 	}
 }
 
@@ -42,6 +44,7 @@ type validator struct {
 	maxLongitude    float64
 	minLatitude     float64
 	maxLatitude     float64
+	gatherer        *metrics.Gatherer
 }
 
 func (validator *validator) validateFlats(flats []*flat) []*flat {
@@ -49,6 +52,9 @@ func (validator *validator) validateFlats(flats []*flat) []*flat {
 	for _, flat := range flats {
 		if validator.validateFlat(flat) {
 			newFlats = append(newFlats, flat)
+			validator.gatherer.GatherValidatedFlats()
+		} else {
+			validator.gatherer.GatherInvalidatedFlats()
 		}
 	}
 	return newFlats
