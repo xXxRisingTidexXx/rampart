@@ -37,6 +37,7 @@ func newTestFetcher(searchURL string) *fetcher {
 			SearchURL: searchURL,
 			SRID:      4326,
 		},
+		nil,
 	)
 }
 

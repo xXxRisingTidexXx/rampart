@@ -7,11 +7,12 @@ import (
 	"io/ioutil"
 	"net/http"
 	"rampart/internal/config"
+	"rampart/internal/mining/metrics"
 	"rampart/internal/misc"
 	"time"
 )
 
-func newFetcher(config *config.Fetcher) *fetcher {
+func newFetcher(config *config.Fetcher, gatherer *metrics.Gatherer) *fetcher {
 	return &fetcher{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		0,
@@ -20,6 +21,7 @@ func newFetcher(config *config.Fetcher) *fetcher {
 		config.Headers,
 		config.SearchURL,
 		config.SRID,
+		gatherer,
 	}
 }
 
@@ -31,6 +33,7 @@ type fetcher struct {
 	headers   map[string]string
 	searchURL string
 	srid      int
+	gatherer  *metrics.Gatherer
 }
 
 func (fetcher *fetcher) fetchFlats(housing misc.Housing) ([]*flat, error) {
@@ -38,7 +41,9 @@ func (fetcher *fetcher) fetchFlats(housing misc.Housing) ([]*flat, error) {
 	if !ok {
 		return nil, fmt.Errorf("domria: fetcher doesn't accept %v housing", housing)
 	}
+	start := time.Now()
 	bytes, err := fetcher.getSearch(flag)
+	fetcher.gatherer.GatherFetchingDuration(time.Since(start).Seconds())
 	if err != nil {
 		return nil, err
 	}
@@ -46,11 +51,13 @@ func (fetcher *fetcher) fetchFlats(housing misc.Housing) ([]*flat, error) {
 	if err != nil {
 		return nil, err
 	}
-	if length := len(flats); length > 0 {
+	length := len(flats)
+	if length > 0 {
 		fetcher.page++
 	} else {
 		fetcher.page = 0
 	}
+	fetcher.gatherer.GatherFetchedFlats(length)
 	return flats, nil
 }
 
