@@ -14,9 +14,9 @@ func NewMiner(config *config.DomriaMiner, db *sql.DB, gatherer *metrics.Gatherer
 		config.Housing,
 		config.Spec,
 		config.Port,
-		newFetcher(config.Fetcher),
+		newFetcher(config.Fetcher, gatherer),
 		newSanitizer(config.Sanitizer),
-		newGeocoder(config.Geocoder),
+		newGeocoder(config.Geocoder, gatherer),
 		newValidator(config.Validator),
 		newStorer(db, config.Storer),
 		gatherer,
@@ -38,8 +38,8 @@ type Miner struct {
 func (miner *Miner) Run() {
 	start := time.Now()
 	if flats, err := miner.fetcher.fetchFlats(miner.housing); err != nil {
-		miner.gatherer.GatherFailedFetching()
 		log.Error(err)
+		miner.gatherer.GatherFailedFetching()
 	} else {
 		flats = miner.sanitizer.sanitizeFlats(flats)
 		flats = miner.geocoder.geocodeFlats(flats)

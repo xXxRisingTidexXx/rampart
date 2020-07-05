@@ -8,18 +8,20 @@ import (
 	"io/ioutil"
 	"net/http"
 	"rampart/internal/config"
+	"rampart/internal/mining/metrics"
 	"rampart/internal/misc"
 	"strings"
 	"time"
 )
 
-func newGeocoder(config *config.Geocoder) *geocoder {
+func newGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer) *geocoder {
 	return &geocoder{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		config.Headers,
 		config.StatelessCities,
 		config.SearchURL,
 		config.SRID,
+		gatherer,
 	}
 }
 
@@ -29,6 +31,7 @@ type geocoder struct {
 	statelessCities *misc.Set
 	searchURL       string
 	srid            int
+	gatherer        *metrics.Gatherer
 }
 
 func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
@@ -36,19 +39,28 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 	for _, flat := range flats {
 		if flat.point != nil {
 			newFlats = append(newFlats, flat)
+			geocoder.gatherer.GatherLocatedFlats()
 		} else if flat.district != "" && flat.street != "" && flat.houseNumber != "" {
 			if newFlat, err := geocoder.geocodeFlat(flat); err != nil {
 				log.Error(err)  // TODO: add log with field "origin_url"
+				geocoder.gatherer.GatherFailedGeocoding()
 			} else if newFlat != nil {
 				newFlats = append(newFlats, newFlat)
+				geocoder.gatherer.GatherSuccessfulGeocoding()
+			} else {
+				geocoder.gatherer.GatherEmptyGeocoding()
 			}
+		} else {
+			geocoder.gatherer.GatherUnlocatedFlats()
 		}
 	}
 	return newFlats
 }
 
 func (geocoder *geocoder) geocodeFlat(flat *flat) (*flat, error) {
+	start := time.Now()
 	bytes, err := geocoder.getLocations(flat)
+	geocoder.gatherer.GatherGeocodingDuration(time.Since(start).Seconds())
 	if err != nil {
 		return nil, err
 	}
