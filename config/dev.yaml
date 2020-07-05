@@ -9,12 +9,12 @@ mining:
     connect_timeout: '10'
   gatherer:
     failedFetchingTracker:
-      name: rampart_failed_fetching
+      name: rampart_mining_failed_fetching_requests
       help: Total number of failed flat fetching attempts
       labels:
         - miner
     fetchingDurationTracker:
-      name: rampart_fetching_duration
+      name: rampart_mining_fetching_duration_seconds
       help: Total elapsed time of a single flat API call in seconds
       buckets:
         - 0.1
@@ -27,37 +27,37 @@ mining:
       labels:
         - miner
     fetchedFlatsTracker:
-      name: rampart_fetched_flats
+      name: rampart_mining_fetched_flats
       help: Total amount of fetched flats
       labels:
         - miner
     locatedFlatsTracker:
-      name: rampart_located_flats
+      name: rampart_mining_located_flats
       help: Total amount of flats with accurate geo coordinates
       labels:
         - miner
     unlocatedFlatsTracker:
-      name: rampart_unlocated_flats
+      name: rampart_mining_unlocated_flats
       help: Total quantity of flats without distinct points and addresses
       labels:
         - miner
     failedGeocodingTracker:
-      name: rampart_failed_geocoding
+      name: rampart_mining_failed_geocoding_requests
       help: Total amount of flats whose Nominatim search yielded HTTP errors
       labels:
         - miner
     emptyGeocodingTracker:
-      name: rampart_empty_geocoding
+      name: rampart_mining_empty_geocoding_requests
       help: Total amount of flats whose Nominatim search yielded no responses
       labels:
         - miner
     successfulGeocodingTracker:
-      name: rampart_successful_geocoding
+      name: rampart_mining_successful_geocoding_requests
       help: Total amount of flats whose Nominatim search yielded coordinates
       labels:
         - miner
     geocodingDurationTracker:
-      name: rampart_geocoding_duration
+      name: rampart_mining_geocoding_duration_seconds
       help: Total elapsed time of a single Nominatim API call in seconds
       buckets:
         - 0.5
@@ -68,37 +68,37 @@ mining:
       labels:
         - miner
     validatedFlatsTracker:
-      name: rampart_validated_flats
+      name: rampart_mining_validated_flats
       help: Total quantity of valid flats
       labels:
         - miner
     invalidatedFlatsTracker:
-      name: rampart_invalidated_flats
+      name: rampart_mining_invalidated_flats
       help: Total amount of invalid flats
       labels:
         - miner
     createdFlatsTracker:
-      name: rampart_created_flats
+      name: rampart_mining_created_flats
       help: Total count of inserted to the DB flats
       labels:
         - miner
     updatedFlatsTracker:
-      name: rampart_updated_flats
+      name: rampart_mining_updated_flats
       help: Total count of modified flats
       labels:
         - miner
     unalteredFlatsTracker:
-      name: rampart_unaltered_flats
+      name: rampart_mining_unaltered_flats
       help: Total count of flats without content changes
       labels:
         - miner
     failedStoringTracker:
-      name: rampart_failed_storing
+      name: rampart_mining_failed_storing_queries
       help: Total quantity of failed flat storing transactions
       labels:
         - miner
     readingDurationTracker:
-      name: rampart_reading_duration
+      name: rampart_mining_reading_duration_seconds
       help: Total elapsed time of a single flat SQL reading in seconds
       buckets:
         - 0.001
@@ -111,7 +111,7 @@ mining:
       labels:
         - miner
     creationDurationTracker:
-      name: rampart_creation_duration
+      name: rampart_mining_creation_duration_seconds
       help: Total elapsed time of a single flat SQL insertion in seconds
       buckets:
         - 0.005
@@ -122,7 +122,7 @@ mining:
       labels:
         - miner
     updateDurationTracker:
-      name: rampart_update_duration
+      name: rampart_mining_update_duration_seconds
       help: Total elapsed time of a single flat SQL mutation in seconds
       buckets:
         - 0.005
@@ -132,8 +132,8 @@ mining:
         - 1
       labels:
         - miner
-    miningDurationTracker:
-      name: rampart_mining_duration
+    runDurationTracker:
+      name: rampart_mining_run_duration_seconds
       help: Total elapsed time of a single miner execution in seconds
       buckets:
         - 1
