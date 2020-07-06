@@ -34,6 +34,8 @@ type geocoder struct {
 	gatherer        *metrics.Gatherer
 }
 
+// TODO: add log with field "origin_url"
+// TODO: fix conditions
 func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 	newFlats := make([]*flat, 0, len(flats))
 	for _, flat := range flats {
@@ -42,7 +44,7 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 			geocoder.gatherer.GatherLocatedFlats()
 		} else if flat.district != "" && flat.street != "" && flat.houseNumber != "" {
 			if newFlat, err := geocoder.geocodeFlat(flat); err != nil {
-				log.Error(err)  // TODO: add log with field "origin_url"
+				log.Error(err)
 				geocoder.gatherer.GatherFailedGeocoding()
 			} else if newFlat != nil {
 				newFlats = append(newFlats, newFlat)
