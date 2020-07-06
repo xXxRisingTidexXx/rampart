@@ -193,8 +193,6 @@ mining:
         maxLongitude: 180
         minLatitude: -90
         maxLatitude: 90
-      storer:
-        updateTiming: 168h
     domriaPrimary:
       <<: *domria
       alias: domria-primary
