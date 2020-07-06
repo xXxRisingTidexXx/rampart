@@ -5,25 +5,24 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/twpayne/go-geom/encoding/ewkb"
-	"rampart/internal/config"
 	"rampart/internal/mining/metrics"
 	"time"
 )
 
-func newStorer(db *sql.DB, config *config.Storer, gatherer *metrics.Gatherer) *storer {
-	return &storer{db, time.Duration(config.UpdateTiming), gatherer}
+func newStorer(db *sql.DB, gatherer *metrics.Gatherer) *storer {
+	return &storer{db, gatherer}
 }
 
 type storer struct {
 	db           *sql.DB
-	updateTiming time.Duration
 	gatherer     *metrics.Gatherer
 }
 
+// TODO: add log with field "origin_url"
 func (storer *storer) storeFlats(flats []*flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {
-			log.Error(err)  // TODO: add log with field "origin_url"
+			log.Error(err)
 			storer.gatherer.GatherFailedStoring()
 		}
 	}
@@ -36,33 +35,51 @@ func (storer *storer) storeFlat(flat *flat) error {
 	}
 	start := time.Now()
 	origin, err := storer.readFlat(tx, flat)
-	storer.gatherer.GatherReadingDuration(time.Since(start).Seconds())
+	storer.gatherer.GatherReadingDuration(start)
 	if err != nil {
 		_ = tx.Rollback()
 		return err
 	}
-	if origin != nil {
-		isNewer := flat.updateTime.Sub(origin.updateTime) >= storer.updateTiming
-		if isNewer || !isNewer && flat.price < origin.price {
-			if err = storer.updateFlat(tx, flat); err != nil {
-				_ = tx.Rollback()
-				return err
-			}
+	message := "domria: storer failed to commit a transaction, %v"
+	if origin == nil {
+		start := time.Now()
+		err = storer.createFlat(tx, flat)
+		storer.gatherer.GatherCreationDuration(start)
+		if err != nil {
+			_ = tx.Rollback()
+			return err
 		}
-	} else if err = storer.createFlat(tx, flat); err != nil {
-		_ = tx.Rollback()
-		return err
+		if err = tx.Commit(); err != nil {
+			return fmt.Errorf(message, err)
+		}
+		storer.gatherer.GatherCreatedFlats()
+		return nil
+	}
+	if flat.updateTime.After(origin.updateTime) {
+		start := time.Now()
+		err = storer.updateFlat(tx, flat)
+		storer.gatherer.GatherUpdateDuration(start)
+		if err != nil {
+			_ = tx.Rollback()
+			return err
+		}
+		if err = tx.Commit(); err != nil {
+			return fmt.Errorf(message, err)
+		}
+		storer.gatherer.GatherUpdatedFlats()
+		return nil
 	}
 	if err = tx.Commit(); err != nil {
-		return fmt.Errorf("domria: storer failed to commit a transaction, %v", err)
+		return fmt.Errorf(message, err)
 	}
+	storer.gatherer.GatherUnalteredFlats()
 	return nil
 }
 
 func (storer *storer) readFlat(tx *sql.Tx, flat *flat) (*origin, error) {
-	row := tx.QueryRow(`select update_time, price from flats where origin_url = $1`, flat.originURL)
+	row := tx.QueryRow(`select update_time from flats where origin_url = $1`, flat.originURL)
 	var origin origin
-	switch err := row.Scan(&origin.updateTime, &origin.price); err {
+	switch err := row.Scan(&origin.updateTime); err {
 	case sql.ErrNoRows:
 		return nil, nil
 	case nil:
