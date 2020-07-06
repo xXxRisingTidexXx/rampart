@@ -43,7 +43,7 @@ func (fetcher *fetcher) fetchFlats(housing misc.Housing) ([]*flat, error) {
 	}
 	start := time.Now()
 	bytes, err := fetcher.getSearch(flag)
-	fetcher.gatherer.GatherFetchingDuration(time.Since(start).Seconds())
+	fetcher.gatherer.GatherFetchingDuration(start)
 	if err != nil {
 		return nil, err
 	}

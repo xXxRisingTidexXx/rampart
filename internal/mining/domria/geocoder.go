@@ -60,7 +60,7 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 func (geocoder *geocoder) geocodeFlat(flat *flat) (*flat, error) {
 	start := time.Now()
 	bytes, err := geocoder.getLocations(flat)
-	geocoder.gatherer.GatherGeocodingDuration(time.Since(start).Seconds())
+	geocoder.gatherer.GatherGeocodingDuration(start)
 	if err != nil {
 		return nil, err
 	}

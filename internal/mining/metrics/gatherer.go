@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"rampart/internal/config"
+	"time"
 )
 
 func NewGatherer(miner string, config *config.Gatherer) *Gatherer {
@@ -54,8 +55,8 @@ func (gatherer *Gatherer) GatherFailedFetching() {
 	gatherer.failedFetchingTracker.track(1)
 }
 
-func (gatherer *Gatherer) GatherFetchingDuration(fetchingDuration float64) {
-	gatherer.fetchingDurationTracker.track(fetchingDuration)
+func (gatherer *Gatherer) GatherFetchingDuration(start time.Time) {
+	gatherer.fetchingDurationTracker.track(time.Since(start).Seconds())
 }
 
 func (gatherer *Gatherer) GatherFetchedFlats(fetchedFlats int) {
@@ -82,8 +83,8 @@ func (gatherer *Gatherer) GatherSuccessfulGeocoding() {
 	gatherer.successfulGeocodingTracker.track(1)
 }
 
-func (gatherer *Gatherer) GatherGeocodingDuration(geocodingDuration float64) {
-	gatherer.geocodingDurationTracker.track(geocodingDuration)
+func (gatherer *Gatherer) GatherGeocodingDuration(start time.Time) {
+	gatherer.geocodingDurationTracker.track(time.Since(start).Seconds())
 }
 
 func (gatherer *Gatherer) GatherValidatedFlats() {
@@ -110,20 +111,20 @@ func (gatherer *Gatherer) GatherFailedStoring() {
 	gatherer.failedStoringTracker.track(1)
 }
 
-func (gatherer *Gatherer) GatherReadingDuration(readingDuration float64) {
-	gatherer.readingDurationTracker.track(readingDuration)
+func (gatherer *Gatherer) GatherReadingDuration(start time.Time) {
+	gatherer.readingDurationTracker.track(time.Since(start).Seconds())
 }
 
-func (gatherer *Gatherer) GatherCreationDuration(creationDuration float64) {
-	gatherer.creationDurationTracker.track(creationDuration)
+func (gatherer *Gatherer) GatherCreationDuration(start time.Time) {
+	gatherer.creationDurationTracker.track(time.Since(start).Seconds())
 }
 
-func (gatherer *Gatherer) GatherUpdateDuration(updateDuration float64) {
-	gatherer.updateDurationTracker.track(updateDuration)
+func (gatherer *Gatherer) GatherUpdateDuration(start time.Time) {
+	gatherer.updateDurationTracker.track(time.Since(start).Seconds())
 }
 
-func (gatherer *Gatherer) GatherRunDuration(runDuration float64) {
-	gatherer.runDurationTracker.track(runDuration)
+func (gatherer *Gatherer) GatherRunDuration(start time.Time) {
+	gatherer.runDurationTracker.track(time.Since(start).Seconds())
 }
 
 func (gatherer *Gatherer) Unregister() error {
