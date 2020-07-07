@@ -29,6 +29,8 @@ func NewGatherer(miner string, config *config.Gatherer) *Gatherer {
 	}
 }
 
+// TODO: probably, replace failed fetching with successful/failed runs.
+// TODO: probably, drop fetched flats.
 type Gatherer struct {
 	failedFetchingTracker      *counterTracker
 	fetchingDurationTracker    *histogramTracker

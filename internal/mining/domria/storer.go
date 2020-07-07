@@ -18,7 +18,7 @@ type storer struct {
 	gatherer *metrics.Gatherer
 }
 
-// TODO: add log with field "origin_url"
+// TODO: add log with field "origin_url".
 func (storer *storer) storeFlats(flats []*flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {

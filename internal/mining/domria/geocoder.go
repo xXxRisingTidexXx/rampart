@@ -34,7 +34,7 @@ type geocoder struct {
 	gatherer        *metrics.Gatherer
 }
 
-// TODO: add log with field "origin_url"
+// TODO: add log with field "origin_url".
 func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 	newFlats := make([]*flat, 0, len(flats))
 	for _, flat := range flats {
