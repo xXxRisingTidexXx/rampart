@@ -14,8 +14,8 @@ func newStorer(db *sql.DB, gatherer *metrics.Gatherer) *storer {
 }
 
 type storer struct {
-	db           *sql.DB
-	gatherer     *metrics.Gatherer
+	db       *sql.DB
+	gatherer *metrics.Gatherer
 }
 
 // TODO: add log with field "origin_url"
