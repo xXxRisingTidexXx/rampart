@@ -35,38 +35,44 @@ type geocoder struct {
 }
 
 // TODO: add log with field "origin_url"
-// TODO: fix conditions
 func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 	newFlats := make([]*flat, 0, len(flats))
 	for _, flat := range flats {
-		if flat.point != nil {
-			newFlats = append(newFlats, flat)
-			geocoder.gatherer.GatherLocatedFlats()
-		} else if flat.district != "" && flat.street != "" && flat.houseNumber != "" {
-			if newFlat, err := geocoder.geocodeFlat(flat); err != nil {
-				log.Error(err)
-				geocoder.gatherer.GatherFailedGeocoding()
-			} else if newFlat != nil {
-				newFlats = append(newFlats, newFlat)
-				geocoder.gatherer.GatherSuccessfulGeocoding()
-			} else {
-				geocoder.gatherer.GatherEmptyGeocoding()
-			}
-		} else {
-			geocoder.gatherer.GatherUnlocatedFlats()
+		if newFlat, err := geocoder.geocodeFlat(flat); err != nil {
+			log.Error(err)
+			geocoder.gatherer.GatherFailedGeocoding()
+		} else if newFlat != nil {
+			newFlats = append(newFlats, newFlat)
 		}
 	}
 	return newFlats
 }
 
 func (geocoder *geocoder) geocodeFlat(flat *flat) (*flat, error) {
+	if flat.point != nil {
+		geocoder.gatherer.GatherLocatedFlats()
+		return flat, nil
+	}
+	if flat.district == "" || flat.street == "" || flat.houseNumber == "" {
+		geocoder.gatherer.GatherUnlocatedFlats()
+		return nil, nil
+	}
 	start := time.Now()
 	bytes, err := geocoder.getLocations(flat)
 	geocoder.gatherer.GatherGeocodingDuration(start)
 	if err != nil {
 		return nil, err
 	}
-	return geocoder.locateFlat(flat, bytes)
+	newFlat, err := geocoder.locateFlat(flat, bytes)
+	if err != nil {
+		return nil, err
+	}
+	if newFlat == nil {
+		geocoder.gatherer.GatherEmptyGeocoding()
+		return nil, nil
+	}
+	geocoder.gatherer.GatherSuccessfulGeocoding()
+	return newFlat, nil
 }
 
 func (geocoder *geocoder) getLocations(flat *flat) ([]byte, error) {
