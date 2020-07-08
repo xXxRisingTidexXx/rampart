@@ -2,13 +2,14 @@ package config
 
 import (
 	"fmt"
+	"rampart/internal/misc"
 )
 
 type GeocodingTracker struct {
-	Name       string      `yaml:"name"`
-	Help       string      `yaml:"help"`
-	Labels     []string    `yaml:"labels"`
-	Categories *Categories `yaml:"categories"`
+	Name       string           `yaml:"name"`
+	Help       string           `yaml:"help"`
+	Labels     []string         `yaml:"labels"`
+	Categories *misc.Categories `yaml:"categories"`
 }
 
 func (tracker *GeocodingTracker) String() string {

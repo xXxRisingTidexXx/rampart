@@ -2,13 +2,14 @@ package config
 
 import (
 	"fmt"
+	"rampart/internal/misc"
 )
 
 type ValidationTracker struct {
-	Name     string    `yaml:"name"`
-	Help     string    `yaml:"help"`
-	Labels   []string  `yaml:"labels"`
-	Verdicts *Verdicts `yaml:"verdicts"`
+	Name     string         `yaml:"name"`
+	Help     string         `yaml:"help"`
+	Labels   []string       `yaml:"labels"`
+	Verdicts *misc.Verdicts `yaml:"verdicts"`
 }
 
 func (tracker *ValidationTracker) String() string {
