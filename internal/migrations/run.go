@@ -4,6 +4,7 @@ import (
 	"database/sql"
 )
 
+// TODO: shorten the house number column varchar length.
 func Run(db *sql.DB) error {
 	versions, err := listVersions()
 	if err != nil {
