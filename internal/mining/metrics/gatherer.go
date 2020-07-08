@@ -7,50 +7,12 @@ import (
 
 func NewGatherer(miner string, config *config.Gatherer) *Gatherer {
 	return &Gatherer{
-		newCounterTracker(miner, config.FailedFetchingTracker),
-		newHistogramTracker(miner, config.FetchingDurationTracker),
-		newCounterTracker(miner, config.FetchedFlatsTracker),
-		newCounterTracker(miner, config.LocatedFlatsTracker),
-		newCounterTracker(miner, config.UnlocatedFlatsTracker),
-		newCounterTracker(miner, config.FailedGeocodingTracker),
-		newCounterTracker(miner, config.EmptyGeocodingTracker),
-		newCounterTracker(miner, config.SuccessfulGeocodingTracker),
-		newHistogramTracker(miner, config.GeocodingDurationTracker),
-		newCounterTracker(miner, config.ValidatedFlatsTracker),
-		newCounterTracker(miner, config.InvalidatedFlatsTracker),
-		newCounterTracker(miner, config.CreatedFlatsTracker),
-		newCounterTracker(miner, config.UpdatedFlatsTracker),
-		newCounterTracker(miner, config.UnalteredFlatsTracker),
-		newCounterTracker(miner, config.FailedStoringTracker),
-		newHistogramTracker(miner, config.ReadingDurationTracker),
-		newHistogramTracker(miner, config.CreationDurationTracker),
-		newHistogramTracker(miner, config.UpdateDurationTracker),
-		newHistogramTracker(miner, config.RunDurationTracker),
+
 	}
 }
 
-// TODO: probably, replace failed fetching with successful/failed runs.
-// TODO: probably, drop fetched flats.
 type Gatherer struct {
-	failedFetchingTracker      *counterTracker
-	fetchingDurationTracker    *histogramTracker
-	fetchedFlatsTracker        *counterTracker
-	locatedFlatsTracker        *counterTracker
-	unlocatedFlatsTracker      *counterTracker
-	failedGeocodingTracker     *counterTracker
-	emptyGeocodingTracker      *counterTracker
-	successfulGeocodingTracker *counterTracker
-	geocodingDurationTracker   *histogramTracker
-	validatedFlatsTracker      *counterTracker
-	invalidatedFlatsTracker    *counterTracker
-	createdFlatsTracker        *counterTracker
-	updatedFlatsTracker        *counterTracker
-	unalteredFlatsTracker      *counterTracker
-	failedStoringTracker       *counterTracker
-	readingDurationTracker     *histogramTracker
-	creationDurationTracker    *histogramTracker
-	updateDurationTracker      *histogramTracker
-	runDurationTracker         *histogramTracker
+
 }
 
 func (gatherer *Gatherer) GatherFailedFetching() {

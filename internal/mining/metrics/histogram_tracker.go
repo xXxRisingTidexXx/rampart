@@ -7,29 +7,48 @@ import (
 	"rampart/internal/config"
 )
 
-func newHistogramTracker(miner string, config *config.DurationTracker) *histogramTracker {
+func newHistogramTracker(
+	config *config.HistogramTracker,
+	miner string,
+	targets []string,
+) *histogramTracker {
 	histogramVec := promauto.NewHistogramVec(
 		prometheus.HistogramOpts{Name: config.Name, Help: config.Help, Buckets: config.Buckets},
 		config.Labels,
 	)
-	return &histogramTracker{histogramVec, histogramVec.WithLabelValues(miner), config.Name, miner}
+	observerMap := make(map[string]prometheus.Observer, len(targets))
+	for _, target := range targets {
+		observerMap[target] = histogramVec.WithLabelValues(miner, target)
+	}
+	return &histogramTracker{histogramVec, observerMap, config.Name, miner}
 }
 
 type histogramTracker struct {
 	histogramVec *prometheus.HistogramVec
-	observer     prometheus.Observer
+	observerMap  map[string]prometheus.Observer
 	name         string
 	miner        string
 }
 
-func (tracker *histogramTracker) track(value float64) {
-	tracker.observer.Observe(value)
+func (tracker *histogramTracker) track(target string, value float64) {
+	observer, ok := tracker.observerMap[target]
+	if !ok {
+		panic(
+			fmt.Sprintf("metrics: %s histogram tracker failed to track target %s", tracker.name, target),
+		)
+	}
+	observer.Observe(value)
 }
 
 func (tracker *histogramTracker) unregister() error {
-	if tracker.histogramVec.DeleteLabelValues(tracker.miner) &&
-		prometheus.Unregister(tracker.histogramVec) {
+	err := fmt.Errorf("metrics: histogram tracker %s failed to unregister", tracker.name)
+	for target := range tracker.observerMap {
+		if !tracker.histogramVec.DeleteLabelValues(tracker.miner, target) {
+			return err
+		}
+	}
+	if prometheus.Unregister(tracker.histogramVec) {
 		return nil
 	}
-	return fmt.Errorf("metrics: %s histogram tracker failed to unregister", tracker.name)
+	return err
 }
