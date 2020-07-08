@@ -8,143 +8,70 @@ mining:
     <<: *dsnParams
     connect_timeout: '10'
   gatherer:
-    failedFetchingTracker:
-      name: rampart_mining_failed_fetching_requests
-      help: Total number of failed flat fetching attempts
+    runTracker:
+      name: rampart_mining_run_total
+      help: Total number of a certain job executions
       labels:
         - miner
-    fetchingDurationTracker:
-      name: rampart_mining_fetching_duration_seconds
-      help: Total elapsed time of a single flat API call in seconds
-      buckets:
-        - 0.1
-        - 0.5
-        - 1
-        - 1.5
-        - 2
-        - 5
-        - 10
+        - status
+      statuses:
+        success: success
+        failure: failure
+    geocodingTracker:
+      name: rampart_mining_geocoding_total
+      help: Total amount of flats passed through the Nominatim geocoder
       labels:
         - miner
-    fetchedFlatsTracker:
-      name: rampart_mining_fetched_flats_total
-      help: Total amount of fetched flats
+        - category
+      categories:
+        located: located
+        unlocated: unlocated
+        failed: failed
+        inconclusive: inconclusive
+        successful: successful
+    validationTracker:
+      name: rampart_mining_validation_total
+      help: Total amount of flats checked by validator
       labels:
         - miner
-    locatedFlatsTracker:
-      name: rampart_mining_located_flats_total
-      help: Total amount of flats with accurate geo coordinates
+        - verdict
+      verdicts:
+        valid: valid
+        invalid: invalid
+    storingTracker:
+      name: rampart_mining_storing_total
+      help: Total amount of flats affected the DB state
       labels:
         - miner
-    unlocatedFlatsTracker:
-      name: rampart_mining_unlocated_flats_total
-      help: Total quantity of flats without distinct points and addresses
-      labels:
-        - miner
-    failedGeocodingTracker:
-      name: rampart_mining_failed_geocoding_requests
-      help: Total amount of flats whose Nominatim search yielded HTTP errors
-      labels:
-        - miner
-    emptyGeocodingTracker:
-      name: rampart_mining_empty_geocoding_requests
-      help: Total amount of flats whose Nominatim search yielded no responses
-      labels:
-        - miner
-    successfulGeocodingTracker:
-      name: rampart_mining_successful_geocoding_requests
-      help: Total amount of flats whose Nominatim search yielded coordinates
-      labels:
-        - miner
-    geocodingDurationTracker:
-      name: rampart_mining_geocoding_duration_seconds
-      help: Total elapsed time of a single Nominatim API call in seconds
-      buckets:
-        - 0.5
-        - 1
-        - 1.5
-        - 2
-        - 5
-      labels:
-        - miner
-    validatedFlatsTracker:
-      name: rampart_mining_validated_flats_total
-      help: Total quantity of valid flats
-      labels:
-        - miner
-    invalidatedFlatsTracker:
-      name: rampart_mining_invalidated_flats_total
-      help: Total amount of invalid flats
-      labels:
-        - miner
-    createdFlatsTracker:
-      name: rampart_mining_created_flats_total
-      help: Total count of inserted to the DB flats
-      labels:
-        - miner
-    updatedFlatsTracker:
-      name: rampart_mining_updated_flats_total
-      help: Total count of modified flats
-      labels:
-        - miner
-    unalteredFlatsTracker:
-      name: rampart_mining_unaltered_flats_total
-      help: Total count of flats without content changes
-      labels:
-        - miner
-    failedStoringTracker:
-      name: rampart_mining_failed_storing_queries
-      help: Total quantity of failed flat storing transactions
-      labels:
-        - miner
-    readingDurationTracker:
-      name: rampart_mining_reading_duration_seconds
-      help: Total elapsed time of a single flat SQL reading in seconds
+        - consequence
+      consequences:
+        created: created
+        updated: updated
+        unaltered: unaltered
+        failed: failed
+    durationTracker:
+      name: rampart_mining_duration_seconds
+      help: Timing of a certain I/O-bound task execution
       buckets:
         - 0.001
-        - 0.005
-        - 0.01
-        - 0.05
-        - 0.1
-        - 0.5
-        - 1
-      labels:
-        - miner
-    creationDurationTracker:
-      name: rampart_mining_creation_duration_seconds
-      help: Total elapsed time of a single flat SQL insertion in seconds
-      buckets:
-        - 0.005
         - 0.01
         - 0.1
         - 0.5
-        - 1
-      labels:
-        - miner
-    updateDurationTracker:
-      name: rampart_mining_update_duration_seconds
-      help: Total elapsed time of a single flat SQL mutation in seconds
-      buckets:
-        - 0.005
-        - 0.01
-        - 0.1
-        - 0.5
-        - 1
-      labels:
-        - miner
-    runDurationTracker:
-      name: rampart_mining_run_duration_seconds
-      help: Total elapsed time of a single miner execution in seconds
-      buckets:
         - 1
         - 2
-        - 4
+        - 5
         - 10
-        - 15
         - 30
-        - 60
       labels:
         - miner
+        - process
+      processes:
+        fetching: fetching
+        geocoding: geocoding
+        reading: reading
+        creation: creation
+        update: update
+        run: run
   server:
     readTimeout: 5s
     writeTimeout: 5s
