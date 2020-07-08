@@ -7,7 +7,7 @@ import (
 	"rampart/internal/config"
 )
 
-func newHistogramTracker(miner string, config *config.HistogramTracker) *histogramTracker {
+func newHistogramTracker(miner string, config *config.DurationTracker) *histogramTracker {
 	histogramVec := promauto.NewHistogramVec(
 		prometheus.HistogramOpts{Name: config.Name, Help: config.Help, Buckets: config.Buckets},
 		config.Labels,

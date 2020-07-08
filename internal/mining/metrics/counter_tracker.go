@@ -7,7 +7,7 @@ import (
 	"rampart/internal/config"
 )
 
-func newCounterTracker(miner string, config *config.CounterTracker) *counterTracker {
+func newCounterTracker(miner string, config *config.RunTracker) *counterTracker {
 	counterVec := promauto.NewCounterVec(
 		prometheus.CounterOpts{Name: config.Name, Help: config.Help},
 		config.Labels,
