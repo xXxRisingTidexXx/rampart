@@ -29,7 +29,7 @@ type counterTracker struct {
 func (tracker *counterTracker) track(target string) {
 	counter, ok := tracker.counterMap[target]
 	if !ok {
-		panic(fmt.Sprintf("metrics: %s counter tracker failed to track target %s", tracker.name, target))
+		panic(fmt.Sprintf("metrics: counter tracker %s failed to track target %s", tracker.name, target))
 	}
 	counter.Inc()
 }

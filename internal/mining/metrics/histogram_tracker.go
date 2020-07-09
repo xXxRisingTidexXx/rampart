@@ -7,11 +7,7 @@ import (
 	"rampart/internal/config"
 )
 
-func newHistogramTracker(
-	config *config.HistogramTracker,
-	miner string,
-	targets []string,
-) *histogramTracker {
+func newHistogramTracker(config *config.HistogramTracker, miner string, targets []string) *histogramTracker {
 	histogramVec := promauto.NewHistogramVec(
 		prometheus.HistogramOpts{Name: config.Name, Help: config.Help, Buckets: config.Buckets},
 		config.Labels,
@@ -33,9 +29,7 @@ type histogramTracker struct {
 func (tracker *histogramTracker) track(target string, value float64) {
 	observer, ok := tracker.observerMap[target]
 	if !ok {
-		panic(
-			fmt.Sprintf("metrics: %s histogram tracker failed to track target %s", tracker.name, target),
-		)
+		panic(fmt.Sprintf("metrics: histogram tracker %s failed to track target %s", tracker.name, target))
 	}
 	observer.Observe(value)
 }

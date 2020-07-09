@@ -11,6 +11,10 @@ type Consequences struct {
 	Failed    string `yaml:"failed"`
 }
 
+func (consequences *Consequences) Targets() []string {
+	return []string{consequences.Created, consequences.Updated, consequences.Unaltered, consequences.Failed}
+}
+
 func (consequences *Consequences) String() string {
 	return fmt.Sprintf(
 		"{%s %s %s %s}",

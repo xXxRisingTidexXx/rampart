@@ -2,149 +2,126 @@ package metrics
 
 import (
 	"rampart/internal/config"
+	"rampart/internal/misc"
 	"time"
 )
 
 func NewGatherer(miner string, config *config.Gatherer) *Gatherer {
 	return &Gatherer{
-
+		newCounterTracker(config.RunTracker, miner, config.Statuses.Targets()),
+		config.Statuses,
+		newCounterTracker(config.GeocodingTracker, miner, config.Categories.Targets()),
+		config.Categories,
+		newCounterTracker(config.ValidationTracker, miner, config.Verdicts.Targets()),
+		config.Verdicts,
+		newCounterTracker(config.StoringTracker, miner, config.Consequences.Targets()),
+		config.Consequences,
+		newHistogramTracker(config.DurationTracker, miner, config.Processes.Targets()),
+		config.Processes,
 	}
 }
 
 type Gatherer struct {
-
+	runTracker *counterTracker
+	statuses *misc.Statuses
+	geocodingTracker *counterTracker
+	categories *misc.Categories
+	validationTracker *counterTracker
+	verdicts *misc.Verdicts
+	storingTracker *counterTracker
+	consequences *misc.Consequences
+	durationTracker *histogramTracker
+	processes *misc.Processes
 }
 
-func (gatherer *Gatherer) GatherFailedFetching() {
-	gatherer.failedFetchingTracker.track(1)
+func (gatherer *Gatherer) GatherFailureRun() {
+	gatherer.runTracker.track(gatherer.statuses.Failure)
 }
 
-func (gatherer *Gatherer) GatherFetchingDuration(start time.Time) {
-	gatherer.fetchingDurationTracker.track(time.Since(start).Seconds())
+func (gatherer *Gatherer) GatherSuccessRun() {
+	gatherer.runTracker.track(gatherer.statuses.Success)
 }
 
-func (gatherer *Gatherer) GatherFetchedFlats(fetchedFlats int) {
-	gatherer.fetchedFlatsTracker.track(float64(fetchedFlats))
+func (gatherer *Gatherer) GatherLocatedGeocoding() {
+	gatherer.geocodingTracker.track(gatherer.categories.Located)
 }
 
-func (gatherer *Gatherer) GatherLocatedFlats() {
-	gatherer.locatedFlatsTracker.track(1)
-}
-
-func (gatherer *Gatherer) GatherUnlocatedFlats() {
-	gatherer.unlocatedFlatsTracker.track(1)
+func (gatherer *Gatherer) GatherUnlocatedGeocoding() {
+	gatherer.geocodingTracker.track(gatherer.categories.Unlocated)
 }
 
 func (gatherer *Gatherer) GatherFailedGeocoding() {
-	gatherer.failedGeocodingTracker.track(1)
+	gatherer.geocodingTracker.track(gatherer.categories.Failed)
 }
 
-func (gatherer *Gatherer) GatherEmptyGeocoding() {
-	gatherer.emptyGeocodingTracker.track(1)
+func (gatherer *Gatherer) GatherInconclusiveGeocoding() {
+	gatherer.geocodingTracker.track(gatherer.categories.Inconclusive)
 }
 
 func (gatherer *Gatherer) GatherSuccessfulGeocoding() {
-	gatherer.successfulGeocodingTracker.track(1)
+	gatherer.geocodingTracker.track(gatherer.categories.Successful)
 }
 
-func (gatherer *Gatherer) GatherGeocodingDuration(start time.Time) {
-	gatherer.geocodingDurationTracker.track(time.Since(start).Seconds())
+func (gatherer *Gatherer) GatherValidValidation() {
+	gatherer.validationTracker.track(gatherer.verdicts.Valid)
 }
 
-func (gatherer *Gatherer) GatherValidatedFlats() {
-	gatherer.validatedFlatsTracker.track(1)
+func (gatherer *Gatherer) GatherInvalidValidation() {
+	gatherer.validationTracker.track(gatherer.verdicts.Invalid)
 }
 
-func (gatherer *Gatherer) GatherInvalidatedFlats() {
-	gatherer.invalidatedFlatsTracker.track(1)
+func (gatherer *Gatherer) GatherCreatedStoring() {
+	gatherer.storingTracker.track(gatherer.consequences.Created)
 }
 
-func (gatherer *Gatherer) GatherCreatedFlats() {
-	gatherer.createdFlatsTracker.track(1)
+func (gatherer *Gatherer) GatherUpdatedStoring() {
+	gatherer.storingTracker.track(gatherer.consequences.Updated)
 }
 
-func (gatherer *Gatherer) GatherUpdatedFlats() {
-	gatherer.updatedFlatsTracker.track(1)
-}
-
-func (gatherer *Gatherer) GatherUnalteredFlats() {
-	gatherer.unalteredFlatsTracker.track(1)
+func (gatherer *Gatherer) GatherUnalteredStoring() {
+	gatherer.storingTracker.track(gatherer.consequences.Unaltered)
 }
 
 func (gatherer *Gatherer) GatherFailedStoring() {
-	gatherer.failedStoringTracker.track(1)
+	gatherer.storingTracker.track(gatherer.consequences.Failed)
+}
+
+func (gatherer *Gatherer) GatherFetchingDuration(start time.Time) {
+	gatherer.durationTracker.track(gatherer.processes.Fetching, time.Since(start).Seconds())
+}
+
+func (gatherer *Gatherer) GatherGeocodingDuration(start time.Time) {
+	gatherer.durationTracker.track(gatherer.processes.Geocoding, time.Since(start).Seconds())
 }
 
 func (gatherer *Gatherer) GatherReadingDuration(start time.Time) {
-	gatherer.readingDurationTracker.track(time.Since(start).Seconds())
+	gatherer.durationTracker.track(gatherer.processes.Reading, time.Since(start).Seconds())
 }
 
 func (gatherer *Gatherer) GatherCreationDuration(start time.Time) {
-	gatherer.creationDurationTracker.track(time.Since(start).Seconds())
+	gatherer.durationTracker.track(gatherer.processes.Creation, time.Since(start).Seconds())
 }
 
 func (gatherer *Gatherer) GatherUpdateDuration(start time.Time) {
-	gatherer.updateDurationTracker.track(time.Since(start).Seconds())
+	gatherer.durationTracker.track(gatherer.processes.Update, time.Since(start).Seconds())
 }
 
 func (gatherer *Gatherer) GatherRunDuration(start time.Time) {
-	gatherer.runDurationTracker.track(time.Since(start).Seconds())
+	gatherer.durationTracker.track(gatherer.processes.Run, time.Since(start).Seconds())
 }
 
 func (gatherer *Gatherer) Unregister() error {
-	if err := gatherer.failedFetchingTracker.unregister(); err != nil {
+	if err := gatherer.runTracker.unregister(); err != nil {
 		return err
 	}
-	if err := gatherer.fetchingDurationTracker.unregister(); err != nil {
+	if err := gatherer.geocodingTracker.unregister(); err != nil {
 		return err
 	}
-	if err := gatherer.fetchedFlatsTracker.unregister(); err != nil {
+	if err := gatherer.validationTracker.unregister(); err != nil {
 		return err
 	}
-	if err := gatherer.locatedFlatsTracker.unregister(); err != nil {
+	if err := gatherer.storingTracker.unregister(); err != nil {
 		return err
 	}
-	if err := gatherer.unlocatedFlatsTracker.unregister(); err != nil {
-		return err
-	}
-	if err := gatherer.failedGeocodingTracker.unregister(); err != nil {
-		return err
-	}
-	if err := gatherer.emptyGeocodingTracker.unregister(); err != nil {
-		return err
-	}
-	if err := gatherer.successfulGeocodingTracker.unregister(); err != nil {
-		return err
-	}
-	if err := gatherer.geocodingDurationTracker.unregister(); err != nil {
-		return err
-	}
-	if err := gatherer.validatedFlatsTracker.unregister(); err != nil {
-		return err
-	}
-	if err := gatherer.invalidatedFlatsTracker.unregister(); err != nil {
-		return err
-	}
-	if err := gatherer.createdFlatsTracker.unregister(); err != nil {
-		return err
-	}
-	if err := gatherer.updatedFlatsTracker.unregister(); err != nil {
-		return err
-	}
-	if err := gatherer.unalteredFlatsTracker.unregister(); err != nil {
-		return err
-	}
-	if err := gatherer.failedStoringTracker.unregister(); err != nil {
-		return err
-	}
-	if err := gatherer.readingDurationTracker.unregister(); err != nil {
-		return err
-	}
-	if err := gatherer.creationDurationTracker.unregister(); err != nil {
-		return err
-	}
-	if err := gatherer.updateDurationTracker.unregister(); err != nil {
-		return err
-	}
-	return gatherer.runDurationTracker.unregister()
+	return gatherer.durationTracker.unregister()
 }

@@ -13,6 +13,17 @@ type Processes struct {
 	Run       string `yaml:"run"`
 }
 
+func (processes *Processes) Targets() []string {
+	return []string{
+		processes.Fetching,
+		processes.Geocoding,
+		processes.Reading,
+		processes.Creation,
+		processes.Update,
+		processes.Run,
+	}
+}
+
 func (processes *Processes) String() string {
 	return fmt.Sprintf(
 		"{%s %s %s %s %s %s}",
