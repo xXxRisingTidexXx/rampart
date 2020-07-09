@@ -62,12 +62,12 @@ func (gatherer *Gatherer) GatherSuccessfulGeocoding() {
 	gatherer.geocodingTracker.track(gatherer.categories.Successful)
 }
 
-func (gatherer *Gatherer) GatherValidValidation() {
-	gatherer.validationTracker.track(gatherer.verdicts.Valid)
+func (gatherer *Gatherer) GatherApprovedValidation() {
+	gatherer.validationTracker.track(gatherer.verdicts.Approved)
 }
 
-func (gatherer *Gatherer) GatherInvalidValidation() {
-	gatherer.validationTracker.track(gatherer.verdicts.Invalid)
+func (gatherer *Gatherer) GatherDeniedValidation() {
+	gatherer.validationTracker.track(gatherer.verdicts.Denied)
 }
 
 func (gatherer *Gatherer) GatherCreatedStoring() {

@@ -36,8 +36,8 @@ mining:
         - miner
         - verdict
     verdicts:
-      valid: valid
-      invalid: invalid
+      approved: approved
+      denied: denied
     storingTracker:
       name: rampart_mining_storing_total
       help: Total amount of flats affected the DB state

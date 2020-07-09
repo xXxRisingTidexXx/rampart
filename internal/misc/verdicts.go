@@ -5,14 +5,14 @@ import (
 )
 
 type Verdicts struct {
-	Valid   string `yaml:"valid"`
-	Invalid string `yaml:"invalid"`
+	Approved string `yaml:"approved"`
+	Denied   string `yaml:"denied"`
 }
 
 func (verdicts *Verdicts) Targets() []string {
-	return []string{verdicts.Valid, verdicts.Invalid}
+	return []string{verdicts.Approved, verdicts.Denied}
 }
 
 func (verdicts *Verdicts) String() string {
-	return fmt.Sprintf("{%s %s}", verdicts.Valid, verdicts.Invalid)
+	return fmt.Sprintf("{%s %s}", verdicts.Approved, verdicts.Denied)
 }
