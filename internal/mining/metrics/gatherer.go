@@ -22,16 +22,16 @@ func NewGatherer(miner string, config *config.Gatherer) *Gatherer {
 }
 
 type Gatherer struct {
-	runTracker *counterTracker
-	statuses *misc.Statuses
-	geocodingTracker *counterTracker
-	categories *misc.Categories
+	runTracker        *counterTracker
+	statuses          *misc.Statuses
+	geocodingTracker  *counterTracker
+	categories        *misc.Categories
 	validationTracker *counterTracker
-	verdicts *misc.Verdicts
-	storingTracker *counterTracker
-	consequences *misc.Consequences
-	durationTracker *histogramTracker
-	processes *misc.Processes
+	verdicts          *misc.Verdicts
+	storingTracker    *counterTracker
+	consequences      *misc.Consequences
+	durationTracker   *histogramTracker
+	processes         *misc.Processes
 }
 
 func (gatherer *Gatherer) GatherFailureRun() {
