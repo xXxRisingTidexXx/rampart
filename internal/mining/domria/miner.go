@@ -39,12 +39,13 @@ func (miner *Miner) Run() {
 	start := time.Now()
 	if flats, err := miner.fetcher.fetchFlats(miner.housing); err != nil {
 		log.Error(err)
-		miner.gatherer.GatherFailedFetching()
+		miner.gatherer.GatherFailureRun()
 	} else {
 		flats = miner.sanitizer.sanitizeFlats(flats)
 		flats = miner.geocoder.geocodeFlats(flats)
 		flats = miner.validator.validateFlats(flats)
 		miner.storer.storeFlats(flats)
+		miner.gatherer.GatherSuccessRun()
 	}
 	miner.gatherer.GatherRunDuration(start)
 }

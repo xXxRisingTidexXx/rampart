@@ -50,11 +50,11 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 
 func (geocoder *geocoder) geocodeFlat(flat *flat) (*flat, error) {
 	if flat.point != nil {
-		geocoder.gatherer.GatherLocatedFlats()
+		geocoder.gatherer.GatherLocatedGeocoding()
 		return flat, nil
 	}
 	if flat.district == "" || flat.street == "" || flat.houseNumber == "" {
-		geocoder.gatherer.GatherUnlocatedFlats()
+		geocoder.gatherer.GatherUnlocatedGeocoding()
 		return nil, nil
 	}
 	start := time.Now()
@@ -68,7 +68,7 @@ func (geocoder *geocoder) geocodeFlat(flat *flat) (*flat, error) {
 		return nil, err
 	}
 	if newFlat == nil {
-		geocoder.gatherer.GatherEmptyGeocoding()
+		geocoder.gatherer.GatherInconclusiveGeocoding()
 		return nil, nil
 	}
 	geocoder.gatherer.GatherSuccessfulGeocoding()

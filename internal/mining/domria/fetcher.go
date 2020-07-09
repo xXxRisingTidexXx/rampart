@@ -51,13 +51,11 @@ func (fetcher *fetcher) fetchFlats(housing misc.Housing) ([]*flat, error) {
 	if err != nil {
 		return nil, err
 	}
-	length := len(flats)
-	if length > 0 {
+	if len(flats) > 0 {
 		fetcher.page++
 	} else {
 		fetcher.page = 0
 	}
-	fetcher.gatherer.GatherFetchedFlats(length)
 	return flats, nil
 }
 

@@ -52,9 +52,9 @@ func (validator *validator) validateFlats(flats []*flat) []*flat {
 	for _, flat := range flats {
 		if validator.validateFlat(flat) {
 			newFlats = append(newFlats, flat)
-			validator.gatherer.GatherValidatedFlats()
+			validator.gatherer.GatherApprovedValidation()
 		} else {
-			validator.gatherer.GatherInvalidatedFlats()
+			validator.gatherer.GatherDeniedValidation()
 		}
 	}
 	return newFlats

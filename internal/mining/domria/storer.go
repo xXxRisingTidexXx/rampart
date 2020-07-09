@@ -52,7 +52,7 @@ func (storer *storer) storeFlat(flat *flat) error {
 		if err = tx.Commit(); err != nil {
 			return fmt.Errorf(message, err)
 		}
-		storer.gatherer.GatherCreatedFlats()
+		storer.gatherer.GatherCreatedStoring()
 		return nil
 	}
 	if flat.updateTime.After(origin.updateTime) {
@@ -66,13 +66,13 @@ func (storer *storer) storeFlat(flat *flat) error {
 		if err = tx.Commit(); err != nil {
 			return fmt.Errorf(message, err)
 		}
-		storer.gatherer.GatherUpdatedFlats()
+		storer.gatherer.GatherUpdatedStoring()
 		return nil
 	}
 	if err = tx.Commit(); err != nil {
 		return fmt.Errorf(message, err)
 	}
-	storer.gatherer.GatherUnalteredFlats()
+	storer.gatherer.GatherUnalteredStoring()
 	return nil
 }
 
