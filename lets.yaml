@@ -19,7 +19,7 @@ commands:
     cmd: docker-compose up -d database
   psql:
     description: Run PostgreSQL CLI
-    cmd: docker exec -it database psql rampart postgres
+    cmd: docker exec -it rampart-database psql rampart postgres
   generate:
     description: Generate a new SQL migration file
     cmd: |

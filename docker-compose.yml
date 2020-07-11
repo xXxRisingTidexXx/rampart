@@ -2,7 +2,7 @@ version: '3.7'
 services:
   database:
     image: postgis/postgis:12-master
-    container_name: database
+    container_name: rampart-database
     restart: always
     ports:
       - 5432:5432
@@ -15,3 +15,7 @@ services:
       PGDATA: /var/lib/postgresql/data
 volumes:
   database:
+    name: rampart-database
+networks:
+  default:
+    name: rampart-default
