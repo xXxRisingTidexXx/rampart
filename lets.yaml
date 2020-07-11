@@ -1,5 +1,8 @@
 shell: bash
 commands:
+  build:
+    description: Construct/renovate all local docker images
+    cmd: docker-compose build checks
   compile:
     description: Compile the source code
     cmd: |
@@ -50,10 +53,7 @@ commands:
     cmd: gofmt -w -s .
   lint:
     description: Lint the source code
-    cmd: golangci-lint run
+    cmd: docker-compose run --rm lint
   test:
     description: Run test suites
     cmd: go test rampart/internal/mining/domria
-  benchmark:
-    description: Run benchmarking
-    cmd: go test -bench . -benchmem rampart/internal/mining/domria

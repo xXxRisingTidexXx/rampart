@@ -13,6 +13,17 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       PGDATA: /var/lib/postgresql/data
+  checks:
+    build:
+      context: .
+      dockerfile: docker/checks.dockerfile
+    image: rampart-checks
+  lint:
+    image: rampart-checks
+    container_name: rampart-lint
+    volumes:
+      - .:/go/src/app
+    command: golangci-lint run
 volumes:
   database:
     name: rampart-database
