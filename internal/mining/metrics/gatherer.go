@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// TODO: pass the registry to metrics server
+// TODO: pass the registry to metrics server.
 func NewGatherer(miner string, config *config.Gatherer) *Gatherer {
 	registry := prometheus.NewRegistry()
 	registry.MustRegister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}))
