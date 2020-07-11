@@ -53,7 +53,7 @@ commands:
     cmd: golangci-lint run
   test:
     description: Run test suites
-    cmd: go test -v rampart/internal/mining/domria
+    cmd: go test rampart/internal/mining/domria
   benchmark:
     description: Run benchmarking
-    cmd: go test -bench=. -benchmem
+    cmd: go test -bench . -benchmem rampart/internal/mining/domria
