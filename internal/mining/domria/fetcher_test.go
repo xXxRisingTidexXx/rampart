@@ -28,6 +28,7 @@ func newDefaultFetcher() *fetcher {
 	return newTestFetcher("https://domria.ua/search/")
 }
 
+// TODO: Add gatherer de-registration.
 func newTestFetcher(searchURL string) *fetcher {
 	return newFetcher(
 		&config.Fetcher{

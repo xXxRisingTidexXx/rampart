@@ -3,23 +3,29 @@ package metrics
 import (
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 	"rampart/internal/config"
 )
 
-func newCounterTracker(config *config.CounterTracker, miner string, targets []string) *counterTracker {
-	counterVec := promauto.NewCounterVec(
+func newCounterTracker(
+	registerer prometheus.Registerer,
+	config *config.CounterTracker,
+	miner string,
+	targets []string,
+) *counterTracker {
+	counterVec := prometheus.NewCounterVec(
 		prometheus.CounterOpts{Name: config.Name, Help: config.Help},
 		config.Labels,
 	)
+	registerer.MustRegister(counterVec)
 	counterMap := make(map[string]prometheus.Counter, len(targets))
 	for _, target := range targets {
 		counterMap[target] = counterVec.WithLabelValues(miner, target)
 	}
-	return &counterTracker{counterVec, counterMap, config.Name, miner}
+	return &counterTracker{registerer, counterVec, counterMap, config.Name, miner}
 }
 
 type counterTracker struct {
+	registerer prometheus.Registerer
 	counterVec *prometheus.CounterVec
 	counterMap map[string]prometheus.Counter
 	name       string
@@ -41,7 +47,7 @@ func (tracker *counterTracker) unregister() error {
 			return err
 		}
 	}
-	if prometheus.Unregister(tracker.counterVec) {
+	if tracker.registerer.Unregister(tracker.counterVec) {
 		return nil
 	}
 	return err

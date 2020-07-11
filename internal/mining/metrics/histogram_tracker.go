@@ -3,23 +3,29 @@ package metrics
 import (
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 	"rampart/internal/config"
 )
 
-func newHistogramTracker(config *config.HistogramTracker, miner string, targets []string) *histogramTracker {
-	histogramVec := promauto.NewHistogramVec(
+func newHistogramTracker(
+	registerer prometheus.Registerer,
+	config *config.HistogramTracker,
+	miner string,
+	targets []string,
+) *histogramTracker {
+	histogramVec := prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{Name: config.Name, Help: config.Help, Buckets: config.Buckets},
 		config.Labels,
 	)
+	registerer.MustRegister(histogramVec)
 	observerMap := make(map[string]prometheus.Observer, len(targets))
 	for _, target := range targets {
 		observerMap[target] = histogramVec.WithLabelValues(miner, target)
 	}
-	return &histogramTracker{histogramVec, observerMap, config.Name, miner}
+	return &histogramTracker{registerer, histogramVec, observerMap, config.Name, miner}
 }
 
 type histogramTracker struct {
+	registerer   prometheus.Registerer
 	histogramVec *prometheus.HistogramVec
 	observerMap  map[string]prometheus.Observer
 	name         string
@@ -41,7 +47,7 @@ func (tracker *histogramTracker) unregister() error {
 			return err
 		}
 	}
-	if prometheus.Unregister(tracker.histogramVec) {
+	if tracker.registerer.Unregister(tracker.histogramVec) {
 		return nil
 	}
 	return err

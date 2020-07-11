@@ -1,27 +1,34 @@
 package metrics
 
 import (
+	"github.com/prometheus/client_golang/prometheus"
 	"rampart/internal/config"
 	"rampart/internal/misc"
 	"time"
 )
 
+// TODO: pass the registry to metrics server
 func NewGatherer(miner string, config *config.Gatherer) *Gatherer {
+	registry := prometheus.NewRegistry()
+	registry.MustRegister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}))
+	registry.MustRegister(prometheus.NewGoCollector())
 	return &Gatherer{
-		newCounterTracker(config.RunTracker, miner, config.Statuses.Targets()),
+		registry,
+		newCounterTracker(registry, config.RunTracker, miner, config.Statuses.Targets()),
 		config.Statuses,
-		newCounterTracker(config.GeocodingTracker, miner, config.Categories.Targets()),
+		newCounterTracker(registry, config.GeocodingTracker, miner, config.Categories.Targets()),
 		config.Categories,
-		newCounterTracker(config.ValidationTracker, miner, config.Verdicts.Targets()),
+		newCounterTracker(registry, config.ValidationTracker, miner, config.Verdicts.Targets()),
 		config.Verdicts,
-		newCounterTracker(config.StoringTracker, miner, config.Consequences.Targets()),
+		newCounterTracker(registry, config.StoringTracker, miner, config.Consequences.Targets()),
 		config.Consequences,
-		newHistogramTracker(config.DurationTracker, miner, config.Processes.Targets()),
+		newHistogramTracker(registry, config.DurationTracker, miner, config.Processes.Targets()),
 		config.Processes,
 	}
 }
 
 type Gatherer struct {
+	registry          *prometheus.Registry
 	runTracker        *counterTracker
 	statuses          *misc.Statuses
 	geocodingTracker  *counterTracker
