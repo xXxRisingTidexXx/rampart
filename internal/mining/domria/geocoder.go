@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func newGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer) *geocoder {
+func newGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger log.FieldLogger) *geocoder {
 	return &geocoder{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		config.Headers,
@@ -22,6 +22,7 @@ func newGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer) *geocoder 
 		config.SearchURL,
 		config.SRID,
 		gatherer,
+		logger,
 	}
 }
 
@@ -32,14 +33,14 @@ type geocoder struct {
 	searchURL       string
 	srid            int
 	gatherer        *metrics.Gatherer
+	logger          log.FieldLogger
 }
 
-// TODO: add log with field "origin_url".
 func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 	newFlats := make([]*flat, 0, len(flats))
 	for _, flat := range flats {
 		if newFlat, err := geocoder.geocodeFlat(flat); err != nil {
-			log.Error(err)
+			geocoder.logger.WithField("origin_url", flat.originURL).Error(err)
 			geocoder.gatherer.GatherFailedGeocoding()
 		} else if newFlat != nil {
 			newFlats = append(newFlats, newFlat)

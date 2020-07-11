@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func RunServer(port int, config *config.Server) {
+func RunServer(port int, config *config.Server, logger log.FieldLogger) {
 	server := &http.Server{
 		Addr:           ":" + strconv.Itoa(port),
 		ReadTimeout:    time.Duration(config.ReadTimeout),
@@ -19,7 +19,7 @@ func RunServer(port int, config *config.Server) {
 	}
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			log.Fatalf("metrics: server met an error, %v", err)
+			logger.Fatalf("metrics: server met an error, %v", err)
 		}
 	}()
 }
