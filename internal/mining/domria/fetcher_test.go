@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"rampart/internal/config"
+	"rampart/internal/mining/metrics"
 	"rampart/internal/misc"
 	"testing"
 	"time"
@@ -27,6 +28,7 @@ func newDefaultFetcher() *fetcher {
 	return newTestFetcher("https://domria.ua/search/")
 }
 
+// TODO: Add gatherer de-registration.
 func newTestFetcher(searchURL string) *fetcher {
 	return newFetcher(
 		&config.Fetcher{
@@ -37,7 +39,34 @@ func newTestFetcher(searchURL string) *fetcher {
 			SearchURL: searchURL,
 			SRID:      4326,
 		},
-		nil,
+		metrics.NewGatherer(
+			"domria-primary",
+			&config.Gatherer{
+				RunTracker: &config.CounterTracker{Name: "run", Labels: []string{"miner", "status"}},
+				Statuses:   &misc.Statuses{},
+				GeocodingTracker: &config.CounterTracker{
+					Name:   "geocoding",
+					Labels: []string{"miner", "category"},
+				},
+				Categories: &misc.Categories{},
+				ValidationTracker: &config.CounterTracker{
+					Name:   "validation",
+					Labels: []string{"miner", "verdict"},
+				},
+				Verdicts: &misc.Verdicts{},
+				StoringTracker: &config.CounterTracker{
+					Name:   "storing",
+					Labels: []string{"miner", "consequence"},
+				},
+				Consequences: &misc.Consequences{},
+				DurationTracker: &config.HistogramTracker{
+					Name:    "duration",
+					Labels:  []string{"miner", "process"},
+					Buckets: []float64{0.1, 0.5, 1},
+				},
+				Processes: &misc.Processes{},
+			},
+		),
 	)
 }
 
@@ -100,7 +129,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 	if len(flats) != 2 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -124,7 +153,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 			"",
 		},
 	)
-	assertFlat(
+	testFlat(
 		t,
 		flats[1],
 		&flat{
@@ -178,7 +207,7 @@ func readAll(t *testing.T, fixtureName string) []byte {
 }
 
 //nolint:gocognit,funlen
-func assertFlat(t *testing.T, actual *flat, expected *flat) {
+func testFlat(t *testing.T, actual *flat, expected *flat) {
 	if actual == nil {
 		t.Fatal("domria: empty actual")
 	}
@@ -382,7 +411,7 @@ func TestUnmarshalSearchEmptyItem(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(t, flats[0], &flat{housing: misc.Primary})
+	testFlat(t, flats[0], &flat{housing: misc.Primary})
 }
 
 func TestUnmarshalSearchValidItem(t *testing.T) {
@@ -394,7 +423,7 @@ func TestUnmarshalSearchValidItem(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -429,7 +458,7 @@ func TestUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -488,7 +517,7 @@ func TestUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -535,7 +564,7 @@ func TestUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -594,7 +623,7 @@ func TestUnmarshalSearchEmptyPriceArr(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -629,7 +658,7 @@ func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -700,7 +729,7 @@ func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -747,7 +776,7 @@ func TestUnmarshalSearchSupremeKitchenSquareMeters(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -782,7 +811,7 @@ func TestUnmarshalSearchNegativeFloor(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -817,7 +846,7 @@ func TestUnmarshalSearchSupremeFloor(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -852,7 +881,7 @@ func TestUnmarshalSearchJustLongitude(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -887,7 +916,7 @@ func TestUnmarshalSearchJustLatitude(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -922,7 +951,7 @@ func TestUnmarshalSearchStringCoordinates(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -957,7 +986,7 @@ func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -1004,7 +1033,7 @@ func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -1039,7 +1068,7 @@ func TestUnmarshalSearchEmptyStreets(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -1074,7 +1103,7 @@ func TestUnmarshalSearchJustRUStreet(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -1110,7 +1139,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 	if len(flats) != 3 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	assertFlat(
+	testFlat(
 		t,
 		flats[0],
 		&flat{
@@ -1134,7 +1163,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			"6",
 		},
 	)
-	assertFlat(
+	testFlat(
 		t,
 		flats[1],
 		&flat{
@@ -1158,7 +1187,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			"",
 		},
 	)
-	assertFlat(
+	testFlat(
 		t,
 		flats[2],
 		&flat{
