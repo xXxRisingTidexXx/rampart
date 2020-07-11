@@ -2,14 +2,7 @@ shell: bash
 commands:
   build:
     description: Construct/renovate all local docker images
-    cmd: docker-compose build checks
-  compile:
-    description: Compile the source code
-    cmd: |
-      rm -f mining
-      go build -o mining cmd/mining/main.go
-      rm -f migrations
-      go build -o migrations cmd/migrations/main.go
+    cmd: docker-compose build checks backend
   database:
     description: Run the DB server
     cmd: docker-compose up -d database
@@ -22,31 +15,31 @@ commands:
       mkdir -p internal/migrations/versions && \
       VERSION=$(date +"%s") && \
       touch internal/migrations/versions/$VERSION.sql && \
-      echo "migrations: generated version $VERSION" && \
       sleep 1
   migrations:
     description: Upgrade the DB schema to the newest version
-    cmd: ./migrations
+    cmd: |
+      docker-compose up migrations
+      docker rm rampart-migrations || true
   mining:
     description: Run the data mining app single workflow
-    cmd: ./mining -once -miner domria-secondary
-  run:
-    description: Run rampart ecosystem
     cmd: |
-      ./mining -miner domria-primary &
-      ./mining -miner domria-secondary &
+      docker-compose up mining
+      docker rm rampart-mining || true
+  run:
+    description: Activate the whole rampart ecosystem
+    cmd: |
+      docker-compose up mining-domria-primary mining-domria-secondary
+      docker rm rampart-mining-domria-primary rampart-mining-domria-secondary || true
   stop:
-    description: Stop all rampart apps
-    cmd: pkill mining
-  down:
     description: Dispose all docker stuff
     cmd: docker-compose down
   format:
     description: Format the source code
-    cmd: gofmt -w -s .
+    cmd: docker-compose run --rm gofmt
   lint:
     description: Lint the source code
     cmd: docker-compose run --rm lint
   test:
     description: Run test suites
-    cmd: go test rampart/internal/mining/domria
+    cmd: docker-compose run --rm test
