@@ -3,16 +3,16 @@ package domria
 import (
 	"encoding/json"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"github.com/twpayne/go-geom"
 	"io/ioutil"
 	"net/http"
 	"rampart/internal/config"
+	"rampart/internal/mining/metrics"
 	"rampart/internal/misc"
 	"time"
 )
 
-func newFetcher(config *config.Fetcher) *fetcher {
+func newFetcher(config *config.Fetcher, gatherer *metrics.Gatherer) *fetcher {
 	return &fetcher{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		0,
@@ -21,6 +21,7 @@ func newFetcher(config *config.Fetcher) *fetcher {
 		config.Headers,
 		config.SearchURL,
 		config.SRID,
+		gatherer,
 	}
 }
 
@@ -32,6 +33,7 @@ type fetcher struct {
 	headers   map[string]string
 	searchURL string
 	srid      int
+	gatherer  *metrics.Gatherer
 }
 
 func (fetcher *fetcher) fetchFlats(housing misc.Housing) ([]*flat, error) {
@@ -41,19 +43,17 @@ func (fetcher *fetcher) fetchFlats(housing misc.Housing) ([]*flat, error) {
 	}
 	start := time.Now()
 	bytes, err := fetcher.getSearch(flag)
+	fetcher.gatherer.GatherFetchingDuration(start)
 	if err != nil {
 		return nil, err
 	}
-	duration := time.Since(start).Seconds()
 	flats, err := fetcher.unmarshalSearch(bytes, housing)
 	if err != nil {
 		return nil, err
 	}
-	if length := len(flats); length > 0 {
-		log.Debugf("domria: fetcher fetched %d flats on %d page (%.3fs)", length, fetcher.page, duration)
+	if len(flats) > 0 {
 		fetcher.page++
 	} else {
-		log.Debugf("domria: fetcher reset on %d page (%.3fs)", fetcher.page, duration)
 		fetcher.page = 0
 	}
 	return flats, nil

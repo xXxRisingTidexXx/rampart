@@ -30,13 +30,14 @@ func newDefaultFetcher() *fetcher {
 func newTestFetcher(searchURL string) *fetcher {
 	return newFetcher(
 		&config.Fetcher{
-			Timeout:   misc.Timing(100 * time.Millisecond),
+			Timeout:   config.Timing(100 * time.Millisecond),
 			Portion:   10,
 			Flags:     map[misc.Housing]string{misc.Primary: "pm_housing=1"},
 			Headers:   map[string]string{"User-Agent": "domria-test-bot/1.0.0"},
 			SearchURL: searchURL,
 			SRID:      4326,
 		},
+		nil,
 	)
 }
 

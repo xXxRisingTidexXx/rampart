@@ -2,7 +2,6 @@ package migrations
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"path/filepath"
 	"rampart/internal/homedir"
@@ -38,6 +37,5 @@ func listVersions() ([]*version, error) {
 			return versions[i].id < versions[j].id
 		},
 	)
-	log.Debugf("migrations: found %d versions", len(versions))
 	return versions, nil
 }

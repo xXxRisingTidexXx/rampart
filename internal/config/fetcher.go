@@ -6,7 +6,7 @@ import (
 )
 
 type Fetcher struct {
-	Timeout   misc.Timing             `yaml:"timeout"`
+	Timeout   Timing                  `yaml:"timeout"`
 	Portion   int                     `yaml:"portion"`
 	Flags     map[misc.Housing]string `yaml:"flags"`
 	Headers   map[string]string       `yaml:"headers"`

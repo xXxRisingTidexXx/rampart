@@ -6,6 +6,6 @@ import (
 
 type Miner interface {
 	cron.Job
-	Alias() string
 	Spec() string
+	Port() int
 }

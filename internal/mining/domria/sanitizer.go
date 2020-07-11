@@ -1,7 +1,6 @@
 package domria
 
 import (
-	log "github.com/sirupsen/logrus"
 	"rampart/internal/config"
 	"strings"
 )
@@ -21,6 +20,7 @@ func newSanitizer(config *config.Sanitizer) *sanitizer {
 // TODO: add street purity (replace shorts and russian suffixes and endings).
 // TODO: add complex purity (replace "ЖК " prefixes if needed).
 // TODO: add street whitespace reduce.
+// TODO: add house number truncates.
 type sanitizer struct {
 	originURLPrefix string
 	imageURLPrefix  string
@@ -31,16 +31,10 @@ type sanitizer struct {
 }
 
 func (sanitizer *sanitizer) sanitizeFlats(flats []*flat) []*flat {
-	length := len(flats)
-	if length == 0 {
-		log.Debug("domria: sanitizer skipped flats")
-		return flats
-	}
-	newFlats := make([]*flat, length)
+	newFlats := make([]*flat, len(flats))
 	for i, flat := range flats {
 		newFlats[i] = sanitizer.sanitizeFlat(flat)
 	}
-	log.Debugf("domria: sanitizer sanitized %d flats", length)
 	return newFlats
 }
 

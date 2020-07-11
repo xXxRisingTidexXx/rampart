@@ -19,5 +19,5 @@ create table if not exists flats
     city         varchar(50)           not null,
     district     varchar(50)           not null,
     street       varchar(70)           not null,
-    house_number varchar(10)           not null
+    house_number varchar(20)           not null
 );

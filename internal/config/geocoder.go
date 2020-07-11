@@ -6,7 +6,7 @@ import (
 )
 
 type Geocoder struct {
-	Timeout         misc.Timing       `yaml:"timeout"`
+	Timeout         Timing            `yaml:"timeout"`
 	Headers         map[string]string `yaml:"headers"`
 	StatelessCities *misc.Set         `yaml:"statelessCities"`
 	SearchURL       string            `yaml:"searchURL"`

@@ -5,8 +5,8 @@ import (
 )
 
 type Miners struct {
-	DomriaPrimary   *Domria `yaml:"domriaPrimary"`
-	DomriaSecondary *Domria `yaml:"domriaSecondary"`
+	DomriaPrimary   *DomriaMiner `yaml:"domriaPrimary"`
+	DomriaSecondary *DomriaMiner `yaml:"domriaSecondary"`
 }
 
 func (miners *Miners) String() string {

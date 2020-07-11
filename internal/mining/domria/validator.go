@@ -1,12 +1,11 @@
 package domria
 
 import (
-	log "github.com/sirupsen/logrus"
 	"rampart/internal/config"
-	"rampart/internal/misc"
+	"rampart/internal/mining/metrics"
 )
 
-func newValidator(config *config.Validator) *validator {
+func newValidator(config *config.Validator, gatherer *metrics.Gatherer) *validator {
 	return &validator{
 		config.MinPrice,
 		config.MinTotalArea,
@@ -24,6 +23,7 @@ func newValidator(config *config.Validator) *validator {
 		config.MaxLongitude,
 		config.MinLatitude,
 		config.MaxLatitude,
+		gatherer,
 	}
 }
 
@@ -44,27 +44,25 @@ type validator struct {
 	maxLongitude    float64
 	minLatitude     float64
 	maxLatitude     float64
+	gatherer        *metrics.Gatherer
 }
 
 func (validator *validator) validateFlats(flats []*flat) []*flat {
-	expectedLength := len(flats)
-	if expectedLength == 0 {
-		log.Debug("domria: validator skipped flats")
-		return flats
-	}
-	newFlats := make([]*flat, 0, expectedLength)
+	newFlats := make([]*flat, 0, len(flats))
 	for _, flat := range flats {
 		if validator.validateFlat(flat) {
 			newFlats = append(newFlats, flat)
+			validator.gatherer.GatherApprovedValidation()
+		} else {
+			validator.gatherer.GatherDeniedValidation()
 		}
 	}
-	log.Debugf("domria: validator validated %d flats", len(newFlats))
 	return newFlats
 }
 
 //nolint:gocognit
 func (validator *validator) validateFlat(flat *flat) bool {
-	if flat == nil || flat.roomNumber == 0 {
+	if flat.roomNumber == 0 {
 		return false
 	}
 	specificArea := flat.totalArea / float64(flat.roomNumber)
@@ -84,9 +82,6 @@ func (validator *validator) validateFlat(flat *flat) bool {
 		flat.floor <= flat.totalFloor &&
 		validator.minTotalFloor <= flat.totalFloor &&
 		flat.totalFloor <= validator.maxTotalFloor &&
-		(flat.housing == misc.Primary ||
-			flat.housing == misc.Secondary) &&
-		flat.point != nil &&
 		validator.minLongitude <= flat.point.X() &&
 		flat.point.X() <= validator.maxLongitude &&
 		validator.minLatitude <= flat.point.Y() &&

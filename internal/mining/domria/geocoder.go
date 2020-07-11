@@ -8,18 +8,20 @@ import (
 	"io/ioutil"
 	"net/http"
 	"rampart/internal/config"
+	"rampart/internal/mining/metrics"
 	"rampart/internal/misc"
 	"strings"
 	"time"
 )
 
-func newGeocoder(config *config.Geocoder) *geocoder {
+func newGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer) *geocoder {
 	return &geocoder{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		config.Headers,
 		config.StatelessCities,
 		config.SearchURL,
 		config.SRID,
+		gatherer,
 	}
 }
 
@@ -29,42 +31,48 @@ type geocoder struct {
 	statelessCities *misc.Set
 	searchURL       string
 	srid            int
+	gatherer        *metrics.Gatherer
 }
 
+// TODO: add log with field "origin_url".
 func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
-	expectedLength := len(flats)
-	if expectedLength == 0 {
-		log.Debug("domria: geocoder skipped flats")
-		return flats
-	}
-	geocodedNumber, duration, newFlats := 0.0, 0.0, make([]*flat, 0, expectedLength)
+	newFlats := make([]*flat, 0, len(flats))
 	for _, flat := range flats {
-		if flat.point != nil {
-			newFlats = append(newFlats, flat)
-		} else if flat.district != "" && flat.street != "" && flat.houseNumber != "" {
-			start := time.Now()
-			geocodedNumber++
-			if newFlat, err := geocoder.geocodeFlat(flat); err != nil {
-				log.Error(err)
-			} else if newFlat != nil {
-				newFlats = append(newFlats, newFlat)
-			}
-			duration += time.Since(start).Seconds()
+		if newFlat, err := geocoder.geocodeFlat(flat); err != nil {
+			log.Error(err)
+			geocoder.gatherer.GatherFailedGeocoding()
+		} else if newFlat != nil {
+			newFlats = append(newFlats, newFlat)
 		}
 	}
-	if geocodedNumber != 0 {
-		duration /= geocodedNumber
-	}
-	log.Debugf("domria: geocoder geocoded %d flats (%.3fs)", len(newFlats), duration)
 	return newFlats
 }
 
 func (geocoder *geocoder) geocodeFlat(flat *flat) (*flat, error) {
+	if flat.point != nil {
+		geocoder.gatherer.GatherLocatedGeocoding()
+		return flat, nil
+	}
+	if flat.district == "" || flat.street == "" || flat.houseNumber == "" {
+		geocoder.gatherer.GatherUnlocatedGeocoding()
+		return nil, nil
+	}
+	start := time.Now()
 	bytes, err := geocoder.getLocations(flat)
+	geocoder.gatherer.GatherGeocodingDuration(start)
 	if err != nil {
 		return nil, err
 	}
-	return geocoder.locateFlat(flat, bytes)
+	newFlat, err := geocoder.locateFlat(flat, bytes)
+	if err != nil {
+		return nil, err
+	}
+	if newFlat == nil {
+		geocoder.gatherer.GatherInconclusiveGeocoding()
+		return nil, nil
+	}
+	geocoder.gatherer.GatherSuccessfulGeocoding()
+	return newFlat, nil
 }
 
 func (geocoder *geocoder) getLocations(flat *flat) ([]byte, error) {

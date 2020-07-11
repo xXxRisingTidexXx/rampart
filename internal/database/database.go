@@ -3,7 +3,6 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	gourl "net/url"
 )
 
@@ -32,8 +31,9 @@ func NewDatabase(dsn string, params map[string]string) (*sql.DB, error) {
 }
 
 //nolint:interfacer
-func CloseDatabase(db *sql.DB) {
+func CloseDatabase(db *sql.DB) error {
 	if err := db.Close(); err != nil {
-		log.Fatalf("database: failed to close the db, %v", err)
+		return fmt.Errorf("database: failed to close the db, %v", err)
 	}
+	return nil
 }

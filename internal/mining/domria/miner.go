@@ -4,52 +4,56 @@ import (
 	"database/sql"
 	log "github.com/sirupsen/logrus"
 	"rampart/internal/config"
+	"rampart/internal/mining/metrics"
 	"rampart/internal/misc"
 	"time"
 )
 
-func NewMiner(config *config.Domria, db *sql.DB) *Miner {
+func NewMiner(config *config.DomriaMiner, db *sql.DB, gatherer *metrics.Gatherer) *Miner {
 	return &Miner{
-		config.Alias,
 		config.Housing,
 		config.Spec,
-		newFetcher(config.Fetcher),
+		config.Port,
+		newFetcher(config.Fetcher, gatherer),
 		newSanitizer(config.Sanitizer),
-		newGeocoder(config.Geocoder),
-		newValidator(config.Validator),
-		newStorer(db, config.Storer),
+		newGeocoder(config.Geocoder, gatherer),
+		newValidator(config.Validator, gatherer),
+		newStorer(db, gatherer),
+		gatherer,
 	}
 }
 
 type Miner struct {
-	alias     string
 	housing   misc.Housing
 	spec      string
+	port      int
 	fetcher   *fetcher
 	sanitizer *sanitizer
 	geocoder  *geocoder
 	validator *validator
 	storer    *storer
+	gatherer  *metrics.Gatherer
 }
 
-func (miner *Miner) Alias() string {
-	return miner.alias
+func (miner *Miner) Run() {
+	start := time.Now()
+	if flats, err := miner.fetcher.fetchFlats(miner.housing); err != nil {
+		log.Error(err)
+		miner.gatherer.GatherFailureRun()
+	} else {
+		flats = miner.sanitizer.sanitizeFlats(flats)
+		flats = miner.geocoder.geocodeFlats(flats)
+		flats = miner.validator.validateFlats(flats)
+		miner.storer.storeFlats(flats)
+		miner.gatherer.GatherSuccessRun()
+	}
+	miner.gatherer.GatherRunDuration(start)
 }
 
 func (miner *Miner) Spec() string {
 	return miner.spec
 }
 
-func (miner *Miner) Run() {
-	start := time.Now()
-	flats, err := miner.fetcher.fetchFlats(miner.housing)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	flats = miner.sanitizer.sanitizeFlats(flats)
-	flats = miner.geocoder.geocodeFlats(flats)
-	flats = miner.validator.validateFlats(flats)
-	miner.storer.storeFlats(flats)
-	log.Debugf("domria: %s miner run (%.3fs)", miner.alias, time.Since(start).Seconds())
+func (miner *Miner) Port() int {
+	return miner.port
 }

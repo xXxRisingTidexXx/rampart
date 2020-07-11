@@ -17,12 +17,9 @@ commands:
   database:
     description: Run the DB server
     cmd: docker-compose up -d database
-  run:
-    description: Run the data mining app single workflow
-    cmd: ./mining -once -miner domria-secondary
-  schedule:
-    description: Run the data mining app in a periodical manner
-    cmd: ./mining -miner domria-secondary
+  psql:
+    description: Run PostgreSQL CLI
+    cmd: docker exec -it database psql rampart postgres
   generate:
     description: Generate a new SQL migration file
     cmd: |
@@ -31,13 +28,21 @@ commands:
       touch internal/migrations/versions/$VERSION.sql && \
       echo "migrations: generated version $VERSION" && \
       sleep 1
-  migrate:
+  migrations:
     description: Upgrade the DB schema to the newest version
     cmd: ./migrations
-  psql:
-    description: Run PostgreSQL CLI
-    cmd: docker exec -it database psql rampart postgres
+  mining:
+    description: Run the data mining app single workflow
+    cmd: ./mining -once -miner domria-secondary
+  run:
+    description: Run rampart ecosystem
+    cmd: |
+      ./mining -miner domria-primary &
+      ./mining -miner domria-secondary &
   stop:
+    description: Stop all rampart apps
+    cmd: pkill mining
+  down:
     description: Dispose all docker stuff
     cmd: docker-compose down
   format:

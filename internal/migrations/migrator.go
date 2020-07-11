@@ -3,8 +3,6 @@ package migrations
 import (
 	"database/sql"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"time"
 )
 
 func newMigrator(db *sql.DB) (*migrator, error) {
@@ -20,7 +18,6 @@ type migrator struct {
 }
 
 func (migrator *migrator) ensureVersions() (int64, error) {
-	start := time.Now()
 	_, err := migrator.tx.Exec("create table if not exists versions(id bigint not null)")
 	if err != nil {
 		_ = migrator.tx.Rollback()
@@ -47,12 +44,10 @@ func (migrator *migrator) ensureVersions() (int64, error) {
 			return 0, fmt.Errorf("migrations: migrator failed to read the latest version, %v", err)
 		}
 	}
-	log.Debugf("migrations: migrator ensured the versions (%.3fs)", time.Since(start).Seconds())
 	return id, nil
 }
 
 func (migrator *migrator) applyVersion(version *version) error {
-	start := time.Now()
 	query, err := version.load()
 	if err != nil {
 		_ = migrator.tx.Rollback()
@@ -66,15 +61,12 @@ func (migrator *migrator) applyVersion(version *version) error {
 		_ = migrator.tx.Rollback()
 		return fmt.Errorf("migrations: migrator failed to update version %d, %v", version.id, err)
 	}
-	log.Debugf("migrations: migrator applied version %d (%.3fs)", version.id, time.Since(start).Seconds())
 	return nil
 }
 
 func (migrator *migrator) commit() error {
-	start := time.Now()
 	if err := migrator.tx.Commit(); err != nil {
 		return fmt.Errorf("migrations: migrator failed to commit a transaction, %v", err)
 	}
-	log.Debugf("migrations: migrator committed (%.3fs)", time.Since(start).Seconds())
 	return nil
 }
