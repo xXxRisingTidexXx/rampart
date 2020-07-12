@@ -3,7 +3,6 @@ create table if not exists runs
     id                            serial primary key not null,
     completion_time               timestamp          not null,
     miner                         varchar(40)        not null check ( miner != '' ),
-    is_successful                 bool               not null,
     located_geocoding_number      smallint           not null check ( 0 <= located_geocoding_number ),
     unlocated_geocoding_number    smallint           not null check ( 0 <= unlocated_geocoding_number ),
     failed_geocoding_number       smallint           not null check ( 0 <= failed_geocoding_number ),

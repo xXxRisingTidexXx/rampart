@@ -12,7 +12,6 @@ func NewGatherer(miner string, db *sql.DB) *Gatherer {
 
 type Gatherer struct {
 	miner                       string
-	isSuccessful                bool
 	locatedGeocodingNumber      int
 	unlocatedGeocodingNumber    int
 	failedGeocodingNumber       int
@@ -35,10 +34,6 @@ type Gatherer struct {
 	updateDurationCount         float64
 	totalDuration               float64
 	db                          *sql.DB
-}
-
-func (gatherer *Gatherer) GatherSuccess() {
-	gatherer.isSuccessful = true
 }
 
 func (gatherer *Gatherer) GatherLocatedGeocoding() {
@@ -134,7 +129,7 @@ func (gatherer *Gatherer) Flush() error {
 	_, err := gatherer.db.Exec(
 		`insert into runs
     	(
-    	    completion_time, miner, is_successful, located_geocoding_number, unlocated_geocoding_number,
+    	    completion_time, miner, located_geocoding_number, unlocated_geocoding_number,
     	    failed_geocoding_number, inconclusive_geocoding_number, successful_geocoding_number,
     	    approved_validation_number, denied_validation_number, created_storing_number,
     	    updated_storing_number, unaltered_storing_number, failed_storing_number, fetching_duration,
@@ -143,10 +138,9 @@ func (gatherer *Gatherer) Flush() error {
     	values
     	(
     		now() at time zone 'utc', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
-    	    $17, $18, $19 
+    	    $17, $18 
     	)`,
 		gatherer.miner,
-		gatherer.isSuccessful,
 		gatherer.locatedGeocodingNumber,
 		gatherer.unlocatedGeocodingNumber,
 		gatherer.failedGeocodingNumber,
@@ -165,7 +159,6 @@ func (gatherer *Gatherer) Flush() error {
 		updateDuration,
 		gatherer.totalDuration,
 	)
-	gatherer.isSuccessful = false
 	gatherer.locatedGeocodingNumber = 0
 	gatherer.unlocatedGeocodingNumber = 0
 	gatherer.failedGeocodingNumber = 0
