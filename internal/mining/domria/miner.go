@@ -9,17 +9,23 @@ import (
 	"time"
 )
 
-func NewMiner(config *config.DomriaMiner, db *sql.DB, gatherer *metrics.Gatherer) *Miner {
+func NewMiner(
+	config *config.DomriaMiner,
+	db *sql.DB,
+	gatherer *metrics.Gatherer,
+	logger log.FieldLogger,
+) *Miner {
 	return &Miner{
 		config.Housing,
 		config.Spec,
 		config.Port,
 		newFetcher(config.Fetcher, gatherer),
 		newSanitizer(config.Sanitizer),
-		newGeocoder(config.Geocoder, gatherer),
+		newGeocoder(config.Geocoder, gatherer, logger),
 		newValidator(config.Validator, gatherer),
-		newStorer(db, gatherer),
+		newStorer(db, gatherer, logger),
 		gatherer,
+		logger,
 	}
 }
 
@@ -33,12 +39,13 @@ type Miner struct {
 	validator *validator
 	storer    *storer
 	gatherer  *metrics.Gatherer
+	logger    log.FieldLogger
 }
 
 func (miner *Miner) Run() {
 	start := time.Now()
 	if flats, err := miner.fetcher.fetchFlats(miner.housing); err != nil {
-		log.Error(err)
+		miner.logger.Error(err)
 		miner.gatherer.GatherFailureRun()
 	} else {
 		flats = miner.sanitizer.sanitizeFlats(flats)

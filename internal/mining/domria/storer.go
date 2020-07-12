@@ -9,20 +9,20 @@ import (
 	"time"
 )
 
-func newStorer(db *sql.DB, gatherer *metrics.Gatherer) *storer {
-	return &storer{db, gatherer}
+func newStorer(db *sql.DB, gatherer *metrics.Gatherer, logger log.FieldLogger) *storer {
+	return &storer{db, gatherer, logger}
 }
 
 type storer struct {
 	db       *sql.DB
 	gatherer *metrics.Gatherer
+	logger   log.FieldLogger
 }
 
-// TODO: add log with field "origin_url".
 func (storer *storer) storeFlats(flats []*flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {
-			log.Error(err)
+			storer.logger.WithField("origin_url", flat.originURL).Error(err)
 			storer.gatherer.GatherFailedStoring()
 		}
 	}

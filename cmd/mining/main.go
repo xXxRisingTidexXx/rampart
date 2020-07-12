@@ -16,25 +16,27 @@ func main() {
 	isOnce := flag.Bool("once", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
 	flag.Parse()
-	log.SetLevel(log.InfoLevel)
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetReportCaller(true)
+	entry := log.WithField("miner", *alias)
 	scr, err := secrets.NewSecrets()
 	if err != nil {
-		log.Fatal(err)
+		entry.Fatal(err)
 	}
 	cfg, err := config.NewConfig()
 	if err != nil {
-		log.Fatal(err)
+		entry.Fatal(err)
 	}
 	db, err := database.NewDatabase(scr.DSN, cfg.Mining.DSNParams)
 	if err != nil {
-		log.Fatal(err)
+		entry.Fatal(err)
 	}
 	gatherer := metrics.NewGatherer(*alias, cfg.Mining.Gatherer)
-	miner, err := mining.FindMiner(*alias, cfg.Mining.Miners, db, gatherer)
+	miner, err := mining.FindMiner(*alias, cfg.Mining.Miners, db, gatherer, entry)
 	if err != nil {
 		_ = db.Close()
 		_ = gatherer.Unregister()
-		log.Fatal(err)
+		entry.Fatal(err)
 	}
 	if *isOnce {
 		miner.Run()
@@ -43,16 +45,16 @@ func main() {
 		if _, err = cron.AddJob(miner.Spec(), miner); err != nil {
 			_ = db.Close()
 			_ = gatherer.Unregister()
-			log.Fatalf("main: mining failed to run, %v", err)
+			entry.Fatalf("main: mining failed to run, %v", err)
 		}
-		metrics.RunServer(miner.Port(), cfg.Mining.Server)
+		metrics.RunServer(miner.Port(), cfg.Mining.Server, entry)
 		cron.Run()
 	}
 	if err = gatherer.Unregister(); err != nil {
 		_ = db.Close()
-		log.Fatal(err)
+		entry.Fatal(err)
 	}
 	if err = database.CloseDatabase(db); err != nil {
-		log.Fatal(err)
+		entry.Fatal(err)
 	}
 }

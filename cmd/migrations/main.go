@@ -10,7 +10,8 @@ import (
 )
 
 func main() {
-	log.SetLevel(log.InfoLevel)
+	log.SetFormatter(&log.JSONFormatter{})
+	log.SetReportCaller(true)
 	scr, err := secrets.NewSecrets()
 	if err != nil {
 		log.Fatal(err)
