@@ -9,16 +9,13 @@ import (
 	"time"
 )
 
-func RunServer(port int, config *config.Server, gatherer *Gatherer, logger log.FieldLogger) {
+func RunServer(port int, config *config.Server, logger log.FieldLogger) {
 	server := &http.Server{
 		Addr:           ":" + strconv.Itoa(port),
 		ReadTimeout:    time.Duration(config.ReadTimeout),
 		WriteTimeout:   time.Duration(config.WriteTimeout),
 		MaxHeaderBytes: config.MaxHeaderBytes,
-		Handler: promhttp.InstrumentMetricHandler(
-			gatherer.registry,
-			promhttp.HandlerFor(gatherer.registry, promhttp.HandlerOpts{}),
-		),
+		Handler:        promhttp.Handler(),
 	}
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
