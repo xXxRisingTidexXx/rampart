@@ -1,134 +1,187 @@
 package metrics
 
 import (
-	"github.com/prometheus/client_golang/prometheus"
-	"rampart/internal/config"
-	"rampart/internal/misc"
+	"database/sql"
+	"fmt"
 	"time"
 )
 
-// TODO: pass the registry to metrics server.
-func NewGatherer(miner string, config *config.Gatherer) *Gatherer {
-	registry := prometheus.NewRegistry()
-	registry.MustRegister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}))
-	registry.MustRegister(prometheus.NewGoCollector())
-	return &Gatherer{
-		registry,
-		newCounterTracker(registry, config.RunTracker, miner, config.Statuses.Targets()),
-		config.Statuses,
-		newCounterTracker(registry, config.GeocodingTracker, miner, config.Categories.Targets()),
-		config.Categories,
-		newCounterTracker(registry, config.ValidationTracker, miner, config.Verdicts.Targets()),
-		config.Verdicts,
-		newCounterTracker(registry, config.StoringTracker, miner, config.Consequences.Targets()),
-		config.Consequences,
-		newHistogramTracker(registry, config.DurationTracker, miner, config.Processes.Targets()),
-		config.Processes,
-	}
+func NewGatherer(miner string, db *sql.DB) *Gatherer {
+	return &Gatherer{miner: miner, db: db}
 }
 
 type Gatherer struct {
-	registry          *prometheus.Registry
-	runTracker        *counterTracker
-	statuses          *misc.Statuses
-	geocodingTracker  *counterTracker
-	categories        *misc.Categories
-	validationTracker *counterTracker
-	verdicts          *misc.Verdicts
-	storingTracker    *counterTracker
-	consequences      *misc.Consequences
-	durationTracker   *histogramTracker
-	processes         *misc.Processes
-}
-
-func (gatherer *Gatherer) GatherFailureRun() {
-	gatherer.runTracker.track(gatherer.statuses.Failure)
-}
-
-func (gatherer *Gatherer) GatherSuccessRun() {
-	gatherer.runTracker.track(gatherer.statuses.Success)
+	miner                       string
+	locatedGeocodingNumber      int
+	unlocatedGeocodingNumber    int
+	failedGeocodingNumber       int
+	inconclusiveGeocodingNumber int
+	successfulGeocodingNumber   int
+	approvedValidationNumber    int
+	deniedValidationNumber      int
+	createdStoringNumber        int
+	updatedStoringNumber        int
+	unalteredStoringNumber      int
+	failedStoringNumber         int
+	fetchingDuration            float64
+	geocodingDurationSum        float64
+	geocodingDurationCount      float64
+	readingDurationSum          float64
+	readingDurationCount        float64
+	creationDurationSum         float64
+	creationDurationCount       float64
+	updateDurationSum           float64
+	updateDurationCount         float64
+	totalDuration               float64
+	db                          *sql.DB
 }
 
 func (gatherer *Gatherer) GatherLocatedGeocoding() {
-	gatherer.geocodingTracker.track(gatherer.categories.Located)
+	gatherer.locatedGeocodingNumber++
 }
 
 func (gatherer *Gatherer) GatherUnlocatedGeocoding() {
-	gatherer.geocodingTracker.track(gatherer.categories.Unlocated)
+	gatherer.unlocatedGeocodingNumber++
 }
 
 func (gatherer *Gatherer) GatherFailedGeocoding() {
-	gatherer.geocodingTracker.track(gatherer.categories.Failed)
+	gatherer.failedGeocodingNumber++
 }
 
 func (gatherer *Gatherer) GatherInconclusiveGeocoding() {
-	gatherer.geocodingTracker.track(gatherer.categories.Inconclusive)
+	gatherer.inconclusiveGeocodingNumber++
 }
 
 func (gatherer *Gatherer) GatherSuccessfulGeocoding() {
-	gatherer.geocodingTracker.track(gatherer.categories.Successful)
+	gatherer.successfulGeocodingNumber++
 }
 
 func (gatherer *Gatherer) GatherApprovedValidation() {
-	gatherer.validationTracker.track(gatherer.verdicts.Approved)
+	gatherer.approvedValidationNumber++
 }
 
 func (gatherer *Gatherer) GatherDeniedValidation() {
-	gatherer.validationTracker.track(gatherer.verdicts.Denied)
+	gatherer.deniedValidationNumber++
 }
 
 func (gatherer *Gatherer) GatherCreatedStoring() {
-	gatherer.storingTracker.track(gatherer.consequences.Created)
+	gatherer.createdStoringNumber++
 }
 
 func (gatherer *Gatherer) GatherUpdatedStoring() {
-	gatherer.storingTracker.track(gatherer.consequences.Updated)
+	gatherer.updatedStoringNumber++
 }
 
 func (gatherer *Gatherer) GatherUnalteredStoring() {
-	gatherer.storingTracker.track(gatherer.consequences.Unaltered)
+	gatherer.unalteredStoringNumber++
 }
 
 func (gatherer *Gatherer) GatherFailedStoring() {
-	gatherer.storingTracker.track(gatherer.consequences.Failed)
+	gatherer.failedStoringNumber++
 }
 
 func (gatherer *Gatherer) GatherFetchingDuration(start time.Time) {
-	gatherer.durationTracker.track(gatherer.processes.Fetching, time.Since(start).Seconds())
+	gatherer.fetchingDuration = time.Since(start).Seconds()
 }
 
 func (gatherer *Gatherer) GatherGeocodingDuration(start time.Time) {
-	gatherer.durationTracker.track(gatherer.processes.Geocoding, time.Since(start).Seconds())
+	gatherer.geocodingDurationSum += time.Since(start).Seconds()
+	gatherer.geocodingDurationCount++
 }
 
 func (gatherer *Gatherer) GatherReadingDuration(start time.Time) {
-	gatherer.durationTracker.track(gatherer.processes.Reading, time.Since(start).Seconds())
+	gatherer.readingDurationSum += time.Since(start).Seconds()
+	gatherer.readingDurationCount++
 }
 
 func (gatherer *Gatherer) GatherCreationDuration(start time.Time) {
-	gatherer.durationTracker.track(gatherer.processes.Creation, time.Since(start).Seconds())
+	gatherer.creationDurationSum += time.Since(start).Seconds()
+	gatherer.creationDurationCount++
 }
 
 func (gatherer *Gatherer) GatherUpdateDuration(start time.Time) {
-	gatherer.durationTracker.track(gatherer.processes.Update, time.Since(start).Seconds())
+	gatherer.updateDurationSum += time.Since(start).Seconds()
+	gatherer.updateDurationCount++
 }
 
-func (gatherer *Gatherer) GatherRunDuration(start time.Time) {
-	gatherer.durationTracker.track(gatherer.processes.Run, time.Since(start).Seconds())
+func (gatherer *Gatherer) GatherTotalDuration(start time.Time) {
+	gatherer.totalDuration = time.Since(start).Seconds()
 }
 
-func (gatherer *Gatherer) Unregister() error {
-	if err := gatherer.runTracker.unregister(); err != nil {
-		return err
+//nolint:funlen
+func (gatherer *Gatherer) Flush() error {
+	geocodingDuration := 0.0
+	if gatherer.geocodingDurationCount != 0 {
+		geocodingDuration = gatherer.geocodingDurationSum / gatherer.geocodingDurationCount
 	}
-	if err := gatherer.geocodingTracker.unregister(); err != nil {
-		return err
+	readingDuration := 0.0
+	if gatherer.readingDurationCount != 0 {
+		readingDuration = gatherer.readingDurationSum / gatherer.readingDurationCount
 	}
-	if err := gatherer.validationTracker.unregister(); err != nil {
-		return err
+	creationDuration := 0.0
+	if gatherer.creationDurationCount != 0 {
+		creationDuration = gatherer.creationDurationSum / gatherer.creationDurationCount
 	}
-	if err := gatherer.storingTracker.unregister(); err != nil {
-		return err
+	updateDuration := 0.0
+	if gatherer.updateDurationCount != 0 {
+		updateDuration = gatherer.updateDurationSum / gatherer.updateDurationCount
 	}
-	return gatherer.durationTracker.unregister()
+	_, err := gatherer.db.Exec(
+		`insert into runs
+    	(
+    	    completion_time, miner, located_geocoding_number, unlocated_geocoding_number,
+    	    failed_geocoding_number, inconclusive_geocoding_number, successful_geocoding_number,
+    	    approved_validation_number, denied_validation_number, created_storing_number,
+    	    updated_storing_number, unaltered_storing_number, failed_storing_number, fetching_duration,
+    	    geocoding_duration, reading_duration, creation_duration, update_duration, total_duration
+    	)
+    	values
+    	(
+    		now() at time zone 'utc', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
+    	    $17, $18 
+    	)`,
+		gatherer.miner,
+		gatherer.locatedGeocodingNumber,
+		gatherer.unlocatedGeocodingNumber,
+		gatherer.failedGeocodingNumber,
+		gatherer.inconclusiveGeocodingNumber,
+		gatherer.successfulGeocodingNumber,
+		gatherer.approvedValidationNumber,
+		gatherer.deniedValidationNumber,
+		gatherer.createdStoringNumber,
+		gatherer.updatedStoringNumber,
+		gatherer.unalteredStoringNumber,
+		gatherer.failedStoringNumber,
+		gatherer.fetchingDuration,
+		geocodingDuration,
+		readingDuration,
+		creationDuration,
+		updateDuration,
+		gatherer.totalDuration,
+	)
+	gatherer.locatedGeocodingNumber = 0
+	gatherer.unlocatedGeocodingNumber = 0
+	gatherer.failedGeocodingNumber = 0
+	gatherer.inconclusiveGeocodingNumber = 0
+	gatherer.successfulGeocodingNumber = 0
+	gatherer.approvedValidationNumber = 0
+	gatherer.deniedValidationNumber = 0
+	gatherer.createdStoringNumber = 0
+	gatherer.updatedStoringNumber = 0
+	gatherer.unalteredStoringNumber = 0
+	gatherer.failedStoringNumber = 0
+	gatherer.fetchingDuration = 0
+	gatherer.geocodingDurationSum = 0
+	gatherer.geocodingDurationCount = 0
+	gatherer.readingDurationSum = 0
+	gatherer.readingDurationCount = 0
+	gatherer.creationDurationSum = 0
+	gatherer.creationDurationCount = 0
+	gatherer.updateDurationSum = 0
+	gatherer.updateDurationCount = 0
+	gatherer.totalDuration = 0
+	if err != nil {
+		return fmt.Errorf("metrics: gatherer failed to flush, %v", err)
+	}
+	return nil
 }

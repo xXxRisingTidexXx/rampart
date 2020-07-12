@@ -28,7 +28,6 @@ func newDefaultFetcher() *fetcher {
 	return newTestFetcher("https://domria.ua/search/")
 }
 
-// TODO: Add gatherer de-registration.
 func newTestFetcher(searchURL string) *fetcher {
 	return newFetcher(
 		&config.Fetcher{
@@ -39,34 +38,7 @@ func newTestFetcher(searchURL string) *fetcher {
 			SearchURL: searchURL,
 			SRID:      4326,
 		},
-		metrics.NewGatherer(
-			"domria-primary",
-			&config.Gatherer{
-				RunTracker: &config.CounterTracker{Name: "run", Labels: []string{"miner", "status"}},
-				Statuses:   &misc.Statuses{},
-				GeocodingTracker: &config.CounterTracker{
-					Name:   "geocoding",
-					Labels: []string{"miner", "category"},
-				},
-				Categories: &misc.Categories{},
-				ValidationTracker: &config.CounterTracker{
-					Name:   "validation",
-					Labels: []string{"miner", "verdict"},
-				},
-				Verdicts: &misc.Verdicts{},
-				StoringTracker: &config.CounterTracker{
-					Name:   "storing",
-					Labels: []string{"miner", "consequence"},
-				},
-				Consequences: &misc.Consequences{},
-				DurationTracker: &config.HistogramTracker{
-					Name:    "duration",
-					Labels:  []string{"miner", "process"},
-					Buckets: []float64{0.1, 0.5, 1},
-				},
-				Processes: &misc.Processes{},
-			},
-		),
+		metrics.NewGatherer("domria-primary", nil),
 	)
 }
 
