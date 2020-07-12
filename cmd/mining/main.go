@@ -47,7 +47,7 @@ func main() {
 			_ = gatherer.Unregister()
 			entry.Fatalf("main: mining failed to run, %v", err)
 		}
-		metrics.RunServer(miner.Port(), cfg.Mining.Server, entry)
+		metrics.RunServer(miner.Port(), cfg.Mining.Server, gatherer, entry)
 		cron.Run()
 	}
 	if err = gatherer.Unregister(); err != nil {
