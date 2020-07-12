@@ -136,7 +136,6 @@ func (storer *storer) updateFlat(tx *sql.Tx, flat *flat) error {
 	return nil
 }
 
-//nolint:funlen
 func (storer *storer) createFlat(tx *sql.Tx, flat *flat) error {
 	_, err := tx.Exec(
 		`insert into flats
