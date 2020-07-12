@@ -8,7 +8,6 @@ linters:
     - gochecknoglobals
     - goimports
     - goerr113
-    - testpackage
     - gochecknoinits
     - gofumpt
     - noctx
