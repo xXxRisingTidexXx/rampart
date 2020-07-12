@@ -7,7 +7,6 @@ mining:
   dsnParams:
     <<: *dsnParams
     connect_timeout: '10'
-  gatherer:
   server:
     readTimeout: 5s
     writeTimeout: 5s

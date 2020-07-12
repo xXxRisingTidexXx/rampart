@@ -46,15 +46,17 @@ func (miner *Miner) Run() {
 	start := time.Now()
 	if flats, err := miner.fetcher.fetchFlats(miner.housing); err != nil {
 		miner.logger.Error(err)
-		miner.gatherer.GatherFailureRun()
 	} else {
 		flats = miner.sanitizer.sanitizeFlats(flats)
 		flats = miner.geocoder.geocodeFlats(flats)
 		flats = miner.validator.validateFlats(flats)
 		miner.storer.storeFlats(flats)
-		miner.gatherer.GatherSuccessRun()
+		miner.gatherer.GatherSuccess()
 	}
-	miner.gatherer.GatherRunDuration(start)
+	miner.gatherer.GatherTotalDuration(start)
+	if err := miner.gatherer.Flush(); err != nil {
+		miner.logger.Error(err)
+	}
 }
 
 func (miner *Miner) Spec() string {

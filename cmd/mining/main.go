@@ -31,11 +31,10 @@ func main() {
 	if err != nil {
 		entry.Fatal(err)
 	}
-	gatherer := metrics.NewGatherer(*alias, cfg.Mining.Gatherer)
+	gatherer := metrics.NewGatherer(*alias, db)
 	miner, err := mining.FindMiner(*alias, cfg.Mining.Miners, db, gatherer, entry)
 	if err != nil {
 		_ = db.Close()
-		_ = gatherer.Unregister()
 		entry.Fatal(err)
 	}
 	if *isOnce {
@@ -44,15 +43,10 @@ func main() {
 		cron := gocron.New()
 		if _, err = cron.AddJob(miner.Spec(), miner); err != nil {
 			_ = db.Close()
-			_ = gatherer.Unregister()
 			entry.Fatalf("main: mining failed to run, %v", err)
 		}
-		metrics.RunServer(miner.Port(), cfg.Mining.Server, gatherer, entry)
+		metrics.RunServer(miner.Port(), cfg.Mining.Server, entry)
 		cron.Run()
-	}
-	if err = gatherer.Unregister(); err != nil {
-		_ = db.Close()
-		entry.Fatal(err)
 	}
 	if err = database.CloseDatabase(db); err != nil {
 		entry.Fatal(err)
