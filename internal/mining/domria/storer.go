@@ -139,47 +139,17 @@ func (storer *storer) updateFlat(tx *sql.Tx, flat *flat) error {
 //nolint:funlen
 func (storer *storer) createFlat(tx *sql.Tx, flat *flat) error {
 	_, err := tx.Exec(
-		`insert into flats(
-                  origin_url, 
-                  image_url, 
-                  update_time, 
-                  parsing_time, 
-                  price, 
-                  total_area, 
-                  living_area, 
-                  kitchen_area, 
-                  room_number, 
-                  floor, 
-                  total_floor, 
-                  housing, 
-                  complex, 
-                  point, 
-                  state, 
-                  city, 
-                  district, 
-                  street, 
-                  house_number
-                  ) values (
-                            $1, 
-                            $2, 
-                            $3, 
-                            now() at time zone 'utc', 
-                            $4, 
-                            $5, 
-                            $6, 
-                            $7, 
-                            $8, 
-                            $9, 
-                            $10, 
-                            $11, 
-                            $12, 
-                            $13, 
-                            $14, 
-                            $15, 
-                            $16, 
-                            $17, 
-                            $18
-                            )`,
+		`insert into flats
+        (
+         	origin_url, image_url, update_time, parsing_time, price, total_area, living_area, kitchen_area,
+            room_number, floor, total_floor, housing, complex, point, state, city, district, street,
+            house_number
+        )
+        values 
+		(
+		    $1, $2, $3, now() at time zone 'utc', $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
+		    $17, $18
+		)`,
 		flat.originURL,
 		flat.imageURL,
 		flat.updateTime,
