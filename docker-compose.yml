@@ -38,6 +38,7 @@ services:
     command: go run rampart/cmd/mining -miner domria-primary
     ports:
       - 9001:9001
+    restart: on-failure
   mining-domria-secondary:
     image: rampart-backend
     container_name: rampart-mining-domria-secondary
@@ -46,6 +47,7 @@ services:
     command: go run rampart/cmd/mining -miner domria-secondary
     ports:
       - 9002:9002
+    restart: on-failure
   checks:
     build:
       context: .
