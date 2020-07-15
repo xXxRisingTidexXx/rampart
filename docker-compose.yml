@@ -71,8 +71,13 @@ services:
     volumes:
       - .:/go/src/app
     command: go test rampart/internal/mining/domria
+  notebook:
+    build:
+      context: .
+      dockerfile: docker/notebook.dockerfile
+    image: rampart-notebook
   jupyter:
-    image: jupyter/scipy-notebook
+    image: rampart-notebook
     container_name: rampart-jupyter
     volumes:
       - ./notebooks:/home/jovyan
