@@ -20,3 +20,5 @@ venv
 .npm
 .idea
 .cache
+notebooks/.ipynb_checkpoints
+notebooks/.ipython

@@ -71,6 +71,15 @@ services:
     volumes:
       - .:/go/src/app
     command: go test rampart/internal/mining/domria
+  jupyter:
+    image: jupyter/scipy-notebook
+    container_name: rampart-jupyter
+    volumes:
+      - ./notebooks:/home/jovyan
+    ports:
+      - 8888:8888
+    environment:
+      JUPYTER_ENABLE_LAB: 'yes'
 volumes:
   database:
     name: rampart-database

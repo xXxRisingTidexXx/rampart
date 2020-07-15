@@ -43,3 +43,8 @@ commands:
   test:
     description: Run test suites
     cmd: docker-compose run --rm test
+  jupyter:
+    description: Run Jupyter Notebook server
+    cmd: |
+      docker-compose up jupyter
+      docker rm rampart-jupyter || true
