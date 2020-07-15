@@ -17,5 +17,5 @@ venv
 .local
 .npm
 .cache
-notebooks/.ipynb_checkpoints
-notebooks/.ipython
+.ipynb_checkpoints
+.ipython

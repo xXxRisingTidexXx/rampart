@@ -7,10 +7,6 @@
 *.out
 out
 gen
-/mining
-/mining-race
-/migrations
-/migrations-race
 node_modules
 venv
 .lets
@@ -20,5 +16,5 @@ venv
 .npm
 .idea
 .cache
-notebooks/.ipynb_checkpoints
-notebooks/.ipython
+.ipynb_checkpoints
+.ipython
