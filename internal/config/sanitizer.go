@@ -6,20 +6,21 @@ import (
 )
 
 type Sanitizer struct {
-	OriginURLPrefix    string            `yaml:"originURLPrefix"`
-	ImageURLPrefix     string            `yaml:"imageURLPrefix"`
-	StateDictionary    map[string]string `yaml:"stateDictionary"`
-	StateSuffix        string            `yaml:"stateSuffix"`
-	CityDictionary     map[string]string `yaml:"cityDictionary"`
-	DistrictDictionary map[string]string `yaml:"districtDictionary"`
-	DistrictCitySwaps  *misc.Set         `yaml:"districtCitySwaps"`
-	DistrictEnding     string            `yaml:"districtEnding"`
-	DistrictSuffix     string            `yaml:"districtSuffix"`
+	OriginURLPrefix         string            `yaml:"originURLPrefix"`
+	ImageURLPrefix          string            `yaml:"imageURLPrefix"`
+	StateDictionary         map[string]string `yaml:"stateDictionary"`
+	StateSuffix             string            `yaml:"stateSuffix"`
+	CityDictionary          map[string]string `yaml:"cityDictionary"`
+	DistrictDictionary      map[string]string `yaml:"districtDictionary"`
+	DistrictCitySwaps       *misc.Set         `yaml:"districtCitySwaps"`
+	DistrictEnding          string            `yaml:"districtEnding"`
+	DistrictSuffix          string            `yaml:"districtSuffix"`
+	HouseNumberReplacements []string          `yaml:"houseNumberReplacements"`
 }
 
 func (sanitizer *Sanitizer) String() string {
 	return fmt.Sprintf(
-		"{%s %s %v %s %v %v %v %s %s}",
+		"{%s %s %v %s %v %v %v %s %s %v}",
 		sanitizer.OriginURLPrefix,
 		sanitizer.ImageURLPrefix,
 		sanitizer.StateDictionary,
@@ -29,5 +30,6 @@ func (sanitizer *Sanitizer) String() string {
 		sanitizer.DistrictCitySwaps,
 		sanitizer.DistrictEnding,
 		sanitizer.DistrictSuffix,
+		sanitizer.HouseNumberReplacements,
 	)
 }
