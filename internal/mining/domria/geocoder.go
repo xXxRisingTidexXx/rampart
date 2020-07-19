@@ -26,7 +26,6 @@ func newGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger log
 	}
 }
 
-// TODO: steel "road" from "addressdetails" in a case of search
 type geocoder struct {
 	client          *http.Client
 	headers         map[string]string
