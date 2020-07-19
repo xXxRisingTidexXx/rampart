@@ -17,6 +17,7 @@ func NewSanitizer(config *config.Sanitizer) *Sanitizer {
 		config.DistrictCitySwaps,
 		config.DistrictEnding,
 		config.DistrictSuffix,
+		strings.NewReplacer(config.StreetReplacements...),
 		strings.NewReplacer(config.HouseNumberReplacements...),
 		",",
 	}
@@ -32,6 +33,7 @@ type Sanitizer struct {
 	districtCitySwaps   *misc.Set
 	districtEnding      string
 	districtSuffix      string
+	streetReplacer      *strings.Replacer
 	houseNumberReplacer *strings.Replacer
 	comma               string
 }
@@ -99,7 +101,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 		state,
 		city,
 		district,
-		street,
+		strings.TrimSpace(sanitizer.streetReplacer.Replace(street)),
 		houseNumber,
 	}
 }

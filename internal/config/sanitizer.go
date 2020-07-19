@@ -15,12 +15,13 @@ type Sanitizer struct {
 	DistrictCitySwaps       *misc.Set         `yaml:"districtCitySwaps"`
 	DistrictEnding          string            `yaml:"districtEnding"`
 	DistrictSuffix          string            `yaml:"districtSuffix"`
+	StreetReplacements      []string          `yaml:"streetReplacements"`
 	HouseNumberReplacements []string          `yaml:"houseNumberReplacements"`
 }
 
 func (sanitizer *Sanitizer) String() string {
 	return fmt.Sprintf(
-		"{%s %s %v %s %v %v %v %s %s %v}",
+		"{%s %s %v %s %v %v %v %s %s %v %v}",
 		sanitizer.OriginURLPrefix,
 		sanitizer.ImageURLPrefix,
 		sanitizer.StateDictionary,
@@ -30,6 +31,7 @@ func (sanitizer *Sanitizer) String() string {
 		sanitizer.DistrictCitySwaps,
 		sanitizer.DistrictEnding,
 		sanitizer.DistrictSuffix,
+		sanitizer.StreetReplacements,
 		sanitizer.HouseNumberReplacements,
 	)
 }
