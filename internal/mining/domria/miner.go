@@ -20,7 +20,7 @@ func NewMiner(
 		config.Spec,
 		config.Port,
 		NewFetcher(config.Fetcher, gatherer),
-		NewSanitizer(config.Sanitizer),
+		NewSanitizer(config.Sanitizer, gatherer),
 		NewGeocoder(config.Geocoder, gatherer, logger),
 		NewValidator(config.Validator, gatherer),
 		NewStorer(db, gatherer, logger),

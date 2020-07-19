@@ -11,29 +11,59 @@ func NewGatherer(miner string, db *sql.DB) *Gatherer {
 }
 
 type Gatherer struct {
-	miner                       string
-	locatedGeocodingNumber      int
-	unlocatedGeocodingNumber    int
-	failedGeocodingNumber       int
-	inconclusiveGeocodingNumber int
-	successfulGeocodingNumber   int
-	approvedValidationNumber    int
-	deniedValidationNumber      int
-	createdStoringNumber        int
-	updatedStoringNumber        int
-	unalteredStoringNumber      int
-	failedStoringNumber         int
-	fetchingDuration            float64
-	geocodingDurationSum        float64
-	geocodingDurationCount      float64
-	readingDurationSum          float64
-	readingDurationCount        float64
-	creationDurationSum         float64
-	creationDurationCount       float64
-	updateDurationSum           float64
-	updateDurationCount         float64
-	totalDuration               float64
-	db                          *sql.DB
+	miner                         string
+	stateSanitizationNumber       int
+	citySanitizationNumber        int
+	districtSanitizationNumber    int
+	swapSanitizationNumber        int
+	streetSanitizationNumber      int
+	houseNumberSanitizationNumber int
+	locatedGeocodingNumber        int
+	unlocatedGeocodingNumber      int
+	failedGeocodingNumber         int
+	inconclusiveGeocodingNumber   int
+	successfulGeocodingNumber     int
+	approvedValidationNumber      int
+	deniedValidationNumber        int
+	createdStoringNumber          int
+	updatedStoringNumber          int
+	unalteredStoringNumber        int
+	failedStoringNumber           int
+	fetchingDuration              float64
+	geocodingDurationSum          float64
+	geocodingDurationCount        float64
+	readingDurationSum            float64
+	readingDurationCount          float64
+	creationDurationSum           float64
+	creationDurationCount         float64
+	updateDurationSum             float64
+	updateDurationCount           float64
+	totalDuration                 float64
+	db                            *sql.DB
+}
+
+func (gatherer *Gatherer) GatherStateSanitization() {
+	gatherer.stateSanitizationNumber++
+}
+
+func (gatherer *Gatherer) GatherCitySanitization() {
+	gatherer.citySanitizationNumber++
+}
+
+func (gatherer *Gatherer) GatherDistrictSanitization() {
+	gatherer.districtSanitizationNumber++
+}
+
+func (gatherer *Gatherer) GatherSwapSanitization() {
+	gatherer.swapSanitizationNumber++
+}
+
+func (gatherer *Gatherer) GatherStreetSanitization() {
+	gatherer.streetSanitizationNumber++
+}
+
+func (gatherer *Gatherer) GatherHouseNumberSanitization() {
+	gatherer.houseNumberSanitizationNumber++
 }
 
 func (gatherer *Gatherer) GatherLocatedGeocoding() {
@@ -108,6 +138,7 @@ func (gatherer *Gatherer) GatherTotalDuration(start time.Time) {
 	gatherer.totalDuration = time.Since(start).Seconds()
 }
 
+// TODO: insert sanitization values into the DB.
 //nolint:funlen
 func (gatherer *Gatherer) Flush() error {
 	geocodingDuration := 0.0
@@ -159,6 +190,12 @@ func (gatherer *Gatherer) Flush() error {
 		updateDuration,
 		gatherer.totalDuration,
 	)
+	gatherer.stateSanitizationNumber = 0
+	gatherer.citySanitizationNumber = 0
+	gatherer.districtSanitizationNumber = 0
+	gatherer.swapSanitizationNumber = 0
+	gatherer.streetSanitizationNumber = 0
+	gatherer.houseNumberSanitizationNumber = 0
 	gatherer.locatedGeocodingNumber = 0
 	gatherer.unlocatedGeocodingNumber = 0
 	gatherer.failedGeocodingNumber = 0
