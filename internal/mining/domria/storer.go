@@ -9,26 +9,26 @@ import (
 	"time"
 )
 
-func newStorer(db *sql.DB, gatherer *metrics.Gatherer, logger log.FieldLogger) *storer {
-	return &storer{db, gatherer, logger}
+func NewStorer(db *sql.DB, gatherer *metrics.Gatherer, logger log.FieldLogger) *Storer {
+	return &Storer{db, gatherer, logger}
 }
 
-type storer struct {
+type Storer struct {
 	db       *sql.DB
 	gatherer *metrics.Gatherer
 	logger   log.FieldLogger
 }
 
-func (storer *storer) storeFlats(flats []*flat) {
+func (storer *Storer) StoreFlats(flats []*Flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {
-			storer.logger.WithField("origin_url", flat.originURL).Error(err)
+			storer.logger.WithField("origin_url", flat.OriginURL).Error(err)
 			storer.gatherer.GatherFailedStoring()
 		}
 	}
 }
 
-func (storer *storer) storeFlat(flat *flat) error {
+func (storer *Storer) storeFlat(flat *Flat) error {
 	tx, err := storer.db.Begin()
 	if err != nil {
 		return fmt.Errorf("domria: storer failed to begin a transaction, %v", err)
@@ -55,7 +55,7 @@ func (storer *storer) storeFlat(flat *flat) error {
 		storer.gatherer.GatherCreatedStoring()
 		return nil
 	}
-	if flat.updateTime.After(origin.updateTime) {
+	if flat.UpdateTime.After(origin.updateTime) {
 		start := time.Now()
 		err = storer.updateFlat(tx, flat)
 		storer.gatherer.GatherUpdateDuration(start)
@@ -76,8 +76,8 @@ func (storer *storer) storeFlat(flat *flat) error {
 	return nil
 }
 
-func (storer *storer) readFlat(tx *sql.Tx, flat *flat) (*origin, error) {
-	row := tx.QueryRow(`select update_time from flats where origin_url = $1`, flat.originURL)
+func (storer *Storer) readFlat(tx *sql.Tx, flat *Flat) (*origin, error) {
+	row := tx.QueryRow(`select update_time from flats where origin_url = $1`, flat.OriginURL)
 	var origin origin
 	switch err := row.Scan(&origin.updateTime); err {
 	case sql.ErrNoRows:
@@ -85,11 +85,11 @@ func (storer *storer) readFlat(tx *sql.Tx, flat *flat) (*origin, error) {
 	case nil:
 		return &origin, nil
 	default:
-		return nil, fmt.Errorf("domria: storer failed to read flat %s, %v", flat.originURL, err)
+		return nil, fmt.Errorf("domria: storer failed to read flat %s, %v", flat.OriginURL, err)
 	}
 }
 
-func (storer *storer) updateFlat(tx *sql.Tx, flat *flat) error {
+func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 	_, err := tx.Exec(
 		`update flats 
 		set image_url = $1,
@@ -111,32 +111,32 @@ func (storer *storer) updateFlat(tx *sql.Tx, flat *flat) error {
 		    street = $16,
 		    house_number = $17
 		where origin_url = $18`,
-		flat.imageURL,
-		flat.updateTime,
-		flat.price,
-		flat.totalArea,
-		flat.livingArea,
-		flat.kitchenArea,
-		flat.roomNumber,
-		flat.floor,
-		flat.totalFloor,
-		flat.housing.String(),
-		flat.complex,
-		&ewkb.Point{Point: flat.point},
-		flat.state,
-		flat.city,
-		flat.district,
-		flat.street,
-		flat.houseNumber,
-		flat.originURL,
+		flat.ImageURL,
+		flat.UpdateTime,
+		flat.Price,
+		flat.TotalArea,
+		flat.LivingArea,
+		flat.KitchenArea,
+		flat.RoomNumber,
+		flat.Floor,
+		flat.TotalFloor,
+		flat.Housing.String(),
+		flat.Complex,
+		&ewkb.Point{Point: flat.Point},
+		flat.State,
+		flat.City,
+		flat.District,
+		flat.Street,
+		flat.HouseNumber,
+		flat.OriginURL,
 	)
 	if err != nil {
-		return fmt.Errorf("domria: storer failed to update flat %s, %v", flat.originURL, err)
+		return fmt.Errorf("domria: storer failed to update flat %s, %v", flat.OriginURL, err)
 	}
 	return nil
 }
 
-func (storer *storer) createFlat(tx *sql.Tx, flat *flat) error {
+func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 	_, err := tx.Exec(
 		`insert into flats
         (
@@ -149,27 +149,27 @@ func (storer *storer) createFlat(tx *sql.Tx, flat *flat) error {
 		    $1, $2, $3, now() at time zone 'utc', $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
 		    $17, $18
 		)`,
-		flat.originURL,
-		flat.imageURL,
-		flat.updateTime,
-		flat.price,
-		flat.totalArea,
-		flat.livingArea,
-		flat.kitchenArea,
-		flat.roomNumber,
-		flat.floor,
-		flat.totalFloor,
-		flat.housing.String(),
-		flat.complex,
-		&ewkb.Point{Point: flat.point},
-		flat.state,
-		flat.city,
-		flat.district,
-		flat.street,
-		flat.houseNumber,
+		flat.OriginURL,
+		flat.ImageURL,
+		flat.UpdateTime,
+		flat.Price,
+		flat.TotalArea,
+		flat.LivingArea,
+		flat.KitchenArea,
+		flat.RoomNumber,
+		flat.Floor,
+		flat.TotalFloor,
+		flat.Housing.String(),
+		flat.Complex,
+		&ewkb.Point{Point: flat.Point},
+		flat.State,
+		flat.City,
+		flat.District,
+		flat.Street,
+		flat.HouseNumber,
 	)
 	if err != nil {
-		return fmt.Errorf("domria: storer failed to create flat %s, %v", flat.originURL, err)
+		return fmt.Errorf("domria: storer failed to create flat %s, %v", flat.OriginURL, err)
 	}
 	return nil
 }

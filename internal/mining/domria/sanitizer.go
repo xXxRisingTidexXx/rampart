@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-func newSanitizer(config *config.Sanitizer) *sanitizer {
-	return &sanitizer{
+func NewSanitizer(config *config.Sanitizer) *Sanitizer {
+	return &Sanitizer{
 		config.OriginURLPrefix,
 		config.ImageURLPrefix,
 		config.StateEnding,
@@ -16,12 +16,7 @@ func newSanitizer(config *config.Sanitizer) *sanitizer {
 	}
 }
 
-// TODO: add street split (some streets contain house numbers).
-// TODO: add street purity (replace shorts and russian suffixes and endings).
-// TODO: add complex purity (replace "ЖК " prefixes if needed).
-// TODO: add street whitespace reduce.
-// TODO: add house number truncates.
-type sanitizer struct {
+type Sanitizer struct {
 	originURLPrefix string
 	imageURLPrefix  string
 	stateEnding     string
@@ -30,49 +25,49 @@ type sanitizer struct {
 	districtSuffix  string
 }
 
-func (sanitizer *sanitizer) sanitizeFlats(flats []*flat) []*flat {
-	newFlats := make([]*flat, len(flats))
+func (sanitizer *Sanitizer) SanitizeFlats(flats []*Flat) []*Flat {
+	newFlats := make([]*Flat, len(flats))
 	for i, flat := range flats {
 		newFlats[i] = sanitizer.sanitizeFlat(flat)
 	}
 	return newFlats
 }
 
-func (sanitizer *sanitizer) sanitizeFlat(f *flat) *flat {
-	originURL := f.originURL
+func (sanitizer *Sanitizer) sanitizeFlat(f *Flat) *Flat {
+	originURL := f.OriginURL
 	if originURL != "" {
 		originURL = sanitizer.originURLPrefix + originURL
 	}
-	imageURL := f.imageURL
+	imageURL := f.ImageURL
 	if imageURL != "" {
 		imageURL = sanitizer.imageURLPrefix + imageURL
 	}
-	state := f.state
+	state := f.State
 	if strings.HasSuffix(state, sanitizer.stateEnding) {
 		state += sanitizer.stateSuffix
 	}
-	district := f.district
+	district := f.District
 	if strings.HasSuffix(district, sanitizer.districtEnding) {
 		district += sanitizer.districtSuffix
 	}
-	return &flat{
+	return &Flat{
 		originURL,
 		imageURL,
-		f.updateTime,
-		f.price,
-		f.totalArea,
-		f.livingArea,
-		f.kitchenArea,
-		f.roomNumber,
-		f.floor,
-		f.totalFloor,
-		f.housing,
-		f.complex,
-		f.point,
+		f.UpdateTime,
+		f.Price,
+		f.TotalArea,
+		f.LivingArea,
+		f.KitchenArea,
+		f.RoomNumber,
+		f.Floor,
+		f.TotalFloor,
+		f.Housing,
+		f.Complex,
+		f.Point,
 		state,
-		f.city,
+		f.City,
 		district,
-		f.street,
-		f.houseNumber,
+		f.Street,
+		f.HouseNumber,
 	}
 }

@@ -5,8 +5,8 @@ import (
 	"rampart/internal/mining/metrics"
 )
 
-func newValidator(config *config.Validator, gatherer *metrics.Gatherer) *validator {
-	return &validator{
+func NewValidator(config *config.Validator, gatherer *metrics.Gatherer) *Validator {
+	return &Validator{
 		config.MinPrice,
 		config.MinTotalArea,
 		config.MaxTotalArea,
@@ -27,7 +27,7 @@ func newValidator(config *config.Validator, gatherer *metrics.Gatherer) *validat
 	}
 }
 
-type validator struct {
+type Validator struct {
 	minPrice        float64
 	minTotalArea    float64
 	maxTotalArea    float64
@@ -47,8 +47,8 @@ type validator struct {
 	gatherer        *metrics.Gatherer
 }
 
-func (validator *validator) validateFlats(flats []*flat) []*flat {
-	newFlats := make([]*flat, 0, len(flats))
+func (validator *Validator) ValidateFlats(flats []*Flat) []*Flat {
+	newFlats := make([]*Flat, 0, len(flats))
 	for _, flat := range flats {
 		if validator.validateFlat(flat) {
 			newFlats = append(newFlats, flat)
@@ -61,29 +61,29 @@ func (validator *validator) validateFlats(flats []*flat) []*flat {
 }
 
 //nolint:gocognit
-func (validator *validator) validateFlat(flat *flat) bool {
-	if flat.roomNumber == 0 {
+func (validator *Validator) validateFlat(flat *Flat) bool {
+	if flat.RoomNumber == 0 {
 		return false
 	}
-	specificArea := flat.totalArea / float64(flat.roomNumber)
-	return flat.originURL != "" &&
-		validator.minPrice <= flat.price &&
-		validator.minTotalArea <= flat.totalArea &&
-		flat.totalArea <= validator.maxTotalArea &&
-		validator.minLivingArea <= flat.livingArea &&
-		flat.livingArea < flat.totalArea &&
-		validator.minKitchenArea <= flat.kitchenArea &&
-		flat.kitchenArea < flat.totalArea &&
-		validator.minRoomNumber <= flat.roomNumber &&
-		flat.roomNumber <= validator.maxRoomNumber &&
+	specificArea := flat.TotalArea / float64(flat.RoomNumber)
+	return flat.OriginURL != "" &&
+		validator.minPrice <= flat.Price &&
+		validator.minTotalArea <= flat.TotalArea &&
+		flat.TotalArea <= validator.maxTotalArea &&
+		validator.minLivingArea <= flat.LivingArea &&
+		flat.LivingArea < flat.TotalArea &&
+		validator.minKitchenArea <= flat.KitchenArea &&
+		flat.KitchenArea < flat.TotalArea &&
+		validator.minRoomNumber <= flat.RoomNumber &&
+		flat.RoomNumber <= validator.maxRoomNumber &&
 		validator.minSpecificArea <= specificArea &&
 		specificArea <= validator.maxSpecificArea &&
-		validator.minFloor <= flat.floor &&
-		flat.floor <= flat.totalFloor &&
-		validator.minTotalFloor <= flat.totalFloor &&
-		flat.totalFloor <= validator.maxTotalFloor &&
-		validator.minLongitude <= flat.point.X() &&
-		flat.point.X() <= validator.maxLongitude &&
-		validator.minLatitude <= flat.point.Y() &&
-		flat.point.Y() <= validator.maxLatitude
+		validator.minFloor <= flat.Floor &&
+		flat.Floor <= flat.TotalFloor &&
+		validator.minTotalFloor <= flat.TotalFloor &&
+		flat.TotalFloor <= validator.maxTotalFloor &&
+		validator.minLongitude <= flat.Point.X() &&
+		flat.Point.X() <= validator.maxLongitude &&
+		validator.minLatitude <= flat.Point.Y() &&
+		flat.Point.Y() <= validator.maxLatitude
 }

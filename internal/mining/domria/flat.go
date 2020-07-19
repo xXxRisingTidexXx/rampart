@@ -7,47 +7,47 @@ import (
 	"time"
 )
 
-type flat struct {
-	originURL   string
-	imageURL    string
-	updateTime  time.Time
-	price       float64
-	totalArea   float64
-	livingArea  float64
-	kitchenArea float64
-	roomNumber  int
-	floor       int
-	totalFloor  int
-	housing     misc.Housing
-	complex     string
-	point       *geom.Point
-	state       string
-	city        string
-	district    string
-	street      string
-	houseNumber string
+type Flat struct {
+	OriginURL   string
+	ImageURL    string
+	UpdateTime  time.Time
+	Price       float64
+	TotalArea   float64
+	LivingArea  float64
+	KitchenArea float64
+	RoomNumber  int
+	Floor       int
+	TotalFloor  int
+	Housing     misc.Housing
+	Complex     string
+	Point       *geom.Point
+	State       string
+	City        string
+	District    string
+	Street      string
+	HouseNumber string
 }
 
-func (flat *flat) String() string {
+func (flat *Flat) String() string {
 	return fmt.Sprintf(
 		"{%s %s %s %.2f %.1f %.1f %.1f %d %d %d %s %s %v %s %s %s %s %s}",
-		flat.originURL,
-		flat.imageURL,
-		flat.updateTime,
-		flat.price,
-		flat.totalArea,
-		flat.livingArea,
-		flat.kitchenArea,
-		flat.roomNumber,
-		flat.floor,
-		flat.totalFloor,
-		flat.housing,
-		flat.complex,
-		flat.point,
-		flat.state,
-		flat.city,
-		flat.district,
-		flat.street,
-		flat.houseNumber,
+		flat.OriginURL,
+		flat.ImageURL,
+		flat.UpdateTime,
+		flat.Price,
+		flat.TotalArea,
+		flat.LivingArea,
+		flat.KitchenArea,
+		flat.RoomNumber,
+		flat.Floor,
+		flat.TotalFloor,
+		flat.Housing,
+		flat.Complex,
+		flat.Point,
+		flat.State,
+		flat.City,
+		flat.District,
+		flat.Street,
+		flat.HouseNumber,
 	)
 }
