@@ -54,7 +54,11 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) (*Flat, error) {
 		geocoder.gatherer.GatherLocatedGeocoding()
 		return flat, nil
 	}
-	if flat.District == "" || flat.Street == "" || flat.HouseNumber == "" {
+	if flat.State == "" ||
+		flat.City == "" ||
+		flat.District == "" ||
+		flat.Street == "" ||
+		flat.HouseNumber == "" {
 		geocoder.gatherer.GatherUnlocatedGeocoding()
 		return nil, nil
 	}
@@ -105,17 +109,16 @@ func (geocoder *Geocoder) getLocations(flat *Flat) ([]byte, error) {
 
 func (geocoder *Geocoder) getSearchURL(flat *Flat) string {
 	state := ""
-	whitespace, plus := " ", "+"
 	if !geocoder.statelessCities.Contains(flat.City) {
-		state = strings.ReplaceAll(flat.State, whitespace, plus)
+		state = strings.ReplaceAll(flat.State, " ", "+")
 	}
 	return fmt.Sprintf(
 		geocoder.searchURL,
 		state,
-		strings.ReplaceAll(flat.City, whitespace, plus),
-		strings.ReplaceAll(flat.District, whitespace, plus),
-		strings.ReplaceAll(flat.Street, whitespace, plus),
-		strings.ReplaceAll(flat.HouseNumber, whitespace, plus),
+		strings.ReplaceAll(flat.City, " ", "+"),
+		strings.ReplaceAll(flat.District, " ", "+"),
+		strings.ReplaceAll(flat.Street, " ", "+"),
+		strings.ReplaceAll(flat.HouseNumber, " ", "+"),
 	)
 }
 
