@@ -19,11 +19,11 @@ func NewMiner(
 		config.Housing,
 		config.Spec,
 		config.Port,
-		newFetcher(config.Fetcher, gatherer),
-		newSanitizer(config.Sanitizer),
-		newGeocoder(config.Geocoder, gatherer, logger),
-		newValidator(config.Validator, gatherer),
-		newStorer(db, gatherer, logger),
+		NewFetcher(config.Fetcher, gatherer),
+		NewSanitizer(config.Sanitizer, gatherer),
+		NewGeocoder(config.Geocoder, gatherer, logger),
+		NewValidator(config.Validator, gatherer),
+		NewStorer(db, gatherer, logger),
 		gatherer,
 		logger,
 	}
@@ -33,24 +33,24 @@ type Miner struct {
 	housing   misc.Housing
 	spec      string
 	port      int
-	fetcher   *fetcher
-	sanitizer *sanitizer
-	geocoder  *geocoder
-	validator *validator
-	storer    *storer
+	fetcher   *Fetcher
+	sanitizer *Sanitizer
+	geocoder  *Geocoder
+	validator *Validator
+	storer    *Storer
 	gatherer  *metrics.Gatherer
 	logger    log.FieldLogger
 }
 
 func (miner *Miner) Run() {
 	start := time.Now()
-	if flats, err := miner.fetcher.fetchFlats(miner.housing); err != nil {
+	if flats, err := miner.fetcher.FetchFlats(miner.housing); err != nil {
 		miner.logger.Error(err)
 	} else {
-		flats = miner.sanitizer.sanitizeFlats(flats)
-		flats = miner.geocoder.geocodeFlats(flats)
-		flats = miner.validator.validateFlats(flats)
-		miner.storer.storeFlats(flats)
+		flats = miner.sanitizer.SanitizeFlats(flats)
+		flats = miner.geocoder.GeocodeFlats(flats)
+		flats = miner.validator.ValidateFlats(flats)
+		miner.storer.StoreFlats(flats)
 	}
 	miner.gatherer.GatherTotalDuration(start)
 	if err := miner.gatherer.Flush(); err != nil {

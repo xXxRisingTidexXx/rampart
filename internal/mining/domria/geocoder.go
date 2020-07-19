@@ -14,33 +14,37 @@ import (
 	"time"
 )
 
-func newGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger log.FieldLogger) *geocoder {
-	return &geocoder{
+func NewGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger log.FieldLogger) *Geocoder {
+	return &Geocoder{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		config.Headers,
 		config.StatelessCities,
 		config.SearchURL,
 		config.SRID,
+		" ",
+		"+",
 		gatherer,
 		logger,
 	}
 }
 
-type geocoder struct {
+type Geocoder struct {
 	client          *http.Client
 	headers         map[string]string
 	statelessCities *misc.Set
 	searchURL       string
 	srid            int
+	whitespace      string
+	plus            string
 	gatherer        *metrics.Gatherer
 	logger          log.FieldLogger
 }
 
-func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
-	newFlats := make([]*flat, 0, len(flats))
+func (geocoder *Geocoder) GeocodeFlats(flats []*Flat) []*Flat {
+	newFlats := make([]*Flat, 0, len(flats))
 	for _, flat := range flats {
 		if newFlat, err := geocoder.geocodeFlat(flat); err != nil {
-			geocoder.logger.WithField("origin_url", flat.originURL).Error(err)
+			geocoder.logger.WithField("origin_url", flat.OriginURL).Error(err)
 			geocoder.gatherer.GatherFailedGeocoding()
 		} else if newFlat != nil {
 			newFlats = append(newFlats, newFlat)
@@ -49,12 +53,16 @@ func (geocoder *geocoder) geocodeFlats(flats []*flat) []*flat {
 	return newFlats
 }
 
-func (geocoder *geocoder) geocodeFlat(flat *flat) (*flat, error) {
-	if flat.point != nil {
+func (geocoder *Geocoder) geocodeFlat(flat *Flat) (*Flat, error) {
+	if flat.Point != nil {
 		geocoder.gatherer.GatherLocatedGeocoding()
 		return flat, nil
 	}
-	if flat.district == "" || flat.street == "" || flat.houseNumber == "" {
+	if flat.State == "" ||
+		flat.City == "" ||
+		flat.District == "" ||
+		flat.Street == "" ||
+		flat.HouseNumber == "" {
 		geocoder.gatherer.GatherUnlocatedGeocoding()
 		return nil, nil
 	}
@@ -76,7 +84,7 @@ func (geocoder *geocoder) geocodeFlat(flat *flat) (*flat, error) {
 	return newFlat, nil
 }
 
-func (geocoder *geocoder) getLocations(flat *flat) ([]byte, error) {
+func (geocoder *Geocoder) getLocations(flat *Flat) ([]byte, error) {
 	request, err := http.NewRequest(http.MethodGet, geocoder.getSearchURL(flat), nil)
 	if err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to construct a request, %v", err)
@@ -103,23 +111,22 @@ func (geocoder *geocoder) getLocations(flat *flat) ([]byte, error) {
 	return bytes, nil
 }
 
-func (geocoder *geocoder) getSearchURL(flat *flat) string {
+func (geocoder *Geocoder) getSearchURL(flat *Flat) string {
 	state := ""
-	whitespace, plus := " ", "+"
-	if !geocoder.statelessCities.Contains(flat.city) {
-		state = strings.ReplaceAll(flat.state, whitespace, plus)
+	if !geocoder.statelessCities.Contains(flat.City) {
+		state = strings.ReplaceAll(flat.State, geocoder.whitespace, geocoder.plus)
 	}
 	return fmt.Sprintf(
 		geocoder.searchURL,
 		state,
-		strings.ReplaceAll(flat.city, whitespace, plus),
-		strings.ReplaceAll(flat.district, whitespace, plus),
-		strings.ReplaceAll(flat.street, whitespace, plus),
-		strings.ReplaceAll(flat.houseNumber, whitespace, plus),
+		strings.ReplaceAll(flat.City, geocoder.whitespace, geocoder.plus),
+		strings.ReplaceAll(flat.District, geocoder.whitespace, geocoder.plus),
+		strings.ReplaceAll(flat.Street, geocoder.whitespace, geocoder.plus),
+		strings.ReplaceAll(flat.HouseNumber, geocoder.whitespace, geocoder.plus),
 	)
 }
 
-func (geocoder *geocoder) locateFlat(f *flat, bytes []byte) (*flat, error) {
+func (geocoder *Geocoder) locateFlat(flat *Flat, bytes []byte) (*Flat, error) {
 	var locations []*location
 	if err := json.Unmarshal(bytes, &locations); err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the locations, %v", err)
@@ -127,27 +134,27 @@ func (geocoder *geocoder) locateFlat(f *flat, bytes []byte) (*flat, error) {
 	if len(locations) == 0 {
 		return nil, nil
 	}
-	return &flat{
-		f.originURL,
-		f.imageURL,
-		f.updateTime,
-		f.price,
-		f.totalArea,
-		f.livingArea,
-		f.kitchenArea,
-		f.roomNumber,
-		f.floor,
-		f.totalFloor,
-		f.housing,
-		f.complex,
+	return &Flat{
+		flat.OriginURL,
+		flat.ImageURL,
+		flat.UpdateTime,
+		flat.Price,
+		flat.TotalArea,
+		flat.LivingArea,
+		flat.KitchenArea,
+		flat.RoomNumber,
+		flat.Floor,
+		flat.TotalFloor,
+		flat.Housing,
+		flat.Complex,
 		geom.NewPointFlat(
 			geom.XY,
 			[]float64{float64(locations[0].Lon), float64(locations[0].Lat)},
 		).SetSRID(geocoder.srid),
-		f.state,
-		f.city,
-		f.district,
-		f.street,
-		f.houseNumber,
+		flat.State,
+		flat.City,
+		flat.District,
+		flat.Street,
+		flat.HouseNumber,
 	}, nil
 }

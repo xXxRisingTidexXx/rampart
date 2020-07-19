@@ -15,7 +15,7 @@ import (
 
 func TestFetchSearchInvalidHousing(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.fetchFlats(misc.Secondary)
+	flats, err := fetcher.FetchFlats(misc.Secondary)
 	if err == nil || err.Error() != "domria: fetcher doesn't accept secondary housing" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
@@ -24,12 +24,12 @@ func TestFetchSearchInvalidHousing(t *testing.T) {
 	}
 }
 
-func newDefaultFetcher() *fetcher {
+func newDefaultFetcher() *Fetcher {
 	return newTestFetcher("https://domria.ua/search/")
 }
 
-func newTestFetcher(searchURL string) *fetcher {
-	return newFetcher(
+func newTestFetcher(searchURL string) *Fetcher {
+	return NewFetcher(
 		&config.Fetcher{
 			Timeout:   config.Timing(100 * time.Millisecond),
 			Portion:   10,
@@ -62,7 +62,7 @@ func TestFetchSearchWithReset(t *testing.T) {
 	)
 	fetcher := newServerFetcher(server)
 	fetcher.page = 2
-	flats, err := fetcher.fetchFlats(misc.Primary)
+	flats, err := fetcher.FetchFlats(misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -75,7 +75,7 @@ func TestFetchSearchWithReset(t *testing.T) {
 	server.Close()
 }
 
-func newServerFetcher(server *httptest.Server) *fetcher {
+func newServerFetcher(server *httptest.Server) *Fetcher {
 	return newTestFetcher(server.URL + "/?%s&page=%d&limit=%d")
 }
 
@@ -91,7 +91,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 		},
 	)
 	fetcher := newServerFetcher(server)
-	flats, err := fetcher.fetchFlats(misc.Primary)
+	flats, err := fetcher.FetchFlats(misc.Primary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -104,7 +104,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-vinnitsa-blijnee-zamoste-16890016.html",
 			"dom/photo/10990/1099054/109905467/109905467.jpg",
 			time.Date(2020, time.June, 8, 6, 59, 6, 0, time.Local).UTC(),
@@ -128,7 +128,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 	testFlat(
 		t,
 		flats[1],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-vinnitsa-akademicheskiy-16892143.html",
 			"dom/photo/10992/1099221/109922120/109922120.jpg",
 			time.Date(2020, time.June, 8, 6, 58, 49, 0, time.Local).UTC(),
@@ -179,74 +179,74 @@ func readAll(t *testing.T, fixtureName string) []byte {
 }
 
 //nolint:gocognit,funlen
-func testFlat(t *testing.T, actual *flat, expected *flat) {
+func testFlat(t *testing.T, actual *Flat, expected *Flat) {
 	if actual == nil {
 		t.Fatal("domria: empty actual")
 	}
 	if expected == nil {
 		t.Fatal("domria: empty expected")
 	}
-	if actual.originURL != expected.originURL {
-		t.Errorf("domria: invalid origin url, %s != %s", actual.originURL, expected.originURL)
+	if actual.OriginURL != expected.OriginURL {
+		t.Errorf("domria: invalid origin url, %s != %s", actual.OriginURL, expected.OriginURL)
 	}
-	if actual.imageURL != expected.imageURL {
-		t.Errorf("domria: invalid image url, %s != %s", actual.imageURL, expected.imageURL)
+	if actual.ImageURL != expected.ImageURL {
+		t.Errorf("domria: invalid image url, %s != %s", actual.ImageURL, expected.ImageURL)
 	}
-	if !actual.updateTime.Equal(expected.updateTime) {
-		t.Errorf("domria: invalid update time, %v != %v", actual.updateTime, expected.updateTime)
+	if !actual.UpdateTime.Equal(expected.UpdateTime) {
+		t.Errorf("domria: invalid update time, %v != %v", actual.UpdateTime, expected.UpdateTime)
 	}
-	if actual.price != expected.price {
-		t.Errorf("domria: invalid price, %.1f != %.1f", actual.price, expected.price)
+	if actual.Price != expected.Price {
+		t.Errorf("domria: invalid price, %.1f != %.1f", actual.Price, expected.Price)
 	}
-	if actual.totalArea != expected.totalArea {
-		t.Errorf("domria: invalid total area, %1.f != %.1f", actual.totalArea, expected.totalArea)
+	if actual.TotalArea != expected.TotalArea {
+		t.Errorf("domria: invalid total area, %1.f != %.1f", actual.TotalArea, expected.TotalArea)
 	}
-	if actual.livingArea != expected.livingArea {
-		t.Errorf("domria: invalid living area, %.1f != %.1f", actual.livingArea, expected.livingArea)
+	if actual.LivingArea != expected.LivingArea {
+		t.Errorf("domria: invalid living area, %.1f != %.1f", actual.LivingArea, expected.LivingArea)
 	}
-	if actual.kitchenArea != expected.kitchenArea {
-		t.Errorf("domria: invalid kitchen area, %.1f != %.1f", actual.kitchenArea, expected.kitchenArea)
+	if actual.KitchenArea != expected.KitchenArea {
+		t.Errorf("domria: invalid kitchen area, %.1f != %.1f", actual.KitchenArea, expected.KitchenArea)
 	}
-	if actual.roomNumber != expected.roomNumber {
-		t.Errorf("domria: invalid room number, %d != %d", actual.roomNumber, expected.roomNumber)
+	if actual.RoomNumber != expected.RoomNumber {
+		t.Errorf("domria: invalid room number, %d != %d", actual.RoomNumber, expected.RoomNumber)
 	}
-	if actual.floor != expected.floor {
-		t.Errorf("domria: invalid floor, %d != %d", actual.floor, expected.floor)
+	if actual.Floor != expected.Floor {
+		t.Errorf("domria: invalid floor, %d != %d", actual.Floor, expected.Floor)
 	}
-	if actual.totalFloor != expected.totalFloor {
-		t.Errorf("domria: invalid total floor, %d != %d", actual.totalFloor, expected.totalFloor)
+	if actual.TotalFloor != expected.TotalFloor {
+		t.Errorf("domria: invalid total floor, %d != %d", actual.TotalFloor, expected.TotalFloor)
 	}
-	if actual.housing != expected.housing {
-		t.Errorf("domria: invalid housing, %s != %s", actual.housing, expected.housing)
+	if actual.Housing != expected.Housing {
+		t.Errorf("domria: invalid housing, %s != %s", actual.Housing, expected.Housing)
 	}
-	if actual.complex != expected.complex {
-		t.Errorf("domria: invalid complex, %s != %s", actual.complex, expected.complex)
+	if actual.Complex != expected.Complex {
+		t.Errorf("domria: invalid complex, %s != %s", actual.Complex, expected.Complex)
 	}
-	if expected.point == nil && actual.point != nil {
-		t.Errorf("domria: non-nil point, %v", actual.point)
+	if expected.Point == nil && actual.Point != nil {
+		t.Errorf("domria: non-nil point, %v", actual.Point)
 	}
-	if expected.point != nil &&
-		(actual.point == nil ||
-			actual.point.Layout() != expected.point.Layout() ||
-			actual.point.X() != expected.point.X() ||
-			actual.point.Y() != expected.point.Y() ||
-			actual.point.SRID() != expected.point.SRID()) {
-		t.Errorf("domria: invalid point, %v != %v", actual.point, expected.point)
+	if expected.Point != nil &&
+		(actual.Point == nil ||
+			actual.Point.Layout() != expected.Point.Layout() ||
+			actual.Point.X() != expected.Point.X() ||
+			actual.Point.Y() != expected.Point.Y() ||
+			actual.Point.SRID() != expected.Point.SRID()) {
+		t.Errorf("domria: invalid point, %v != %v", actual.Point, expected.Point)
 	}
-	if actual.state != expected.state {
-		t.Errorf("domria: invalid state, %s != %s", actual.state, expected.state)
+	if actual.State != expected.State {
+		t.Errorf("domria: invalid state, %s != %s", actual.State, expected.State)
 	}
-	if actual.city != expected.city {
-		t.Errorf("domria: invalid city, %s != %s", actual.city, expected.city)
+	if actual.City != expected.City {
+		t.Errorf("domria: invalid city, %s != %s", actual.City, expected.City)
 	}
-	if actual.district != expected.district {
-		t.Errorf("domria: invalid district, %s != %s", actual.district, expected.district)
+	if actual.District != expected.District {
+		t.Errorf("domria: invalid district, %s != %s", actual.District, expected.District)
 	}
-	if actual.street != expected.street {
-		t.Errorf("domria: invalid street, %s != %s", actual.street, expected.street)
+	if actual.Street != expected.Street {
+		t.Errorf("domria: invalid street, %s != %s", actual.Street, expected.Street)
 	}
-	if actual.houseNumber != expected.houseNumber {
-		t.Errorf("domria: invalid house number, %s != %s", actual.houseNumber, expected.houseNumber)
+	if actual.HouseNumber != expected.HouseNumber {
+		t.Errorf("domria: invalid house number, %s != %s", actual.HouseNumber, expected.HouseNumber)
 	}
 }
 
@@ -383,7 +383,7 @@ func TestUnmarshalSearchEmptyItem(t *testing.T) {
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	testFlat(t, flats[0], &flat{housing: misc.Primary})
+	testFlat(t, flats[0], &Flat{Housing: misc.Primary})
 }
 
 func TestUnmarshalSearchValidItem(t *testing.T) {
@@ -398,7 +398,7 @@ func TestUnmarshalSearchValidItem(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-rovno-schastlivoe-chernovola-vyacheslava-ulitsa-16818824.html",
 			"dom/photo/10925/1092575/109257503/109257503.jpg",
 			time.Date(2020, time.June, 6, 14, 57, 18, 0, time.Local).UTC(),
@@ -433,7 +433,7 @@ func TestUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-ternopol-bam-17186701.html",
 			"",
 			time.Date(2020, time.June, 3, 16, 16, 26, 0, time.Local).UTC(),
@@ -492,7 +492,7 @@ func TestUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-harkov-elizavetinskaya-ulitsa-17180614.html",
 			"dom/photo/11270/1127013/112701340/112701340.jpg",
 			time.Date(2020, time.June, 7, 7, 0, 4, 0, time.Local).UTC(),
@@ -539,7 +539,7 @@ func TestUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-perevireno-prodaja-kvartira-vinnitsa-vishenka-vasiliya-porika-ulitsa-17073207.html",
 			"dom/photo/11162/1116219/111621990/111621990.jpg",
 			time.Date(2021, time.January, 7, 7, 7, 41, 0, time.Local).UTC(),
@@ -598,7 +598,7 @@ func TestUnmarshalSearchEmptyPriceArr(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-chernovtsy-fastovskaya-ruska-17169204.html",
 			"dom/photo/11259/1125975/112597577/112597577.jpg",
 			time.Date(2020, time.May, 31, 12, 44, 7, 0, time.Local).UTC(),
@@ -633,7 +633,7 @@ func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-harkov-shevchenkovskiy-16798175.html",
 			"dom/photo/10906/1090623/109062364/109062364.jpg",
 			time.Date(2020, time.June, 7, 7, 20, 30, 0, time.Local).UTC(),
@@ -704,7 +704,7 @@ func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-ternopol-bam-saharova-andreya-akademika-ulitsa-16349831.html",
 			"dom/photo/10507/1050708/105070868/105070868.jpg",
 			time.Date(2020, time.June, 7, 7, 55, 45, 0, time.Local).UTC(),
@@ -751,7 +751,7 @@ func TestUnmarshalSearchSupremeKitchenSquareMeters(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-ujgorod-tsentr-voloshina-ulitsa-15559098.html",
 			"dom/photo/9751/975170/97517018/97517018.jpg",
 			time.Date(2020, time.June, 7, 7, 43, 22, 0, time.Local).UTC(),
@@ -786,7 +786,7 @@ func TestUnmarshalSearchNegativeFloor(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-kiev-solomenskiy-petra-radchenko-ulitsa-16760338.html",
 			"dom/photo/10873/1087329/108732937/108732937.jpg",
 			time.Date(2020, time.June, 7, 9, 49, 9, 0, time.Local).UTC(),
@@ -821,7 +821,7 @@ func TestUnmarshalSearchSupremeFloor(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-kiev-shevchenkovskiy-zlatoustovskaya-ulitsa-16489927.html",
 			"dom/photo/10621/1062170/106217048/106217048.jpg",
 			time.Date(2020, time.June, 1, 10, 42, 16, 0, time.Local).UTC(),
@@ -856,7 +856,7 @@ func TestUnmarshalSearchJustLongitude(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-vinnitsa-tsentr-lva-tolstogo-ulitsa-17203089.html",
 			"dom/photo/11289/1128911/112891158/112891158.jpg",
 			time.Date(2020, time.June, 7, 13, 8, 45, 0, time.Local).UTC(),
@@ -891,7 +891,7 @@ func TestUnmarshalSearchJustLatitude(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-perevireno-prodaja-kvartira-hmelnitskiy-vyistavka-starokostyantinovskoe-shosse-16982542.html",
 			"dom/photo/11243/1124301/112430139/112430139.jpg",
 			time.Date(2020, time.June, 5, 22, 36, 29, 0, time.Local).UTC(),
@@ -926,7 +926,7 @@ func TestUnmarshalSearchStringCoordinates(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-vinnitsa-podole-17135787.html",
 			"dom/photo/11226/1122631/112263193/112263193.jpg",
 			time.Date(2020, time.June, 2, 9, 38, 5, 0, time.Local).UTC(),
@@ -961,7 +961,7 @@ func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-odessa-primorskiy-nekrasova-pereulok-16179973.html",
 			"dom/photo/10370/1037099/103709962/103709962.jpg",
 			time.Date(2020, time.June, 8, 5, 39, 24, 0, time.Local).UTC(),
@@ -1008,7 +1008,7 @@ func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-herson-suvorovskiy-17165402.html",
 			"dom/photo/11256/1125653/112565321/112565321.jpg",
 			time.Date(2020, time.June, 8, 10, 9, 58, 0, time.Local).UTC(),
@@ -1043,7 +1043,7 @@ func TestUnmarshalSearchEmptyStreets(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-odessa-kievskiy-ilfa-i-petrova-ulitsa-17120761.html",
 			"dom/photo/11211/1121120/112112031/112112031.jpg",
 			time.Date(2020, time.June, 8, 6, 7, 59, 0, time.Local).UTC(),
@@ -1078,7 +1078,7 @@ func TestUnmarshalSearchJustRUStreet(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-lvov-galitskiy-17148133.html",
 			"dom/photo/11238/1123874/112387482/112387482.jpg",
 			time.Date(2020, time.June, 8, 7, 30, 43, 0, time.Local).UTC(),
@@ -1114,7 +1114,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 	testFlat(
 		t,
 		flats[0],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-vinnitsa-podole-generala-yakova-gandzyuka-ulitsa-17150263.html",
 			"dom/photo/11241/1124150/112415070/112415070.jpg",
 			time.Date(2020, time.June, 8, 6, 59, 13, 0, time.Local).UTC(),
@@ -1138,7 +1138,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 	testFlat(
 		t,
 		flats[1],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-dnepr-slobojanskoe-slobojanskiy-prospekt-16927270.html",
 			"dom/photo/11025/1102580/110258034/110258034.jpg",
 			time.Date(2018, time.June, 8, 10, 7, 18, 0, time.Local).UTC(),
@@ -1162,7 +1162,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 	testFlat(
 		t,
 		flats[2],
-		&flat{
+		&Flat{
 			"realty-prodaja-kvartira-dnepr-slobojanskoe-slobojanskiy-prospekt-16927282.html",
 			"dom/photo/11025/1102580/110258071/110258071.jpg",
 			time.Date(2020, time.June, 8, 10, 7, 18, 0, time.Local).UTC(),

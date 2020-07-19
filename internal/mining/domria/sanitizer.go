@@ -2,77 +2,123 @@ package domria
 
 import (
 	"rampart/internal/config"
+	"rampart/internal/mining/metrics"
+	"rampart/internal/misc"
 	"strings"
 )
 
-func newSanitizer(config *config.Sanitizer) *sanitizer {
-	return &sanitizer{
+func NewSanitizer(config *config.Sanitizer, gatherer *metrics.Gatherer) *Sanitizer {
+	return &Sanitizer{
 		config.OriginURLPrefix,
 		config.ImageURLPrefix,
-		config.StateEnding,
+		config.StateDictionary,
 		config.StateSuffix,
+		config.CityDictionary,
+		config.DistrictDictionary,
+		config.DistrictCitySwaps,
 		config.DistrictEnding,
 		config.DistrictSuffix,
+		strings.NewReplacer(config.StreetReplacements...),
+		strings.NewReplacer(config.HouseNumberReplacements...),
+		",",
+		gatherer,
 	}
 }
 
-// TODO: add street split (some streets contain house numbers).
-// TODO: add street purity (replace shorts and russian suffixes and endings).
-// TODO: add complex purity (replace "ЖК " prefixes if needed).
-// TODO: add street whitespace reduce.
-// TODO: add house number truncates.
-type sanitizer struct {
-	originURLPrefix string
-	imageURLPrefix  string
-	stateEnding     string
-	stateSuffix     string
-	districtEnding  string
-	districtSuffix  string
+type Sanitizer struct {
+	originURLPrefix     string
+	imageURLPrefix      string
+	stateDictionary     map[string]string
+	stateSuffix         string
+	cityDictionary      map[string]string
+	districtDictionary  map[string]string
+	districtCitySwaps   *misc.Set
+	districtEnding      string
+	districtSuffix      string
+	streetReplacer      *strings.Replacer
+	houseNumberReplacer *strings.Replacer
+	comma               string
+	gatherer            *metrics.Gatherer
 }
 
-func (sanitizer *sanitizer) sanitizeFlats(flats []*flat) []*flat {
-	newFlats := make([]*flat, len(flats))
+func (sanitizer *Sanitizer) SanitizeFlats(flats []*Flat) []*Flat {
+	newFlats := make([]*Flat, len(flats))
 	for i, flat := range flats {
 		newFlats[i] = sanitizer.sanitizeFlat(flat)
 	}
 	return newFlats
 }
 
-func (sanitizer *sanitizer) sanitizeFlat(f *flat) *flat {
-	originURL := f.originURL
+func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
+	originURL := flat.OriginURL
 	if originURL != "" {
 		originURL = sanitizer.originURLPrefix + originURL
 	}
-	imageURL := f.imageURL
+	imageURL := flat.ImageURL
 	if imageURL != "" {
 		imageURL = sanitizer.imageURLPrefix + imageURL
 	}
-	state := f.state
-	if strings.HasSuffix(state, sanitizer.stateEnding) {
-		state += sanitizer.stateSuffix
+	state := strings.TrimSpace(flat.State)
+	if value, ok := sanitizer.stateDictionary[state]; ok {
+		state = value + sanitizer.stateSuffix
+		sanitizer.gatherer.GatherStateSanitization()
 	}
-	district := f.district
+	city := strings.TrimSpace(flat.City)
+	if value, ok := sanitizer.cityDictionary[city]; ok {
+		city = value
+		sanitizer.gatherer.GatherCitySanitization()
+	}
+	district := strings.TrimSpace(flat.District)
+	if value, ok := sanitizer.districtDictionary[district]; ok {
+		district = value
+		sanitizer.gatherer.GatherDistrictSanitization()
+	}
+	if sanitizer.districtCitySwaps.Contains(district) {
+		city, district = district, city
+		sanitizer.gatherer.GatherSwapSanitization()
+	}
 	if strings.HasSuffix(district, sanitizer.districtEnding) {
 		district += sanitizer.districtSuffix
 	}
-	return &flat{
+	street, houseNumber := flat.Street, sanitizer.sanitizeHouseNumber(flat.HouseNumber)
+	if index := strings.Index(flat.Street, sanitizer.comma); index != -1 {
+		street = flat.Street[:index]
+		sanitizer.gatherer.GatherStreetSanitization()
+		extraNumber := sanitizer.sanitizeHouseNumber(flat.Street[index+1:])
+		if houseNumber == "" && extraNumber != "" && extraNumber[0] >= '0' && extraNumber[0] <= '9' {
+			houseNumber = extraNumber
+			sanitizer.gatherer.GatherHouseNumberSanitization()
+		}
+	}
+	return &Flat{
 		originURL,
 		imageURL,
-		f.updateTime,
-		f.price,
-		f.totalArea,
-		f.livingArea,
-		f.kitchenArea,
-		f.roomNumber,
-		f.floor,
-		f.totalFloor,
-		f.housing,
-		f.complex,
-		f.point,
+		flat.UpdateTime,
+		flat.Price,
+		flat.TotalArea,
+		flat.LivingArea,
+		flat.KitchenArea,
+		flat.RoomNumber,
+		flat.Floor,
+		flat.TotalFloor,
+		flat.Housing,
+		flat.Complex,
+		flat.Point,
 		state,
-		f.city,
+		city,
 		district,
-		f.street,
-		f.houseNumber,
+		strings.TrimSpace(sanitizer.streetReplacer.Replace(street)),
+		houseNumber,
 	}
+}
+
+func (sanitizer *Sanitizer) sanitizeHouseNumber(houseNumber string) string {
+	if houseNumber == "" {
+		return houseNumber
+	}
+	newHouseNumber := sanitizer.houseNumberReplacer.Replace(houseNumber)
+	if index := strings.Index(newHouseNumber, sanitizer.comma); index != -1 {
+		return newHouseNumber[:index]
+	}
+	return newHouseNumber
 }

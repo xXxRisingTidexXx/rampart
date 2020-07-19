@@ -12,8 +12,8 @@ import (
 	"time"
 )
 
-func newFetcher(config *config.Fetcher, gatherer *metrics.Gatherer) *fetcher {
-	return &fetcher{
+func NewFetcher(config *config.Fetcher, gatherer *metrics.Gatherer) *Fetcher {
+	return &Fetcher{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		0,
 		config.Portion,
@@ -25,7 +25,7 @@ func newFetcher(config *config.Fetcher, gatherer *metrics.Gatherer) *fetcher {
 	}
 }
 
-type fetcher struct {
+type Fetcher struct {
 	client    *http.Client
 	page      int
 	portion   int
@@ -36,7 +36,7 @@ type fetcher struct {
 	gatherer  *metrics.Gatherer
 }
 
-func (fetcher *fetcher) fetchFlats(housing misc.Housing) ([]*flat, error) {
+func (fetcher *Fetcher) FetchFlats(housing misc.Housing) ([]*Flat, error) {
 	flag, ok := fetcher.flags[housing]
 	if !ok {
 		return nil, fmt.Errorf("domria: fetcher doesn't accept %v housing", housing)
@@ -59,7 +59,7 @@ func (fetcher *fetcher) fetchFlats(housing misc.Housing) ([]*flat, error) {
 	return flats, nil
 }
 
-func (fetcher *fetcher) getSearch(flag string) ([]byte, error) {
+func (fetcher *Fetcher) getSearch(flag string) ([]byte, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf(fetcher.searchURL, flag, fetcher.page, fetcher.portion),
@@ -90,12 +90,12 @@ func (fetcher *fetcher) getSearch(flag string) ([]byte, error) {
 	return bytes, nil
 }
 
-func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing misc.Housing) ([]*flat, error) {
+func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing misc.Housing) ([]*Flat, error) {
 	var search search
 	if err := json.Unmarshal(bytes, &search); err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the search, %v", err)
 	}
-	flats := make([]*flat, len(search.Items))
+	flats := make([]*Flat, len(search.Items))
 	for i, item := range search.Items {
 		price := 0.0
 		if item.PriceArr != nil {
@@ -112,7 +112,7 @@ func (fetcher *fetcher) unmarshalSearch(bytes []byte, housing misc.Housing) ([]*
 		if street == "" && item.StreetName != "" {
 			street = item.StreetName
 		}
-		flats[i] = &flat{
+		flats[i] = &Flat{
 			item.BeautifulURL,
 			item.MainPhoto,
 			time.Time(item.UpdatedAt),
