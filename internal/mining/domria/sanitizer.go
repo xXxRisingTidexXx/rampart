@@ -2,6 +2,7 @@ package domria
 
 import (
 	"rampart/internal/config"
+	"rampart/internal/misc"
 	"strings"
 )
 
@@ -9,20 +10,26 @@ func NewSanitizer(config *config.Sanitizer) *Sanitizer {
 	return &Sanitizer{
 		config.OriginURLPrefix,
 		config.ImageURLPrefix,
-		config.StateEnding,
+		config.StateDictionary,
 		config.StateSuffix,
+		config.CityDictionary,
+		config.DistrictDictionary,
+		config.DistrictCitySwaps,
 		config.DistrictEnding,
 		config.DistrictSuffix,
 	}
 }
 
 type Sanitizer struct {
-	originURLPrefix string
-	imageURLPrefix  string
-	stateEnding     string
-	stateSuffix     string
-	districtEnding  string
-	districtSuffix  string
+	originURLPrefix    string
+	imageURLPrefix     string
+	stateDictionary    map[string]string
+	stateSuffix        string
+	cityDictionary     map[string]string
+	districtDictionary map[string]string
+	districtCitySwaps  *misc.Set
+	districtEnding     string
+	districtSuffix     string
 }
 
 func (sanitizer *Sanitizer) SanitizeFlats(flats []*Flat) []*Flat {
@@ -33,41 +40,55 @@ func (sanitizer *Sanitizer) SanitizeFlats(flats []*Flat) []*Flat {
 	return newFlats
 }
 
-func (sanitizer *Sanitizer) sanitizeFlat(f *Flat) *Flat {
-	originURL := f.OriginURL
+func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
+	originURL := flat.OriginURL
 	if originURL != "" {
 		originURL = sanitizer.originURLPrefix + originURL
 	}
-	imageURL := f.ImageURL
+	imageURL := flat.ImageURL
 	if imageURL != "" {
 		imageURL = sanitizer.imageURLPrefix + imageURL
 	}
-	state := f.State
-	if strings.HasSuffix(state, sanitizer.stateEnding) {
+	state := strings.TrimSpace(flat.State)
+	if value, ok := sanitizer.stateDictionary[state]; ok {
+		state = value
+	}
+	if state != "" {
 		state += sanitizer.stateSuffix
 	}
-	district := f.District
+	city := strings.TrimSpace(flat.City)
+	if value, ok := sanitizer.cityDictionary[city]; ok {
+		city = value
+	}
+	district := strings.TrimSpace(flat.District)
+	if value, ok := sanitizer.districtDictionary[district]; ok {
+		district = value
+	}
+	if sanitizer.districtCitySwaps.Contains(district) {
+		city, district = district, city
+	}
 	if strings.HasSuffix(district, sanitizer.districtEnding) {
 		district += sanitizer.districtSuffix
 	}
+
 	return &Flat{
 		originURL,
 		imageURL,
-		f.UpdateTime,
-		f.Price,
-		f.TotalArea,
-		f.LivingArea,
-		f.KitchenArea,
-		f.RoomNumber,
-		f.Floor,
-		f.TotalFloor,
-		f.Housing,
-		f.Complex,
-		f.Point,
+		flat.UpdateTime,
+		flat.Price,
+		flat.TotalArea,
+		flat.LivingArea,
+		flat.KitchenArea,
+		flat.RoomNumber,
+		flat.Floor,
+		flat.TotalFloor,
+		flat.Housing,
+		flat.Complex,
+		flat.Point,
 		state,
-		f.City,
+		city,
 		district,
-		f.Street,
-		f.HouseNumber,
+		flat.Street,
+		flat.HouseNumber,
 	}
 }
