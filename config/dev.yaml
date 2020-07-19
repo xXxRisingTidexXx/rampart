@@ -14,7 +14,7 @@ mining:
   miners:
     domria: &domria
       fetcher:
-        timeout: 30s
+        timeout: 40s
         portion: 100
         flags:
           primary: newbuildings=1
