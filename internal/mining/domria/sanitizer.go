@@ -57,10 +57,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 	}
 	state := strings.TrimSpace(flat.State)
 	if value, ok := sanitizer.stateDictionary[state]; ok {
-		state = value
-	}
-	if state != "" {
-		state += sanitizer.stateSuffix
+		state = value + sanitizer.stateSuffix
 	}
 	city := strings.TrimSpace(flat.City)
 	if value, ok := sanitizer.cityDictionary[city]; ok {
