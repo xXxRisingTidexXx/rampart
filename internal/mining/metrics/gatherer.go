@@ -160,7 +160,9 @@ func (gatherer *Gatherer) Flush() error {
 	_, err := gatherer.db.Exec(
 		`insert into runs
     	(
-    	    completion_time, miner, located_geocoding_number, unlocated_geocoding_number,
+    	    completion_time, miner, state_sanitization_number, city_sanitization_number,
+    	    district_sanitization_number, swap_sanitization_number, street_sanitization_number,
+    	    house_number_sanitization_number, located_geocoding_number, unlocated_geocoding_number,
     	    failed_geocoding_number, inconclusive_geocoding_number, successful_geocoding_number,
     	    approved_validation_number, denied_validation_number, created_storing_number,
     	    updated_storing_number, unaltered_storing_number, failed_storing_number, fetching_duration,
@@ -169,9 +171,15 @@ func (gatherer *Gatherer) Flush() error {
     	values
     	(
     		now() at time zone 'utc', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
-    	    $17, $18 
+    	    $17, $18, $19, $20, $21, $22, $23, $24
     	)`,
 		gatherer.miner,
+		gatherer.stateSanitizationNumber,
+		gatherer.citySanitizationNumber,
+		gatherer.districtSanitizationNumber,
+		gatherer.swapSanitizationNumber,
+		gatherer.streetSanitizationNumber,
+		gatherer.houseNumberSanitizationNumber,
 		gatherer.locatedGeocodingNumber,
 		gatherer.unlocatedGeocodingNumber,
 		gatherer.failedGeocodingNumber,
