@@ -1,5 +1,9 @@
 package domria
 
+import (
+	"fmt"
+)
+
 type item struct {
 	BeautifulURL        string     `json:"beautiful_url"`
 	MainPhoto           string     `json:"main_photo"`
@@ -20,4 +24,29 @@ type item struct {
 	StreetNameUK        string     `json:"street_name_uk"`
 	StreetName          string     `json:"street_name"`
 	BuildingNumberStr   string     `json:"building_number_str"`
+}
+
+func (item *item) String() string {
+	return fmt.Sprintf(
+		"{%s %s %s %v %.1f %.1f %.1f %d %d %d %s %.6f %.6f %s %s %s %s %s %s}",
+		item.BeautifulURL,
+		item.MainPhoto,
+		item.UpdatedAt,
+		item.PriceArr,
+		item.TotalSquareMeters,
+		item.LivingSquareMeters,
+		item.KitchenSquareMeters,
+		item.RoomsCount,
+		item.Floor,
+		item.FloorsCount,
+		item.UserNewbuildNameUK,
+		item.Longitude,
+		item.Latitude,
+		item.StateNameUK,
+		item.CityNameUK,
+		item.DistrictNameUK,
+		item.StreetNameUK,
+		item.StreetName,
+		item.BuildingNumberStr,
+	)
 }
