@@ -3,8 +3,8 @@ package metrics
 import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"net/http"
-	"rampart/internal/config"
 	"strconv"
 	"time"
 )
