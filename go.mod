@@ -1,4 +1,4 @@
-module rampart
+module github.com/xXxRisingTidexXx/rampart
 
 go 1.14
 
