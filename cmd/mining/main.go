@@ -5,11 +5,11 @@ import (
 	_ "github.com/lib/pq"
 	gocron "github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
-	"rampart/internal/config"
-	"rampart/internal/database"
-	"rampart/internal/mining"
-	"rampart/internal/mining/metrics"
-	"rampart/internal/secrets"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/database"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
+	"github.com/xXxRisingTidexXx/rampart/internal/secrets"
 )
 
 func main() {

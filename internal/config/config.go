@@ -2,9 +2,9 @@ package config
 
 import (
 	"fmt"
+	"github.com/xXxRisingTidexXx/rampart/internal/homedir"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
-	"rampart/internal/homedir"
 )
 
 func NewConfig() (*Config, error) {

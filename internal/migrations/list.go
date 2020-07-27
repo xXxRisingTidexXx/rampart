@@ -2,9 +2,9 @@ package migrations
 
 import (
 	"fmt"
+	"github.com/xXxRisingTidexXx/rampart/internal/homedir"
 	"io/ioutil"
 	"path/filepath"
-	"rampart/internal/homedir"
 	"sort"
 	"strconv"
 	"strings"

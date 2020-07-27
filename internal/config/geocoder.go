@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"rampart/internal/misc"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
 type Geocoder struct {

@@ -4,9 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"rampart/internal/config"
-	"rampart/internal/mining/domria"
-	"rampart/internal/mining/metrics"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining/domria"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 )
 
 func FindMiner(

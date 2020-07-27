@@ -3,10 +3,10 @@ package main
 import (
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
-	"rampart/internal/config"
-	"rampart/internal/database"
-	"rampart/internal/migrations"
-	"rampart/internal/secrets"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/database"
+	"github.com/xXxRisingTidexXx/rampart/internal/migrations"
+	"github.com/xXxRisingTidexXx/rampart/internal/secrets"
 )
 
 func main() {

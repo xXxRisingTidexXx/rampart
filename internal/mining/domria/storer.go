@@ -5,7 +5,7 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/twpayne/go-geom/encoding/ewkb"
-	"rampart/internal/mining/metrics"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"time"
 )
 

@@ -23,19 +23,19 @@ services:
     container_name: rampart-migrations
     volumes:
       - .:/go/src/app
-    command: go run rampart/cmd/migrations
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/migrations
   mining:
     image: rampart-backend
     container_name: rampart-mining
     volumes:
       - .:/go/src/app
-    command: go run rampart/cmd/mining -once -miner domria-primary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -once -miner domria-primary
   mining-domria-primary:
     image: rampart-backend
     container_name: rampart-mining-domria-primary
     volumes:
       - .:/go/src/app
-    command: go run rampart/cmd/mining -miner domria-primary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-primary
     ports:
       - 9001:9001
     restart: on-failure
@@ -44,7 +44,7 @@ services:
     container_name: rampart-mining-domria-secondary
     volumes:
       - .:/go/src/app
-    command: go run rampart/cmd/mining -miner domria-secondary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-secondary
     ports:
       - 9002:9002
     restart: on-failure
@@ -70,7 +70,7 @@ services:
     container_name: rampart-test
     volumes:
       - .:/go/src/app
-    command: go test rampart/internal/mining/domria
+    command: go test github.com/xXxRisingTidexXx/rampart/internal/mining/domria
   notebook:
     build:
       context: .
