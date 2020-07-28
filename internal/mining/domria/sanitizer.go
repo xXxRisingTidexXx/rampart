@@ -76,7 +76,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 		district = value
 		sanitizer.gatherer.GatherDistrictSanitization()
 	}
-	if sanitizer.districtCitySwaps.Contains(district) {
+	if sanitizer.districtCitySwaps.Contains(city) {
 		city, district = district, city
 		sanitizer.gatherer.GatherSwapSanitization()
 	}
