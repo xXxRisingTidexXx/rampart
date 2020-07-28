@@ -79,7 +79,6 @@ func newServerFetcher(server *httptest.Server) *Fetcher {
 	return newTestFetcher(server.URL + "/?%s&page=%d&limit=%d")
 }
 
-//nolint:funlen
 func TestFetchSearchMultipleFlats(t *testing.T) {
 	server := newServer(
 		t,
