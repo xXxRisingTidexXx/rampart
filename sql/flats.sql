@@ -31,7 +31,7 @@ group by city
 order by flat_count desc;
 
 -- Discover complex count by cities.
-select city, count(complex) as complex_count
+select city, count(distinct complex) as complex_count
 from flats
 where complex != ''
 group by city
