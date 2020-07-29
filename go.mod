@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/kr/text v0.2.0 // indirect
-	github.com/lib/pq v1.7.1
+	github.com/lib/pq v1.8.0
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/prometheus/client_golang v1.7.1
 	github.com/robfig/cron/v3 v3.0.1
