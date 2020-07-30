@@ -43,20 +43,19 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 }
 
 func (gauger *Gauger) gaugeSubwayStationDistance(point *geom.Point) (float64, error) {
-	bytes, err := gauger.query(
+	_, err := gauger.query(
 		"node[station=subway](around:%f,%f,%f);out;",
 		gauger.searchRadius,
 		point.Y(),
 		point.X(),
 	)
-	gauger.logger.Info(string(bytes))
 	return 0, err
 }
 
-func (gauger *Gauger) query(query string, parameters ...interface{}) ([]byte, error) {
+func (gauger *Gauger) query(query string, params ...interface{}) ([]byte, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf(gauger.interpreterURL, url.QueryEscape(fmt.Sprintf(query, parameters...))),
+		fmt.Sprintf(gauger.interpreterURL, url.QueryEscape(fmt.Sprintf(query, params...))),
 		nil,
 	)
 	if err != nil {

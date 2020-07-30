@@ -1,6 +1,5 @@
 dsnParams: &dsnParams
   sslmode: disable
-  binary_parameters: yes
 userAgent: &userAgent rampart-mining-bot/1.0.0
 srid: &srid 4326
 mining:
