@@ -103,7 +103,7 @@ func (geocoder *Geocoder) getLocations(flat *Flat) ([]byte, error) {
 		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: geocoder failed to read the response body, %v", err)
 	}
-	if err = response.Body.Close(); err != nil {
+	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to close the response body, %v", err)
 	}
 	return bytes, nil
