@@ -41,20 +41,17 @@ type Geocoder struct {
 func (geocoder *Geocoder) GeocodeFlats(flats []*Flat) []*Flat {
 	newFlats := make([]*Flat, 0, len(flats))
 	for _, flat := range flats {
-		if newFlat, err := geocoder.geocodeFlat(flat); err != nil {
-			geocoder.logger.WithField("origin_url", flat.OriginURL).Error(err)
-			geocoder.gatherer.GatherFailedGeocoding()
-		} else if newFlat != nil {
+		if newFlat := geocoder.geocodeFlat(flat); newFlat != nil {
 			newFlats = append(newFlats, newFlat)
 		}
 	}
 	return newFlats
 }
 
-func (geocoder *Geocoder) geocodeFlat(flat *Flat) (*Flat, error) {
+func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 	if flat.Point.Lon() != 0 || flat.Point.Lat() != 0 {
 		geocoder.gatherer.GatherLocatedGeocoding()
-		return flat, nil
+		return flat
 	}
 	if flat.State == "" ||
 		flat.City == "" ||
@@ -62,27 +59,26 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) (*Flat, error) {
 		flat.Street == "" ||
 		flat.HouseNumber == "" {
 		geocoder.gatherer.GatherUnlocatedGeocoding()
-		return nil, nil
+		return nil
 	}
 	start := time.Now()
-	bytes, err := geocoder.getLocations(flat)
+	locations, err := geocoder.getLocations(flat)
 	geocoder.gatherer.GatherGeocodingDuration(start)
 	if err != nil {
-		return nil, err
+		geocoder.logger.WithField("origin_url", flat.OriginURL).Error(err)
+		geocoder.gatherer.GatherFailedGeocoding()
+		return nil
 	}
-	newFlat, err := geocoder.locateFlat(flat, bytes)
-	if err != nil {
-		return nil, err
-	}
+	newFlat := geocoder.locateFlat(flat, locations)
 	if newFlat == nil {
 		geocoder.gatherer.GatherInconclusiveGeocoding()
-		return nil, nil
+		return nil
 	}
 	geocoder.gatherer.GatherSuccessfulGeocoding()
-	return newFlat, nil
+	return newFlat
 }
 
-func (geocoder *Geocoder) getLocations(flat *Flat) ([]byte, error) {
+func (geocoder *Geocoder) getLocations(flat *Flat) ([]*location, error) {
 	request, err := http.NewRequest(http.MethodGet, geocoder.getSearchURL(flat), nil)
 	if err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to construct a request, %v", err)
@@ -106,7 +102,11 @@ func (geocoder *Geocoder) getLocations(flat *Flat) ([]byte, error) {
 	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to close the response body, %v", err)
 	}
-	return bytes, nil
+	var locations []*location
+	if err := json.Unmarshal(bytes, &locations); err != nil {
+		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the locations, %v", err)
+	}
+	return locations, nil
 }
 
 func (geocoder *Geocoder) getSearchURL(flat *Flat) string {
@@ -124,13 +124,9 @@ func (geocoder *Geocoder) getSearchURL(flat *Flat) string {
 	)
 }
 
-func (geocoder *Geocoder) locateFlat(flat *Flat, bytes []byte) (*Flat, error) {
-	var locations []*location
-	if err := json.Unmarshal(bytes, &locations); err != nil {
-		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the locations, %v", err)
-	}
+func (geocoder *Geocoder) locateFlat(flat *Flat, locations []*location) *Flat {
 	if len(locations) == 0 {
-		return nil, nil
+		return nil
 	}
 	return &Flat{
 		flat.OriginURL,
@@ -151,5 +147,5 @@ func (geocoder *Geocoder) locateFlat(flat *Flat, bytes []byte) (*Flat, error) {
 		flat.District,
 		flat.Street,
 		flat.HouseNumber,
-	}, nil
+	}
 }
