@@ -6,6 +6,7 @@ import (
 	"github.com/paulmach/orb/planar"
 	gosm "github.com/paulmach/osm"
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"io/ioutil"
 	"math"
@@ -14,12 +15,13 @@ import (
 	"time"
 )
 
-func NewGauger(gatherer *metrics.Gatherer, logger log.FieldLogger) *Gauger {
+func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger log.FieldLogger) *Gauger {
 	return &Gauger{
-		&http.Client{Timeout: 5 * time.Second},
-		map[string]string{"User-Agent": "rampart/1.0"},
-		"https://overpass.kumi.systems/api/interpreter?data=%s",
-		2000,
+		&http.Client{Timeout: time.Duration(config.Timeout)},
+		config.Headers,
+		config.InterpreterURL,
+		config.SearchRadius,
+		-1,
 		gatherer,
 		logger,
 	}
@@ -30,6 +32,7 @@ type Gauger struct {
 	headers        map[string]string
 	interpreterURL string
 	searchRadius   float64
+	noDistance     float64
 	gatherer       *metrics.Gatherer
 	logger         log.FieldLogger
 }
@@ -37,7 +40,7 @@ type Gauger struct {
 func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 	newFlats := make([]*Flat, len(flats))
 	for i, flat := range flats {
-		if x := gauger.gaugeSubwayStationDistance(flat); x != -1 {
+		if x := gauger.gaugeSubwayStationDistance(flat); x != gauger.noDistance {
 			gauger.logger.Info(flat.OriginURL, x)
 		}
 		newFlats[i] = flat
@@ -54,10 +57,10 @@ func (gauger *Gauger) gaugeSubwayStationDistance(flat *Flat) float64 {
 	)
 	if err != nil {
 		gauger.logger.WithField("origin_url", flat.OriginURL).Error(err)
-		return -1
+		return gauger.noDistance
 	}
 	if len(osm.Nodes) == 0 {
-		return -1
+		return gauger.noDistance
 	}
 	distance := planar.Distance(flat.Point, osm.Nodes[0].Point())
 	for _, node := range osm.Nodes {

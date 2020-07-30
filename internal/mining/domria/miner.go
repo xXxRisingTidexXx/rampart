@@ -22,7 +22,7 @@ func NewMiner(
 		NewFetcher(config.Fetcher, gatherer),
 		NewSanitizer(config.Sanitizer, gatherer),
 		NewGeocoder(config.Geocoder, gatherer, logger),
-		NewGauger(gatherer, logger),
+		NewGauger(config.Gauger, gatherer, logger),
 		NewValidator(config.Validator, gatherer),
 		NewStorer(config.Storer, db, gatherer, logger),
 		gatherer,
