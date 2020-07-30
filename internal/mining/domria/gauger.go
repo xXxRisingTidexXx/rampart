@@ -2,8 +2,8 @@ package domria
 
 import (
 	"fmt"
+	"github.com/paulmach/orb"
 	log "github.com/sirupsen/logrus"
-	"github.com/twpayne/go-geom"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"io/ioutil"
 	"net/http"
@@ -42,12 +42,12 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 	return newFlats
 }
 
-func (gauger *Gauger) gaugeSubwayStationDistance(point *geom.Point) (float64, error) {
+func (gauger *Gauger) gaugeSubwayStationDistance(point orb.Point) (float64, error) {
 	_, err := gauger.query(
 		"node[station=subway](around:%f,%f,%f);out;",
 		gauger.searchRadius,
-		point.Y(),
-		point.X(),
+		point.Lat(),
+		point.Lon(),
 	)
 	return 0, err
 }

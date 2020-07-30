@@ -3,7 +3,6 @@ package domria
 import (
 	"database/sql"
 	"fmt"
-	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/encoding/wkb"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
@@ -112,13 +111,13 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 		    total_floor = $9,
 		    housing = $10,
 		    complex = $11,
-		    point = st_geomfromwkb($12, 4326),
-		    state = $13,
-		    city = $14,
-		    district = $15,
-		    street = $16,
-		    house_number = $17
-		where origin_url = $18`,
+		    point = st_geomfromwkb($12, $13),
+		    state = $14,
+		    city = $15,
+		    district = $16,
+		    street = $17,
+		    house_number = $18
+		where origin_url = $19`,
 		flat.ImageURL,
 		flat.UpdateTime,
 		flat.Price,
@@ -130,7 +129,8 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 		flat.TotalFloor,
 		flat.Housing.String(),
 		flat.Complex,
-		wkb.Value(orb.Point{flat.Point.X(), flat.Point.Y()}),
+		wkb.Value(flat.Point),
+		storer.srid,
 		flat.State,
 		flat.City,
 		flat.District,
@@ -155,7 +155,7 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
         values 
 		(
 		    $1, $2, $3, now() at time zone 'utc', $4, $5, $6, $7, $8, $9, $10, $11, $12, 
-		    st_geomfromwkb($13, 4326), $14, $15, $16, $17, $18
+		    st_geomfromwkb($13, $14), $15, $16, $17, $18, $19
 		)`,
 		flat.OriginURL,
 		flat.ImageURL,
@@ -169,7 +169,8 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 		flat.TotalFloor,
 		flat.Housing.String(),
 		flat.Complex,
-		wkb.Value(orb.Point{flat.Point.X(), flat.Point.Y()}),
+		wkb.Value(flat.Point),
+		storer.srid,
 		flat.State,
 		flat.City,
 		flat.District,

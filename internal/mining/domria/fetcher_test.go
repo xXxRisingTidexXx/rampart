@@ -2,7 +2,7 @@ package domria
 
 import (
 	"fmt"
-	"github.com/twpayne/go-geom"
+	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
@@ -36,7 +36,6 @@ func newTestFetcher(searchURL string) *Fetcher {
 			Flags:     map[misc.Housing]string{misc.Primary: "pm_housing=1"},
 			Headers:   map[string]string{"User-Agent": "domria-test-bot/1.0.0"},
 			SearchURL: searchURL,
-			SRID:      4326,
 		},
 		metrics.NewGatherer("domria-primary", nil),
 	)
@@ -116,7 +115,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 			9,
 			misc.Primary,
 			"",
-			geom.NewPointFlat(geom.XY, []float64{28.4962815, 49.2410151}).SetSRID(4326),
+			orb.Point{28.4962815, 49.2410151},
 			"Вінницька",
 			"Вінниця",
 			"Ближнє замостя",
@@ -140,7 +139,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 			7,
 			misc.Primary,
 			"Микрорайон «АКАДЕМІЧНИЙ»",
-			geom.NewPointFlat(geom.XY, []float64{28.4269, 49.207109}).SetSRID(4326),
+			orb.Point{28.4269, 49.207109},
 			"Вінницька",
 			"Вінниця",
 			"Академічний",
@@ -221,15 +220,7 @@ func testFlat(t *testing.T, actual *Flat, expected *Flat) {
 	if actual.Complex != expected.Complex {
 		t.Errorf("domria: invalid complex, %s != %s", actual.Complex, expected.Complex)
 	}
-	if expected.Point == nil && actual.Point != nil {
-		t.Errorf("domria: non-nil point, %v", actual.Point)
-	}
-	if expected.Point != nil &&
-		(actual.Point == nil ||
-			actual.Point.Layout() != expected.Point.Layout() ||
-			actual.Point.X() != expected.Point.X() ||
-			actual.Point.Y() != expected.Point.Y() ||
-			actual.Point.SRID() != expected.Point.SRID()) {
+	if !actual.Point.Equal(expected.Point) {
 		t.Errorf("domria: invalid point, %v != %v", actual.Point, expected.Point)
 	}
 	if actual.State != expected.State {
@@ -410,7 +401,7 @@ func TestUnmarshalSearchValidItem(t *testing.T) {
 			9,
 			misc.Primary,
 			"ЖК На Щасливому, будинок 27",
-			geom.NewPointFlat(geom.XY, []float64{26.267247115344, 50.59766586795}).SetSRID(4326),
+			orb.Point{26.267247115344, 50.59766586795},
 			"Рівненська",
 			"Рівне",
 			"Щасливе",
@@ -445,7 +436,7 @@ func TestUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 			4,
 			misc.Secondary,
 			"",
-			geom.NewPointFlat(geom.XY, []float64{25.594767, 49.553517}).SetSRID(4326),
+			orb.Point{25.594767, 49.553517},
 			"Тернопільська",
 			"Тернопіль",
 			"Бам",
@@ -504,7 +495,7 @@ func TestUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 			16,
 			misc.Primary,
 			"ЖК Левада 2",
-			geom.NewPointFlat(geom.XY, []float64{36.239501354492, 49.978100188645}).SetSRID(4326),
+			orb.Point{36.239501354492, 49.978100188645},
 			"Харківська",
 			"Харків",
 			"",
@@ -551,7 +542,7 @@ func TestUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 			5,
 			misc.Secondary,
 			"",
-			geom.NewPointFlat(geom.XY, []float64{28.4247279, 49.2291492}).SetSRID(4326),
+			orb.Point{28.4247279, 49.2291492},
 			"Вінницька",
 			"Вінниця",
 			"Вишенька",
@@ -610,7 +601,7 @@ func TestUnmarshalSearchEmptyPriceArr(t *testing.T) {
 			9,
 			misc.Primary,
 			"",
-			geom.NewPointFlat(geom.XY, []float64{25.9820274, 48.2831323}).SetSRID(4326),
+			orb.Point{25.9820274, 48.2831323},
 			"Чернівецька",
 			"Чернівці",
 			"Фастівська",
@@ -645,7 +636,7 @@ func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {
 			16,
 			misc.Primary,
 			"",
-			geom.NewPointFlat(geom.XY, []float64{36.2245388, 49.9974272}).SetSRID(4326),
+			orb.Point{36.2245388, 49.9974272},
 			"Харківська",
 			"Харків",
 			"Шевченківський",
@@ -716,7 +707,7 @@ func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 			11,
 			misc.Primary,
 			"",
-			geom.NewPointFlat(geom.XY, []float64{25.644687974235, 49.550329822762}).SetSRID(4326),
+			orb.Point{25.644687974235, 49.550329822762},
 			"Тернопільська",
 			"Тернопіль",
 			"Бам",
@@ -763,7 +754,7 @@ func TestUnmarshalSearchSupremeKitchenSquareMeters(t *testing.T) {
 			3,
 			misc.Secondary,
 			"",
-			geom.NewPointFlat(geom.XY, []float64{22.301875199999998, 48.621579}).SetSRID(4326),
+			orb.Point{22.301875199999998, 48.621579},
 			"Закарпатська",
 			"Ужгород",
 			"Центр",
@@ -798,7 +789,7 @@ func TestUnmarshalSearchNegativeFloor(t *testing.T) {
 			26,
 			misc.Primary,
 			"ЖК Медовий-2",
-			geom.NewPointFlat(geom.XY, []float64{30.4760253, 50.4128865}).SetSRID(4326),
+			orb.Point{30.4760253, 50.4128865},
 			"Київська",
 			"Київ",
 			"Солом'янський",
@@ -833,7 +824,7 @@ func TestUnmarshalSearchSupremeFloor(t *testing.T) {
 			18,
 			misc.Primary,
 			"ЖК «Шевченківський»",
-			geom.NewPointFlat(geom.XY, []float64{30.487440507934, 50.450000744175}).SetSRID(4326),
+			orb.Point{30.487440507934, 50.450000744175},
 			"Київська",
 			"Київ",
 			"Шевченківський",
@@ -868,7 +859,7 @@ func TestUnmarshalSearchJustLongitude(t *testing.T) {
 			17,
 			misc.Primary,
 			"",
-			geom.NewPointFlat(geom.XY, []float64{28.4607622, 0}).SetSRID(4326),
+			orb.Point{28.4607622, 0},
 			"Вінницька",
 			"Вінниця",
 			"Центр",
@@ -903,7 +894,7 @@ func TestUnmarshalSearchJustLatitude(t *testing.T) {
 			10,
 			misc.Primary,
 			"",
-			geom.NewPointFlat(geom.XY, []float64{0, 49.431359}).SetSRID(4326),
+			orb.Point{0, 49.431359},
 			"Хмельницька",
 			"Хмельницький",
 			"Виставка",
@@ -938,7 +929,7 @@ func TestUnmarshalSearchStringCoordinates(t *testing.T) {
 			9,
 			misc.Secondary,
 			"Микрорайон Поділля",
-			geom.NewPointFlat(geom.XY, []float64{28.4489892, 49.2173192}).SetSRID(4326),
+			orb.Point{28.4489892, 49.2173192},
 			"Вінницька",
 			"Вінниця",
 			"Поділля",
@@ -973,7 +964,7 @@ func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {
 			2,
 			misc.Secondary,
 			"",
-			nil,
+			orb.Point{},
 			"Одеська",
 			"Одеса",
 			"Приморський",
@@ -1020,7 +1011,7 @@ func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {
 			7,
 			misc.Secondary,
 			"",
-			geom.NewPointFlat(geom.XY, []float64{-183.839023, 2931.000183399}).SetSRID(4326),
+			orb.Point{-183.839023, 2931.000183399},
 			"Херсонська",
 			"Херсон",
 			"Суворовський",
@@ -1055,7 +1046,7 @@ func TestUnmarshalSearchEmptyStreets(t *testing.T) {
 			9,
 			misc.Secondary,
 			"",
-			nil,
+			orb.Point{},
 			"Одеська",
 			"Одеса",
 			"Київський",
@@ -1090,7 +1081,7 @@ func TestUnmarshalSearchJustRUStreet(t *testing.T) {
 			3,
 			misc.Secondary,
 			"",
-			nil,
+			orb.Point{},
 			"Львівська",
 			"Львів",
 			"Галицький",
@@ -1126,7 +1117,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			9,
 			misc.Primary,
 			"ЖК Перлина Поділля",
-			geom.NewPointFlat(geom.XY, []float64{28.437752173707, 49.214143792302}).SetSRID(4326),
+			orb.Point{28.437752173707, 49.214143792302},
 			"Вінницька",
 			"Вінниця",
 			"Поділля",
@@ -1150,7 +1141,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			10,
 			misc.Primary,
 			"ЖК Дніпровська Брама 2",
-			geom.NewPointFlat(geom.XY, []float64{35.085059977507, 48.536070034556}).SetSRID(4326),
+			orb.Point{35.085059977507, 48.536070034556},
 			"Дніпропетровська",
 			"Дніпро",
 			"Слобожанське",
@@ -1174,7 +1165,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			10,
 			misc.Primary,
 			"ЖК Дніпровська Брама 2",
-			geom.NewPointFlat(geom.XY, []float64{35.085059977507, 48.536070034556}).SetSRID(4326),
+			orb.Point{35.085059977507, 48.536070034556},
 			"Дніпропетровська",
 			"Дніпро",
 			"Слобожанське",

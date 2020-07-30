@@ -3,8 +3,8 @@ package domria
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/paulmach/orb"
 	log "github.com/sirupsen/logrus"
-	"github.com/twpayne/go-geom"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
@@ -52,7 +52,7 @@ func (geocoder *Geocoder) GeocodeFlats(flats []*Flat) []*Flat {
 }
 
 func (geocoder *Geocoder) geocodeFlat(flat *Flat) (*Flat, error) {
-	if flat.Point != nil {
+	if flat.Point.Lon() != 0 || flat.Point.Lat() != 0 {
 		geocoder.gatherer.GatherLocatedGeocoding()
 		return flat, nil
 	}
@@ -145,10 +145,7 @@ func (geocoder *Geocoder) locateFlat(flat *Flat, bytes []byte) (*Flat, error) {
 		flat.TotalFloor,
 		flat.Housing,
 		flat.Complex,
-		geom.NewPointFlat(
-			geom.XY,
-			[]float64{float64(locations[0].Lon), float64(locations[0].Lat)},
-		).SetSRID(geocoder.srid),
+		orb.Point{float64(locations[0].Lon), float64(locations[0].Lat)},
 		flat.State,
 		flat.City,
 		flat.District,

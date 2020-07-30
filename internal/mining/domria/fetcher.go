@@ -3,7 +3,7 @@ package domria
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/twpayne/go-geom"
+	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
@@ -99,13 +99,6 @@ func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing misc.Housing) ([]*
 		if item.PriceArr != nil {
 			price = float64(item.PriceArr.USD)
 		}
-		var point *geom.Point
-		if item.Longitude != 0 || item.Latitude != 0 {
-			point = geom.NewPointFlat(
-				geom.XY,
-				[]float64{float64(item.Longitude), float64(item.Latitude)},
-			).SetSRID(fetcher.srid)
-		}
 		street := item.StreetNameUK
 		if street == "" && item.StreetName != "" {
 			street = item.StreetName
@@ -123,7 +116,7 @@ func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing misc.Housing) ([]*
 			item.FloorsCount,
 			housing,
 			item.UserNewbuildNameUK,
-			point,
+			orb.Point{float64(item.Longitude), float64(item.Latitude)},
 			item.StateNameUK,
 			item.CityNameUK,
 			item.DistrictNameUK,

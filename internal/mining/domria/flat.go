@@ -2,7 +2,7 @@ package domria
 
 import (
 	"fmt"
-	"github.com/twpayne/go-geom"
+	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"time"
 )
@@ -20,7 +20,7 @@ type Flat struct {
 	TotalFloor  int
 	Housing     misc.Housing
 	Complex     string
-	Point       *geom.Point
+	Point       orb.Point
 	State       string
 	City        string
 	District    string
