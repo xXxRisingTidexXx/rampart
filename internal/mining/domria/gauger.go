@@ -1,11 +1,14 @@
 package domria
 
 import (
+	"encoding/xml"
 	"fmt"
-	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/planar"
+	gosm "github.com/paulmach/osm"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"net/url"
 	"time"
@@ -34,25 +37,36 @@ type Gauger struct {
 func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 	newFlats := make([]*Flat, len(flats))
 	for i, flat := range flats {
-		if _, err := gauger.gaugeSubwayStationDistance(flat.Point); err != nil {
-			gauger.logger.WithField("origin_url", flat.OriginURL).Error(err)
+		if x := gauger.gaugeSubwayStationDistance(flat); x != -1 {
+			gauger.logger.Info(flat.OriginURL, x)
 		}
 		newFlats[i] = flat
 	}
 	return newFlats
 }
 
-func (gauger *Gauger) gaugeSubwayStationDistance(point orb.Point) (float64, error) {
-	_, err := gauger.query(
+func (gauger *Gauger) gaugeSubwayStationDistance(flat *Flat) float64 {
+	osm, err := gauger.query(
 		"node[station=subway](around:%f,%f,%f);out;",
 		gauger.searchRadius,
-		point.Lat(),
-		point.Lon(),
+		flat.Point.Lat(),
+		flat.Point.Lon(),
 	)
-	return 0, err
+	if err != nil {
+		gauger.logger.WithField("origin_url", flat.OriginURL).Error(err)
+		return -1
+	}
+	if len(osm.Nodes) == 0 {
+		return -1
+	}
+	distance := planar.Distance(flat.Point, osm.Nodes[0].Point())
+	for _, node := range osm.Nodes {
+		distance = math.Min(distance, planar.Distance(flat.Point, node.Point()))
+	}
+	return distance
 }
 
-func (gauger *Gauger) query(query string, params ...interface{}) ([]byte, error) {
+func (gauger *Gauger) query(query string, params ...interface{}) (*gosm.OSM, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf(gauger.interpreterURL, url.QueryEscape(fmt.Sprintf(query, params...))),
@@ -77,8 +91,12 @@ func (gauger *Gauger) query(query string, params ...interface{}) ([]byte, error)
 		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: gauger failed to read the response body, %v", err)
 	}
-	if err = response.Body.Close(); err != nil {
+	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to close the response body, %v", err)
 	}
-	return bytes, nil
+	var osm gosm.OSM
+	if err := xml.Unmarshal(bytes, &osm); err != nil {
+		return nil, fmt.Errorf("domria: gauger failed to unmarshal the osm, %v", err)
+	}
+	return &osm, nil
 }
