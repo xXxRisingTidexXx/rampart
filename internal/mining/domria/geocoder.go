@@ -20,7 +20,6 @@ func NewGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger log
 		config.Headers,
 		config.StatelessCities,
 		config.SearchURL,
-		config.SRID,
 		" ",
 		"+",
 		gatherer,
@@ -33,7 +32,6 @@ type Geocoder struct {
 	headers         map[string]string
 	statelessCities *misc.Set
 	searchURL       string
-	srid            int
 	whitespace      string
 	plus            string
 	gatherer        *metrics.Gatherer

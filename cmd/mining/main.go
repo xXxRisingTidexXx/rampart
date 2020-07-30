@@ -12,6 +12,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/secrets"
 )
 
+// TODO: apply common logging field enum.
 func main() {
 	isOnce := flag.Bool("once", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")

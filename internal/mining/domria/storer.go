@@ -6,15 +6,22 @@ import (
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/encoding/wkb"
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"time"
 )
 
-func NewStorer(db *sql.DB, gatherer *metrics.Gatherer, logger log.FieldLogger) *Storer {
-	return &Storer{db, gatherer, logger}
+func NewStorer(
+	config *config.Storer,
+	db *sql.DB,
+	gatherer *metrics.Gatherer,
+	logger log.FieldLogger,
+) *Storer {
+	return &Storer{config.SRID, db, gatherer, logger}
 }
 
 type Storer struct {
+	srid     int
 	db       *sql.DB
 	gatherer *metrics.Gatherer
 	logger   log.FieldLogger

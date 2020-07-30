@@ -11,17 +11,15 @@ type Fetcher struct {
 	Flags     map[misc.Housing]string `yaml:"flags"`
 	Headers   map[string]string       `yaml:"headers"`
 	SearchURL string                  `yaml:"searchURL"`
-	SRID      int                     `yaml:"srid"`
 }
 
 func (fetcher *Fetcher) String() string {
 	return fmt.Sprintf(
-		"{%s %d %v %v %s %d}",
+		"{%s %d %v %v %s}",
 		fetcher.Timeout,
 		fetcher.Portion,
 		fetcher.Flags,
 		fetcher.Headers,
 		fetcher.SearchURL,
-		fetcher.SRID,
 	)
 }

@@ -20,7 +20,6 @@ func NewFetcher(config *config.Fetcher, gatherer *metrics.Gatherer) *Fetcher {
 		config.Flags,
 		config.Headers,
 		config.SearchURL,
-		config.SRID,
 		gatherer,
 	}
 }
@@ -32,7 +31,6 @@ type Fetcher struct {
 	flags     map[misc.Housing]string
 	headers   map[string]string
 	searchURL string
-	srid      int
 	gatherer  *metrics.Gatherer
 }
 

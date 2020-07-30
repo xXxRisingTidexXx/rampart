@@ -14,11 +14,12 @@ type DomriaMiner struct {
 	Sanitizer *Sanitizer   `yaml:"sanitizer"`
 	Geocoder  *Geocoder    `yaml:"geocoder"`
 	Validator *Validator   `yaml:"validator"`
+	Storer    *Storer      `yaml:"storer"`
 }
 
 func (domria *DomriaMiner) String() string {
 	return fmt.Sprintf(
-		"{%s %s %s %d %v %v %v %v}",
+		"{%s %s %s %d %v %v %v %v %v}",
 		domria.Alias,
 		domria.Housing,
 		domria.Spec,
@@ -27,5 +28,6 @@ func (domria *DomriaMiner) String() string {
 		domria.Sanitizer,
 		domria.Geocoder,
 		domria.Validator,
+		domria.Storer,
 	)
 }
