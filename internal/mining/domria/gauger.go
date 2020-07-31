@@ -67,23 +67,28 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 }
 
 func (gauger *Gauger) gaugeSubwayStationDistance(flat *Flat) float64 {
+	start := time.Now()
 	osm, err := gauger.query(
 		"node[station=subway](around:%f,%f,%f);out;",
 		gauger.searchRadius,
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
+	gauger.gatherer.GatherSubwayGaugingDuration(start)
 	if err != nil {
+		gauger.gatherer.GatherFailedSubwayGauging()
 		gauger.logger.WithField(misc.FieldOriginURL, flat.OriginURL).Error(err)
 		return gauger.noDistance
 	}
 	if len(osm.Nodes) == 0 {
+		gauger.gatherer.GatherInconclusiveSubwayGauging()
 		return gauger.noDistance
 	}
 	distance := planar.Distance(flat.Point, osm.Nodes[0].Point())
 	for _, node := range osm.Nodes {
 		distance = math.Min(distance, planar.Distance(flat.Point, node.Point()))
 	}
+	gauger.gatherer.GatherSuccessfulSubwayGauging()
 	return distance
 }
 
