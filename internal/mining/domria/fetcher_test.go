@@ -15,7 +15,7 @@ import (
 
 func TestFetchSearchInvalidHousing(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.FetchFlats(misc.Secondary)
+	flats, err := fetcher.FetchFlats(misc.HousingSecondary)
 	if err == nil || err.Error() != "domria: fetcher doesn't accept secondary housing" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
 	}
@@ -33,7 +33,7 @@ func newTestFetcher(searchURL string) *Fetcher {
 		&config.Fetcher{
 			Timeout:   config.Timing(100 * time.Millisecond),
 			Portion:   10,
-			Flags:     map[misc.Housing]string{misc.Primary: "pm_housing=1"},
+			Flags:     map[config.Housing]string{misc.HousingPrimary: "pm_housing=1"},
 			Headers:   map[string]string{"User-Agent": "domria-test-bot/1.0.0"},
 			SearchURL: searchURL,
 		},
@@ -61,7 +61,7 @@ func TestFetchSearchWithReset(t *testing.T) {
 	)
 	fetcher := newServerFetcher(server)
 	fetcher.page = 2
-	flats, err := fetcher.FetchFlats(misc.Primary)
+	flats, err := fetcher.FetchFlats(misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -90,7 +90,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 		},
 	)
 	fetcher := newServerFetcher(server)
-	flats, err := fetcher.FetchFlats(misc.Primary)
+	flats, err := fetcher.FetchFlats(misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -114,7 +114,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 			3,
 			8,
 			9,
-			misc.Primary,
+			misc.HousingPrimary,
 			"",
 			orb.Point{28.4962815, 49.2410151},
 			0,
@@ -139,7 +139,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 			1,
 			-7,
 			7,
-			misc.Primary,
+			misc.HousingPrimary,
 			"Микрорайон «АКАДЕМІЧНИЙ»",
 			orb.Point{28.4269, 49.207109},
 			0,
@@ -299,7 +299,7 @@ func TestGetSearchNotFound(t *testing.T) {
 
 func TestUnmarshalSearchEmptyString(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch([]byte(""), misc.Primary)
+	flats, err := fetcher.unmarshalSearch([]byte(""), misc.HousingPrimary)
 	if err == nil || err.Error() != "domria: fetcher failed t"+
 		"o unmarshal the search, unexpected end of JSON input" {
 		t.Errorf("domria: absent or invalid error, %v", err)
@@ -311,7 +311,7 @@ func TestUnmarshalSearchEmptyString(t *testing.T) {
 
 func TestUnmarshalSearchInvalidJSON(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch([]byte("{"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch([]byte("{"), misc.HousingPrimary)
 	if err == nil || err.Error() != "domria: fetcher failed t"+
 		"o unmarshal the search, unexpected end of JSON input" {
 		t.Errorf("domria: absent or invalid error, %v", err)
@@ -323,7 +323,7 @@ func TestUnmarshalSearchInvalidJSON(t *testing.T) {
 
 func TestUnmarshalSearchArrayInsteadOfObject(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch([]byte("[]"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch([]byte("[]"), misc.HousingPrimary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the search"+
 		", json: cannot unmarshal array into Go value of type domria.search" {
 		t.Errorf("domria: absent or invalid error, %v", err)
@@ -335,7 +335,7 @@ func TestUnmarshalSearchArrayInsteadOfObject(t *testing.T) {
 
 func TestUnmarshalSearchEmptyJSON(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch([]byte("{}"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch([]byte("{}"), misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -346,7 +346,7 @@ func TestUnmarshalSearchEmptyJSON(t *testing.T) {
 
 func TestUnmarshalSearchWithoutItems(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "without_items"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "without_items"), misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -357,7 +357,7 @@ func TestUnmarshalSearchWithoutItems(t *testing.T) {
 
 func TestUnmarshalSearchEmptySearch(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_search"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_search"), misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -368,19 +368,19 @@ func TestUnmarshalSearchEmptySearch(t *testing.T) {
 
 func TestUnmarshalSearchEmptyItem(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_item"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_item"), misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
 	if len(flats) != 1 {
 		t.Fatalf("domria: corrupted flats, %v", flats)
 	}
-	testFlat(t, flats[0], &Flat{Housing: misc.Primary})
+	testFlat(t, flats[0], &Flat{Housing: misc.HousingPrimary})
 }
 
 func TestUnmarshalSearchValidItem(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "valid_item"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "valid_item"), misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -401,7 +401,7 @@ func TestUnmarshalSearchValidItem(t *testing.T) {
 			1,
 			2,
 			9,
-			misc.Primary,
+			misc.HousingPrimary,
 			"ЖК На Щасливому, будинок 27",
 			orb.Point{26.267247115344, 50.59766586795},
 			0,
@@ -416,7 +416,7 @@ func TestUnmarshalSearchValidItem(t *testing.T) {
 
 func TestUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_main_photo"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_main_photo"), misc.HousingSecondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -437,7 +437,7 @@ func TestUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 			2,
 			2,
 			4,
-			misc.Secondary,
+			misc.HousingSecondary,
 			"",
 			orb.Point{25.594767, 49.553517},
 			0,
@@ -452,7 +452,7 @@ func TestUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 
 func TestUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_updated_at"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_updated_at"), misc.HousingSecondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarsh"+
 		"al the search, domria: moment string is too short, 2" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -464,7 +464,7 @@ func TestUnmarshalSearchEmptyUpdatedAt(t *testing.T) {
 
 func TestUnmarshalSearchTrashUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_updated_at"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_updated_at"), misc.HousingSecondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the search, domria: mom"+
 		"ent can't split date & timing, |@!|)  )0w23 8&Nu sho, pososesh huj?$@%@8182)( @" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -476,7 +476,7 @@ func TestUnmarshalSearchTrashUpdatedAt(t *testing.T) {
 
 func TestUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "leading_zeros_updated_at"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "leading_zeros_updated_at"), misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -497,7 +497,7 @@ func TestUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 			1,
 			7,
 			16,
-			misc.Primary,
+			misc.HousingPrimary,
 			"ЖК Левада 2",
 			orb.Point{36.239501354492, 49.978100188645},
 			0,
@@ -512,7 +512,7 @@ func TestUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 
 func TestUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "missing_shapes_updated_at"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "missing_shapes_updated_at"), misc.HousingPrimary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal "+
 		"the search, domria: moment cannot split date, 2020- 07:53" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -524,7 +524,7 @@ func TestUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {
 
 func TestUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "13_month_updated_at"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "13_month_updated_at"), misc.HousingSecondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -545,7 +545,7 @@ func TestUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 			1,
 			4,
 			5,
-			misc.Secondary,
+			misc.HousingSecondary,
 			"",
 			orb.Point{28.4247279, 49.2291492},
 			0,
@@ -560,7 +560,7 @@ func TestUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 
 func TestUnmarshalSearchJustDateUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "just_date_updated_at"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "just_date_updated_at"), misc.HousingSecondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal t"+
 		"he search, domria: moment cannot split timing, 2020-06-07 " {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -572,7 +572,7 @@ func TestUnmarshalSearchJustDateUpdatedAt(t *testing.T) {
 
 func TestUnmarshalSearchJustTimeUpdatedAt(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "just_time_updated_at"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "just_time_updated_at"), misc.HousingSecondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal"+
 		" the search, domria: moment cannot split date,  07:47:11" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -584,7 +584,7 @@ func TestUnmarshalSearchJustTimeUpdatedAt(t *testing.T) {
 
 func TestUnmarshalSearchEmptyPriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_price_arr"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_price_arr"), misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -605,7 +605,7 @@ func TestUnmarshalSearchEmptyPriceArr(t *testing.T) {
 			3,
 			6,
 			9,
-			misc.Primary,
+			misc.HousingPrimary,
 			"",
 			orb.Point{25.9820274, 48.2831323},
 			0,
@@ -620,7 +620,7 @@ func TestUnmarshalSearchEmptyPriceArr(t *testing.T) {
 
 func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "no_usd_price_arr"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "no_usd_price_arr"), misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -641,7 +641,7 @@ func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {
 			1,
 			14,
 			16,
-			misc.Primary,
+			misc.HousingPrimary,
 			"",
 			orb.Point{36.2245388, 49.9974272},
 			0,
@@ -656,7 +656,7 @@ func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {
 
 func TestUnmarshalSearchEmptyPricePriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_price_price_arr"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_price_price_arr"), misc.HousingSecondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmars"+
 		"hal the search, domria: price string is too short, 2" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -668,7 +668,7 @@ func TestUnmarshalSearchEmptyPricePriceArr(t *testing.T) {
 
 func TestUnmarshalSearchWhitespacePricePriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "whitespace_price_price_arr"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "whitespace_price_price_arr"), misc.HousingSecondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal th"+
 		"e search, strconv.ParseFloat: parsing \"\": invalid syntax" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -680,7 +680,7 @@ func TestUnmarshalSearchWhitespacePricePriceArr(t *testing.T) {
 
 func TestUnmarshalSearchTrashPricePriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_price_price_arr"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_price_price_arr"), misc.HousingPrimary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the "+
 		"search, strconv.ParseFloat: parsing \"Suck\": invalid syntax" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -692,7 +692,7 @@ func TestUnmarshalSearchTrashPricePriceArr(t *testing.T) {
 
 func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "negative_price_price_arr"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "negative_price_price_arr"), misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -713,7 +713,7 @@ func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 			3,
 			9,
 			11,
-			misc.Primary,
+			misc.HousingPrimary,
 			"",
 			orb.Point{25.644687974235, 49.550329822762},
 			0,
@@ -728,7 +728,7 @@ func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 
 func TestUnmarshalSearchTrashTotalSquareMeters(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_total_square_meters"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_total_square_meters"), misc.HousingSecondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the"+
 		" search, invalid character '-' after object key:value pair" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -740,7 +740,7 @@ func TestUnmarshalSearchTrashTotalSquareMeters(t *testing.T) {
 
 func TestUnmarshalSearchSupremeKitchenSquareMeters(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "supreme_kitchen_square_meters"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "supreme_kitchen_square_meters"), misc.HousingSecondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -761,7 +761,7 @@ func TestUnmarshalSearchSupremeKitchenSquareMeters(t *testing.T) {
 			4,
 			3,
 			3,
-			misc.Secondary,
+			misc.HousingSecondary,
 			"",
 			orb.Point{22.301875199999998, 48.621579},
 			0,
@@ -776,7 +776,7 @@ func TestUnmarshalSearchSupremeKitchenSquareMeters(t *testing.T) {
 
 func TestUnmarshalSearchNegativeFloor(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "negative_floor"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "negative_floor"), misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -797,7 +797,7 @@ func TestUnmarshalSearchNegativeFloor(t *testing.T) {
 			2,
 			-1,
 			26,
-			misc.Primary,
+			misc.HousingPrimary,
 			"ЖК Медовий-2",
 			orb.Point{30.4760253, 50.4128865},
 			0,
@@ -812,7 +812,7 @@ func TestUnmarshalSearchNegativeFloor(t *testing.T) {
 
 func TestUnmarshalSearchSupremeFloor(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "supreme_floor"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "supreme_floor"), misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -833,7 +833,7 @@ func TestUnmarshalSearchSupremeFloor(t *testing.T) {
 			3,
 			116,
 			18,
-			misc.Primary,
+			misc.HousingPrimary,
 			"ЖК «Шевченківський»",
 			orb.Point{30.487440507934, 50.450000744175},
 			0,
@@ -848,7 +848,7 @@ func TestUnmarshalSearchSupremeFloor(t *testing.T) {
 
 func TestUnmarshalSearchJustLongitude(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "just_longitude"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "just_longitude"), misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -869,7 +869,7 @@ func TestUnmarshalSearchJustLongitude(t *testing.T) {
 			5,
 			17,
 			17,
-			misc.Primary,
+			misc.HousingPrimary,
 			"",
 			orb.Point{28.4607622, 0},
 			0,
@@ -884,7 +884,7 @@ func TestUnmarshalSearchJustLongitude(t *testing.T) {
 
 func TestUnmarshalSearchJustLatitude(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "just_latitude"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "just_latitude"), misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -905,7 +905,7 @@ func TestUnmarshalSearchJustLatitude(t *testing.T) {
 			1,
 			4,
 			10,
-			misc.Primary,
+			misc.HousingPrimary,
 			"",
 			orb.Point{0, 49.431359},
 			0,
@@ -920,7 +920,7 @@ func TestUnmarshalSearchJustLatitude(t *testing.T) {
 
 func TestUnmarshalSearchStringCoordinates(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "string_coordinates"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "string_coordinates"), misc.HousingSecondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -941,7 +941,7 @@ func TestUnmarshalSearchStringCoordinates(t *testing.T) {
 			4,
 			3,
 			9,
-			misc.Secondary,
+			misc.HousingSecondary,
 			"Микрорайон Поділля",
 			orb.Point{28.4489892, 49.2173192},
 			0,
@@ -956,7 +956,7 @@ func TestUnmarshalSearchStringCoordinates(t *testing.T) {
 
 func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_string_coordinates"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_string_coordinates"), misc.HousingSecondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -977,7 +977,7 @@ func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {
 			4,
 			2,
 			2,
-			misc.Secondary,
+			misc.HousingSecondary,
 			"",
 			orb.Point{},
 			0,
@@ -992,7 +992,7 @@ func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {
 
 func TestUnmarshalSearchTrashCoordinates(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_coordinates"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_coordinates"), misc.HousingSecondary)
 	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the sear"+
 		"ch, strconv.ParseFloat: parsing \"982jd293jd)J\": invalid syntax" {
 		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -1004,7 +1004,7 @@ func TestUnmarshalSearchTrashCoordinates(t *testing.T) {
 
 func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "supreme_coordinates"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "supreme_coordinates"), misc.HousingSecondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -1025,7 +1025,7 @@ func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {
 			3,
 			2,
 			7,
-			misc.Secondary,
+			misc.HousingSecondary,
 			"",
 			orb.Point{-183.839023, 2931.000183399},
 			0,
@@ -1040,7 +1040,7 @@ func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {
 
 func TestUnmarshalSearchEmptyStreets(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_streets"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_streets"), misc.HousingSecondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -1061,7 +1061,7 @@ func TestUnmarshalSearchEmptyStreets(t *testing.T) {
 			3,
 			4,
 			9,
-			misc.Secondary,
+			misc.HousingSecondary,
 			"",
 			orb.Point{},
 			0,
@@ -1076,7 +1076,7 @@ func TestUnmarshalSearchEmptyStreets(t *testing.T) {
 
 func TestUnmarshalSearchJustRUStreet(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "just_ru_street"), misc.Secondary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "just_ru_street"), misc.HousingSecondary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -1097,7 +1097,7 @@ func TestUnmarshalSearchJustRUStreet(t *testing.T) {
 			2,
 			3,
 			3,
-			misc.Secondary,
+			misc.HousingSecondary,
 			"",
 			orb.Point{},
 			0,
@@ -1113,7 +1113,7 @@ func TestUnmarshalSearchJustRUStreet(t *testing.T) {
 //nolint:funlen
 func TestUnmarshalSearchMultipleItems(t *testing.T) {
 	fetcher := newDefaultFetcher()
-	flats, err := fetcher.unmarshalSearch(readAll(t, "multiple_items"), misc.Primary)
+	flats, err := fetcher.unmarshalSearch(readAll(t, "multiple_items"), misc.HousingPrimary)
 	if err != nil {
 		t.Fatalf("domria: unexpected error, %v", err)
 	}
@@ -1134,7 +1134,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			2,
 			2,
 			9,
-			misc.Primary,
+			misc.HousingPrimary,
 			"ЖК Перлина Поділля",
 			orb.Point{28.437752173707, 49.214143792302},
 			0,
@@ -1159,7 +1159,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			1,
 			8,
 			10,
-			misc.Primary,
+			misc.HousingPrimary,
 			"ЖК Дніпровська Брама 2",
 			orb.Point{35.085059977507, 48.536070034556},
 			0,
@@ -1184,7 +1184,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			1,
 			6,
 			10,
-			misc.Primary,
+			misc.HousingPrimary,
 			"ЖК Дніпровська Брама 2",
 			orb.Point{35.085059977507, 48.536070034556},
 			0,

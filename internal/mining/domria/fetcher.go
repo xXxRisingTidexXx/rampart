@@ -6,18 +6,21 @@ import (
 	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"io/ioutil"
 	"net/http"
 	"time"
 )
 
 func NewFetcher(config *config.Fetcher, gatherer *metrics.Gatherer) *Fetcher {
+	flags := make(map[string]string, len(config.Flags))
+	for key, value := range config.Flags {
+		flags[string(key)] = value
+	}
 	return &Fetcher{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		0,
 		config.Portion,
-		config.Flags,
+		flags,
 		config.Headers,
 		config.SearchURL,
 		gatherer,
@@ -28,13 +31,13 @@ type Fetcher struct {
 	client    *http.Client
 	page      int
 	portion   int
-	flags     map[misc.Housing]string
+	flags     map[string]string
 	headers   map[string]string
 	searchURL string
 	gatherer  *metrics.Gatherer
 }
 
-func (fetcher *Fetcher) FetchFlats(housing misc.Housing) ([]*Flat, error) {
+func (fetcher *Fetcher) FetchFlats(housing string) ([]*Flat, error) {
 	flag, ok := fetcher.flags[housing]
 	if !ok {
 		return nil, fmt.Errorf("domria: fetcher doesn't accept %v housing", housing)
@@ -88,7 +91,7 @@ func (fetcher *Fetcher) getSearch(flag string) ([]byte, error) {
 	return bytes, nil
 }
 
-func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing misc.Housing) ([]*Flat, error) {
+func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing string) ([]*Flat, error) {
 	var search search
 	if err := json.Unmarshal(bytes, &search); err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the search, %v", err)

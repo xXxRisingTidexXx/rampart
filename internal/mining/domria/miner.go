@@ -5,7 +5,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"time"
 )
 
@@ -16,7 +15,7 @@ func NewMiner(
 	logger log.FieldLogger,
 ) *Miner {
 	return &Miner{
-		config.Housing,
+		string(config.Housing),
 		config.Spec,
 		config.Port,
 		NewFetcher(config.Fetcher, gatherer),
@@ -31,7 +30,7 @@ func NewMiner(
 }
 
 type Miner struct {
-	housing   misc.Housing
+	housing   string
 	spec      string
 	port      int
 	fetcher   *Fetcher

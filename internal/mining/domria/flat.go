@@ -3,7 +3,6 @@ package domria
 import (
 	"fmt"
 	"github.com/paulmach/orb"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"time"
 )
 
@@ -18,7 +17,7 @@ type Flat struct {
 	RoomNumber            int
 	Floor                 int
 	TotalFloor            int
-	Housing               misc.Housing
+	Housing               string
 	Complex               string
 	Point                 orb.Point
 	SubwayStationDistance float64
