@@ -138,7 +138,6 @@ func (gatherer *Gatherer) GatherTotalDuration(start time.Time) {
 	gatherer.totalDuration = time.Since(start).Seconds()
 }
 
-// TODO: insert sanitization values into the DB.
 //nolint:funlen
 func (gatherer *Gatherer) Flush() error {
 	geocodingDuration := 0.0
