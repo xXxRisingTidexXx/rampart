@@ -70,7 +70,7 @@ services:
     container_name: rampart-test
     volumes:
       - .:/go/src/app
-    command: go test github.com/xXxRisingTidexXx/rampart/internal/mining/domria
+    command: richgo test github.com/xXxRisingTidexXx/rampart/internal/mining/domria
   notebook:
     build:
       context: .

@@ -9,6 +9,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/database"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"github.com/xXxRisingTidexXx/rampart/internal/secrets"
 )
 
@@ -18,7 +19,7 @@ func main() {
 	flag.Parse()
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
-	entry := log.WithField("miner", *alias)
+	entry := log.WithField(misc.FieldMiner, *alias)
 	scr, err := secrets.NewSecrets()
 	if err != nil {
 		entry.Fatal(err)

@@ -107,6 +107,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 		flat.Housing,
 		flat.Complex,
 		flat.Point,
+		0,
 		state,
 		city,
 		district,

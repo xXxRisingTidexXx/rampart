@@ -2,23 +2,24 @@ package config
 
 import (
 	"fmt"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
 type DomriaMiner struct {
-	Alias     string       `yaml:"alias"`
-	Housing   misc.Housing `yaml:"housing"`
-	Spec      string       `yaml:"spec"`
-	Port      int          `yaml:"port"`
-	Fetcher   *Fetcher     `yaml:"fetcher"`
-	Sanitizer *Sanitizer   `yaml:"sanitizer"`
-	Geocoder  *Geocoder    `yaml:"geocoder"`
-	Validator *Validator   `yaml:"validator"`
+	Alias     string     `yaml:"alias"`
+	Housing   Housing    `yaml:"housing"`
+	Spec      string     `yaml:"spec"`
+	Port      int        `yaml:"port"`
+	Fetcher   *Fetcher   `yaml:"fetcher"`
+	Sanitizer *Sanitizer `yaml:"sanitizer"`
+	Geocoder  *Geocoder  `yaml:"geocoder"`
+	Gauger    *Gauger    `yaml:"gauger"`
+	Validator *Validator `yaml:"validator"`
+	Storer    *Storer    `yaml:"storer"`
 }
 
 func (domria *DomriaMiner) String() string {
 	return fmt.Sprintf(
-		"{%s %s %s %d %v %v %v %v}",
+		"{%s %s %s %d %v %v %v %v %v %v}",
 		domria.Alias,
 		domria.Housing,
 		domria.Spec,
@@ -26,6 +27,8 @@ func (domria *DomriaMiner) String() string {
 		domria.Fetcher,
 		domria.Sanitizer,
 		domria.Geocoder,
+		domria.Gauger,
 		domria.Validator,
+		domria.Storer,
 	)
 }

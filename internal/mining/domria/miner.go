@@ -5,7 +5,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"time"
 )
 
@@ -16,26 +15,28 @@ func NewMiner(
 	logger log.FieldLogger,
 ) *Miner {
 	return &Miner{
-		config.Housing,
+		string(config.Housing),
 		config.Spec,
 		config.Port,
 		NewFetcher(config.Fetcher, gatherer),
 		NewSanitizer(config.Sanitizer, gatherer),
 		NewGeocoder(config.Geocoder, gatherer, logger),
+		NewGauger(config.Gauger, gatherer, logger),
 		NewValidator(config.Validator, gatherer),
-		NewStorer(db, gatherer, logger),
+		NewStorer(config.Storer, db, gatherer, logger),
 		gatherer,
 		logger,
 	}
 }
 
 type Miner struct {
-	housing   misc.Housing
+	housing   string
 	spec      string
 	port      int
 	fetcher   *Fetcher
 	sanitizer *Sanitizer
 	geocoder  *Geocoder
+	gauger    *Gauger
 	validator *Validator
 	storer    *Storer
 	gatherer  *metrics.Gatherer
@@ -49,6 +50,7 @@ func (miner *Miner) Run() {
 	} else {
 		flats = miner.sanitizer.SanitizeFlats(flats)
 		flats = miner.geocoder.GeocodeFlats(flats)
+		flats = miner.gauger.GaugeFlats(flats)
 		flats = miner.validator.ValidateFlats(flats)
 		miner.storer.StoreFlats(flats)
 	}

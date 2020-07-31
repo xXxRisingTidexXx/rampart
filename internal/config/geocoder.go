@@ -10,16 +10,14 @@ type Geocoder struct {
 	Headers         map[string]string `yaml:"headers"`
 	StatelessCities *misc.Set         `yaml:"statelessCities"`
 	SearchURL       string            `yaml:"searchURL"`
-	SRID            int               `yaml:"srid"`
 }
 
 func (geocoder *Geocoder) String() string {
 	return fmt.Sprintf(
-		"{%s %v %v %s %d}",
+		"{%s %v %v %s}",
 		geocoder.Timeout,
 		geocoder.Headers,
 		geocoder.StatelessCities,
 		geocoder.SearchURL,
-		geocoder.SRID,
 	)
 }

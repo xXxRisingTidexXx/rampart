@@ -14,4 +14,4 @@ COPY internal internal
 COPY config config
 COPY secrets secrets
 
-RUN go get -t ./...
+RUN go get -t ./... && go get -u -t github.com/kyoh86/richgo

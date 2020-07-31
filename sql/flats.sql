@@ -42,3 +42,10 @@ select city, district, count(*) as flat_count
 from flats
 group by city, district
 order by flat_count desc;
+
+-- Explore cities with subway stations.
+select city, count(*) as flat_count
+from flats
+where subway_station_distance != -1
+group by city
+order by flat_count desc;

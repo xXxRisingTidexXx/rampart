@@ -3,17 +3,25 @@ package domria
 import (
 	"database/sql"
 	"fmt"
+	"github.com/paulmach/orb/encoding/wkb"
 	log "github.com/sirupsen/logrus"
-	"github.com/twpayne/go-geom/encoding/ewkb"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"time"
 )
 
-func NewStorer(db *sql.DB, gatherer *metrics.Gatherer, logger log.FieldLogger) *Storer {
-	return &Storer{db, gatherer, logger}
+func NewStorer(
+	config *config.Storer,
+	db *sql.DB,
+	gatherer *metrics.Gatherer,
+	logger log.FieldLogger,
+) *Storer {
+	return &Storer{config.SRID, db, gatherer, logger}
 }
 
 type Storer struct {
+	srid     int
 	db       *sql.DB
 	gatherer *metrics.Gatherer
 	logger   log.FieldLogger
@@ -22,7 +30,7 @@ type Storer struct {
 func (storer *Storer) StoreFlats(flats []*Flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {
-			storer.logger.WithField("origin_url", flat.OriginURL).Error(err)
+			storer.logger.WithField(misc.FieldOriginURL, flat.OriginURL).Error(err)
 			storer.gatherer.GatherFailedStoring()
 		}
 	}
@@ -104,13 +112,14 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 		    total_floor = $9,
 		    housing = $10,
 		    complex = $11,
-		    point = $12,
-		    state = $13,
-		    city = $14,
-		    district = $15,
-		    street = $16,
-		    house_number = $17
-		where origin_url = $18`,
+		    point = st_geomfromwkb($12, $13),
+		    subway_station_distance = $14,
+		    state = $15,
+		    city = $16,
+		    district = $17,
+		    street = $18,
+		    house_number = $19
+		where origin_url = $20`,
 		flat.ImageURL,
 		flat.UpdateTime,
 		flat.Price,
@@ -120,9 +129,11 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 		flat.RoomNumber,
 		flat.Floor,
 		flat.TotalFloor,
-		flat.Housing.String(),
+		flat.Housing,
 		flat.Complex,
-		&ewkb.Point{Point: flat.Point},
+		wkb.Value(flat.Point),
+		storer.srid,
+		flat.SubwayStationDistance,
 		flat.State,
 		flat.City,
 		flat.District,
@@ -141,13 +152,13 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 		`insert into flats
         (
          	origin_url, image_url, update_time, parsing_time, price, total_area, living_area, kitchen_area,
-            room_number, floor, total_floor, housing, complex, point, state, city, district, street,
-            house_number
+            room_number, floor, total_floor, housing, complex, point, subway_station_distance, state, city,
+            district, street, house_number
         )
         values 
 		(
-		    $1, $2, $3, now() at time zone 'utc', $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
-		    $17, $18
+		    $1, $2, $3, now() at time zone 'utc', $4, $5, $6, $7, $8, $9, $10, $11, $12, 
+		    st_geomfromwkb($13, $14), $15, $16, $17, $18, $19, $20
 		)`,
 		flat.OriginURL,
 		flat.ImageURL,
@@ -159,9 +170,11 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 		flat.RoomNumber,
 		flat.Floor,
 		flat.TotalFloor,
-		flat.Housing.String(),
+		flat.Housing,
 		flat.Complex,
-		&ewkb.Point{Point: flat.Point},
+		wkb.Value(flat.Point),
+		storer.srid,
+		flat.SubwayStationDistance,
 		flat.State,
 		flat.City,
 		flat.District,

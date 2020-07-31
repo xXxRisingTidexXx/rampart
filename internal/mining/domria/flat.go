@@ -2,35 +2,35 @@ package domria
 
 import (
 	"fmt"
-	"github.com/twpayne/go-geom"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"github.com/paulmach/orb"
 	"time"
 )
 
 type Flat struct {
-	OriginURL   string
-	ImageURL    string
-	UpdateTime  time.Time
-	Price       float64
-	TotalArea   float64
-	LivingArea  float64
-	KitchenArea float64
-	RoomNumber  int
-	Floor       int
-	TotalFloor  int
-	Housing     misc.Housing
-	Complex     string
-	Point       *geom.Point
-	State       string
-	City        string
-	District    string
-	Street      string
-	HouseNumber string
+	OriginURL             string
+	ImageURL              string
+	UpdateTime            time.Time
+	Price                 float64
+	TotalArea             float64
+	LivingArea            float64
+	KitchenArea           float64
+	RoomNumber            int
+	Floor                 int
+	TotalFloor            int
+	Housing               string
+	Complex               string
+	Point                 orb.Point
+	SubwayStationDistance float64
+	State                 string
+	City                  string
+	District              string
+	Street                string
+	HouseNumber           string
 }
 
 func (flat *Flat) String() string {
 	return fmt.Sprintf(
-		"{%s %s %s %.2f %.1f %.1f %.1f %d %d %d %s %s %v %s %s %s %s %s}",
+		"{%s %s %s %.2f %.1f %.1f %.1f %d %d %d %s %s %v %.5f %s %s %s %s %s}",
 		flat.OriginURL,
 		flat.ImageURL,
 		flat.UpdateTime,
@@ -44,6 +44,7 @@ func (flat *Flat) String() string {
 		flat.Housing,
 		flat.Complex,
 		flat.Point,
+		flat.SubwayStationDistance,
 		flat.State,
 		flat.City,
 		flat.District,

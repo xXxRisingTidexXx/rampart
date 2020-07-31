@@ -3,24 +3,26 @@ package domria
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/twpayne/go-geom"
+	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"io/ioutil"
 	"net/http"
 	"time"
 )
 
 func NewFetcher(config *config.Fetcher, gatherer *metrics.Gatherer) *Fetcher {
+	flags := make(map[string]string, len(config.Flags))
+	for key, value := range config.Flags {
+		flags[string(key)] = value
+	}
 	return &Fetcher{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		0,
 		config.Portion,
-		config.Flags,
+		flags,
 		config.Headers,
 		config.SearchURL,
-		config.SRID,
 		gatherer,
 	}
 }
@@ -29,14 +31,13 @@ type Fetcher struct {
 	client    *http.Client
 	page      int
 	portion   int
-	flags     map[misc.Housing]string
+	flags     map[string]string
 	headers   map[string]string
 	searchURL string
-	srid      int
 	gatherer  *metrics.Gatherer
 }
 
-func (fetcher *Fetcher) FetchFlats(housing misc.Housing) ([]*Flat, error) {
+func (fetcher *Fetcher) FetchFlats(housing string) ([]*Flat, error) {
 	flag, ok := fetcher.flags[housing]
 	if !ok {
 		return nil, fmt.Errorf("domria: fetcher doesn't accept %v housing", housing)
@@ -90,7 +91,7 @@ func (fetcher *Fetcher) getSearch(flag string) ([]byte, error) {
 	return bytes, nil
 }
 
-func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing misc.Housing) ([]*Flat, error) {
+func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing string) ([]*Flat, error) {
 	var search search
 	if err := json.Unmarshal(bytes, &search); err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the search, %v", err)
@@ -100,13 +101,6 @@ func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing misc.Housing) ([]*
 		price := 0.0
 		if item.PriceArr != nil {
 			price = float64(item.PriceArr.USD)
-		}
-		var point *geom.Point
-		if item.Longitude != 0 || item.Latitude != 0 {
-			point = geom.NewPointFlat(
-				geom.XY,
-				[]float64{float64(item.Longitude), float64(item.Latitude)},
-			).SetSRID(fetcher.srid)
 		}
 		street := item.StreetNameUK
 		if street == "" && item.StreetName != "" {
@@ -125,7 +119,8 @@ func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing misc.Housing) ([]*
 			item.FloorsCount,
 			housing,
 			item.UserNewbuildNameUK,
-			point,
+			orb.Point{float64(item.Longitude), float64(item.Latitude)},
+			0,
 			item.StateNameUK,
 			item.CityNameUK,
 			item.DistrictNameUK,
