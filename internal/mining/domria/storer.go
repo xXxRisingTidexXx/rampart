@@ -113,12 +113,13 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 		    housing = $10,
 		    complex = $11,
 		    point = st_geomfromwkb($12, $13),
-		    state = $14,
-		    city = $15,
-		    district = $16,
-		    street = $17,
-		    house_number = $18
-		where origin_url = $19`,
+		    subway_station_distance = $14,
+		    state = $15,
+		    city = $16,
+		    district = $17,
+		    street = $18,
+		    house_number = $19
+		where origin_url = $20`,
 		flat.ImageURL,
 		flat.UpdateTime,
 		flat.Price,
@@ -132,6 +133,7 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 		flat.Complex,
 		wkb.Value(flat.Point),
 		storer.srid,
+		flat.SubwayStationDistance,
 		flat.State,
 		flat.City,
 		flat.District,
@@ -150,13 +152,13 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 		`insert into flats
         (
          	origin_url, image_url, update_time, parsing_time, price, total_area, living_area, kitchen_area,
-            room_number, floor, total_floor, housing, complex, point, state, city, district, street,
-            house_number
+            room_number, floor, total_floor, housing, complex, point, subway_station_distance, state, city,
+            district, street, house_number
         )
         values 
 		(
 		    $1, $2, $3, now() at time zone 'utc', $4, $5, $6, $7, $8, $9, $10, $11, $12, 
-		    st_geomfromwkb($13, $14), $15, $16, $17, $18, $19
+		    st_geomfromwkb($13, $14), $15, $16, $17, $18, $19, $20
 		)`,
 		flat.OriginURL,
 		flat.ImageURL,
@@ -172,6 +174,7 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 		flat.Complex,
 		wkb.Value(flat.Point),
 		storer.srid,
+		flat.SubwayStationDistance,
 		flat.State,
 		flat.City,
 		flat.District,
