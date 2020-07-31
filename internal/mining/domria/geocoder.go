@@ -142,6 +142,7 @@ func (geocoder *Geocoder) locateFlat(flat *Flat, locations []*location) *Flat {
 		flat.Housing,
 		flat.Complex,
 		orb.Point{float64(locations[0].Lon), float64(locations[0].Lat)},
+		0,
 		flat.State,
 		flat.City,
 		flat.District,

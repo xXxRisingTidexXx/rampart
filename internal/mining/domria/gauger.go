@@ -40,10 +40,27 @@ type Gauger struct {
 func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 	newFlats := make([]*Flat, len(flats))
 	for i, flat := range flats {
-		if x := gauger.gaugeSubwayStationDistance(flat); x != gauger.noDistance {
-			gauger.logger.Info(flat.OriginURL, x)
+		newFlats[i] = &Flat{
+			flat.OriginURL,
+			flat.ImageURL,
+			flat.UpdateTime,
+			flat.Price,
+			flat.TotalArea,
+			flat.LivingArea,
+			flat.KitchenArea,
+			flat.RoomNumber,
+			flat.Floor,
+			flat.TotalFloor,
+			flat.Housing,
+			flat.Complex,
+			flat.Point,
+			gauger.gaugeSubwayStationDistance(flat),
+			flat.State,
+			flat.City,
+			flat.District,
+			flat.Street,
+			flat.HouseNumber,
 		}
-		newFlats[i] = flat
 	}
 	return newFlats
 }

@@ -117,6 +117,7 @@ func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing misc.Housing) ([]*
 			housing,
 			item.UserNewbuildNameUK,
 			orb.Point{float64(item.Longitude), float64(item.Latitude)},
+			0,
 			item.StateNameUK,
 			item.CityNameUK,
 			item.DistrictNameUK,
