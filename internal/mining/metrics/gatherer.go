@@ -3,7 +3,6 @@ package metrics
 import (
 	"database/sql"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -171,7 +170,6 @@ func (gatherer *Gatherer) Flush() error {
 	if gatherer.subwayGaugingDurationCount != 0 {
 		subwayGaugingDuration = gatherer.subwayGaugingDurationSum / gatherer.subwayGaugingDurationCount
 	}
-	log.Debug(subwayGaugingDuration)
 	readingDuration := 0.0
 	if gatherer.readingDurationCount != 0 {
 		readingDuration = gatherer.readingDurationSum / gatherer.readingDurationCount
@@ -191,14 +189,16 @@ func (gatherer *Gatherer) Flush() error {
     	    district_sanitization_number, swap_sanitization_number, street_sanitization_number,
     	    house_number_sanitization_number, located_geocoding_number, unlocated_geocoding_number,
     	    failed_geocoding_number, inconclusive_geocoding_number, successful_geocoding_number,
-    	    approved_validation_number, denied_validation_number, created_storing_number,
-    	    updated_storing_number, unaltered_storing_number, failed_storing_number, fetching_duration,
-    	    geocoding_duration, reading_duration, creation_duration, update_duration, total_duration
+    	    failed_subway_gauging_number, inconclusive_subway_gauging_number,
+    	    successful_subway_gauging_number, approved_validation_number, denied_validation_number,
+    	    created_storing_number, updated_storing_number, unaltered_storing_number, failed_storing_number,
+    	    fetching_duration, geocoding_duration, subway_gauging_duration, reading_duration,
+    	    creation_duration, update_duration, total_duration
     	)
     	values
     	(
     		now() at time zone 'utc', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
-    	    $17, $18, $19, $20, $21, $22, $23, $24
+    	    $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28
     	)`,
 		gatherer.miner,
 		gatherer.stateSanitizationNumber,
@@ -212,6 +212,9 @@ func (gatherer *Gatherer) Flush() error {
 		gatherer.failedGeocodingNumber,
 		gatherer.inconclusiveGeocodingNumber,
 		gatherer.successfulGeocodingNumber,
+		gatherer.failedSubwayGaugingNumber,
+		gatherer.inconclusiveSubwayGaugingNumber,
+		gatherer.successfulSubwayGaugingNumber,
 		gatherer.approvedValidationNumber,
 		gatherer.deniedValidationNumber,
 		gatherer.createdStoringNumber,
@@ -220,6 +223,7 @@ func (gatherer *Gatherer) Flush() error {
 		gatherer.failedStoringNumber,
 		gatherer.fetchingDuration,
 		geocodingDuration,
+		subwayGaugingDuration,
 		readingDuration,
 		creationDuration,
 		updateDuration,
