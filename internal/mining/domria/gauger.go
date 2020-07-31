@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"io/ioutil"
 	"math"
 	"net/http"
@@ -73,7 +74,7 @@ func (gauger *Gauger) gaugeSubwayStationDistance(flat *Flat) float64 {
 		flat.Point.Lon(),
 	)
 	if err != nil {
-		gauger.logger.WithField("origin_url", flat.OriginURL).Error(err)
+		gauger.logger.WithField(misc.FieldOriginURL, flat.OriginURL).Error(err)
 		return gauger.noDistance
 	}
 	if len(osm.Nodes) == 0 {

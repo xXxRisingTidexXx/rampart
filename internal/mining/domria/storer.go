@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"time"
 )
 
@@ -29,7 +30,7 @@ type Storer struct {
 func (storer *Storer) StoreFlats(flats []*Flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {
-			storer.logger.WithField("origin_url", flat.OriginURL).Error(err)
+			storer.logger.WithField(misc.FieldOriginURL, flat.OriginURL).Error(err)
 			storer.gatherer.GatherFailedStoring()
 		}
 	}
