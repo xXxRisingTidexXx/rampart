@@ -13,6 +13,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/secrets"
 )
 
+// TODO: add field "source" to flat to make easier debugging.
 func main() {
 	isOnce := flag.Bool("once", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
