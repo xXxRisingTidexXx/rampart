@@ -20,25 +20,27 @@ func NewSanitizer(config *config.Sanitizer, gatherer *metrics.Gatherer) *Sanitiz
 		config.DistrictSuffix,
 		strings.NewReplacer(config.StreetReplacements...),
 		strings.NewReplacer(config.HouseNumberReplacements...),
+		config.HouseNumberMaxLength,
 		",",
 		gatherer,
 	}
 }
 
 type Sanitizer struct {
-	originURLPrefix     string
-	imageURLPrefix      string
-	stateDictionary     map[string]string
-	stateSuffix         string
-	cityDictionary      map[string]string
-	districtDictionary  map[string]string
-	districtCitySwaps   *misc.Set
-	districtEnding      string
-	districtSuffix      string
-	streetReplacer      *strings.Replacer
-	houseNumberReplacer *strings.Replacer
-	comma               string
-	gatherer            *metrics.Gatherer
+	originURLPrefix      string
+	imageURLPrefix       string
+	stateDictionary      map[string]string
+	stateSuffix          string
+	cityDictionary       map[string]string
+	districtDictionary   map[string]string
+	districtCitySwaps    *misc.Set
+	districtEnding       string
+	districtSuffix       string
+	streetReplacer       *strings.Replacer
+	houseNumberReplacer  *strings.Replacer
+	houseNumberMaxLength int
+	comma                string
+	gatherer             *metrics.Gatherer
 }
 
 func (sanitizer *Sanitizer) SanitizeFlats(flats []*Flat) []*Flat {
@@ -77,7 +79,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 		sanitizer.gatherer.GatherDistrictSanitization()
 	}
 	if sanitizer.districtCitySwaps.Contains(city) {
-		city, district = district, city
+		city, district = district, ""
 		sanitizer.gatherer.GatherSwapSanitization()
 	}
 	if strings.HasSuffix(district, sanitizer.districtEnding) {
@@ -92,6 +94,9 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 			houseNumber = extraNumber
 			sanitizer.gatherer.GatherHouseNumberSanitization()
 		}
+	}
+	if len(houseNumber) > sanitizer.houseNumberMaxLength {
+		houseNumber = houseNumber[:sanitizer.houseNumberMaxLength]
 	}
 	return &Flat{
 		originURL,
