@@ -35,6 +35,9 @@ mining:
           Киевская: Київська
           Житомирская: Житомирська
           Запорожская: Запорізька
+          О��еська: Одеська
+          Київс��ка: Київська
+          Киї��ська: Київська
         stateSuffix: ' область'
         cityDictionary:
           Киє��о-Святошинський: Києво-Святошинський
@@ -47,6 +50,8 @@ mining:
           Терно��іль: Тернопіль
           Хар��ів: Харків
           Ирпень: Ірпінь
+          Дніпропетровськ: Дніпро
+          Од��са: Одеса
         districtDictionary:
           Петрівське (нов. Святопетрівське): Святопетрівське
           Вознесенівський (Орджонікідзевський): Вознесенівський
@@ -125,6 +130,7 @@ mining:
           - ''
           - ' '
           - ''
+        houseNumberMaxLength: 20
       geocoder:
         timeout: 10s
         headers:
@@ -137,7 +143,7 @@ mining:
         headers:
           <<: *headers
         interpreterURL: https://overpass.kumi.systems/api/interpreter?data=%s
-        searchRadius: 3000
+        searchRadius: 1500
       validator:
         minPrice: 1
         minTotalArea: 12
