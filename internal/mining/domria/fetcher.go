@@ -40,7 +40,7 @@ type Fetcher struct {
 func (fetcher *Fetcher) FetchFlats(housing string) ([]*Flat, error) {
 	flag, ok := fetcher.flags[housing]
 	if !ok {
-		return nil, fmt.Errorf("domria: fetcher doesn't accept %v housing", housing)
+		return nil, fmt.Errorf("domria: fetcher doesn't accept %s housing", housing)
 	}
 	start := time.Now()
 	bytes, err := fetcher.getSearch(flag)

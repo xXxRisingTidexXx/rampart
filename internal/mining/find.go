@@ -23,5 +23,5 @@ func FindMiner(
 	if miner, ok := miners[alias]; ok {
 		return miner, nil
 	}
-	return nil, fmt.Errorf("mining: failed to find the miner with the alias %s", alias)
+	return nil, fmt.Errorf("mining: failed to find the miner")
 }

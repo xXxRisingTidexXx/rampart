@@ -93,7 +93,7 @@ func (storer *Storer) readFlat(tx *sql.Tx, flat *Flat) (*origin, error) {
 	case nil:
 		return &origin, nil
 	default:
-		return nil, fmt.Errorf("domria: storer failed to read flat %s, %v", flat.OriginURL, err)
+		return nil, fmt.Errorf("domria: storer failed to read the flat, %v", err)
 	}
 }
 
@@ -142,7 +142,7 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 		flat.OriginURL,
 	)
 	if err != nil {
-		return fmt.Errorf("domria: storer failed to update flat %s, %v", flat.OriginURL, err)
+		return fmt.Errorf("domria: storer failed to update the flat, %v", err)
 	}
 	return nil
 }
@@ -182,7 +182,7 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 		flat.HouseNumber,
 	)
 	if err != nil {
-		return fmt.Errorf("domria: storer failed to create flat %s, %v", flat.OriginURL, err)
+		return fmt.Errorf("domria: storer failed to create the flat, %v", err)
 	}
 	return nil
 }
