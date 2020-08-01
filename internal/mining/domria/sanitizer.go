@@ -63,7 +63,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 	state := strings.TrimSpace(flat.State)
 	if value, ok := sanitizer.stateDictionary[state]; ok {
 		state = value
-		sanitizer.gatherer.GatherStateSanitization()
+		sanitizer.gatherer.GatherStateSanitation()
 	}
 	if state != "" {
 		state += sanitizer.stateSuffix
@@ -71,16 +71,16 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 	city := strings.TrimSpace(flat.City)
 	if value, ok := sanitizer.cityDictionary[city]; ok {
 		city = value
-		sanitizer.gatherer.GatherCitySanitization()
+		sanitizer.gatherer.GatherCitySanitation()
 	}
 	district := strings.TrimSpace(flat.District)
 	if value, ok := sanitizer.districtDictionary[district]; ok {
 		district = value
-		sanitizer.gatherer.GatherDistrictSanitization()
+		sanitizer.gatherer.GatherDistrictSanitation()
 	}
 	if sanitizer.districtCitySwaps.Contains(city) {
 		city, district = district, ""
-		sanitizer.gatherer.GatherSwapSanitization()
+		sanitizer.gatherer.GatherSwapSanitation()
 	}
 	if strings.HasSuffix(district, sanitizer.districtEnding) {
 		district += sanitizer.districtSuffix
@@ -88,11 +88,11 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 	street, houseNumber := flat.Street, sanitizer.sanitizeHouseNumber(flat.HouseNumber)
 	if index := strings.Index(flat.Street, sanitizer.comma); index != -1 {
 		street = flat.Street[:index]
-		sanitizer.gatherer.GatherStreetSanitization()
+		sanitizer.gatherer.GatherStreetSanitation()
 		extraNumber := sanitizer.sanitizeHouseNumber(flat.Street[index+1:])
 		if houseNumber == "" && extraNumber != "" && extraNumber[0] >= '0' && extraNumber[0] <= '9' {
 			houseNumber = extraNumber
-			sanitizer.gatherer.GatherHouseNumberSanitization()
+			sanitizer.gatherer.GatherHouseNumberSanitation()
 		}
 	}
 	if len(houseNumber) > sanitizer.houseNumberMaxLength {

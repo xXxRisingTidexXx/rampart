@@ -51,7 +51,7 @@ group by city
 order by flat_count desc;
 
 -- View flats near subway from cities without subway
-select origin_url, st_asewkt(point)
+select origin_url, st_astext(point) as point
 from flats
 where city not in ('Київ', 'Харків', 'Дніпро')
   and subway_station_distance != -1;
