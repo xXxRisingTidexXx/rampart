@@ -61,6 +61,7 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 			flat.District,
 			flat.Street,
 			flat.HouseNumber,
+			flat.Source,
 		}
 	}
 	return newFlats
@@ -77,7 +78,9 @@ func (gauger *Gauger) gaugeSubwayStationDistance(flat *Flat) float64 {
 	gauger.gatherer.GatherSubwayGaugingDuration(start)
 	if err != nil {
 		gauger.gatherer.GatherFailedSubwayGauging()
-		gauger.logger.WithField(misc.FieldOriginURL, flat.OriginURL).Error(err)
+		gauger.logger.WithFields(
+			log.Fields{misc.FieldOriginURL: flat.OriginURL, misc.FieldSource: flat.Source},
+		).Error(err)
 		return gauger.noDistance
 	}
 	if len(osm.Nodes) == 0 {
@@ -120,7 +123,7 @@ func (gauger *Gauger) query(query string, params ...interface{}) (*gosm.OSM, err
 	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to close the response body, %v", err)
 	}
-	var osm gosm.OSM
+	osm := gosm.OSM{}
 	if err := xml.Unmarshal(bytes, &osm); err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to unmarshal the osm, %v", err)
 	}

@@ -17,11 +17,12 @@ type Sanitizer struct {
 	DistrictSuffix          string            `yaml:"districtSuffix"`
 	StreetReplacements      []string          `yaml:"streetReplacements"`
 	HouseNumberReplacements []string          `yaml:"houseNumberReplacements"`
+	HouseNumberMaxLength    int               `yaml:"houseNumberMaxLength"`
 }
 
 func (sanitizer *Sanitizer) String() string {
 	return fmt.Sprintf(
-		"{%s %s %v %s %v %v %v %s %s %v %v}",
+		"{%s %s %v %s %v %v %v %s %s %v %v %d}",
 		sanitizer.OriginURLPrefix,
 		sanitizer.ImageURLPrefix,
 		sanitizer.StateDictionary,
@@ -33,5 +34,6 @@ func (sanitizer *Sanitizer) String() string {
 		sanitizer.DistrictSuffix,
 		sanitizer.StreetReplacements,
 		sanitizer.HouseNumberReplacements,
+		sanitizer.HouseNumberMaxLength,
 	)
 }

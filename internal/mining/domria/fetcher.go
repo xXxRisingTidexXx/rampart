@@ -40,7 +40,7 @@ type Fetcher struct {
 func (fetcher *Fetcher) FetchFlats(housing string) ([]*Flat, error) {
 	flag, ok := fetcher.flags[housing]
 	if !ok {
-		return nil, fmt.Errorf("domria: fetcher doesn't accept %v housing", housing)
+		return nil, fmt.Errorf("domria: fetcher doesn't accept %s housing", housing)
 	}
 	start := time.Now()
 	bytes, err := fetcher.getSearch(flag)
@@ -91,8 +91,9 @@ func (fetcher *Fetcher) getSearch(flag string) ([]byte, error) {
 	return bytes, nil
 }
 
+// TODO: move unmarshalling to the upper function in order to concentrate error handling.
 func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing string) ([]*Flat, error) {
-	var search search
+	search := search{}
 	if err := json.Unmarshal(bytes, &search); err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the search, %v", err)
 	}
@@ -126,6 +127,7 @@ func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing string) ([]*Flat, 
 			item.DistrictNameUK,
 			street,
 			item.BuildingNumberStr,
+			item.Source,
 		}
 	}
 	return flats, nil

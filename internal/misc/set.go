@@ -16,7 +16,7 @@ func (set *Set) Contains(key string) bool {
 }
 
 func (set *Set) UnmarshalYAML(node *yaml.Node) error {
-	var elements []string
+	elements := make([]string, 0)
 	if err := node.Decode(&elements); err != nil {
 		return err
 	}

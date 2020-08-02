@@ -1,34 +1,64 @@
 package domria
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
 type item struct {
-	BeautifulURL        string     `json:"beautiful_url"`
-	MainPhoto           string     `json:"main_photo"`
-	UpdatedAt           moment     `json:"updated_at"`
-	PriceArr            *prices    `json:"priceArr"`
-	TotalSquareMeters   float64    `json:"total_square_meters"`
-	LivingSquareMeters  float64    `json:"living_square_meters"`
-	KitchenSquareMeters float64    `json:"kitchen_square_meters"`
-	RoomsCount          int        `json:"rooms_count"`
-	Floor               int        `json:"floor"`
-	FloorsCount         int        `json:"floors_count"`
-	UserNewbuildNameUK  string     `json:"user_newbuild_name_uk"`
-	Longitude           coordinate `json:"longitude"`
-	Latitude            coordinate `json:"latitude"`
-	StateNameUK         string     `json:"state_name_uk"`
-	CityNameUK          string     `json:"city_name_uk"`
-	DistrictNameUK      string     `json:"district_name_uk"`
-	StreetNameUK        string     `json:"street_name_uk"`
-	StreetName          string     `json:"street_name"`
-	BuildingNumberStr   string     `json:"building_number_str"`
+	BeautifulURL        string
+	MainPhoto           string
+	UpdatedAt           moment
+	PriceArr            *prices
+	TotalSquareMeters   float64
+	LivingSquareMeters  float64
+	KitchenSquareMeters float64
+	RoomsCount          int
+	Floor               int
+	FloorsCount         int
+	UserNewbuildNameUK  string
+	Longitude           coordinate
+	Latitude            coordinate
+	StateNameUK         string
+	CityNameUK          string
+	DistrictNameUK      string
+	StreetNameUK        string
+	StreetName          string
+	BuildingNumberStr   string
+	Source              string
+}
+
+func (item *item) UnmarshalJSON(bytes []byte) error {
+	sourceless := sourcelessItem{}
+	if err := json.Unmarshal(bytes, &sourceless); err != nil {
+		return err
+	}
+	item.BeautifulURL = sourceless.BeautifulURL
+	item.MainPhoto = sourceless.MainPhoto
+	item.UpdatedAt = sourceless.UpdatedAt
+	item.PriceArr = sourceless.PriceArr
+	item.TotalSquareMeters = sourceless.TotalSquareMeters
+	item.LivingSquareMeters = sourceless.LivingSquareMeters
+	item.KitchenSquareMeters = sourceless.KitchenSquareMeters
+	item.RoomsCount = sourceless.RoomsCount
+	item.Floor = sourceless.Floor
+	item.FloorsCount = sourceless.FloorsCount
+	item.UserNewbuildNameUK = sourceless.UserNewbuildNameUK
+	item.Longitude = sourceless.Longitude
+	item.Latitude = sourceless.Latitude
+	item.StateNameUK = sourceless.StateNameUK
+	item.CityNameUK = sourceless.CityNameUK
+	item.DistrictNameUK = sourceless.DistrictNameUK
+	item.StreetNameUK = sourceless.StreetNameUK
+	item.StreetName = sourceless.StreetName
+	item.BuildingNumberStr = sourceless.BuildingNumberStr
+	item.Source = string(bytes)
+	return nil
 }
 
 func (item *item) String() string {
 	return fmt.Sprintf(
-		"{%s %s %s %v %.1f %.1f %.1f %d %d %d %s %.6f %.6f %s %s %s %s %s %s}",
+		"{%s %s %s %v %.1f %.1f %.1f %d %d %d %s %.6f %.6f %s %s %s %s %s %s %s}",
 		item.BeautifulURL,
 		item.MainPhoto,
 		item.UpdatedAt,
@@ -48,5 +78,6 @@ func (item *item) String() string {
 		item.StreetNameUK,
 		item.StreetName,
 		item.BuildingNumberStr,
+		item.Source,
 	)
 }

@@ -30,7 +30,9 @@ type Storer struct {
 func (storer *Storer) StoreFlats(flats []*Flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {
-			storer.logger.WithField(misc.FieldOriginURL, flat.OriginURL).Error(err)
+			storer.logger.WithFields(
+				log.Fields{misc.FieldOriginURL: flat.OriginURL, misc.FieldSource: flat.Source},
+			).Error(err)
 			storer.gatherer.GatherFailedStoring()
 		}
 	}
@@ -86,14 +88,14 @@ func (storer *Storer) storeFlat(flat *Flat) error {
 
 func (storer *Storer) readFlat(tx *sql.Tx, flat *Flat) (*origin, error) {
 	row := tx.QueryRow(`select update_time from flats where origin_url = $1`, flat.OriginURL)
-	var origin origin
+	origin := origin{}
 	switch err := row.Scan(&origin.updateTime); err {
 	case sql.ErrNoRows:
 		return nil, nil
 	case nil:
 		return &origin, nil
 	default:
-		return nil, fmt.Errorf("domria: storer failed to read flat %s, %v", flat.OriginURL, err)
+		return nil, fmt.Errorf("domria: storer failed to read the flat, %v", err)
 	}
 }
 
@@ -142,7 +144,7 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 		flat.OriginURL,
 	)
 	if err != nil {
-		return fmt.Errorf("domria: storer failed to update flat %s, %v", flat.OriginURL, err)
+		return fmt.Errorf("domria: storer failed to update the flat, %v", err)
 	}
 	return nil
 }
@@ -182,7 +184,7 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 		flat.HouseNumber,
 	)
 	if err != nil {
-		return fmt.Errorf("domria: storer failed to create flat %s, %v", flat.OriginURL, err)
+		return fmt.Errorf("domria: storer failed to create the flat, %v", err)
 	}
 	return nil
 }

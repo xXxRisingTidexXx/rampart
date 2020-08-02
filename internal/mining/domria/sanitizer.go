@@ -20,25 +20,27 @@ func NewSanitizer(config *config.Sanitizer, gatherer *metrics.Gatherer) *Sanitiz
 		config.DistrictSuffix,
 		strings.NewReplacer(config.StreetReplacements...),
 		strings.NewReplacer(config.HouseNumberReplacements...),
+		config.HouseNumberMaxLength,
 		",",
 		gatherer,
 	}
 }
 
 type Sanitizer struct {
-	originURLPrefix     string
-	imageURLPrefix      string
-	stateDictionary     map[string]string
-	stateSuffix         string
-	cityDictionary      map[string]string
-	districtDictionary  map[string]string
-	districtCitySwaps   *misc.Set
-	districtEnding      string
-	districtSuffix      string
-	streetReplacer      *strings.Replacer
-	houseNumberReplacer *strings.Replacer
-	comma               string
-	gatherer            *metrics.Gatherer
+	originURLPrefix      string
+	imageURLPrefix       string
+	stateDictionary      map[string]string
+	stateSuffix          string
+	cityDictionary       map[string]string
+	districtDictionary   map[string]string
+	districtCitySwaps    *misc.Set
+	districtEnding       string
+	districtSuffix       string
+	streetReplacer       *strings.Replacer
+	houseNumberReplacer  *strings.Replacer
+	houseNumberMaxLength int
+	comma                string
+	gatherer             *metrics.Gatherer
 }
 
 func (sanitizer *Sanitizer) SanitizeFlats(flats []*Flat) []*Flat {
@@ -61,7 +63,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 	state := strings.TrimSpace(flat.State)
 	if value, ok := sanitizer.stateDictionary[state]; ok {
 		state = value
-		sanitizer.gatherer.GatherStateSanitization()
+		sanitizer.gatherer.GatherStateSanitation()
 	}
 	if state != "" {
 		state += sanitizer.stateSuffix
@@ -69,16 +71,16 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 	city := strings.TrimSpace(flat.City)
 	if value, ok := sanitizer.cityDictionary[city]; ok {
 		city = value
-		sanitizer.gatherer.GatherCitySanitization()
+		sanitizer.gatherer.GatherCitySanitation()
 	}
 	district := strings.TrimSpace(flat.District)
 	if value, ok := sanitizer.districtDictionary[district]; ok {
 		district = value
-		sanitizer.gatherer.GatherDistrictSanitization()
+		sanitizer.gatherer.GatherDistrictSanitation()
 	}
 	if sanitizer.districtCitySwaps.Contains(city) {
-		city, district = district, city
-		sanitizer.gatherer.GatherSwapSanitization()
+		city, district = district, ""
+		sanitizer.gatherer.GatherSwapSanitation()
 	}
 	if strings.HasSuffix(district, sanitizer.districtEnding) {
 		district += sanitizer.districtSuffix
@@ -86,12 +88,15 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 	street, houseNumber := flat.Street, sanitizer.sanitizeHouseNumber(flat.HouseNumber)
 	if index := strings.Index(flat.Street, sanitizer.comma); index != -1 {
 		street = flat.Street[:index]
-		sanitizer.gatherer.GatherStreetSanitization()
+		sanitizer.gatherer.GatherStreetSanitation()
 		extraNumber := sanitizer.sanitizeHouseNumber(flat.Street[index+1:])
 		if houseNumber == "" && extraNumber != "" && extraNumber[0] >= '0' && extraNumber[0] <= '9' {
 			houseNumber = extraNumber
-			sanitizer.gatherer.GatherHouseNumberSanitization()
+			sanitizer.gatherer.GatherHouseNumberSanitation()
 		}
+	}
+	if runes := []rune(houseNumber); len(runes) > sanitizer.houseNumberMaxLength {
+		houseNumber = string(runes[:sanitizer.houseNumberMaxLength])
 	}
 	return &Flat{
 		originURL,
@@ -113,6 +118,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 		district,
 		strings.TrimSpace(sanitizer.streetReplacer.Replace(street)),
 		houseNumber,
+		flat.Source,
 	}
 }
 

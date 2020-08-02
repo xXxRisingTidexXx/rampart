@@ -12,12 +12,12 @@ func NewGatherer(miner string, db *sql.DB) *Gatherer {
 
 type Gatherer struct {
 	miner                           string
-	stateSanitizationNumber         int
-	citySanitizationNumber          int
-	districtSanitizationNumber      int
-	swapSanitizationNumber          int
-	streetSanitizationNumber        int
-	houseNumberSanitizationNumber   int
+	stateSanitationNumber           int
+	citySanitationNumber            int
+	districtSanitationNumber        int
+	swapSanitationNumber            int
+	streetSanitationNumber          int
+	houseNumberSanitationNumber     int
 	locatedGeocodingNumber          int
 	unlocatedGeocodingNumber        int
 	failedGeocodingNumber           int
@@ -47,28 +47,28 @@ type Gatherer struct {
 	db                              *sql.DB
 }
 
-func (gatherer *Gatherer) GatherStateSanitization() {
-	gatherer.stateSanitizationNumber++
+func (gatherer *Gatherer) GatherStateSanitation() {
+	gatherer.stateSanitationNumber++
 }
 
-func (gatherer *Gatherer) GatherCitySanitization() {
-	gatherer.citySanitizationNumber++
+func (gatherer *Gatherer) GatherCitySanitation() {
+	gatherer.citySanitationNumber++
 }
 
-func (gatherer *Gatherer) GatherDistrictSanitization() {
-	gatherer.districtSanitizationNumber++
+func (gatherer *Gatherer) GatherDistrictSanitation() {
+	gatherer.districtSanitationNumber++
 }
 
-func (gatherer *Gatherer) GatherSwapSanitization() {
-	gatherer.swapSanitizationNumber++
+func (gatherer *Gatherer) GatherSwapSanitation() {
+	gatherer.swapSanitationNumber++
 }
 
-func (gatherer *Gatherer) GatherStreetSanitization() {
-	gatherer.streetSanitizationNumber++
+func (gatherer *Gatherer) GatherStreetSanitation() {
+	gatherer.streetSanitationNumber++
 }
 
-func (gatherer *Gatherer) GatherHouseNumberSanitization() {
-	gatherer.houseNumberSanitizationNumber++
+func (gatherer *Gatherer) GatherHouseNumberSanitation() {
+	gatherer.houseNumberSanitationNumber++
 }
 
 func (gatherer *Gatherer) GatherLocatedGeocoding() {
@@ -185,9 +185,9 @@ func (gatherer *Gatherer) Flush() error {
 	_, err := gatherer.db.Exec(
 		`insert into runs
     	(
-    	    completion_time, miner, state_sanitization_number, city_sanitization_number,
-    	    district_sanitization_number, swap_sanitization_number, street_sanitization_number,
-    	    house_number_sanitization_number, located_geocoding_number, unlocated_geocoding_number,
+    	    completion_time, miner, state_sanitation_number, city_sanitation_number,
+    	    district_sanitation_number, swap_sanitation_number, street_sanitation_number,
+    	    house_number_sanitation_number, located_geocoding_number, unlocated_geocoding_number,
     	    failed_geocoding_number, inconclusive_geocoding_number, successful_geocoding_number,
     	    failed_subway_gauging_number, inconclusive_subway_gauging_number,
     	    successful_subway_gauging_number, approved_validation_number, denied_validation_number,
@@ -201,12 +201,12 @@ func (gatherer *Gatherer) Flush() error {
     	    $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28
     	)`,
 		gatherer.miner,
-		gatherer.stateSanitizationNumber,
-		gatherer.citySanitizationNumber,
-		gatherer.districtSanitizationNumber,
-		gatherer.swapSanitizationNumber,
-		gatherer.streetSanitizationNumber,
-		gatherer.houseNumberSanitizationNumber,
+		gatherer.stateSanitationNumber,
+		gatherer.citySanitationNumber,
+		gatherer.districtSanitationNumber,
+		gatherer.swapSanitationNumber,
+		gatherer.streetSanitationNumber,
+		gatherer.houseNumberSanitationNumber,
 		gatherer.locatedGeocodingNumber,
 		gatherer.unlocatedGeocodingNumber,
 		gatherer.failedGeocodingNumber,
@@ -229,12 +229,12 @@ func (gatherer *Gatherer) Flush() error {
 		updateDuration,
 		gatherer.totalDuration,
 	)
-	gatherer.stateSanitizationNumber = 0
-	gatherer.citySanitizationNumber = 0
-	gatherer.districtSanitizationNumber = 0
-	gatherer.swapSanitizationNumber = 0
-	gatherer.streetSanitizationNumber = 0
-	gatherer.houseNumberSanitizationNumber = 0
+	gatherer.stateSanitationNumber = 0
+	gatherer.citySanitationNumber = 0
+	gatherer.districtSanitationNumber = 0
+	gatherer.swapSanitationNumber = 0
+	gatherer.streetSanitationNumber = 0
+	gatherer.houseNumberSanitationNumber = 0
 	gatherer.locatedGeocodingNumber = 0
 	gatherer.unlocatedGeocodingNumber = 0
 	gatherer.failedGeocodingNumber = 0

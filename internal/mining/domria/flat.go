@@ -26,11 +26,12 @@ type Flat struct {
 	District              string
 	Street                string
 	HouseNumber           string
+	Source                string
 }
 
 func (flat *Flat) String() string {
 	return fmt.Sprintf(
-		"{%s %s %s %.2f %.1f %.1f %.1f %d %d %d %s %s %v %.5f %s %s %s %s %s}",
+		"{%s %s %s %.2f %.1f %.1f %.1f %d %d %d %s %s %v %.5f %s %s %s %s %s %s}",
 		flat.OriginURL,
 		flat.ImageURL,
 		flat.UpdateTime,
@@ -50,5 +51,6 @@ func (flat *Flat) String() string {
 		flat.District,
 		flat.Street,
 		flat.HouseNumber,
+		flat.Source,
 	)
 }

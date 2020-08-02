@@ -123,6 +123,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 			"Ближнє замостя",
 			"вул.Острозького",
 			"",
+			"",
 		},
 	)
 	testFlat(
@@ -147,6 +148,7 @@ func TestFetchSearchMultipleFlats(t *testing.T) {
 			"Вінниця",
 			"Академічний",
 			"вул. Миколаївська / вул. Тимофіївська",
+			"",
 			"",
 		},
 	)
@@ -179,6 +181,7 @@ func readAll(t *testing.T, fixtureName string) []byte {
 	return bytes
 }
 
+// TODO: add "source" assertion.
 func testFlat(t *testing.T, actual *Flat, expected *Flat) {
 	if actual == nil {
 		t.Fatal("domria: empty actual")
@@ -410,6 +413,7 @@ func TestUnmarshalSearchValidItem(t *testing.T) {
 			"Щасливе",
 			"Черновола Вячеслава улица",
 			"91-Ф",
+			"",
 		},
 	)
 }
@@ -444,6 +448,7 @@ func TestUnmarshalSearchEmptyMainPhoto(t *testing.T) {
 			"Тернопільська",
 			"Тернопіль",
 			"Бам",
+			"",
 			"",
 			"",
 		},
@@ -506,6 +511,7 @@ func TestUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 			"",
 			"Лисаветинська вулиця",
 			"2б",
+			"",
 		},
 	)
 }
@@ -554,6 +560,7 @@ func TestUnmarshalSearch13MonthUpdatedAt(t *testing.T) {
 			"Вишенька",
 			"Василя Порика вулиця",
 			"1",
+			"",
 		},
 	)
 }
@@ -614,6 +621,7 @@ func TestUnmarshalSearchEmptyPriceArr(t *testing.T) {
 			"Фастівська",
 			"Руська",
 			"223Д",
+			"",
 		},
 	)
 }
@@ -650,6 +658,7 @@ func TestUnmarshalSearchNoUSDPriceArr(t *testing.T) {
 			"Шевченківський",
 			"пр Ботаническая",
 			"2",
+			"",
 		},
 	)
 }
@@ -722,6 +731,7 @@ func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 			"Бам",
 			"Сахарова Андрія Академіка вулиця",
 			"10",
+			"",
 		},
 	)
 }
@@ -770,6 +780,7 @@ func TestUnmarshalSearchSupremeKitchenSquareMeters(t *testing.T) {
 			"Центр",
 			"Волошина вулиця",
 			"",
+			"",
 		},
 	)
 }
@@ -806,6 +817,7 @@ func TestUnmarshalSearchNegativeFloor(t *testing.T) {
 			"Солом'янський",
 			"Петра Радченко улица",
 			"27",
+			"",
 		},
 	)
 }
@@ -842,6 +854,7 @@ func TestUnmarshalSearchSupremeFloor(t *testing.T) {
 			"Шевченківський",
 			"Золотоустівська вулиця",
 			"27",
+			"",
 		},
 	)
 }
@@ -878,6 +891,7 @@ func TestUnmarshalSearchJustLongitude(t *testing.T) {
 			"Центр",
 			"Льва Толстого вулиця",
 			"9",
+			"",
 		},
 	)
 }
@@ -914,6 +928,7 @@ func TestUnmarshalSearchJustLatitude(t *testing.T) {
 			"Виставка",
 			"Старокостянтинівське шосе",
 			"20/7",
+			"",
 		},
 	)
 }
@@ -950,6 +965,7 @@ func TestUnmarshalSearchStringCoordinates(t *testing.T) {
 			"Поділля",
 			"вул. Зодчих / вул. Бортняка",
 			"1",
+			"",
 		},
 	)
 }
@@ -985,6 +1001,7 @@ func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {
 			"Одеса",
 			"Приморський",
 			"Некрасова провулок",
+			"",
 			"",
 		},
 	)
@@ -1034,6 +1051,7 @@ func TestUnmarshalSearchSupremeCoordinates(t *testing.T) {
 			"Суворовський",
 			"200 Лет Херсона пр.",
 			"",
+			"",
 		},
 	)
 }
@@ -1068,6 +1086,7 @@ func TestUnmarshalSearchEmptyStreets(t *testing.T) {
 			"Одеська",
 			"Одеса",
 			"Київський",
+			"",
 			"",
 			"",
 		},
@@ -1106,6 +1125,7 @@ func TestUnmarshalSearchJustRUStreet(t *testing.T) {
 			"Галицький",
 			"С. Томашівського",
 			"",
+			"",
 		},
 	)
 }
@@ -1143,6 +1163,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			"Поділля",
 			"генерала Якова Гандзюка вулиця",
 			"6",
+			"",
 		},
 	)
 	testFlat(
@@ -1168,6 +1189,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			"Слобожанське",
 			"Слобожанский проспект",
 			"",
+			"",
 		},
 	)
 	testFlat(
@@ -1192,6 +1214,7 @@ func TestUnmarshalSearchMultipleItems(t *testing.T) {
 			"Дніпро",
 			"Слобожанське",
 			"Слобожанский проспект",
+			"",
 			"",
 		},
 	)

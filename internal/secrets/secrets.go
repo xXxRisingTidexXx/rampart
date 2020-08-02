@@ -12,7 +12,7 @@ func NewSecrets() (*Secrets, error) {
 	if err != nil {
 		return nil, fmt.Errorf("secrets: failed to read the secrets file, %v", err)
 	}
-	var secrets Secrets
+	secrets := Secrets{}
 	if err = yaml.Unmarshal(bytes, &secrets); err != nil {
 		return nil, fmt.Errorf("secrets: failed to unmarshal the secrets file, %v", err)
 	}

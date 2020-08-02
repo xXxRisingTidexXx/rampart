@@ -15,7 +15,7 @@ func (c *coordinate) UnmarshalJSON(bytes []byte) error {
 		*c = coordinate(0)
 		return nil
 	}
-	var s string
+	s := ""
 	if err := json.Unmarshal(bytes, &s); err != nil {
 		return err
 	}

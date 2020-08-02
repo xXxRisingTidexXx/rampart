@@ -65,7 +65,9 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 	locations, err := geocoder.getLocations(flat)
 	geocoder.gatherer.GatherGeocodingDuration(start)
 	if err != nil {
-		geocoder.logger.WithField(misc.FieldOriginURL, flat.OriginURL).Error(err)
+		geocoder.logger.WithFields(
+			log.Fields{misc.FieldOriginURL: flat.OriginURL, misc.FieldSource: flat.Source},
+		).Error(err)
 		geocoder.gatherer.GatherFailedGeocoding()
 		return nil
 	}
@@ -102,7 +104,7 @@ func (geocoder *Geocoder) getLocations(flat *Flat) ([]*location, error) {
 	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to close the response body, %v", err)
 	}
-	var locations []*location
+	locations := make([]*location, 0)
 	if err := json.Unmarshal(bytes, &locations); err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the locations, %v", err)
 	}
@@ -148,5 +150,6 @@ func (geocoder *Geocoder) locateFlat(flat *Flat, locations []*location) *Flat {
 		flat.District,
 		flat.Street,
 		flat.HouseNumber,
+		flat.Source,
 	}
 }
