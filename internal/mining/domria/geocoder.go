@@ -148,5 +148,6 @@ func (geocoder *Geocoder) locateFlat(flat *Flat, locations []*location) *Flat {
 		flat.District,
 		flat.Street,
 		flat.HouseNumber,
+		flat.Source,
 	}
 }

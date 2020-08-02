@@ -1,6 +1,7 @@
 package domria
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -24,29 +25,41 @@ type item struct {
 	StreetNameUK        string     `json:"street_name_uk"`
 	StreetName          string     `json:"street_name"`
 	BuildingNumberStr   string     `json:"building_number_str"`
+	Source              string     `json:"-"`
 }
 
-func (item *item) String() string {
+func (i *item) UnmarshalJSON(bytes []byte) error {
+	raw := item{}
+	if err := json.Unmarshal(bytes, &raw); err != nil {
+		return err
+	}
+	*i = raw
+	i.Source = string(bytes)
+	return nil
+}
+
+func (i *item) String() string {
 	return fmt.Sprintf(
-		"{%s %s %s %v %.1f %.1f %.1f %d %d %d %s %.6f %.6f %s %s %s %s %s %s}",
-		item.BeautifulURL,
-		item.MainPhoto,
-		item.UpdatedAt,
-		item.PriceArr,
-		item.TotalSquareMeters,
-		item.LivingSquareMeters,
-		item.KitchenSquareMeters,
-		item.RoomsCount,
-		item.Floor,
-		item.FloorsCount,
-		item.UserNewbuildNameUK,
-		item.Longitude,
-		item.Latitude,
-		item.StateNameUK,
-		item.CityNameUK,
-		item.DistrictNameUK,
-		item.StreetNameUK,
-		item.StreetName,
-		item.BuildingNumberStr,
+		"{%s %s %s %v %.1f %.1f %.1f %d %d %d %s %.6f %.6f %s %s %s %s %s %s %s}",
+		i.BeautifulURL,
+		i.MainPhoto,
+		i.UpdatedAt,
+		i.PriceArr,
+		i.TotalSquareMeters,
+		i.LivingSquareMeters,
+		i.KitchenSquareMeters,
+		i.RoomsCount,
+		i.Floor,
+		i.FloorsCount,
+		i.UserNewbuildNameUK,
+		i.Longitude,
+		i.Latitude,
+		i.StateNameUK,
+		i.CityNameUK,
+		i.DistrictNameUK,
+		i.StreetNameUK,
+		i.StreetName,
+		i.BuildingNumberStr,
+		i.Source,
 	)
 }

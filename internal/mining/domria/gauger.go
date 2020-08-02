@@ -61,6 +61,7 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 			flat.District,
 			flat.Street,
 			flat.HouseNumber,
+			flat.Source,
 		}
 	}
 	return newFlats

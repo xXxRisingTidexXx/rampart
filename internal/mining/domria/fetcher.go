@@ -91,6 +91,7 @@ func (fetcher *Fetcher) getSearch(flag string) ([]byte, error) {
 	return bytes, nil
 }
 
+// TODO: move unmarshalling to the upper function in order to concentrate error handling.
 func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing string) ([]*Flat, error) {
 	var search search
 	if err := json.Unmarshal(bytes, &search); err != nil {
@@ -126,6 +127,7 @@ func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing string) ([]*Flat, 
 			item.DistrictNameUK,
 			street,
 			item.BuildingNumberStr,
+			item.Source,
 		}
 	}
 	return flats, nil

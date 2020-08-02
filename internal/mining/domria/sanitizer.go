@@ -118,6 +118,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 		district,
 		strings.TrimSpace(sanitizer.streetReplacer.Replace(street)),
 		houseNumber,
+		flat.Source,
 	}
 }
 
