@@ -43,12 +43,12 @@ func (fetcher *Fetcher) FetchFlats(housing string) ([]*Flat, error) {
 		return nil, fmt.Errorf("domria: fetcher doesn't accept %s housing", housing)
 	}
 	start := time.Now()
-	bytes, err := fetcher.getSearch(flag)
+	search, err := fetcher.getSearch(flag)
 	fetcher.gatherer.GatherFetchingDuration(start)
 	if err != nil {
 		return nil, err
 	}
-	flats, err := fetcher.unmarshalSearch(bytes, housing)
+	flats, err := fetcher.unmarshalSearch(search, housing)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (fetcher *Fetcher) FetchFlats(housing string) ([]*Flat, error) {
 	return flats, nil
 }
 
-func (fetcher *Fetcher) getSearch(flag string) ([]byte, error) {
+func (fetcher *Fetcher) getSearch(flag string) (*search, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf(fetcher.searchURL, flag, fetcher.page, fetcher.portion),
@@ -88,15 +88,14 @@ func (fetcher *Fetcher) getSearch(flag string) ([]byte, error) {
 	if err = response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to close the response body, %v", err)
 	}
-	return bytes, nil
-}
-
-// TODO: move unmarshalling to the upper function in order to concentrate error handling.
-func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing string) ([]*Flat, error) {
 	search := search{}
 	if err := json.Unmarshal(bytes, &search); err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the search, %v", err)
 	}
+	return &search, nil
+}
+
+func (fetcher *Fetcher) unmarshalSearch(search *search, housing string) ([]*Flat, error) {
 	flats := make([]*Flat, len(search.Items))
 	for i, item := range search.Items {
 		price := 0.0
