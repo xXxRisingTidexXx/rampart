@@ -12,12 +12,12 @@ func NewGatherer(miner string, db *sql.DB) *Gatherer {
 
 type Gatherer struct {
 	miner                           string
-	stateSanitationNumber         int
-	citySanitationNumber          int
-	districtSanitationNumber      int
-	swapSanitationNumber          int
-	streetSanitationNumber        int
-	houseNumberSanitationNumber   int
+	stateSanitationNumber           int
+	citySanitationNumber            int
+	districtSanitationNumber        int
+	swapSanitationNumber            int
+	streetSanitationNumber          int
+	houseNumberSanitationNumber     int
 	locatedGeocodingNumber          int
 	unlocatedGeocodingNumber        int
 	failedGeocodingNumber           int
