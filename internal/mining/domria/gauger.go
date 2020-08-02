@@ -38,6 +38,8 @@ type Gauger struct {
 	logger         log.FieldLogger
 }
 
+// TODO: green zone distance gauging with min object area.
+// TODO: industrial zone distance gauging with min object area.
 func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 	newFlats := make([]*Flat, len(flats))
 	for i, flat := range flats {
