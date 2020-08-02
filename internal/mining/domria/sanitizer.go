@@ -95,8 +95,8 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 			sanitizer.gatherer.GatherHouseNumberSanitation()
 		}
 	}
-	if len(houseNumber) > sanitizer.houseNumberMaxLength {
-		houseNumber = houseNumber[:sanitizer.houseNumberMaxLength]
+	if runes := []rune(houseNumber); len(runes) > sanitizer.houseNumberMaxLength {
+		houseNumber = string(runes[:sanitizer.houseNumberMaxLength])
 	}
 	return &Flat{
 		originURL,

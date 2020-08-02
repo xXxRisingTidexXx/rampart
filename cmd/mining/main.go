@@ -14,7 +14,6 @@ import (
 )
 
 // TODO: add field "source" to flat to make easier debugging.
-// TODO: maybe, pq error connected with truncated house numbers.
 func main() {
 	isOnce := flag.Bool("once", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
