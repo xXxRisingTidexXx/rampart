@@ -104,7 +104,7 @@ func (geocoder *Geocoder) getLocations(flat *Flat) ([]*location, error) {
 	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to close the response body, %v", err)
 	}
-	var locations []*location
+	locations := make([]*location, 0)
 	if err := json.Unmarshal(bytes, &locations); err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the locations, %v", err)
 	}

@@ -123,7 +123,7 @@ func (gauger *Gauger) query(query string, params ...interface{}) (*gosm.OSM, err
 	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to close the response body, %v", err)
 	}
-	var osm gosm.OSM
+	osm := gosm.OSM{}
 	if err := xml.Unmarshal(bytes, &osm); err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to unmarshal the osm, %v", err)
 	}

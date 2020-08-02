@@ -12,7 +12,7 @@ func NewConfig() (*Config, error) {
 	if err != nil {
 		return nil, fmt.Errorf("config: failed to read the config file, %v", err)
 	}
-	var config Config
+	config := Config{}
 	if err = yaml.Unmarshal(bytes, &config); err != nil {
 		return nil, fmt.Errorf("config: failed to unmarshal the config file, %v", err)
 	}
