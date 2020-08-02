@@ -7,10 +7,9 @@ import (
 	"github.com/paulmach/orb/planar"
 	"github.com/paulmach/osm"
 	"github.com/paulmach/osm/osmgeojson"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"io/ioutil"
 	"math"
 	"net/http"
@@ -18,7 +17,7 @@ import (
 	"time"
 )
 
-func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger log.FieldLogger) *Gauger {
+func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger *logging.Logger) *Gauger {
 	return &Gauger{
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		config.Headers,
@@ -37,7 +36,7 @@ type Gauger struct {
 	searchRadius   float64
 	noDistance     float64
 	gatherer       *metrics.Gatherer
-	logger         log.FieldLogger
+	logger         *logging.Logger
 }
 
 func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
@@ -82,9 +81,7 @@ func (gauger *Gauger) gaugeSubwayStationDistance(flat *Flat) float64 {
 	gauger.gatherer.GatherSubwayGaugingDuration(start)
 	if err != nil {
 		gauger.gatherer.GatherFailedSubwayGauging()
-		gauger.logger.WithFields(
-			log.Fields{misc.FieldOriginURL: flat.OriginURL, misc.FieldSource: flat.Source},
-		).Error(err)
+		gauger.logger.Problem(flat, err)
 		return gauger.noDistance
 	}
 	if len(gosm.Nodes) == 0 {
@@ -134,14 +131,8 @@ func (gauger *Gauger) queryOSM(query string, params ...interface{}) (*osm.OSM, e
 	return &gosm, nil
 }
 
-func (gauger *Gauger) log(flat *Flat, err error) {
-	gauger.logger.WithFields(
-		log.Fields{misc.FieldOriginURL: flat.OriginURL, misc.FieldSource: flat.Source},
-	).Error(err)
-}
-
 func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
-	collection, err := gauger.queryFeatureCollection(
+	_, err := gauger.queryFeatureCollection(
 		"(way[landuse=industrial](around:%f,%f,%f);relation[landuse=industrial](around:%f,%f,%f););out;",
 		2000.0,
 		flat.Point.Lat(),
@@ -151,9 +142,7 @@ func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 		flat.Point.Lon(),
 	)
 	if err != nil {
-		gauger.logger.WithFields(
-			log.Fields{misc.FieldOriginURL: flat.OriginURL, misc.FieldSource: flat.Source},
-		).Error(err)
+		gauger.logger.Problem(flat, err)
 		return gauger.noDistance
 	}
 

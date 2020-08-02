@@ -29,6 +29,14 @@ type Flat struct {
 	Source                string
 }
 
+func (flat *Flat) URL() string {
+	return flat.OriginURL
+}
+
+func (flat *Flat) Body() string {
+	return flat.Source
+}
+
 func (flat *Flat) String() string {
 	return fmt.Sprintf(
 		"{%s %s %s %.2f %.1f %.1f %.1f %d %d %d %s %s %v %.5f %s %s %s %s %s %s}",

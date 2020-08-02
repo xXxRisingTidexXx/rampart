@@ -4,10 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/paulmach/orb/encoding/wkb"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"time"
 )
 
@@ -15,7 +14,7 @@ func NewStorer(
 	config *config.Storer,
 	db *sql.DB,
 	gatherer *metrics.Gatherer,
-	logger log.FieldLogger,
+	logger *logging.Logger,
 ) *Storer {
 	return &Storer{config.SRID, db, gatherer, logger}
 }
@@ -24,15 +23,13 @@ type Storer struct {
 	srid     int
 	db       *sql.DB
 	gatherer *metrics.Gatherer
-	logger   log.FieldLogger
+	logger   *logging.Logger
 }
 
 func (storer *Storer) StoreFlats(flats []*Flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {
-			storer.logger.WithFields(
-				log.Fields{misc.FieldOriginURL: flat.OriginURL, misc.FieldSource: flat.Source},
-			).Error(err)
+			storer.logger.Problem(flat, err)
 			storer.gatherer.GatherFailedStoring()
 		}
 	}

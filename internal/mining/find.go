@@ -3,9 +3,9 @@ package mining
 import (
 	"database/sql"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/domria"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 )
 
@@ -14,7 +14,7 @@ func FindMiner(
 	config *config.Miners,
 	db *sql.DB,
 	gatherer *metrics.Gatherer,
-	logger log.FieldLogger,
+	logger *logging.Logger,
 ) (Miner, error) {
 	miners := map[string]Miner{
 		config.DomriaPrimary.Alias:   domria.NewMiner(config.DomriaPrimary, db, gatherer, logger),
