@@ -40,7 +40,7 @@ type Fetcher struct {
 func (fetcher *Fetcher) FetchFlats(housing string) ([]*Flat, error) {
 	flag, ok := fetcher.flags[housing]
 	if !ok {
-		return nil, fmt.Errorf("domria: fetcher doesn't accept %s housing", housing)
+		return nil, fmt.Errorf("domria: fetcher doesn't accept housing %s", housing)
 	}
 	start := time.Now()
 	search, err := fetcher.getSearch(flag)
@@ -48,10 +48,7 @@ func (fetcher *Fetcher) FetchFlats(housing string) ([]*Flat, error) {
 	if err != nil {
 		return nil, err
 	}
-	flats, err := fetcher.unmarshalSearch(search, housing)
-	if err != nil {
-		return nil, err
-	}
+	flats := fetcher.getFlats(search, housing)
 	if len(flats) > 0 {
 		fetcher.page++
 	} else {
@@ -95,7 +92,7 @@ func (fetcher *Fetcher) getSearch(flag string) (*search, error) {
 	return &search, nil
 }
 
-func (fetcher *Fetcher) unmarshalSearch(search *search, housing string) ([]*Flat, error) {
+func (fetcher *Fetcher) getFlats(search *search, housing string) []*Flat {
 	flats := make([]*Flat, len(search.Items))
 	for i, item := range search.Items {
 		price := 0.0
@@ -129,5 +126,5 @@ func (fetcher *Fetcher) unmarshalSearch(search *search, housing string) ([]*Flat
 			item.Source,
 		}
 	}
-	return flats, nil
+	return flats
 }

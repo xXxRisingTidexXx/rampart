@@ -1,4 +1,5 @@
 package domria_test
+
 //
 //import (
 //	"fmt"
