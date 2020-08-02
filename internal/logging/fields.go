@@ -1,4 +1,4 @@
-package misc
+package logging
 
 const (
 	FieldMiner     = "miner"
