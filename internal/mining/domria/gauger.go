@@ -23,7 +23,7 @@ func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger *loggin
 		config.Headers,
 		config.InterpreterURL,
 		config.SearchRadius,
-		-1,
+		config.NoDistance,
 		gatherer,
 		logger,
 	}
@@ -42,7 +42,7 @@ type Gauger struct {
 func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 	newFlats := make([]*Flat, len(flats))
 	for i, flat := range flats {
-		_ = gauger.gaugeIndustrialZoneDistance(flat)
+		//_ = gauger.gaugeIndustrialZoneDistance(flat)
 		newFlats[i] = &Flat{
 			flat.OriginURL,
 			flat.ImageURL,

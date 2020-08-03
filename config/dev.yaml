@@ -147,6 +147,7 @@ mining:
           <<: *headers
         interpreterURL: https://overpass.kumi.systems/api/interpreter?data=%s
         searchRadius: 1500
+        noDistance: -1
       validator:
         minPrice: 1
         minTotalArea: 12
