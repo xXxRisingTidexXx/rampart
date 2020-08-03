@@ -45,12 +45,13 @@ type Gauger struct {
 	logger                 *logging.Logger
 }
 
+// TODO: github.com/paulmach/osm can't parse some osm XMLs. Add
+// TODO: metric to track such cases + think about possible
+// TODO: workarounds. For instance, npm package.
 func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 	newFlats := make([]*Flat, len(flats))
 	for i, flat := range flats {
-		x := gauger.gaugeSubwayStationDistance(flat)
-		y := gauger.gaugeIndustrialZoneDistance(flat)
-		gauger.logger.WithField("origin_url", flat.OriginURL).WithField("point", flat.Point).Debug(x, y)
+		_ = gauger.gaugeIndustrialZoneDistance(flat)
 		newFlats[i] = &Flat{
 			flat.OriginURL,
 			flat.ImageURL,
@@ -65,7 +66,7 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 			flat.Housing,
 			flat.Complex,
 			flat.Point,
-			x,
+			gauger.gaugeSubwayStationDistance(flat),
 			flat.State,
 			flat.City,
 			flat.District,
@@ -153,9 +154,6 @@ func (gauger *Gauger) gaugeDistance(
 	collection *geojson.FeatureCollection,
 	minArea float64,
 ) float64 {
-	if flat.OriginURL == "https://dom.ria.com/uk/realty-perevireno-prodaja-kvartira-vinnitsa-strijavka-kievskaya-ulitsa-17414173.html" {
-		gauger.logger.Info(collection.Features)
-	}
 	geometries := make([]orb.Geometry, 0)
 	for _, feature := range collection.Features {
 		if planar.Area(feature.Geometry) >= minArea {
