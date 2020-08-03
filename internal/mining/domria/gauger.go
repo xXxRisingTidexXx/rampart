@@ -51,7 +51,10 @@ type Gauger struct {
 func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 	newFlats := make([]*Flat, len(flats))
 	for i, flat := range flats {
-		_ = gauger.gaugeIndustrialZoneDistance(flat)
+		//x := gauger.gaugeSubwayStationDistance(flat)
+		//y := gauger.gaugeIndustrialZoneDistance(flat)
+		_ = gauger.gaugeGreenZoneDistance(flat)
+		//gauger.logger.WithFields(log.Fields{"lon": flat.Point.Lon(), "lat": flat.Point.Lat()}).Info(x, y, z)
 		newFlats[i] = &Flat{
 			flat.OriginURL,
 			flat.ImageURL,
@@ -66,7 +69,7 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 			flat.Housing,
 			flat.Complex,
 			flat.Point,
-			gauger.gaugeSubwayStationDistance(flat),
+			-1,
 			flat.State,
 			flat.City,
 			flat.District,
@@ -146,6 +149,7 @@ func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.Featu
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to convert to geojson, %v", err)
 	}
+	gauger.logger.Info(gosm, collection)
 	return collection, nil
 }
 
@@ -170,6 +174,7 @@ func (gauger *Gauger) gaugeDistance(
 	return distance
 }
 
+// TODO: inject metrics.
 func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 	collection, err := gauger.query(
 		`(
@@ -189,4 +194,25 @@ func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 		return gauger.noDistance
 	}
 	return gauger.gaugeDistance(flat, collection, 4e-6)
+}
+
+func (gauger *Gauger) gaugeGreenZoneDistance(flat *Flat) float64 {
+	collection, err := gauger.query(
+		`(
+		  way[leisure=park](around:%f,%f,%f);
+		  relation[leisure=park](around:%f,%f,%f);
+		);
+		out geom;`,
+		1500,
+		flat.Point.Lat(),
+		flat.Point.Lon(),
+		1500,
+		flat.Point.Lat(),
+		flat.Point.Lon(),
+	)
+	if err != nil {
+		gauger.logger.Problem(flat, err)
+		return gauger.noDistance
+	}
+	return gauger.gaugeDistance(flat, collection, 0)
 }
