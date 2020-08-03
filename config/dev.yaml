@@ -146,8 +146,13 @@ mining:
         headers:
           <<: *headers
         interpreterURL: https://overpass.kumi.systems/api/interpreter?data=%s
-        searchRadius: 1500
         noDistance: -1
+        subwayCities:
+          - Київ
+          - Харків
+          - Дніпро
+        subwaySearchRadius: 1500
+        industrialSearchRadius: 2000
       validator:
         minPrice: 1
         minTotalArea: 12

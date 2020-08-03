@@ -10,6 +10,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"io/ioutil"
 	"math"
 	"net/http"
@@ -22,21 +23,25 @@ func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger *loggin
 		&http.Client{Timeout: time.Duration(config.Timeout)},
 		config.Headers,
 		config.InterpreterURL,
-		config.SearchRadius,
 		config.NoDistance,
+		config.SubwayCities,
+		config.SubwaySearchRadius,
+		config.IndustrialSearchRadius,
 		gatherer,
 		logger,
 	}
 }
 
 type Gauger struct {
-	client         *http.Client
-	headers        map[string]string
-	interpreterURL string
-	searchRadius   float64
-	noDistance     float64
-	gatherer       *metrics.Gatherer
-	logger         *logging.Logger
+	client                 *http.Client
+	headers                map[string]string
+	interpreterURL         string
+	noDistance             float64
+	subwayCities           *misc.Set
+	subwaySearchRadius     float64
+	industrialSearchRadius float64
+	gatherer               *metrics.Gatherer
+	logger                 *logging.Logger
 }
 
 func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
@@ -69,12 +74,16 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 	return newFlats
 }
 
-// TODO: add subwayless city optimization.
+// TODO: add subwayless flat metric.
 func (gauger *Gauger) gaugeSubwayStationDistance(flat *Flat) float64 {
+	if !gauger.subwayCities.Contains(flat.City) {
+		return gauger.noDistance
+	}
+	gauger.logger.Info(flat.City)
 	start := time.Now()
 	gosm, err := gauger.queryOSM(
 		"node[station=subway](around:%f,%f,%f);out;",
-		gauger.searchRadius,
+		gauger.subwaySearchRadius,
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
@@ -134,10 +143,10 @@ func (gauger *Gauger) queryOSM(query string, params ...interface{}) (*osm.OSM, e
 func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 	_, err := gauger.queryFeatureCollection(
 		"(way[landuse=industrial](around:%f,%f,%f);relation[landuse=industrial](around:%f,%f,%f););out;",
-		2000.0,
+		gauger.industrialSearchRadius,
 		flat.Point.Lat(),
 		flat.Point.Lon(),
-		2000.0,
+		gauger.industrialSearchRadius,
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
