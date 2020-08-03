@@ -65,17 +65,52 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 		geocoder.gatherer.GatherFailedGeocoding()
 		return nil
 	}
-	newFlat := geocoder.locateFlat(flat, locations)
-	if newFlat == nil {
+	if len(locations) == 0 {
 		geocoder.gatherer.GatherInconclusiveGeocoding()
 		return nil
 	}
 	geocoder.gatherer.GatherSuccessfulGeocoding()
-	return newFlat
+	return &Flat{
+		flat.OriginURL,
+		flat.ImageURL,
+		flat.UpdateTime,
+		flat.Price,
+		flat.TotalArea,
+		flat.LivingArea,
+		flat.KitchenArea,
+		flat.RoomNumber,
+		flat.Floor,
+		flat.TotalFloor,
+		flat.Housing,
+		flat.Complex,
+		orb.Point{float64(locations[0].Lon), float64(locations[0].Lat)},
+		0,
+		flat.State,
+		flat.City,
+		flat.District,
+		flat.Street,
+		flat.HouseNumber,
+		flat.Source,
+	}
 }
 
 func (geocoder *Geocoder) getLocations(flat *Flat) ([]*location, error) {
-	request, err := http.NewRequest(http.MethodGet, geocoder.getSearchURL(flat), nil)
+	whitespace, plus, state := " ", "+", ""
+	if !geocoder.statelessCities.Contains(flat.City) {
+		state = strings.ReplaceAll(flat.State, whitespace, plus)
+	}
+	request, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf(
+			geocoder.searchURL,
+			state,
+			strings.ReplaceAll(flat.City, whitespace, plus),
+			strings.ReplaceAll(flat.District, whitespace, plus),
+			strings.ReplaceAll(flat.Street, whitespace, plus),
+			strings.ReplaceAll(flat.HouseNumber, whitespace, plus),
+		),
+		nil,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to construct a request, %v", err)
 	}
@@ -103,47 +138,4 @@ func (geocoder *Geocoder) getLocations(flat *Flat) ([]*location, error) {
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the locations, %v", err)
 	}
 	return locations, nil
-}
-
-func (geocoder *Geocoder) getSearchURL(flat *Flat) string {
-	whitespace, plus, state := " ", "+", ""
-	if !geocoder.statelessCities.Contains(flat.City) {
-		state = strings.ReplaceAll(flat.State, whitespace, plus)
-	}
-	return fmt.Sprintf(
-		geocoder.searchURL,
-		state,
-		strings.ReplaceAll(flat.City, whitespace, plus),
-		strings.ReplaceAll(flat.District, whitespace, plus),
-		strings.ReplaceAll(flat.Street, whitespace, plus),
-		strings.ReplaceAll(flat.HouseNumber, whitespace, plus),
-	)
-}
-
-func (geocoder *Geocoder) locateFlat(flat *Flat, locations []*location) *Flat {
-	if len(locations) == 0 {
-		return nil
-	}
-	return &Flat{
-		flat.OriginURL,
-		flat.ImageURL,
-		flat.UpdateTime,
-		flat.Price,
-		flat.TotalArea,
-		flat.LivingArea,
-		flat.KitchenArea,
-		flat.RoomNumber,
-		flat.Floor,
-		flat.TotalFloor,
-		flat.Housing,
-		flat.Complex,
-		orb.Point{float64(locations[0].Lon), float64(locations[0].Lat)},
-		0,
-		flat.State,
-		flat.City,
-		flat.District,
-		flat.Street,
-		flat.HouseNumber,
-		flat.Source,
-	}
 }
