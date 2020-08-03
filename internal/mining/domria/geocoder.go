@@ -20,8 +20,6 @@ func NewGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger *lo
 		config.Headers,
 		config.StatelessCities,
 		config.SearchURL,
-		" ",
-		"+",
 		gatherer,
 		logger,
 	}
@@ -32,8 +30,6 @@ type Geocoder struct {
 	headers         map[string]string
 	statelessCities *misc.Set
 	searchURL       string
-	whitespace      string
-	plus            string
 	gatherer        *metrics.Gatherer
 	logger          *logging.Logger
 }
@@ -110,17 +106,17 @@ func (geocoder *Geocoder) getLocations(flat *Flat) ([]*location, error) {
 }
 
 func (geocoder *Geocoder) getSearchURL(flat *Flat) string {
-	state := ""
+	whitespace, plus, state := " ", "+", ""
 	if !geocoder.statelessCities.Contains(flat.City) {
-		state = strings.ReplaceAll(flat.State, geocoder.whitespace, geocoder.plus)
+		state = strings.ReplaceAll(flat.State, whitespace, plus)
 	}
 	return fmt.Sprintf(
 		geocoder.searchURL,
 		state,
-		strings.ReplaceAll(flat.City, geocoder.whitespace, geocoder.plus),
-		strings.ReplaceAll(flat.District, geocoder.whitespace, geocoder.plus),
-		strings.ReplaceAll(flat.Street, geocoder.whitespace, geocoder.plus),
-		strings.ReplaceAll(flat.HouseNumber, geocoder.whitespace, geocoder.plus),
+		strings.ReplaceAll(flat.City, whitespace, plus),
+		strings.ReplaceAll(flat.District, whitespace, plus),
+		strings.ReplaceAll(flat.Street, whitespace, plus),
+		strings.ReplaceAll(flat.HouseNumber, whitespace, plus),
 	)
 }
 
