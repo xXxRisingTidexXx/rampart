@@ -36,7 +36,6 @@ func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger *loggin
 	}
 }
 
-// TODO: add custom Headers type in misc.
 type Gauger struct {
 	client                     *http.Client
 	headers                    misc.Headers
