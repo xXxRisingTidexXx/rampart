@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
 	_ "github.com/lib/pq"
 	gocron "github.com/robfig/cron/v3"
@@ -8,6 +9,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/database"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining/domria"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/secrets"
@@ -33,10 +35,11 @@ func main() {
 		logger.Fatal(err)
 	}
 	gatherer := metrics.NewGatherer(*alias, db)
-	miner, err := mining.FindMiner(*alias, cfg.Mining.Miners, db, gatherer, logger)
-	if err != nil {
+	miner := findMiner(*alias, cfg.Mining.Miners, db, gatherer, logger)
+	if miner == nil {
 		_ = db.Close()
-		logger.Fatal(err)
+		logger.Fatal("main: mining failed to find the miner")
+		return
 	}
 	if *isOnce {
 		miner.Run()
@@ -52,4 +55,18 @@ func main() {
 	if err = database.CloseDatabase(db); err != nil {
 		logger.Fatal(err)
 	}
+}
+
+func findMiner(
+	alias string,
+	config *config.Miners,
+	db *sql.DB,
+	gatherer *metrics.Gatherer,
+	logger *logging.Logger,
+) mining.Miner {
+	miners := map[string]mining.Miner{
+		config.DomriaPrimary.Alias:   domria.NewMiner(config.DomriaPrimary, db, gatherer, logger),
+		config.DomriaSecondary.Alias: domria.NewMiner(config.DomriaSecondary, db, gatherer, logger),
+	}
+	return miners[alias]
 }
