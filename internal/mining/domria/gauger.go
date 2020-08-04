@@ -15,7 +15,7 @@ import (
 	"io/ioutil"
 	"math"
 	"net/http"
-	"net/url"
+	gourl "net/url"
 	"time"
 )
 
@@ -112,11 +112,8 @@ func (gauger *Gauger) gaugeSubwayStationDistance(flat *Flat) float64 {
 }
 
 func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.FeatureCollection, error) {
-	request, err := http.NewRequest(
-		http.MethodGet,
-		fmt.Sprintf(gauger.interpreterURL, url.QueryEscape(fmt.Sprintf(query, params...))),
-		nil,
-	)
+	url := fmt.Sprintf(gauger.interpreterURL, gourl.QueryEscape(fmt.Sprintf(query, params...)))
+	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to construct a request, %v", err)
 	}
@@ -152,7 +149,10 @@ func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.Featu
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to convert to geojson, %v", err)
 	}
-	gauger.logger.Info(gosm, collection)
+	actual, expected := len(collection.Features), len(gosm.Nodes)+len(gosm.Ways)+len(gosm.Relations)
+	if actual != expected {
+		gauger.logger.Inconsistency("domria: gauger poorly converted osm", url, actual, expected)
+	}
 	return collection, nil
 }
 
