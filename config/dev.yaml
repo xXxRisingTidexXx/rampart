@@ -151,8 +151,11 @@ mining:
           - Київ
           - Харків
           - Дніпро
-        subwaySearchRadius: 1500
-        industrialSearchRadius: 2000
+        subwayStationSearchRadius: 1500
+        industrialZoneSearchRadius: 2000
+        industrialZoneMinArea: 0.000004
+        greenZoneSearchRadius: 1200
+        greenZoneMinArea: 0.00001
       validator:
         minPrice: 1
         minTotalArea: 12

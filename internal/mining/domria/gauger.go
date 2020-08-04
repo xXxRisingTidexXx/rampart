@@ -26,23 +26,30 @@ func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger *loggin
 		config.InterpreterURL,
 		config.NoDistance,
 		config.SubwayCities,
-		config.SubwaySearchRadius,
-		config.IndustrialSearchRadius,
+		config.SubwayStationSearchRadius,
+		config.IndustrialZoneSearchRadius,
+		config.IndustrialZoneMinArea,
+		config.GreenZoneSearchRadius,
+		config.GreenZoneMinArea,
 		gatherer,
 		logger,
 	}
 }
 
+// TODO: add custom Headers type in misc.
 type Gauger struct {
-	client                 *http.Client
-	headers                map[string]string
-	interpreterURL         string
-	noDistance             float64
-	subwayCities           *misc.Set
-	subwaySearchRadius     float64
-	industrialSearchRadius float64
-	gatherer               *metrics.Gatherer
-	logger                 *logging.Logger
+	client                     *http.Client
+	headers                    map[string]string
+	interpreterURL             string
+	noDistance                 float64
+	subwayCities               *misc.Set
+	subwayStationSearchRadius  float64
+	industrialZoneSearchRadius float64
+	industrialZoneMinArea      float64
+	greenZoneSearchRadius      float64
+	greenZoneMinArea           float64
+	gatherer                   *metrics.Gatherer
+	logger                     *logging.Logger
 }
 
 // TODO: github.com/paulmach/osm can't parse some osm XMLs. Add
@@ -51,10 +58,6 @@ type Gauger struct {
 func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 	newFlats := make([]*Flat, len(flats))
 	for i, flat := range flats {
-		//x := gauger.gaugeSubwayStationDistance(flat)
-		//y := gauger.gaugeIndustrialZoneDistance(flat)
-		_ = gauger.gaugeGreenZoneDistance(flat)
-		//gauger.logger.WithFields(log.Fields{"lon": flat.Point.Lon(), "lat": flat.Point.Lat()}).Info(x, y, z)
 		newFlats[i] = &Flat{
 			flat.OriginURL,
 			flat.ImageURL,
@@ -69,7 +72,7 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 			flat.Housing,
 			flat.Complex,
 			flat.Point,
-			-1,
+			gauger.gaugeSubwayStationDistance(flat),
 			flat.State,
 			flat.City,
 			flat.District,
@@ -89,7 +92,7 @@ func (gauger *Gauger) gaugeSubwayStationDistance(flat *Flat) float64 {
 	start := time.Now()
 	collection, err := gauger.query(
 		"node[station=subway](around:%f,%f,%f);out;",
-		gauger.subwaySearchRadius,
+		gauger.subwayStationSearchRadius,
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
@@ -182,10 +185,10 @@ func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 		  relation[landuse=industrial](around:%f,%f,%f);
 		);
 		out geom;`,
-		gauger.industrialSearchRadius,
+		gauger.industrialZoneSearchRadius,
 		flat.Point.Lat(),
 		flat.Point.Lon(),
-		gauger.industrialSearchRadius,
+		gauger.industrialZoneSearchRadius,
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
@@ -193,9 +196,10 @@ func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 		gauger.logger.Problem(flat, err)
 		return gauger.noDistance
 	}
-	return gauger.gaugeDistance(flat, collection, 4e-6)
+	return gauger.gaugeDistance(flat, collection, gauger.industrialZoneMinArea)
 }
 
+// TODO: inject metrics.
 func (gauger *Gauger) gaugeGreenZoneDistance(flat *Flat) float64 {
 	collection, err := gauger.query(
 		`(
@@ -203,10 +207,10 @@ func (gauger *Gauger) gaugeGreenZoneDistance(flat *Flat) float64 {
 		  relation[leisure=park](around:%f,%f,%f);
 		);
 		out geom;`,
-		1500,
+		gauger.greenZoneSearchRadius,
 		flat.Point.Lat(),
 		flat.Point.Lon(),
-		1500,
+		gauger.greenZoneSearchRadius,
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
@@ -214,5 +218,5 @@ func (gauger *Gauger) gaugeGreenZoneDistance(flat *Flat) float64 {
 		gauger.logger.Problem(flat, err)
 		return gauger.noDistance
 	}
-	return gauger.gaugeDistance(flat, collection, 0)
+	return gauger.gaugeDistance(flat, collection, gauger.greenZoneMinArea)
 }
