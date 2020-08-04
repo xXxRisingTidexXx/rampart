@@ -9,6 +9,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 )
 
+// TODO: move to main.
 func FindMiner(
 	alias string,
 	config *config.Miners,
