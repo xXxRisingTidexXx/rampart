@@ -6,14 +6,13 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 func RunServer(port int, config *config.Server, logger *logging.Logger) {
 	server := &http.Server{
 		Addr:           ":" + strconv.Itoa(port),
-		ReadTimeout:    time.Duration(config.ReadTimeout),
-		WriteTimeout:   time.Duration(config.WriteTimeout),
+		ReadTimeout:    config.ReadTimeout,
+		WriteTimeout:   config.WriteTimeout,
 		MaxHeaderBytes: config.MaxHeaderBytes,
 		Handler:        promhttp.Handler(),
 	}

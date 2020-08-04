@@ -16,7 +16,7 @@ import (
 
 func NewGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger *logging.Logger) *Geocoder {
 	return &Geocoder{
-		&http.Client{Timeout: time.Duration(config.Timeout)},
+		&http.Client{Timeout: config.Timeout},
 		config.Headers,
 		config.StatelessCities,
 		config.SearchURL,

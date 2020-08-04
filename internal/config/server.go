@@ -2,12 +2,13 @@ package config
 
 import (
 	"fmt"
+	"time"
 )
 
 type Server struct {
-	ReadTimeout    Timing `yaml:"readTimeout"`
-	WriteTimeout   Timing `yaml:"writeTimeout"`
-	MaxHeaderBytes int    `yaml:"maxHeaderBytes"`
+	ReadTimeout    time.Duration `yaml:"readTimeout"`
+	WriteTimeout   time.Duration `yaml:"writeTimeout"`
+	MaxHeaderBytes int           `yaml:"maxHeaderBytes"`
 }
 
 func (server *Server) String() string {

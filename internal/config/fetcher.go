@@ -3,10 +3,11 @@ package config
 import (
 	"fmt"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"time"
 )
 
 type Fetcher struct {
-	Timeout   Timing             `yaml:"timeout"`
+	Timeout   time.Duration      `yaml:"timeout"`
 	Portion   int                `yaml:"portion"`
 	Flags     map[Housing]string `yaml:"flags"`
 	Headers   misc.Headers       `yaml:"headers"`

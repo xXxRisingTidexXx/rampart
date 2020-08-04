@@ -3,19 +3,20 @@ package config
 import (
 	"fmt"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"time"
 )
 
 type Gauger struct {
-	Timeout                    Timing       `yaml:"timeout"`
-	Headers                    misc.Headers `yaml:"headers"`
-	InterpreterURL             string       `yaml:"interpreterURL"`
-	NoDistance                 float64      `yaml:"noDistance"`
-	SubwayCities               misc.Set     `yaml:"subwayCities"`
-	SubwayStationSearchRadius  float64      `yaml:"subwayStationSearchRadius"`
-	IndustrialZoneSearchRadius float64      `yaml:"industrialZoneSearchRadius"`
-	IndustrialZoneMinArea      float64      `yaml:"industrialZoneMinArea"`
-	GreenZoneSearchRadius      float64      `yaml:"greenZoneSearchRadius"`
-	GreenZoneMinArea           float64      `yaml:"greenZoneMinArea"`
+	Timeout                    time.Duration `yaml:"timeout"`
+	Headers                    misc.Headers  `yaml:"headers"`
+	InterpreterURL             string        `yaml:"interpreterURL"`
+	NoDistance                 float64       `yaml:"noDistance"`
+	SubwayCities               misc.Set      `yaml:"subwayCities"`
+	SubwayStationSearchRadius  float64       `yaml:"subwayStationSearchRadius"`
+	IndustrialZoneSearchRadius float64       `yaml:"industrialZoneSearchRadius"`
+	IndustrialZoneMinArea      float64       `yaml:"industrialZoneMinArea"`
+	GreenZoneSearchRadius      float64       `yaml:"greenZoneSearchRadius"`
+	GreenZoneMinArea           float64       `yaml:"greenZoneMinArea"`
 }
 
 func (gauger *Gauger) String() string {

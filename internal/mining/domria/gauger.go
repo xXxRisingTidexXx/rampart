@@ -21,7 +21,7 @@ import (
 
 func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger *logging.Logger) *Gauger {
 	return &Gauger{
-		&http.Client{Timeout: time.Duration(config.Timeout)},
+		&http.Client{Timeout: config.Timeout},
 		config.Headers,
 		config.InterpreterURL,
 		config.NoDistance,

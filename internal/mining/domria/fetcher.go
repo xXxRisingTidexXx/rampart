@@ -18,7 +18,7 @@ func NewFetcher(config *config.Fetcher, gatherer *metrics.Gatherer) *Fetcher {
 		flags[string(key)] = value
 	}
 	return &Fetcher{
-		&http.Client{Timeout: time.Duration(config.Timeout)},
+		&http.Client{Timeout: config.Timeout},
 		0,
 		config.Portion,
 		flags,
