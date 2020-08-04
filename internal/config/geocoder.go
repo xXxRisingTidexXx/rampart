@@ -6,10 +6,10 @@ import (
 )
 
 type Geocoder struct {
-	Timeout         Timing            `yaml:"timeout"`
-	Headers         map[string]string `yaml:"headers"`
-	StatelessCities *misc.Set         `yaml:"statelessCities"`
-	SearchURL       string            `yaml:"searchURL"`
+	Timeout         Timing       `yaml:"timeout"`
+	Headers         misc.Headers `yaml:"headers"`
+	StatelessCities misc.Set     `yaml:"statelessCities"`
+	SearchURL       string       `yaml:"searchURL"`
 }
 
 func (geocoder *Geocoder) String() string {

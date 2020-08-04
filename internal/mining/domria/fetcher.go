@@ -6,6 +6,7 @@ import (
 	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -32,7 +33,7 @@ type Fetcher struct {
 	page      int
 	portion   int
 	flags     map[string]string
-	headers   map[string]string
+	headers   misc.Headers
 	searchURL string
 	gatherer  *metrics.Gatherer
 }
@@ -66,9 +67,7 @@ func (fetcher *Fetcher) getSearch(flag string) (*search, error) {
 	if err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to construct a request, %v", err)
 	}
-	for key, value := range fetcher.headers {
-		request.Header.Set(key, value)
-	}
+	fetcher.headers.Inject(request)
 	response, err := fetcher.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to perform a request, %v", err)

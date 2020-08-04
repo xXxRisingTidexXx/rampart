@@ -39,10 +39,10 @@ func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger *loggin
 // TODO: add custom Headers type in misc.
 type Gauger struct {
 	client                     *http.Client
-	headers                    map[string]string
+	headers                    misc.Headers
 	interpreterURL             string
 	noDistance                 float64
-	subwayCities               *misc.Set
+	subwayCities               misc.Set
 	subwayStationSearchRadius  float64
 	industrialZoneSearchRadius float64
 	industrialZoneMinArea      float64
@@ -117,9 +117,7 @@ func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.Featu
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to construct a request, %v", err)
 	}
-	for key, value := range gauger.headers {
-		request.Header.Set(key, value)
-	}
+	gauger.headers.Inject(request)
 	response, err := gauger.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to perform a request, %v", err)

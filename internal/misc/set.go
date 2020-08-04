@@ -6,30 +6,29 @@ import (
 	"strings"
 )
 
-type Set struct {
-	items map[string]struct{}
-}
+type Set map[string]struct{}
 
-func (set *Set) Contains(key string) bool {
-	_, ok := set.items[key]
+func (set Set) Contains(key string) bool {
+	_, ok := set[key]
 	return ok
 }
 
 func (set *Set) UnmarshalYAML(node *yaml.Node) error {
-	elements := make([]string, 0)
-	if err := node.Decode(&elements); err != nil {
+	keys := make([]string, 0)
+	if err := node.Decode(&keys); err != nil {
 		return err
 	}
-	set.items = make(map[string]struct{}, len(elements))
-	for _, element := range elements {
-		set.items[element] = struct{}{}
+	items := make(map[string]struct{}, len(keys))
+	for _, element := range keys {
+		items[element] = struct{}{}
 	}
+	*set = items
 	return nil
 }
 
-func (set *Set) String() string {
-	keys := make([]string, 0, len(set.items))
-	for key := range set.items {
+func (set Set) String() string {
+	keys := make([]string, 0, len(set))
+	for key := range set {
 		keys = append(keys, key)
 	}
 	return fmt.Sprintf("[%s]", strings.Join(keys, " "))
