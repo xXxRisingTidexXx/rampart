@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"flag"
 	_ "github.com/lib/pq"
 	gocron "github.com/robfig/cron/v3"
@@ -34,8 +33,12 @@ func main() {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	gatherer := metrics.NewGatherer(*alias, db)
-	miner := findMiner(*alias, cfg.Mining.Miners, db, gatherer, logger)
+	short, gatherer := cfg.Mining.Miners, metrics.NewGatherer(*alias, db)
+	miners := map[string]mining.Miner{
+		short.DomriaPrimary.Alias:   domria.NewMiner(short.DomriaPrimary, db, gatherer, logger),
+		short.DomriaSecondary.Alias: domria.NewMiner(short.DomriaSecondary, db, gatherer, logger),
+	}
+	miner := miners[*alias]
 	if miner == nil {
 		_ = db.Close()
 		logger.Fatal("main: mining failed to find the miner")
@@ -55,18 +58,4 @@ func main() {
 	if err = database.CloseDatabase(db); err != nil {
 		logger.Fatal(err)
 	}
-}
-
-func findMiner(
-	alias string,
-	config *config.Miners,
-	db *sql.DB,
-	gatherer *metrics.Gatherer,
-	logger *logging.Logger,
-) mining.Miner {
-	miners := map[string]mining.Miner{
-		config.DomriaPrimary.Alias:   domria.NewMiner(config.DomriaPrimary, db, gatherer, logger),
-		config.DomriaSecondary.Alias: domria.NewMiner(config.DomriaSecondary, db, gatherer, logger),
-	}
-	return miners[alias]
 }
