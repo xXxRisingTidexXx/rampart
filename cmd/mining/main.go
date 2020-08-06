@@ -14,6 +14,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/secrets"
 )
 
+// TODO: https://github.com/robertkrimen/otto - JS interpreter in golang to run https://github.com/tyrasd/osmtogeojson .
 func main() {
 	isOnce := flag.Bool("once", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
