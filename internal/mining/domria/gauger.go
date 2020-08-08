@@ -145,10 +145,6 @@ func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.Featu
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to convert to geojson, %v", err)
 	}
-	actual, expected := len(collection.Features), len(gosm.Nodes)+len(gosm.Ways)+len(gosm.Relations)
-	if actual != expected {
-		gauger.logger.Inconsistency("domria: gauger poorly converted osm", url, actual, expected)
-	}
 	return collection, nil
 }
 
