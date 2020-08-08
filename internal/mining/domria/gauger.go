@@ -172,6 +172,7 @@ func (gauger *Gauger) gaugeDistance(
 }
 
 func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
+	start := time.Now()
 	collection, err := gauger.query(
 		`(
 		  way[landuse=industrial](around:%f,%f,%f);
@@ -185,6 +186,7 @@ func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
+	gauger.gatherer.GatherIndustrialGaugingDuration(start)
 	if err != nil {
 		gauger.gatherer.GatherFailedIndustrialGauging()
 		gauger.logger.Problem(flat, err)
