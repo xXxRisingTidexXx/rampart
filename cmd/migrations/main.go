@@ -9,6 +9,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/secrets"
 )
 
+// TODO: try to use this instead: https://github.com/golang-migrate/migrate .
 func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
