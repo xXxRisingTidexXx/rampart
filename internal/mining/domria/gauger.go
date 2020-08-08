@@ -51,9 +51,6 @@ type Gauger struct {
 	logger                     *logging.Logger
 }
 
-// TODO: github.com/paulmach/osm can't parse some osm XMLs. Add
-// TODO: metric to track such cases + think about possible
-// TODO: workarounds. For instance, npm package.
 func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 	newFlats := make([]*Flat, len(flats))
 	for i, flat := range flats {
@@ -174,7 +171,6 @@ func (gauger *Gauger) gaugeDistance(
 	return distance
 }
 
-// TODO: inject metrics.
 func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 	collection, err := gauger.query(
 		`(
@@ -190,10 +186,17 @@ func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 		flat.Point.Lon(),
 	)
 	if err != nil {
+		gauger.gatherer.GatherFailedIndustrialGauging()
 		gauger.logger.Problem(flat, err)
 		return gauger.noDistance
 	}
-	return gauger.gaugeDistance(flat, collection, gauger.industrialZoneMinArea)
+	distance := gauger.gaugeDistance(flat, collection, gauger.industrialZoneMinArea)
+	if distance == gauger.noDistance {
+		gauger.gatherer.GatherInconclusiveIndustrialGauging()
+	} else {
+		gauger.gatherer.GatherSuccessfulIndustrialGauging()
+	}
+	return distance
 }
 
 // TODO: inject metrics.

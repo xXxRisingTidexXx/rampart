@@ -11,41 +11,46 @@ func NewGatherer(miner string, db *sql.DB) *Gatherer {
 }
 
 type Gatherer struct {
-	miner                           string
-	stateSanitationNumber           int
-	citySanitationNumber            int
-	districtSanitationNumber        int
-	swapSanitationNumber            int
-	streetSanitationNumber          int
-	houseNumberSanitationNumber     int
-	locatedGeocodingNumber          int
-	unlocatedGeocodingNumber        int
-	failedGeocodingNumber           int
-	inconclusiveGeocodingNumber     int
-	successfulGeocodingNumber       int
-	absentSubwayGaugingNumber       int
-	failedSubwayGaugingNumber       int
-	inconclusiveSubwayGaugingNumber int
-	successfulSubwayGaugingNumber   int
-	approvedValidationNumber        int
-	deniedValidationNumber          int
-	createdStoringNumber            int
-	updatedStoringNumber            int
-	unalteredStoringNumber          int
-	failedStoringNumber             int
-	fetchingDuration                float64
-	geocodingDurationSum            float64
-	geocodingDurationCount          float64
-	subwayGaugingDurationSum        float64
-	subwayGaugingDurationCount      float64
-	readingDurationSum              float64
-	readingDurationCount            float64
-	creationDurationSum             float64
-	creationDurationCount           float64
-	updateDurationSum               float64
-	updateDurationCount             float64
-	totalDuration                   float64
-	db                              *sql.DB
+	miner                               string
+	stateSanitationNumber               int
+	citySanitationNumber                int
+	districtSanitationNumber            int
+	swapSanitationNumber                int
+	streetSanitationNumber              int
+	houseNumberSanitationNumber         int
+	locatedGeocodingNumber              int
+	unlocatedGeocodingNumber            int
+	failedGeocodingNumber               int
+	inconclusiveGeocodingNumber         int
+	successfulGeocodingNumber           int
+	absentSubwayGaugingNumber           int
+	failedSubwayGaugingNumber           int
+	inconclusiveSubwayGaugingNumber     int
+	successfulSubwayGaugingNumber       int
+	failedIndustrialGaugingNumber       int
+	inconclusiveIndustrialGaugingNumber int
+	successfulIndustrialGaugingNumber   int
+	approvedValidationNumber            int
+	deniedValidationNumber              int
+	createdStoringNumber                int
+	updatedStoringNumber                int
+	unalteredStoringNumber              int
+	failedStoringNumber                 int
+	fetchingDuration                    float64
+	geocodingDurationSum                float64
+	geocodingDurationCount              float64
+	subwayGaugingDurationSum            float64
+	subwayGaugingDurationCount          float64
+	industrialGaugingDurationSum        float64
+	industrialGaugingDurationCount      float64
+	readingDurationSum                  float64
+	readingDurationCount                float64
+	creationDurationSum                 float64
+	creationDurationCount               float64
+	updateDurationSum                   float64
+	updateDurationCount                 float64
+	totalDuration                       float64
+	db                                  *sql.DB
 }
 
 func (gatherer *Gatherer) GatherStateSanitation() {
@@ -108,6 +113,18 @@ func (gatherer *Gatherer) GatherSuccessfulSubwayGauging() {
 	gatherer.successfulSubwayGaugingNumber++
 }
 
+func (gatherer *Gatherer) GatherFailedIndustrialGauging() {
+	gatherer.failedIndustrialGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherInconclusiveIndustrialGauging() {
+	gatherer.inconclusiveIndustrialGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherSuccessfulIndustrialGauging() {
+	gatherer.successfulIndustrialGaugingNumber++
+}
+
 func (gatherer *Gatherer) GatherApprovedValidation() {
 	gatherer.approvedValidationNumber++
 }
@@ -146,6 +163,11 @@ func (gatherer *Gatherer) GatherSubwayGaugingDuration(start time.Time) {
 	gatherer.subwayGaugingDurationCount++
 }
 
+func (gatherer *Gatherer) GatherIndustrialGaugingDuration(start time.Time) {
+	gatherer.industrialGaugingDurationSum += time.Since(start).Seconds()
+	gatherer.industrialGaugingDurationCount++
+}
+
 func (gatherer *Gatherer) GatherReadingDuration(start time.Time) {
 	gatherer.readingDurationSum += time.Since(start).Seconds()
 	gatherer.readingDurationCount++
@@ -175,6 +197,10 @@ func (gatherer *Gatherer) Flush() error {
 	if gatherer.subwayGaugingDurationCount != 0 {
 		subwayGaugingDuration = gatherer.subwayGaugingDurationSum / gatherer.subwayGaugingDurationCount
 	}
+	//industrialGaugingDuration := 0.0
+	//if gatherer.industrialGaugingDurationCount != 0 {
+	//	industrialGaugingDuration = gatherer.industrialGaugingDurationSum / gatherer.industrialGaugingDurationCount
+	//}
 	readingDuration := 0.0
 	if gatherer.readingDurationCount != 0 {
 		readingDuration = gatherer.readingDurationSum / gatherer.readingDurationCount
@@ -249,6 +275,9 @@ func (gatherer *Gatherer) Flush() error {
 	gatherer.failedSubwayGaugingNumber = 0
 	gatherer.inconclusiveSubwayGaugingNumber = 0
 	gatherer.successfulSubwayGaugingNumber = 0
+	gatherer.failedIndustrialGaugingNumber = 0
+	gatherer.inconclusiveIndustrialGaugingNumber = 0
+	gatherer.successfulIndustrialGaugingNumber = 0
 	gatherer.approvedValidationNumber = 0
 	gatherer.deniedValidationNumber = 0
 	gatherer.createdStoringNumber = 0
@@ -260,6 +289,8 @@ func (gatherer *Gatherer) Flush() error {
 	gatherer.geocodingDurationCount = 0
 	gatherer.subwayGaugingDurationSum = 0
 	gatherer.subwayGaugingDurationCount = 0
+	gatherer.industrialGaugingDurationSum = 0
+	gatherer.industrialGaugingDurationCount = 0
 	gatherer.readingDurationSum = 0
 	gatherer.readingDurationCount = 0
 	gatherer.creationDurationSum = 0
