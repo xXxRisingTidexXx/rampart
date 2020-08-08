@@ -69,6 +69,8 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 			flat.Complex,
 			flat.Point,
 			gauger.gaugeSubwayStationDistance(flat),
+			gauger.gaugeIndustrialZoneDistance(flat),
+			gauger.gaugeGreenZoneDistance(flat),
 			flat.State,
 			flat.City,
 			flat.District,
