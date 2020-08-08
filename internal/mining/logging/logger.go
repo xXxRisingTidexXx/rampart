@@ -15,3 +15,7 @@ type Logger struct {
 func (logger *Logger) Problem(publication Publication, err error) {
 	logger.WithFields(log.Fields{"url": publication.URL(), "body": publication.Body()}).Error(err)
 }
+
+func (logger *Logger) Trouble(publication Publication, err error) {
+	logger.WithFields(log.Fields{"url": publication.URL()}).Error(err)
+}

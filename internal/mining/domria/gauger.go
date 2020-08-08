@@ -97,7 +97,7 @@ func (gauger *Gauger) gaugeSubwayStationDistance(flat *Flat) float64 {
 	gauger.gatherer.GatherSubwayGaugingDuration(start)
 	if err != nil {
 		gauger.gatherer.GatherFailedSubwayGauging()
-		gauger.logger.Problem(flat, err)
+		gauger.logger.Trouble(flat, err)
 		return gauger.noDistance
 	}
 	distance := gauger.gaugeDistance(flat, collection, 0)
@@ -187,7 +187,7 @@ func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 	gauger.gatherer.GatherIndustrialGaugingDuration(start)
 	if err != nil {
 		gauger.gatherer.GatherFailedIndustrialGauging()
-		gauger.logger.Problem(flat, err)
+		gauger.logger.Trouble(flat, err)
 		return gauger.noDistance
 	}
 	distance := gauger.gaugeDistance(flat, collection, gauger.industrialZoneMinArea)
@@ -217,7 +217,7 @@ func (gauger *Gauger) gaugeGreenZoneDistance(flat *Flat) float64 {
 	gauger.gatherer.GatherGreenGaugingDuration(start)
 	if err != nil {
 		gauger.gatherer.GatherFailedGreenGauging()
-		gauger.logger.Problem(flat, err)
+		gauger.logger.Trouble(flat, err)
 		return gauger.noDistance
 	}
 	distance := gauger.gaugeDistance(flat, collection, gauger.greenZoneMinArea)
