@@ -179,13 +179,13 @@ mining:
       <<: *domria
       alias: domria-primary
       housing: primary
-      spec: '1-59/2 * * * *'
+      spec: '0-59/2 * * * *'
       port: 9001
     domriaSecondary:
       <<: *domria
       alias: domria-secondary
       housing: secondary
-      spec: '0-58/2 * * * *'
+      spec: '1-59/2 * * * *'
       port: 9002
 migrations:
   dsnParams:
