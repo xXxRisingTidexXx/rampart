@@ -83,9 +83,9 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 	return newFlats
 }
 
-// TODO: add subwayless flat metric.
 func (gauger *Gauger) gaugeSubwayStationDistance(flat *Flat) float64 {
 	if !gauger.subwayCities.Contains(flat.City) {
+		gauger.gatherer.GatherAbsentSubwayGauging()
 		return gauger.noDistance
 	}
 	start := time.Now()

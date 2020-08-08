@@ -23,6 +23,7 @@ type Gatherer struct {
 	failedGeocodingNumber           int
 	inconclusiveGeocodingNumber     int
 	successfulGeocodingNumber       int
+	absentSubwayGaugingNumber       int
 	failedSubwayGaugingNumber       int
 	inconclusiveSubwayGaugingNumber int
 	successfulSubwayGaugingNumber   int
@@ -89,6 +90,10 @@ func (gatherer *Gatherer) GatherInconclusiveGeocoding() {
 
 func (gatherer *Gatherer) GatherSuccessfulGeocoding() {
 	gatherer.successfulGeocodingNumber++
+}
+
+func (gatherer *Gatherer) GatherAbsentSubwayGauging() {
+	gatherer.absentSubwayGaugingNumber++
 }
 
 func (gatherer *Gatherer) GatherFailedSubwayGauging() {
@@ -240,6 +245,7 @@ func (gatherer *Gatherer) Flush() error {
 	gatherer.failedGeocodingNumber = 0
 	gatherer.inconclusiveGeocodingNumber = 0
 	gatherer.successfulGeocodingNumber = 0
+	gatherer.absentSubwayGaugingNumber = 0
 	gatherer.failedSubwayGaugingNumber = 0
 	gatherer.inconclusiveSubwayGaugingNumber = 0
 	gatherer.successfulSubwayGaugingNumber = 0
