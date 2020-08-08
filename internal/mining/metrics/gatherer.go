@@ -30,6 +30,9 @@ type Gatherer struct {
 	failedIndustrialGaugingNumber       int
 	inconclusiveIndustrialGaugingNumber int
 	successfulIndustrialGaugingNumber   int
+	failedGreenGaugingNumber            int
+	inconclusiveGreenGaugingNumber      int
+	successfulGreenGaugingNumber        int
 	approvedValidationNumber            int
 	deniedValidationNumber              int
 	createdStoringNumber                int
@@ -43,6 +46,8 @@ type Gatherer struct {
 	subwayGaugingDurationCount          float64
 	industrialGaugingDurationSum        float64
 	industrialGaugingDurationCount      float64
+	greenGaugingDurationSum             float64
+	greenGaugingDurationCount           float64
 	readingDurationSum                  float64
 	readingDurationCount                float64
 	creationDurationSum                 float64
@@ -125,6 +130,18 @@ func (gatherer *Gatherer) GatherSuccessfulIndustrialGauging() {
 	gatherer.successfulIndustrialGaugingNumber++
 }
 
+func (gatherer *Gatherer) GatherFailedGreenGauging() {
+	gatherer.failedGreenGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherInconclusiveGreenGauging() {
+	gatherer.inconclusiveGreenGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherSuccessfulGreenGauging() {
+	gatherer.successfulGreenGaugingNumber++
+}
+
 func (gatherer *Gatherer) GatherApprovedValidation() {
 	gatherer.approvedValidationNumber++
 }
@@ -168,6 +185,11 @@ func (gatherer *Gatherer) GatherIndustrialGaugingDuration(start time.Time) {
 	gatherer.industrialGaugingDurationCount++
 }
 
+func (gatherer *Gatherer) GatherGreenGaugingDuration(start time.Time) {
+	gatherer.greenGaugingDurationSum += time.Since(start).Seconds()
+	gatherer.greenGaugingDurationCount++
+}
+
 func (gatherer *Gatherer) GatherReadingDuration(start time.Time) {
 	gatherer.readingDurationSum += time.Since(start).Seconds()
 	gatherer.readingDurationCount++
@@ -200,6 +222,10 @@ func (gatherer *Gatherer) Flush() error {
 	//industrialGaugingDuration := 0.0
 	//if gatherer.industrialGaugingDurationCount != 0 {
 	//	industrialGaugingDuration = gatherer.industrialGaugingDurationSum / gatherer.industrialGaugingDurationCount
+	//}
+	//greenGaugingDuration := 0.0
+	//if gatherer.greenGaugingDurationCount != 0 {
+	//	greenGaugingDuration = gatherer.greenGaugingDurationSum / gatherer.greenGaugingDurationCount
 	//}
 	readingDuration := 0.0
 	if gatherer.readingDurationCount != 0 {
@@ -278,6 +304,9 @@ func (gatherer *Gatherer) Flush() error {
 	gatherer.failedIndustrialGaugingNumber = 0
 	gatherer.inconclusiveIndustrialGaugingNumber = 0
 	gatherer.successfulIndustrialGaugingNumber = 0
+	gatherer.failedGreenGaugingNumber = 0
+	gatherer.inconclusiveGreenGaugingNumber = 0
+	gatherer.successfulGreenGaugingNumber = 0
 	gatherer.approvedValidationNumber = 0
 	gatherer.deniedValidationNumber = 0
 	gatherer.createdStoringNumber = 0
@@ -291,6 +320,8 @@ func (gatherer *Gatherer) Flush() error {
 	gatherer.subwayGaugingDurationCount = 0
 	gatherer.industrialGaugingDurationSum = 0
 	gatherer.industrialGaugingDurationCount = 0
+	gatherer.greenGaugingDurationSum = 0
+	gatherer.greenGaugingDurationCount = 0
 	gatherer.readingDurationSum = 0
 	gatherer.readingDurationCount = 0
 	gatherer.creationDurationSum = 0

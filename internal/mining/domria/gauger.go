@@ -201,8 +201,8 @@ func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 	return distance
 }
 
-// TODO: inject metrics.
 func (gauger *Gauger) gaugeGreenZoneDistance(flat *Flat) float64 {
+	start := time.Now()
 	collection, err := gauger.query(
 		`(
 		  way[leisure=park](around:%f,%f,%f);
@@ -216,9 +216,17 @@ func (gauger *Gauger) gaugeGreenZoneDistance(flat *Flat) float64 {
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
+	gauger.gatherer.GatherGreenGaugingDuration(start)
 	if err != nil {
+		gauger.gatherer.GatherFailedGreenGauging()
 		gauger.logger.Problem(flat, err)
 		return gauger.noDistance
 	}
-	return gauger.gaugeDistance(flat, collection, gauger.greenZoneMinArea)
+	distance := gauger.gaugeDistance(flat, collection, gauger.greenZoneMinArea)
+	if distance == gauger.noDistance {
+		gauger.gatherer.GatherInconclusiveGreenGauging()
+	} else {
+		gauger.gatherer.GatherSuccessfulGreenGauging()
+	}
+	return distance
 }
