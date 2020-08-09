@@ -4,10 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/paulmach/orb/encoding/wkb"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"time"
 )
 
@@ -15,7 +14,7 @@ func NewStorer(
 	config *config.Storer,
 	db *sql.DB,
 	gatherer *metrics.Gatherer,
-	logger log.FieldLogger,
+	logger *logging.Logger,
 ) *Storer {
 	return &Storer{config.SRID, db, gatherer, logger}
 }
@@ -24,15 +23,13 @@ type Storer struct {
 	srid     int
 	db       *sql.DB
 	gatherer *metrics.Gatherer
-	logger   log.FieldLogger
+	logger   *logging.Logger
 }
 
 func (storer *Storer) StoreFlats(flats []*Flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {
-			storer.logger.WithFields(
-				log.Fields{misc.FieldOriginURL: flat.OriginURL, misc.FieldSource: flat.Source},
-			).Error(err)
+			storer.logger.Problem(flat, err)
 			storer.gatherer.GatherFailedStoring()
 		}
 	}
@@ -116,12 +113,14 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 		    complex = $11,
 		    point = st_geomfromwkb($12, $13),
 		    subway_station_distance = $14,
-		    state = $15,
-		    city = $16,
-		    district = $17,
-		    street = $18,
-		    house_number = $19
-		where origin_url = $20`,
+		    industrial_zone_distance = $15,
+		    green_zone_distance = $16,
+		    state = $17,
+		    city = $18,
+		    district = $19,
+		    street = $20,
+		    house_number = $21
+		where origin_url = $22`,
 		flat.ImageURL,
 		flat.UpdateTime,
 		flat.Price,
@@ -136,6 +135,8 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 		wkb.Value(flat.Point),
 		storer.srid,
 		flat.SubwayStationDistance,
+		flat.IndustrialZoneDistance,
+		flat.GreenZoneDistance,
 		flat.State,
 		flat.City,
 		flat.District,
@@ -154,13 +155,13 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 		`insert into flats
         (
          	origin_url, image_url, update_time, parsing_time, price, total_area, living_area, kitchen_area,
-            room_number, floor, total_floor, housing, complex, point, subway_station_distance, state, city,
-            district, street, house_number
+            room_number, floor, total_floor, housing, complex, point, subway_station_distance,
+            industrial_zone_distance, green_zone_distance, state, city, district, street, house_number
         )
         values 
 		(
 		    $1, $2, $3, now() at time zone 'utc', $4, $5, $6, $7, $8, $9, $10, $11, $12, 
-		    st_geomfromwkb($13, $14), $15, $16, $17, $18, $19, $20
+		    st_geomfromwkb($13, $14), $15, $16, $17, $18, $19, $20, $21, $22
 		)`,
 		flat.OriginURL,
 		flat.ImageURL,
@@ -177,6 +178,8 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 		wkb.Value(flat.Point),
 		storer.srid,
 		flat.SubwayStationDistance,
+		flat.IndustrialZoneDistance,
+		flat.GreenZoneDistance,
 		flat.State,
 		flat.City,
 		flat.District,

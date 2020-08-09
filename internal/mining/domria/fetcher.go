@@ -6,6 +6,7 @@ import (
 	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -17,7 +18,7 @@ func NewFetcher(config *config.Fetcher, gatherer *metrics.Gatherer) *Fetcher {
 		flags[string(key)] = value
 	}
 	return &Fetcher{
-		&http.Client{Timeout: time.Duration(config.Timeout)},
+		&http.Client{Timeout: config.Timeout},
 		0,
 		config.Portion,
 		flags,
@@ -32,7 +33,7 @@ type Fetcher struct {
 	page      int
 	portion   int
 	flags     map[string]string
-	headers   map[string]string
+	headers   misc.Headers
 	searchURL string
 	gatherer  *metrics.Gatherer
 }
@@ -40,18 +41,15 @@ type Fetcher struct {
 func (fetcher *Fetcher) FetchFlats(housing string) ([]*Flat, error) {
 	flag, ok := fetcher.flags[housing]
 	if !ok {
-		return nil, fmt.Errorf("domria: fetcher doesn't accept %s housing", housing)
+		return nil, fmt.Errorf("domria: fetcher doesn't accept housing %s", housing)
 	}
 	start := time.Now()
-	bytes, err := fetcher.getSearch(flag)
+	search, err := fetcher.getSearch(flag)
 	fetcher.gatherer.GatherFetchingDuration(start)
 	if err != nil {
 		return nil, err
 	}
-	flats, err := fetcher.unmarshalSearch(bytes, housing)
-	if err != nil {
-		return nil, err
-	}
+	flats := fetcher.getFlats(search, housing)
 	if len(flats) > 0 {
 		fetcher.page++
 	} else {
@@ -60,7 +58,7 @@ func (fetcher *Fetcher) FetchFlats(housing string) ([]*Flat, error) {
 	return flats, nil
 }
 
-func (fetcher *Fetcher) getSearch(flag string) ([]byte, error) {
+func (fetcher *Fetcher) getSearch(flag string) (*search, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf(fetcher.searchURL, flag, fetcher.page, fetcher.portion),
@@ -69,9 +67,7 @@ func (fetcher *Fetcher) getSearch(flag string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to construct a request, %v", err)
 	}
-	for key, value := range fetcher.headers {
-		request.Header.Set(key, value)
-	}
+	fetcher.headers.Inject(request)
 	response, err := fetcher.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to perform a request, %v", err)
@@ -88,15 +84,14 @@ func (fetcher *Fetcher) getSearch(flag string) ([]byte, error) {
 	if err = response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to close the response body, %v", err)
 	}
-	return bytes, nil
-}
-
-// TODO: move unmarshalling to the upper function in order to concentrate error handling.
-func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing string) ([]*Flat, error) {
 	search := search{}
 	if err := json.Unmarshal(bytes, &search); err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the search, %v", err)
 	}
+	return &search, nil
+}
+
+func (fetcher *Fetcher) getFlats(search *search, housing string) []*Flat {
 	flats := make([]*Flat, len(search.Items))
 	for i, item := range search.Items {
 		price := 0.0
@@ -108,27 +103,26 @@ func (fetcher *Fetcher) unmarshalSearch(bytes []byte, housing string) ([]*Flat, 
 			street = item.StreetName
 		}
 		flats[i] = &Flat{
-			item.BeautifulURL,
-			item.MainPhoto,
-			time.Time(item.UpdatedAt),
-			price,
-			item.TotalSquareMeters,
-			item.LivingSquareMeters,
-			item.KitchenSquareMeters,
-			item.RoomsCount,
-			item.Floor,
-			item.FloorsCount,
-			housing,
-			item.UserNewbuildNameUK,
-			orb.Point{float64(item.Longitude), float64(item.Latitude)},
-			0,
-			item.StateNameUK,
-			item.CityNameUK,
-			item.DistrictNameUK,
-			street,
-			item.BuildingNumberStr,
-			item.Source,
+			OriginURL:   item.BeautifulURL,
+			ImageURL:    item.MainPhoto,
+			UpdateTime:  time.Time(item.UpdatedAt),
+			Price:       price,
+			TotalArea:   item.TotalSquareMeters,
+			LivingArea:  item.LivingSquareMeters,
+			KitchenArea: item.KitchenSquareMeters,
+			RoomNumber:  item.RoomsCount,
+			Floor:       item.Floor,
+			TotalFloor:  item.FloorsCount,
+			Housing:     housing,
+			Complex:     item.UserNewbuildNameUK,
+			Point:       orb.Point{float64(item.Longitude), float64(item.Latitude)},
+			State:       item.StateNameUK,
+			City:        item.CityNameUK,
+			District:    item.DistrictNameUK,
+			Street:      street,
+			HouseNumber: item.BuildingNumberStr,
+			Source:      item.Source,
 		}
 	}
-	return flats, nil
+	return flats
 }

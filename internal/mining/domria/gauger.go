@@ -3,39 +3,52 @@ package domria
 import (
 	"encoding/xml"
 	"fmt"
+	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/geojson"
 	"github.com/paulmach/orb/planar"
-	gosm "github.com/paulmach/osm"
-	log "github.com/sirupsen/logrus"
+	"github.com/paulmach/osm"
+	"github.com/paulmach/osm/osmgeojson"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"io/ioutil"
 	"math"
 	"net/http"
-	"net/url"
+	gourl "net/url"
 	"time"
 )
 
-func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger log.FieldLogger) *Gauger {
+func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger *logging.Logger) *Gauger {
 	return &Gauger{
-		&http.Client{Timeout: time.Duration(config.Timeout)},
+		&http.Client{Timeout: config.Timeout},
 		config.Headers,
 		config.InterpreterURL,
-		config.SearchRadius,
-		-1,
+		config.NoDistance,
+		config.SubwayCities,
+		config.SubwayStationSearchRadius,
+		config.IndustrialZoneSearchRadius,
+		config.IndustrialZoneMinArea,
+		config.GreenZoneSearchRadius,
+		config.GreenZoneMinArea,
 		gatherer,
 		logger,
 	}
 }
 
 type Gauger struct {
-	client         *http.Client
-	headers        map[string]string
-	interpreterURL string
-	searchRadius   float64
-	noDistance     float64
-	gatherer       *metrics.Gatherer
-	logger         log.FieldLogger
+	client                     *http.Client
+	headers                    misc.Headers
+	interpreterURL             string
+	noDistance                 float64
+	subwayCities               misc.Set
+	subwayStationSearchRadius  float64
+	industrialZoneSearchRadius float64
+	industrialZoneMinArea      float64
+	greenZoneSearchRadius      float64
+	greenZoneMinArea           float64
+	gatherer                   *metrics.Gatherer
+	logger                     *logging.Logger
 }
 
 func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
@@ -56,6 +69,8 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 			flat.Complex,
 			flat.Point,
 			gauger.gaugeSubwayStationDistance(flat),
+			gauger.gaugeIndustrialZoneDistance(flat),
+			gauger.gaugeGreenZoneDistance(flat),
 			flat.State,
 			flat.City,
 			flat.District,
@@ -68,45 +83,39 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 }
 
 func (gauger *Gauger) gaugeSubwayStationDistance(flat *Flat) float64 {
+	if !gauger.subwayCities.Contains(flat.City) {
+		gauger.gatherer.GatherAbsentSubwayGauging()
+		return gauger.noDistance
+	}
 	start := time.Now()
-	osm, err := gauger.query(
+	collection, err := gauger.query(
 		"node[station=subway](around:%f,%f,%f);out;",
-		gauger.searchRadius,
+		gauger.subwayStationSearchRadius,
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
 	gauger.gatherer.GatherSubwayGaugingDuration(start)
 	if err != nil {
 		gauger.gatherer.GatherFailedSubwayGauging()
-		gauger.logger.WithFields(
-			log.Fields{misc.FieldOriginURL: flat.OriginURL, misc.FieldSource: flat.Source},
-		).Error(err)
+		gauger.logger.Trouble(flat, err)
 		return gauger.noDistance
 	}
-	if len(osm.Nodes) == 0 {
+	distance := gauger.gaugeDistance(flat, collection, 0)
+	if distance == gauger.noDistance {
 		gauger.gatherer.GatherInconclusiveSubwayGauging()
-		return gauger.noDistance
+	} else {
+		gauger.gatherer.GatherSuccessfulSubwayGauging()
 	}
-	distance := planar.Distance(flat.Point, osm.Nodes[0].Point())
-	for _, node := range osm.Nodes {
-		distance = math.Min(distance, planar.Distance(flat.Point, node.Point()))
-	}
-	gauger.gatherer.GatherSuccessfulSubwayGauging()
 	return distance
 }
 
-func (gauger *Gauger) query(query string, params ...interface{}) (*gosm.OSM, error) {
-	request, err := http.NewRequest(
-		http.MethodGet,
-		fmt.Sprintf(gauger.interpreterURL, url.QueryEscape(fmt.Sprintf(query, params...))),
-		nil,
-	)
+func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.FeatureCollection, error) {
+	url := fmt.Sprintf(gauger.interpreterURL, gourl.QueryEscape(fmt.Sprintf(query, params...)))
+	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to construct a request, %v", err)
 	}
-	for key, value := range gauger.headers {
-		request.Header.Set(key, value)
-	}
+	gauger.headers.Inject(request)
 	response, err := gauger.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to perform a request, %v", err)
@@ -123,9 +132,99 @@ func (gauger *Gauger) query(query string, params ...interface{}) (*gosm.OSM, err
 	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to close the response body, %v", err)
 	}
-	osm := gosm.OSM{}
-	if err := xml.Unmarshal(bytes, &osm); err != nil {
+	gosm := osm.OSM{}
+	if err := xml.Unmarshal(bytes, &gosm); err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to unmarshal the osm, %v", err)
 	}
-	return &osm, nil
+	collection, err := osmgeojson.Convert(
+		&gosm,
+		osmgeojson.NoID(true),
+		osmgeojson.NoMeta(true),
+		osmgeojson.NoRelationMembership(true),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("domria: gauger failed to convert to geojson, %v", err)
+	}
+	return collection, nil
+}
+
+func (gauger *Gauger) gaugeDistance(
+	flat *Flat,
+	collection *geojson.FeatureCollection,
+	minArea float64,
+) float64 {
+	geometries := make([]orb.Geometry, 0)
+	for _, feature := range collection.Features {
+		if planar.Area(feature.Geometry) >= minArea {
+			geometries = append(geometries, feature.Geometry)
+		}
+	}
+	if len(geometries) == 0 {
+		return gauger.noDistance
+	}
+	distance := planar.DistanceFrom(geometries[0], flat.Point)
+	for _, geometry := range geometries {
+		distance = math.Min(distance, planar.DistanceFrom(geometry, flat.Point))
+	}
+	return distance
+}
+
+func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
+	start := time.Now()
+	collection, err := gauger.query(
+		`(
+		  way[landuse=industrial](around:%f,%f,%f);
+		  relation[landuse=industrial](around:%f,%f,%f);
+		);
+		out geom;`,
+		gauger.industrialZoneSearchRadius,
+		flat.Point.Lat(),
+		flat.Point.Lon(),
+		gauger.industrialZoneSearchRadius,
+		flat.Point.Lat(),
+		flat.Point.Lon(),
+	)
+	gauger.gatherer.GatherIndustrialGaugingDuration(start)
+	if err != nil {
+		gauger.gatherer.GatherFailedIndustrialGauging()
+		gauger.logger.Trouble(flat, err)
+		return gauger.noDistance
+	}
+	distance := gauger.gaugeDistance(flat, collection, gauger.industrialZoneMinArea)
+	if distance == gauger.noDistance {
+		gauger.gatherer.GatherInconclusiveIndustrialGauging()
+	} else {
+		gauger.gatherer.GatherSuccessfulIndustrialGauging()
+	}
+	return distance
+}
+
+func (gauger *Gauger) gaugeGreenZoneDistance(flat *Flat) float64 {
+	start := time.Now()
+	collection, err := gauger.query(
+		`(
+		  way[leisure=park](around:%f,%f,%f);
+		  relation[leisure=park](around:%f,%f,%f);
+		);
+		out geom;`,
+		gauger.greenZoneSearchRadius,
+		flat.Point.Lat(),
+		flat.Point.Lon(),
+		gauger.greenZoneSearchRadius,
+		flat.Point.Lat(),
+		flat.Point.Lon(),
+	)
+	gauger.gatherer.GatherGreenGaugingDuration(start)
+	if err != nil {
+		gauger.gatherer.GatherFailedGreenGauging()
+		gauger.logger.Trouble(flat, err)
+		return gauger.noDistance
+	}
+	distance := gauger.gaugeDistance(flat, collection, gauger.greenZoneMinArea)
+	if distance == gauger.noDistance {
+		gauger.gatherer.GatherInconclusiveGreenGauging()
+	} else {
+		gauger.gatherer.GatherSuccessfulGreenGauging()
+	}
+	return distance
 }

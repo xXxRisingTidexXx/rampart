@@ -2,18 +2,17 @@ package metrics
 
 import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"net/http"
 	"strconv"
-	"time"
 )
 
-func RunServer(port int, config *config.Server, logger log.FieldLogger) {
+func RunServer(port int, config *config.Server, logger *logging.Logger) {
 	server := &http.Server{
 		Addr:           ":" + strconv.Itoa(port),
-		ReadTimeout:    time.Duration(config.ReadTimeout),
-		WriteTimeout:   time.Duration(config.WriteTimeout),
+		ReadTimeout:    config.ReadTimeout,
+		WriteTimeout:   config.WriteTimeout,
 		MaxHeaderBytes: config.MaxHeaderBytes,
 		Handler:        promhttp.Handler(),
 	}

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/paulmach/orb"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"io/ioutil"
@@ -14,14 +14,12 @@ import (
 	"time"
 )
 
-func NewGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger log.FieldLogger) *Geocoder {
+func NewGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger *logging.Logger) *Geocoder {
 	return &Geocoder{
-		&http.Client{Timeout: time.Duration(config.Timeout)},
+		&http.Client{Timeout: config.Timeout},
 		config.Headers,
 		config.StatelessCities,
 		config.SearchURL,
-		" ",
-		"+",
 		gatherer,
 		logger,
 	}
@@ -29,13 +27,11 @@ func NewGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger log
 
 type Geocoder struct {
 	client          *http.Client
-	headers         map[string]string
-	statelessCities *misc.Set
+	headers         misc.Headers
+	statelessCities misc.Set
 	searchURL       string
-	whitespace      string
-	plus            string
 	gatherer        *metrics.Gatherer
-	logger          log.FieldLogger
+	logger          *logging.Logger
 }
 
 func (geocoder *Geocoder) GeocodeFlats(flats []*Flat) []*Flat {
@@ -65,29 +61,59 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 	locations, err := geocoder.getLocations(flat)
 	geocoder.gatherer.GatherGeocodingDuration(start)
 	if err != nil {
-		geocoder.logger.WithFields(
-			log.Fields{misc.FieldOriginURL: flat.OriginURL, misc.FieldSource: flat.Source},
-		).Error(err)
+		geocoder.logger.Problem(flat, err)
 		geocoder.gatherer.GatherFailedGeocoding()
 		return nil
 	}
-	newFlat := geocoder.locateFlat(flat, locations)
-	if newFlat == nil {
+	if len(locations) == 0 {
 		geocoder.gatherer.GatherInconclusiveGeocoding()
 		return nil
 	}
 	geocoder.gatherer.GatherSuccessfulGeocoding()
-	return newFlat
+	return &Flat{
+		OriginURL:   flat.OriginURL,
+		ImageURL:    flat.ImageURL,
+		UpdateTime:  flat.UpdateTime,
+		Price:       flat.Price,
+		TotalArea:   flat.TotalArea,
+		LivingArea:  flat.LivingArea,
+		KitchenArea: flat.KitchenArea,
+		RoomNumber:  flat.RoomNumber,
+		Floor:       flat.Floor,
+		TotalFloor:  flat.TotalFloor,
+		Housing:     flat.Housing,
+		Complex:     flat.Complex,
+		Point:       orb.Point{float64(locations[0].Lon), float64(locations[0].Lat)},
+		State:       flat.State,
+		City:        flat.City,
+		District:    flat.District,
+		Street:      flat.Street,
+		HouseNumber: flat.HouseNumber,
+		Source:      flat.Source,
+	}
 }
 
 func (geocoder *Geocoder) getLocations(flat *Flat) ([]*location, error) {
-	request, err := http.NewRequest(http.MethodGet, geocoder.getSearchURL(flat), nil)
+	whitespace, plus, state := " ", "+", ""
+	if !geocoder.statelessCities.Contains(flat.City) {
+		state = strings.ReplaceAll(flat.State, whitespace, plus)
+	}
+	request, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf(
+			geocoder.searchURL,
+			state,
+			strings.ReplaceAll(flat.City, whitespace, plus),
+			strings.ReplaceAll(flat.District, whitespace, plus),
+			strings.ReplaceAll(flat.Street, whitespace, plus),
+			strings.ReplaceAll(flat.HouseNumber, whitespace, plus),
+		),
+		nil,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to construct a request, %v", err)
 	}
-	for key, value := range geocoder.headers {
-		request.Header.Set(key, value)
-	}
+	geocoder.headers.Inject(request)
 	response, err := geocoder.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to perform a request, %v", err)
@@ -109,47 +135,4 @@ func (geocoder *Geocoder) getLocations(flat *Flat) ([]*location, error) {
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the locations, %v", err)
 	}
 	return locations, nil
-}
-
-func (geocoder *Geocoder) getSearchURL(flat *Flat) string {
-	state := ""
-	if !geocoder.statelessCities.Contains(flat.City) {
-		state = strings.ReplaceAll(flat.State, geocoder.whitespace, geocoder.plus)
-	}
-	return fmt.Sprintf(
-		geocoder.searchURL,
-		state,
-		strings.ReplaceAll(flat.City, geocoder.whitespace, geocoder.plus),
-		strings.ReplaceAll(flat.District, geocoder.whitespace, geocoder.plus),
-		strings.ReplaceAll(flat.Street, geocoder.whitespace, geocoder.plus),
-		strings.ReplaceAll(flat.HouseNumber, geocoder.whitespace, geocoder.plus),
-	)
-}
-
-func (geocoder *Geocoder) locateFlat(flat *Flat, locations []*location) *Flat {
-	if len(locations) == 0 {
-		return nil
-	}
-	return &Flat{
-		flat.OriginURL,
-		flat.ImageURL,
-		flat.UpdateTime,
-		flat.Price,
-		flat.TotalArea,
-		flat.LivingArea,
-		flat.KitchenArea,
-		flat.RoomNumber,
-		flat.Floor,
-		flat.TotalFloor,
-		flat.Housing,
-		flat.Complex,
-		orb.Point{float64(locations[0].Lon), float64(locations[0].Lat)},
-		0,
-		flat.State,
-		flat.City,
-		flat.District,
-		flat.Street,
-		flat.HouseNumber,
-		flat.Source,
-	}
 }

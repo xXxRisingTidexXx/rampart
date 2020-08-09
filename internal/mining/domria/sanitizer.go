@@ -21,7 +21,6 @@ func NewSanitizer(config *config.Sanitizer, gatherer *metrics.Gatherer) *Sanitiz
 		strings.NewReplacer(config.StreetReplacements...),
 		strings.NewReplacer(config.HouseNumberReplacements...),
 		config.HouseNumberMaxLength,
-		",",
 		gatherer,
 	}
 }
@@ -39,7 +38,6 @@ type Sanitizer struct {
 	streetReplacer       *strings.Replacer
 	houseNumberReplacer  *strings.Replacer
 	houseNumberMaxLength int
-	comma                string
 	gatherer             *metrics.Gatherer
 }
 
@@ -86,7 +84,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 		district += sanitizer.districtSuffix
 	}
 	street, houseNumber := flat.Street, sanitizer.sanitizeHouseNumber(flat.HouseNumber)
-	if index := strings.Index(flat.Street, sanitizer.comma); index != -1 {
+	if index := strings.Index(flat.Street, ","); index != -1 {
 		street = flat.Street[:index]
 		sanitizer.gatherer.GatherStreetSanitation()
 		extraNumber := sanitizer.sanitizeHouseNumber(flat.Street[index+1:])
@@ -99,26 +97,25 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 		houseNumber = string(runes[:sanitizer.houseNumberMaxLength])
 	}
 	return &Flat{
-		originURL,
-		imageURL,
-		flat.UpdateTime,
-		flat.Price,
-		flat.TotalArea,
-		flat.LivingArea,
-		flat.KitchenArea,
-		flat.RoomNumber,
-		flat.Floor,
-		flat.TotalFloor,
-		flat.Housing,
-		flat.Complex,
-		flat.Point,
-		0,
-		state,
-		city,
-		district,
-		strings.TrimSpace(sanitizer.streetReplacer.Replace(street)),
-		houseNumber,
-		flat.Source,
+		OriginURL:   originURL,
+		ImageURL:    imageURL,
+		UpdateTime:  flat.UpdateTime,
+		Price:       flat.Price,
+		TotalArea:   flat.TotalArea,
+		LivingArea:  flat.LivingArea,
+		KitchenArea: flat.KitchenArea,
+		RoomNumber:  flat.RoomNumber,
+		Floor:       flat.Floor,
+		TotalFloor:  flat.TotalFloor,
+		Housing:     flat.Housing,
+		Complex:     flat.Complex,
+		Point:       flat.Point,
+		State:       state,
+		City:        city,
+		District:    district,
+		Street:      strings.TrimSpace(sanitizer.streetReplacer.Replace(street)),
+		HouseNumber: houseNumber,
+		Source:      flat.Source,
 	}
 }
 
@@ -127,7 +124,7 @@ func (sanitizer *Sanitizer) sanitizeHouseNumber(houseNumber string) string {
 		return houseNumber
 	}
 	newHouseNumber := sanitizer.houseNumberReplacer.Replace(houseNumber)
-	if index := strings.Index(newHouseNumber, sanitizer.comma); index != -1 {
+	if index := strings.Index(newHouseNumber, ","); index != -1 {
 		return newHouseNumber[:index]
 	}
 	return newHouseNumber
