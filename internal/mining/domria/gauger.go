@@ -36,6 +36,7 @@ func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger *loggin
 	}
 }
 
+// TODO: increase timeout to ~30-35 sec.
 type Gauger struct {
 	client                     *http.Client
 	headers                    misc.Headers
