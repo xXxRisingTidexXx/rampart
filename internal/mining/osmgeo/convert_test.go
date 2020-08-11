@@ -59,3 +59,7 @@ func testConvert(t *testing.T, filePath string, expected []orb.Geometry) {
 		}
 	}
 }
+
+func TestConvertSingleNode(t *testing.T) {
+	testConvert(t, "testdata/single_node.osm", []orb.Geometry{orb.Point{30.5244014, 50.4495672}})
+}
