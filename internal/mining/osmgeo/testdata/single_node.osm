@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm version="0.6" generator="Overpass API 0.7.56.3 eb200aeb">
+    <note>The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.</note>
+    <meta osm_base="2020-08-11T07:21:03Z"/>
+
+    <node id="4123561640" lat="50.4495672" lon="30.5244014">
+        <tag k="historic" v="memorial"/>
+        <tag k="memorial" v="statue"/>
+        <tag k="name" v="Козак Мамай"/>
+        <tag k="name:en" v="Kozak Mamai"/>
+        <tag k="name:ru" v="Казак Мамай"/>
+        <tag k="tourism" v="artwork"/>
+    </node>
+
+</osm>
