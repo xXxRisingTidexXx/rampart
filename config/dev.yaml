@@ -145,7 +145,7 @@ mining:
         timeout: 35s
         headers:
           <<: *headers
-        interpreterURL: https://overpass.kumi.systems/api/interpreter?data=%s
+        interpreterURL: https://overpass-api.de/api/interpreter?data=%s
         noDistance: -1
         subwayCities:
           - Київ
