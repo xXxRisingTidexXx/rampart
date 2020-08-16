@@ -191,7 +191,6 @@ func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 		gauger.logger.Trouble(flat, err)
 		return gauger.noDistance
 	}
-	gauger.logger.Info(flat.Point, collection)
 	distance := gauger.gaugeDistance(flat, collection, gauger.industrialZoneMinArea)
 	if distance == gauger.noDistance {
 		gauger.gatherer.GatherInconclusiveIndustrialGauging()
@@ -223,7 +222,6 @@ func (gauger *Gauger) gaugeGreenZoneDistance(flat *Flat) float64 {
 		gauger.logger.Trouble(flat, err)
 		return gauger.noDistance
 	}
-	gauger.logger.Info(flat.Point, collection.Features)
 	distance := gauger.gaugeDistance(flat, collection, gauger.greenZoneMinArea)
 	if distance == gauger.noDistance {
 		gauger.gatherer.GatherInconclusiveGreenGauging()
