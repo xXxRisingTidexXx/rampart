@@ -142,7 +142,7 @@ mining:
           - Київ
         searchURL: https://nominatim.openstreetmap.org/search?state=%s&city=%s&county=%s&street=%s+%s&format=json&countrycodes=ua
       gauger:
-        timeout: 15s
+        timeout: 35s
         headers:
           <<: *headers
         interpreterURL: https://overpass.kumi.systems/api/interpreter?data=%s
@@ -179,13 +179,13 @@ mining:
       <<: *domria
       alias: domria-primary
       housing: primary
-      spec: '0-59/2 * * * *'
+      spec: '0-59/4 * * * *'
       port: 9001
     domriaSecondary:
       <<: *domria
       alias: domria-secondary
       housing: secondary
-      spec: '1-59/2 * * * *'
+      spec: '1-59/4 * * * *'
       port: 9002
 migrations:
   dsnParams:
