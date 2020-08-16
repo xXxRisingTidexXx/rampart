@@ -175,6 +175,7 @@ func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 		`(
 		  way[landuse=industrial](around:%f,%f,%f);
 		  relation[landuse=industrial](around:%f,%f,%f);
+		  >;
 		);
 		out geom;`,
 		gauger.industrialZoneSearchRadius,
@@ -205,6 +206,7 @@ func (gauger *Gauger) gaugeGreenZoneDistance(flat *Flat) float64 {
 		`(
 		  way[leisure=park](around:%f,%f,%f);
 		  relation[leisure=park](around:%f,%f,%f);
+		  >;
 		);
 		out geom;`,
 		gauger.greenZoneSearchRadius,
