@@ -36,7 +36,6 @@ func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger *loggin
 	}
 }
 
-// TODO: increase timeout to ~30-35 sec.
 type Gauger struct {
 	client                     *http.Client
 	headers                    misc.Headers
@@ -176,6 +175,7 @@ func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 		`(
 		  way[landuse=industrial](around:%f,%f,%f);
 		  relation[landuse=industrial](around:%f,%f,%f);
+		  >;
 		);
 		out geom;`,
 		gauger.industrialZoneSearchRadius,
@@ -191,6 +191,7 @@ func (gauger *Gauger) gaugeIndustrialZoneDistance(flat *Flat) float64 {
 		gauger.logger.Trouble(flat, err)
 		return gauger.noDistance
 	}
+	gauger.logger.Info(flat.Point, collection)
 	distance := gauger.gaugeDistance(flat, collection, gauger.industrialZoneMinArea)
 	if distance == gauger.noDistance {
 		gauger.gatherer.GatherInconclusiveIndustrialGauging()
@@ -206,6 +207,7 @@ func (gauger *Gauger) gaugeGreenZoneDistance(flat *Flat) float64 {
 		`(
 		  way[leisure=park](around:%f,%f,%f);
 		  relation[leisure=park](around:%f,%f,%f);
+		  >;
 		);
 		out geom;`,
 		gauger.greenZoneSearchRadius,
@@ -221,6 +223,7 @@ func (gauger *Gauger) gaugeGreenZoneDistance(flat *Flat) float64 {
 		gauger.logger.Trouble(flat, err)
 		return gauger.noDistance
 	}
+	gauger.logger.Info(flat.Point, collection.Features)
 	distance := gauger.gaugeDistance(flat, collection, gauger.greenZoneMinArea)
 	if distance == gauger.noDistance {
 		gauger.gatherer.GatherInconclusiveGreenGauging()
