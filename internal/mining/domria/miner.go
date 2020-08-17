@@ -16,8 +16,6 @@ func NewMiner(
 ) *Miner {
 	return &Miner{
 		string(config.Housing),
-		config.Spec,
-		config.Port,
 		NewFetcher(config.Fetcher, gatherer),
 		NewSanitizer(config.Sanitizer, gatherer),
 		NewGeocoder(config.Geocoder, gatherer, logger),
@@ -31,8 +29,6 @@ func NewMiner(
 
 type Miner struct {
 	housing   string
-	spec      string
-	port      int
 	fetcher   *Fetcher
 	sanitizer *Sanitizer
 	geocoder  *Geocoder
@@ -58,12 +54,4 @@ func (miner *Miner) Run() {
 	if err := miner.gatherer.Flush(); err != nil {
 		miner.logger.Error(err)
 	}
-}
-
-func (miner *Miner) Spec() string {
-	return miner.spec
-}
-
-func (miner *Miner) Port() int {
-	return miner.port
 }

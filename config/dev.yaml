@@ -6,7 +6,7 @@ mining:
   dsnParams:
     <<: *dsnParams
     connect_timeout: '10'
-  server:
+  server: &server
     readTimeout: 5s
     writeTimeout: 5s
     maxHeaderBytes: 1048576
@@ -180,13 +180,17 @@ mining:
       alias: domria-primary
       housing: primary
       spec: '0-59/4 * * * *'
-      port: 9001
+      server:
+        <<: *server
+        port: :9001
     domriaSecondary:
       <<: *domria
       alias: domria-secondary
       housing: secondary
       spec: '1-59/4 * * * *'
-      port: 9002
+      server:
+        <<: *server
+        port: :9002
 migrations:
   dsnParams:
     <<: *dsnParams
@@ -196,12 +200,12 @@ gauging:
     <<: *dsnParams
     connect_timeout: '12'
   httpServer:
-    port: 9003
+    port: :9003
     readTimeout: 5s
     writeTimeout: 5s
     maxHeaderBytes: 1048576
   metricsServer:
-    port: 9004
+    port: :9004
     readTimeout: 5s
     writeTimeout: 5s
     maxHeaderBytes: 1048576

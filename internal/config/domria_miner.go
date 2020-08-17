@@ -8,7 +8,7 @@ type DomriaMiner struct {
 	Alias     string     `yaml:"alias"`
 	Housing   Housing    `yaml:"housing"`
 	Spec      string     `yaml:"spec"`
-	Port      int        `yaml:"port"`
+	Server    *Server    `yaml:"server"`
 	Fetcher   *Fetcher   `yaml:"fetcher"`
 	Sanitizer *Sanitizer `yaml:"sanitizer"`
 	Geocoder  *Geocoder  `yaml:"geocoder"`
@@ -17,18 +17,30 @@ type DomriaMiner struct {
 	Storer    *Storer    `yaml:"storer"`
 }
 
-func (domria *DomriaMiner) String() string {
+func (miner *DomriaMiner) Name() string {
+	return miner.Alias
+}
+
+func (miner *DomriaMiner) Schedule() string {
+	return miner.Spec
+}
+
+func (miner *DomriaMiner) Metrics() *Server {
+	return miner.Server
+}
+
+func (miner *DomriaMiner) String() string {
 	return fmt.Sprintf(
-		"{%s %s %s %d %v %v %v %v %v %v}",
-		domria.Alias,
-		domria.Housing,
-		domria.Spec,
-		domria.Port,
-		domria.Fetcher,
-		domria.Sanitizer,
-		domria.Geocoder,
-		domria.Gauger,
-		domria.Validator,
-		domria.Storer,
+		"{%s %s %s %v %v %v %v %v %v %v}",
+		miner.Alias,
+		miner.Housing,
+		miner.Spec,
+		miner.Server,
+		miner.Fetcher,
+		miner.Sanitizer,
+		miner.Geocoder,
+		miner.Gauger,
+		miner.Validator,
+		miner.Storer,
 	)
 }

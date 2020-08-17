@@ -5,12 +5,11 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"net/http"
-	"strconv"
 )
 
-func RunServer(port int, config *config.Server, logger *logging.Logger) {
+func RunServer(config *config.Server, logger *logging.Logger) {
 	server := &http.Server{
-		Addr:           ":" + strconv.Itoa(port),
+		Addr:           config.Port,
 		ReadTimeout:    config.ReadTimeout,
 		WriteTimeout:   config.WriteTimeout,
 		MaxHeaderBytes: config.MaxHeaderBytes,

@@ -7,7 +7,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/database"
-	"github.com/xXxRisingTidexXx/rampart/internal/mining"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/domria"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
@@ -15,6 +14,7 @@ import (
 )
 
 // TODO: set service label for various logs.
+// TODO: move lib/pq driver into database package.
 func main() {
 	isOnce := flag.Bool("once", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
@@ -35,25 +35,30 @@ func main() {
 		logger.Fatal(err)
 	}
 	short, gatherer := cfg.Mining.Miners, metrics.NewGatherer(*alias, db)
-	miners := map[string]mining.Miner{
-		short.DomriaPrimary.Alias:   domria.NewMiner(short.DomriaPrimary, db, gatherer, logger),
-		short.DomriaSecondary.Alias: domria.NewMiner(short.DomriaSecondary, db, gatherer, logger),
+	jobs := map[string]gocron.Job{
+		short.DomriaPrimary.Name():   domria.NewMiner(short.DomriaPrimary, db, gatherer, logger),
+		short.DomriaSecondary.Name(): domria.NewMiner(short.DomriaSecondary, db, gatherer, logger),
 	}
-	miner := miners[*alias]
-	if miner == nil {
+	job, ok := jobs[*alias]
+	if !ok {
 		_ = db.Close()
 		logger.Fatal("main: mining failed to find the miner")
 		return
 	}
+	miners := map[string]config.Miner{
+		short.DomriaPrimary.Name():   short.DomriaPrimary,
+		short.DomriaSecondary.Name(): short.DomriaSecondary,
+	}
+	miner := miners[*alias]
 	if *isOnce {
-		miner.Run()
+		job.Run()
 	} else {
 		cron := gocron.New()
-		if _, err = cron.AddJob(miner.Spec(), miner); err != nil {
+		if _, err = cron.AddJob(miner.Schedule(), job); err != nil {
 			_ = db.Close()
 			logger.Fatalf("main: mining failed to run, %v", err)
 		}
-		metrics.RunServer(miner.Port(), cfg.Mining.Server, logger)
+		metrics.RunServer(miner.Metrics(), logger)
 		cron.Run()
 	}
 	if err = database.CloseDatabase(db); err != nil {
