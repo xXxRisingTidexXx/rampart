@@ -58,14 +58,14 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 		return nil
 	}
 	start := time.Now()
-	locations, err := geocoder.getLocations(flat)
+	positions, err := geocoder.getLocations(flat)
 	geocoder.gatherer.GatherGeocodingDuration(start)
 	if err != nil {
 		geocoder.logger.Problem(flat, err)
 		geocoder.gatherer.GatherFailedGeocoding()
 		return nil
 	}
-	if len(locations) == 0 {
+	if len(positions) == 0 {
 		geocoder.gatherer.GatherInconclusiveGeocoding()
 		return nil
 	}
@@ -83,7 +83,7 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 		TotalFloor:  flat.TotalFloor,
 		Housing:     flat.Housing,
 		Complex:     flat.Complex,
-		Point:       orb.Point{float64(locations[0].Lon), float64(locations[0].Lat)},
+		Point:       orb.Point{float64(positions[0].Lon), float64(positions[0].Lat)},
 		State:       flat.State,
 		City:        flat.City,
 		District:    flat.District,
@@ -93,7 +93,7 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 	}
 }
 
-func (geocoder *Geocoder) getLocations(flat *Flat) ([]*location, error) {
+func (geocoder *Geocoder) getLocations(flat *Flat) ([]*position, error) {
 	whitespace, plus, state := " ", "+", ""
 	if !geocoder.statelessCities.Contains(flat.City) {
 		state = strings.ReplaceAll(flat.State, whitespace, plus)
@@ -130,9 +130,9 @@ func (geocoder *Geocoder) getLocations(flat *Flat) ([]*location, error) {
 	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to close the response body, %v", err)
 	}
-	locations := make([]*location, 0)
-	if err := json.Unmarshal(bytes, &locations); err != nil {
-		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the locations, %v", err)
+	positions := make([]*position, 0)
+	if err := json.Unmarshal(bytes, &positions); err != nil {
+		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the positions, %v", err)
 	}
-	return locations, nil
+	return positions, nil
 }
