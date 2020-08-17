@@ -102,6 +102,7 @@ func (gatherer *Gatherer) GatherSuccessfulGeocoding() {
 	gatherer.successfulGeocodingNumber++
 }
 
+// TODO: remove all gauging metrics.
 func (gatherer *Gatherer) GatherAbsentSubwayGauging() {
 	gatherer.absentSubwayGaugingNumber++
 }
