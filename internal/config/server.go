@@ -6,7 +6,7 @@ import (
 )
 
 type Server struct {
-	Port           string        `yaml:"port"`
+	Address        string        `yaml:"address"`
 	ReadTimeout    time.Duration `yaml:"readTimeout"`
 	WriteTimeout   time.Duration `yaml:"writeTimeout"`
 	MaxHeaderBytes int           `yaml:"maxHeaderBytes"`
@@ -15,7 +15,7 @@ type Server struct {
 func (server *Server) String() string {
 	return fmt.Sprintf(
 		"{%s %s %s %d}",
-		server.Port,
+		server.Address,
 		server.ReadTimeout,
 		server.WriteTimeout,
 		server.MaxHeaderBytes,

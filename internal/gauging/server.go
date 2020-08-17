@@ -2,17 +2,16 @@ package gauging
 
 import (
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"net/http"
-	"strconv"
-	"time"
 )
 
-func RunServer() {
+func RunServer(config *config.Server) {
 	server := &http.Server{
-		Addr:           ":" + strconv.Itoa(9003),
-		ReadTimeout:    5 * time.Second,
-		WriteTimeout:   5 * time.Second,
-		MaxHeaderBytes: 1048576,
+		Addr:           config.Address,
+		ReadTimeout:    config.ReadTimeout,
+		WriteTimeout:   config.WriteTimeout,
+		MaxHeaderBytes: config.MaxHeaderBytes,
 		Handler:        newHandler(),
 	}
 	go func() {

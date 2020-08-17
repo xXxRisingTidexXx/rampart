@@ -9,7 +9,7 @@ import (
 
 func RunServer(config *config.Server, logger *logging.Logger) {
 	server := &http.Server{
-		Addr:           config.Port,
+		Addr:           config.Address,
 		ReadTimeout:    config.ReadTimeout,
 		WriteTimeout:   config.WriteTimeout,
 		MaxHeaderBytes: config.MaxHeaderBytes,

@@ -24,8 +24,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	gauging.RunServer()
-	metrics.RunServer()
+	gauging.RunServer(cfg.Gauging.HTTPServer)
+	metrics.RunServer(cfg.Gauging.MetricsServer)
 	if err = database.CloseDatabase(db); err != nil {
 		log.Fatal(err)
 	}

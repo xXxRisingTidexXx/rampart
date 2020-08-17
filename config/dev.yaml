@@ -182,7 +182,7 @@ mining:
       spec: '0-59/4 * * * *'
       server:
         <<: *server
-        port: :9001
+        address: :9001
     domriaSecondary:
       <<: *domria
       alias: domria-secondary
@@ -190,7 +190,7 @@ mining:
       spec: '1-59/4 * * * *'
       server:
         <<: *server
-        port: :9002
+        address: :9002
 migrations:
   dsnParams:
     <<: *dsnParams
@@ -200,12 +200,12 @@ gauging:
     <<: *dsnParams
     connect_timeout: '12'
   httpServer:
-    port: :9003
+    address: :9003
     readTimeout: 5s
     writeTimeout: 5s
     maxHeaderBytes: 1048576
   metricsServer:
-    port: :9004
+    address: :9004
     readTimeout: 5s
     writeTimeout: 5s
     maxHeaderBytes: 1048576

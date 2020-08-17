@@ -3,17 +3,16 @@ package metrics
 import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"net/http"
-	"strconv"
-	"time"
 )
 
-func RunServer() {
+func RunServer(config *config.Server) {
 	server := &http.Server{
-		Addr:           ":" + strconv.Itoa(9004),
-		ReadTimeout:    5 * time.Second,
-		WriteTimeout:   5 * time.Second,
-		MaxHeaderBytes: 1048576,
+		Addr:           config.Address,
+		ReadTimeout:    config.ReadTimeout,
+		WriteTimeout:   config.WriteTimeout,
+		MaxHeaderBytes: config.MaxHeaderBytes,
 		Handler:        promhttp.Handler(),
 	}
 	go func() {
