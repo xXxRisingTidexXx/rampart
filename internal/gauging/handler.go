@@ -5,11 +5,13 @@ import (
 	"net/http"
 )
 
-func newHandler() *handler {
-	return &handler{}
+func newHandler(gauger *Gauger) *handler {
+	return &handler{gauger}
 }
 
-type handler struct{}
+type handler struct{
+	gauger *Gauger
+}
 
 func (handler *handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != http.MethodPost {

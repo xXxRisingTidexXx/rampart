@@ -6,13 +6,13 @@ import (
 	"net/http"
 )
 
-func RunServer(config *config.Server) {
+func RunServer(config *config.Server, gauger *Gauger) {
 	server := &http.Server{
 		Addr:           config.Address,
 		ReadTimeout:    config.ReadTimeout,
 		WriteTimeout:   config.WriteTimeout,
 		MaxHeaderBytes: config.MaxHeaderBytes,
-		Handler:        newHandler(),
+		Handler:        newHandler(gauger),
 	}
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
