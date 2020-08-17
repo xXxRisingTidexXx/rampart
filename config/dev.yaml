@@ -191,3 +191,17 @@ migrations:
   dsnParams:
     <<: *dsnParams
     connect_timeout: '15'
+gauging:
+  dsnParams:
+    <<: *dsnParams
+    connect_timeout: '12'
+  httpServer:
+    port: 9003
+    readTimeout: 5s
+    writeTimeout: 5s
+    maxHeaderBytes: 1048576
+  metricsServer:
+    port: 9004
+    readTimeout: 5s
+    writeTimeout: 5s
+    maxHeaderBytes: 1048576
