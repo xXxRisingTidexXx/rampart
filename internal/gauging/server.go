@@ -1,4 +1,4 @@
-package httpserve
+package gauging
 
 import (
 	log "github.com/sirupsen/logrus"
