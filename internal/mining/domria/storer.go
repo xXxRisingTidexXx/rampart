@@ -112,15 +112,15 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 		    housing = $10,
 		    complex = $11,
 		    point = st_geomfromwkb($12, $13),
-		    subway_station_distance = $14,
-		    industrial_zone_distance = $15,
-		    green_zone_distance = $16,
-		    state = $17,
-		    city = $18,
-		    district = $19,
-		    street = $20,
-		    house_number = $21
-		where origin_url = $22`,
+		    subway_station_distance = default,
+		    industrial_zone_distance = default,
+		    green_zone_distance = default,
+		    state = $14,
+		    city = $15,
+		    district = $16,
+		    street = $17,
+		    house_number = $18
+		where origin_url = $19`,
 		flat.ImageURL,
 		flat.UpdateTime,
 		flat.Price,
@@ -134,9 +134,6 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 		flat.Complex,
 		wkb.Value(flat.Point),
 		storer.srid,
-		flat.SubwayStationDistance,
-		flat.IndustrialZoneDistance,
-		flat.GreenZoneDistance,
 		flat.State,
 		flat.City,
 		flat.District,
@@ -155,13 +152,13 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 		`insert into flats
         (
          	origin_url, image_url, update_time, parsing_time, price, total_area, living_area, kitchen_area,
-            room_number, floor, total_floor, housing, complex, point, subway_station_distance,
-            industrial_zone_distance, green_zone_distance, state, city, district, street, house_number
+            room_number, floor, total_floor, housing, complex, point, state, city, district, street,
+            house_number
         )
         values 
 		(
 		    $1, $2, $3, now() at time zone 'utc', $4, $5, $6, $7, $8, $9, $10, $11, $12, 
-		    st_geomfromwkb($13, $14), $15, $16, $17, $18, $19, $20, $21, $22
+		    st_geomfromwkb($13, $14), $15, $16, $17, $18, $19
 		)`,
 		flat.OriginURL,
 		flat.ImageURL,
@@ -177,9 +174,6 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 		flat.Complex,
 		wkb.Value(flat.Point),
 		storer.srid,
-		flat.SubwayStationDistance,
-		flat.IndustrialZoneDistance,
-		flat.GreenZoneDistance,
 		flat.State,
 		flat.City,
 		flat.District,
