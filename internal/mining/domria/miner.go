@@ -19,7 +19,6 @@ func NewMiner(
 		NewFetcher(config.Fetcher, gatherer),
 		NewSanitizer(config.Sanitizer, gatherer),
 		NewGeocoder(config.Geocoder, gatherer, logger),
-		NewGauger(config.Gauger, gatherer, logger),
 		NewValidator(config.Validator, gatherer),
 		NewStorer(config.Storer, db, gatherer, logger),
 		gatherer,
@@ -32,7 +31,6 @@ type Miner struct {
 	fetcher   *Fetcher
 	sanitizer *Sanitizer
 	geocoder  *Geocoder
-	gauger    *Gauger
 	validator *Validator
 	storer    *Storer
 	gatherer  *metrics.Gatherer
@@ -46,7 +44,6 @@ func (miner *Miner) Run() {
 	} else {
 		flats = miner.sanitizer.SanitizeFlats(flats)
 		flats = miner.geocoder.GeocodeFlats(flats)
-		flats = miner.gauger.GaugeFlats(flats)
 		flats = miner.validator.ValidateFlats(flats)
 		miner.storer.StoreFlats(flats)
 	}

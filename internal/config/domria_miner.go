@@ -12,7 +12,6 @@ type DomriaMiner struct {
 	Fetcher   *Fetcher   `yaml:"fetcher"`
 	Sanitizer *Sanitizer `yaml:"sanitizer"`
 	Geocoder  *Geocoder  `yaml:"geocoder"`
-	Gauger    *Gauger    `yaml:"gauger"`
 	Validator *Validator `yaml:"validator"`
 	Storer    *Storer    `yaml:"storer"`
 }
@@ -31,7 +30,7 @@ func (miner *DomriaMiner) Metrics() *Server {
 
 func (miner *DomriaMiner) String() string {
 	return fmt.Sprintf(
-		"{%s %s %s %v %v %v %v %v %v %v}",
+		"{%s %s %s %v %v %v %v %v %v}",
 		miner.Alias,
 		miner.Housing,
 		miner.Spec,
@@ -39,7 +38,6 @@ func (miner *DomriaMiner) String() string {
 		miner.Fetcher,
 		miner.Sanitizer,
 		miner.Geocoder,
-		miner.Gauger,
 		miner.Validator,
 		miner.Storer,
 	)
