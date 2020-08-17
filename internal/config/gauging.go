@@ -5,7 +5,7 @@ import (
 )
 
 type Gauging struct {
-	DSNParams     map[string]string `yaml:"dnsParams"`
+	DSNParams     map[string]string `yaml:"dsnParams"`
 	HTTPServer    *Server           `yaml:"httpServer"`
 	MetricsServer *Server           `yaml:"metricsServer"`
 }
