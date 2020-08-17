@@ -30,6 +30,12 @@ services:
     volumes:
       - .:/go/src/app
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -once -miner domria-primary
+  gauging:
+    image: rampart-backend
+    container_name: rampart-gauging
+    volumes:
+      - .:/go/src/app
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/gauging
   mining-domria-primary:
     image: rampart-backend
     container_name: rampart-mining-domria-primary
