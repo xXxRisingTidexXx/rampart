@@ -17,7 +17,7 @@ func RunServer() {
 	}
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			log.Fatal("httpserve: server met an error, %v", err)
+			log.Fatalf("httpserve: server met an error, %v", err)
 		}
 	}()
 }
