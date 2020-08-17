@@ -7,6 +7,9 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/gauging"
 	"github.com/xXxRisingTidexXx/rampart/internal/gauging/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/secrets"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
@@ -26,6 +29,9 @@ func main() {
 	}
 	gauging.RunServer(cfg.Gauging.HTTPServer)
 	metrics.RunServer(cfg.Gauging.MetricsServer)
+	signalChannel := make(chan os.Signal, 1)
+	signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)
+	<-signalChannel
 	if err = database.CloseDatabase(db); err != nil {
 		log.Fatal(err)
 	}
