@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	_ "github.com/lib/pq"
 	gocron "github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
@@ -14,7 +13,6 @@ import (
 )
 
 // TODO: set service label for various logs.
-// TODO: move lib/pq driver into database package.
 func main() {
 	isOnce := flag.Bool("once", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")

@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/database"
