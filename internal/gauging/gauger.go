@@ -23,7 +23,7 @@ func (gauger *Gauger) run() {
 	}
 }
 
-func (gauger *Gauger) GaugeDistances(locations []*dto.Location) {
+func (gauger *Gauger) GaugeAmenities(locations []*dto.Location) {
 	for _, location := range locations {
 		gauger.locationChannel <- location
 	}

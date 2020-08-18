@@ -27,5 +27,5 @@ func (handler *handler) ServeHTTP(writer http.ResponseWriter, request *http.Requ
 		log.Errorf("gauging: failed to unmarshal the locations, %v", err)
 		return
 	}
-	handler.gauger.GaugeDistances(locations)
+	handler.gauger.GaugeAmenities(locations)
 }
