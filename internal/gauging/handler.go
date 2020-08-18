@@ -9,7 +9,7 @@ func newHandler(gauger *Gauger) *handler {
 	return &handler{gauger}
 }
 
-type handler struct{
+type handler struct {
 	gauger *Gauger
 }
 
@@ -18,6 +18,6 @@ func (handler *handler) ServeHTTP(writer http.ResponseWriter, request *http.Requ
 		writer.WriteHeader(http.StatusMethodNotAllowed)
 		log.Errorf("httpserve: received invalid request method, %s", request.Method)
 	} else {
-
+		log.Info("gauging: success")
 	}
 }
