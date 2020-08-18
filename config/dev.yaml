@@ -164,7 +164,7 @@ mining:
         maxLatitude: 90
       storer:
         srid: 4326
-      gauger:
+      dumper:
         timeout: 5s
         gaugingURL: http://rampart-gauging:9003
         headers:
