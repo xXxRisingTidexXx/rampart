@@ -6,10 +6,10 @@ import (
 )
 
 type Location struct {
-	ID    int           `json:"id"`
-	Point geojson.Point `json:"point"`
+	OriginURL string        `json:"originURL"`
+	Point     geojson.Point `json:"point"`
 }
 
 func (location *Location) String() string {
-	return fmt.Sprintf("{%d %v}", location.ID, location.Point)
+	return fmt.Sprintf("{%s %v}", location.OriginURL, location.Point)
 }

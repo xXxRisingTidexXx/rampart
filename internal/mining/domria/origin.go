@@ -6,9 +6,10 @@ import (
 )
 
 type origin struct {
+	id         int
 	updateTime time.Time
 }
 
 func (origin *origin) String() string {
-	return fmt.Sprintf("{%s}", origin.updateTime)
+	return fmt.Sprintf("{%d %s}", origin.id, origin.updateTime)
 }
