@@ -57,7 +57,7 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 		return nil
 	}
 	start := time.Now()
-	positions, err := geocoder.getLocations(flat)
+	positions, err := geocoder.getPositions(flat)
 	geocoder.gatherer.GatherGeocodingDuration(start)
 	if err != nil {
 		geocoder.logger.Problem(flat, err)
@@ -92,7 +92,7 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 	}
 }
 
-func (geocoder *Geocoder) getLocations(flat *Flat) ([]*position, error) {
+func (geocoder *Geocoder) getPositions(flat *Flat) ([]*position, error) {
 	whitespace, plus, state := " ", "+", ""
 	if !geocoder.statelessCities.Contains(flat.City) {
 		state = strings.ReplaceAll(flat.State, whitespace, plus)
