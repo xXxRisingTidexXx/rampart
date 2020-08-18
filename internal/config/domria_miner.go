@@ -14,6 +14,7 @@ type DomriaMiner struct {
 	Geocoder  *Geocoder  `yaml:"geocoder"`
 	Validator *Validator `yaml:"validator"`
 	Storer    *Storer    `yaml:"storer"`
+	Dumper    *Dumper    `yaml:"dumper"`
 }
 
 func (miner *DomriaMiner) Name() string {
@@ -30,7 +31,7 @@ func (miner *DomriaMiner) Metrics() *Server {
 
 func (miner *DomriaMiner) String() string {
 	return fmt.Sprintf(
-		"{%s %s %s %v %v %v %v %v %v}",
+		"{%s %s %s %v %v %v %v %v %v %v}",
 		miner.Alias,
 		miner.Housing,
 		miner.Spec,
@@ -40,5 +41,6 @@ func (miner *DomriaMiner) String() string {
 		miner.Geocoder,
 		miner.Validator,
 		miner.Storer,
+		miner.Dumper,
 	)
 }
