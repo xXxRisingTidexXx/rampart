@@ -26,17 +26,17 @@ func (dumper *Dumper) DumpFlats(flats []*Flat) error {
 	if length == 0 {
 		return nil
 	}
-	locations := make([]*dto.Location, length)
+	newFlats := make([]*dto.Flat, length)
 	for i, flat := range flats {
-		locations[i] = &dto.Location{
+		newFlats[i] = &dto.Flat{
 			OriginURL: flat.OriginURL,
 			Point:     geojson.Point(flat.Point),
 			City:      flat.City,
 		}
 	}
-	bytes, err := json.Marshal(locations)
+	bytes, err := json.Marshal(newFlats)
 	if err != nil {
-		return fmt.Errorf("domria: dumper failed to marshal locations, %v", err)
+		return fmt.Errorf("domria: dumper failed to marshal the flats, %v", err)
 	}
 	request, err := http.NewRequest(http.MethodPost, dumper.gaugingURL, gobytes.NewBuffer(bytes))
 	if err != nil {

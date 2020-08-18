@@ -5,12 +5,12 @@ import (
 	"github.com/paulmach/orb/geojson"
 )
 
-type Location struct {
+type Flat struct {
 	OriginURL string        `json:"originURL"`
 	Point     geojson.Point `json:"point"`
 	City      string        `json:"city"`
 }
 
-func (location *Location) String() string {
-	return fmt.Sprintf("{%s %v %s}", location.OriginURL, location.Point, location.City)
+func (flat *Flat) String() string {
+	return fmt.Sprintf("{%s %v %s}", flat.OriginURL, flat.Point, flat.City)
 }

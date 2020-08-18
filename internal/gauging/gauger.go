@@ -7,24 +7,24 @@ import (
 )
 
 func NewGauger() *Gauger {
-	gauger := &Gauger{&http.Client{Timeout: 35 * time.Second}, make(chan *dto.Location, 200)}
+	gauger := &Gauger{&http.Client{Timeout: 35 * time.Second}, make(chan *dto.Flat, 200)}
 	go gauger.run()
 	return gauger
 }
 
 type Gauger struct {
-	client          *http.Client
-	locationChannel chan *dto.Location
+	client      *http.Client
+	flatChannel chan *dto.Flat
 }
 
 func (gauger *Gauger) run() {
-	for range gauger.locationChannel {
+	for range gauger.flatChannel {
 
 	}
 }
 
-func (gauger *Gauger) GaugeAmenities(locations []*dto.Location) {
-	for _, location := range locations {
-		gauger.locationChannel <- location
+func (gauger *Gauger) GaugeFlats(flats []*dto.Flat) {
+	for _, flat := range flats {
+		gauger.flatChannel <- flat
 	}
 }

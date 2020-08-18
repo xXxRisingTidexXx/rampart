@@ -21,11 +21,11 @@ func (handler *handler) ServeHTTP(writer http.ResponseWriter, request *http.Requ
 		log.Errorf("gauging: received invalid request method, %s", request.Method)
 		return
 	}
-	locations := make([]*dto.Location, 0)
-	if err := json.NewDecoder(request.Body).Decode(&locations); err != nil {
+	flats := make([]*dto.Flat, 0)
+	if err := json.NewDecoder(request.Body).Decode(&flats); err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
-		log.Errorf("gauging: failed to unmarshal the locations, %v", err)
+		log.Errorf("gauging: failed to unmarshal the flats, %v", err)
 		return
 	}
-	handler.gauger.GaugeAmenities(locations)
+	handler.gauger.GaugeFlats(flats)
 }
