@@ -21,6 +21,7 @@ func NewMiner(
 		NewGeocoder(config.Geocoder, gatherer, logger),
 		NewValidator(config.Validator, gatherer),
 		NewStorer(config.Storer, db, gatherer, logger),
+		NewGauger(),
 		gatherer,
 		logger,
 	}
@@ -33,20 +34,23 @@ type Miner struct {
 	geocoder  *Geocoder
 	validator *Validator
 	storer    *Storer
+	gauger    *Gauger
 	gatherer  *metrics.Gatherer
 	logger    *logging.Logger
 }
 
 func (miner *Miner) Run() {
 	start := time.Now()
-	if flats, err := miner.fetcher.FetchFlats(miner.housing); err != nil {
+	flats, err := miner.fetcher.FetchFlats(miner.housing)
+	if err != nil {
 		miner.logger.Error(err)
-	} else {
-		flats = miner.sanitizer.SanitizeFlats(flats)
-		flats = miner.geocoder.GeocodeFlats(flats)
-		flats = miner.validator.ValidateFlats(flats)
-		locations := miner.storer.StoreFlats(flats)
-
+	}
+	flats = miner.sanitizer.SanitizeFlats(flats)
+	flats = miner.geocoder.GeocodeFlats(flats)
+	flats = miner.validator.ValidateFlats(flats)
+	flats = miner.storer.StoreFlats(flats)
+	if err := miner.gauger.GaugeFlats(flats); err != nil {
+		miner.logger.Error(err)
 	}
 	miner.gatherer.GatherTotalDuration(start)
 	if err := miner.gatherer.Flush(); err != nil {
