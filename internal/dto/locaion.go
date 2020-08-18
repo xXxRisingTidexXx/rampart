@@ -8,8 +8,9 @@ import (
 type Location struct {
 	OriginURL string        `json:"originURL"`
 	Point     geojson.Point `json:"point"`
+	City      string        `json:"city"`
 }
 
 func (location *Location) String() string {
-	return fmt.Sprintf("{%s %v}", location.OriginURL, location.Point)
+	return fmt.Sprintf("{%s %v %s}", location.OriginURL, location.Point, location.City)
 }
