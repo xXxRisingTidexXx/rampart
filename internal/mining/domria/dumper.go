@@ -11,21 +11,21 @@ import (
 	"time"
 )
 
-func NewGauger() *Gauger {
-	return &Gauger{
+func NewDumper() *Dumper {
+	return &Dumper{
 		&http.Client{Timeout: 5 * time.Second},
 		"http://rampart-gauging:9003",
 		misc.Headers{"Content-Type": "application/json"},
 	}
 }
 
-type Gauger struct {
+type Dumper struct {
 	client     *http.Client
 	gaugingURL string
 	headers    misc.Headers
 }
 
-func (gauger *Gauger) GaugeFlats(flats []*Flat) error {
+func (dumper *Dumper) DumpFlats(flats []*Flat) error {
 	length := len(flats)
 	if length == 0 {
 		return nil
@@ -36,22 +36,22 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) error {
 	}
 	bytes, err := json.Marshal(locations)
 	if err != nil {
-		return fmt.Errorf("domria: gauger failed to marshal locations, %v", err)
+		return fmt.Errorf("domria: dumper failed to marshal locations, %v", err)
 	}
-	request, err := http.NewRequest(http.MethodPost, gauger.gaugingURL, gobytes.NewBuffer(bytes))
+	request, err := http.NewRequest(http.MethodPost, dumper.gaugingURL, gobytes.NewBuffer(bytes))
 	if err != nil {
-		return fmt.Errorf("domria: gauger failed to construct a request, %v", err)
+		return fmt.Errorf("domria: dumper failed to construct a request, %v", err)
 	}
-	gauger.headers.Inject(request)
-	response, err := gauger.client.Do(request)
+	dumper.headers.Inject(request)
+	response, err := dumper.client.Do(request)
 	if err != nil {
-		return fmt.Errorf("domria: gauger failed to perform a request, %v", err)
+		return fmt.Errorf("domria: dumper failed to perform a request, %v", err)
 	}
 	if err = response.Body.Close(); err != nil {
-		return fmt.Errorf("domria: gauger failed to close the response body, %v", err)
+		return fmt.Errorf("domria: dumper failed to close the response body, %v", err)
 	}
 	if response.StatusCode != http.StatusOK {
-		return fmt.Errorf("domria: gauger got response with status %s", response.Status)
+		return fmt.Errorf("domria: dumper got response with status %s", response.Status)
 	}
 	return nil
 }
