@@ -4,9 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/paulmach/orb/encoding/wkb"
-	"github.com/paulmach/orb/geojson"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
-	"github.com/xXxRisingTidexXx/rampart/internal/dto"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"time"
@@ -28,30 +26,30 @@ type Storer struct {
 	logger   *logging.Logger
 }
 
-func (storer *Storer) StoreFlats(flats []*Flat) []*dto.Location {
-	locations := make([]*dto.Location, 0)
+func (storer *Storer) StoreFlats(flats []*Flat) []*Flat {
+	newFlats := make([]*Flat, 0)
 	for _, flat := range flats {
-		if location, err := storer.storeFlat(flat); err != nil {
+		if ok, err := storer.storeFlat(flat); err != nil {
 			storer.logger.Problem(flat, err)
 			storer.gatherer.GatherFailedStoring()
-		} else if location != nil {
-			locations = append(locations, location)
+		} else if ok {
+			newFlats = append(newFlats, flat)
 		}
 	}
-	return locations
+	return newFlats
 }
 
-func (storer *Storer) storeFlat(flat *Flat) (*dto.Location, error) {
+func (storer *Storer) storeFlat(flat *Flat) (bool, error) {
 	tx, err := storer.db.Begin()
 	if err != nil {
-		return nil, fmt.Errorf("domria: storer failed to begin a transaction, %v", err)
+		return false, fmt.Errorf("domria: storer failed to begin a transaction, %v", err)
 	}
 	start := time.Now()
 	origin, err := storer.readFlat(tx, flat)
 	storer.gatherer.GatherReadingDuration(start)
 	if err != nil {
 		_ = tx.Rollback()
-		return nil, err
+		return false, err
 	}
 	message := "domria: storer failed to commit a transaction, %v"
 	if origin == nil {
@@ -60,13 +58,13 @@ func (storer *Storer) storeFlat(flat *Flat) (*dto.Location, error) {
 		storer.gatherer.GatherCreationDuration(start)
 		if err != nil {
 			_ = tx.Rollback()
-			return nil, err
+			return false, err
 		}
 		if err = tx.Commit(); err != nil {
-			return nil, fmt.Errorf(message, err)
+			return false, fmt.Errorf(message, err)
 		}
 		storer.gatherer.GatherCreatedStoring()
-		return &dto.Location{OriginURL: flat.OriginURL, Point: geojson.Point(flat.Point)}, nil
+		return true, nil
 	}
 	if flat.UpdateTime.After(origin.updateTime) {
 		start := time.Now()
@@ -74,19 +72,19 @@ func (storer *Storer) storeFlat(flat *Flat) (*dto.Location, error) {
 		storer.gatherer.GatherUpdateDuration(start)
 		if err != nil {
 			_ = tx.Rollback()
-			return nil, err
+			return false, err
 		}
 		if err = tx.Commit(); err != nil {
-			return nil, fmt.Errorf(message, err)
+			return false, fmt.Errorf(message, err)
 		}
 		storer.gatherer.GatherUpdatedStoring()
-		return &dto.Location{OriginURL: flat.OriginURL, Point: geojson.Point(flat.Point)}, nil
+		return true, nil
 	}
 	if err = tx.Commit(); err != nil {
-		return nil, fmt.Errorf(message, err)
+		return false, fmt.Errorf(message, err)
 	}
 	storer.gatherer.GatherUnalteredStoring()
-	return nil, nil
+	return false, nil
 }
 
 func (storer *Storer) readFlat(tx *sql.Tx, flat *Flat) (*origin, error) {
