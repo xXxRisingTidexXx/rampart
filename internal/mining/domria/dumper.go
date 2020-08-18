@@ -30,8 +30,8 @@ func (dumper *Dumper) DumpFlats(flats []*Flat) error {
 	for i, flat := range flats {
 		locations[i] = &dto.Location{
 			OriginURL: flat.OriginURL,
-			Point: geojson.Point(flat.Point),
-			City: flat.City,
+			Point:     geojson.Point(flat.Point),
+			City:      flat.City,
 		}
 	}
 	bytes, err := json.Marshal(locations)
