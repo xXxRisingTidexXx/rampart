@@ -21,7 +21,7 @@ func NewMiner(
 		NewGeocoder(config.Geocoder, gatherer, logger),
 		NewValidator(config.Validator, gatherer),
 		NewStorer(config.Storer, db, gatherer, logger),
-		NewDumper(),
+		NewDumper(config.Dumper),
 		gatherer,
 		logger,
 	}

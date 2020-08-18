@@ -5,18 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/paulmach/orb/geojson"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
-	"time"
 )
 
-func NewDumper() *Dumper {
-	return &Dumper{
-		&http.Client{Timeout: 5 * time.Second},
-		"http://rampart-gauging:9003",
-		misc.Headers{"Content-Type": "application/json"},
-	}
+func NewDumper(config *config.Dumper) *Dumper {
+	return &Dumper{&http.Client{Timeout: config.Timeout}, config.GaugingURL, config.Headers}
 }
 
 type Dumper struct {
