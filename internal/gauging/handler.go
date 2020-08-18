@@ -27,5 +27,5 @@ func (handler *handler) ServeHTTP(writer http.ResponseWriter, request *http.Requ
 		log.Errorf("gauging: failed to unmarshal the flats, %v", err)
 		return
 	}
-	handler.gauger.GaugeFlats(flats)
+	go handler.gauger.GaugeFlats(flats)
 }
