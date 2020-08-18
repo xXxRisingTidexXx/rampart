@@ -45,7 +45,8 @@ func (miner *Miner) Run() {
 		flats = miner.sanitizer.SanitizeFlats(flats)
 		flats = miner.geocoder.GeocodeFlats(flats)
 		flats = miner.validator.ValidateFlats(flats)
-		miner.storer.StoreFlats(flats)
+		locations := miner.storer.StoreFlats(flats)
+
 	}
 	miner.gatherer.GatherTotalDuration(start)
 	if err := miner.gatherer.Flush(); err != nil {
