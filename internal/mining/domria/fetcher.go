@@ -7,7 +7,6 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
-	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -76,17 +75,13 @@ func (fetcher *Fetcher) getSearch(flag string) (*search, error) {
 		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: fetcher got response with status %s", response.Status)
 	}
-	bytes, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		_ = response.Body.Close()
-		return nil, fmt.Errorf("domria: fetcher failed to read the response body, %v", err)
-	}
-	if err = response.Body.Close(); err != nil {
-		return nil, fmt.Errorf("domria: fetcher failed to close the response body, %v", err)
-	}
 	search := search{}
-	if err := json.Unmarshal(bytes, &search); err != nil {
+	if err := json.NewDecoder(response.Body).Decode(&search); err != nil {
+		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the search, %v", err)
+	}
+	if err := response.Body.Close(); err != nil {
+		return nil, fmt.Errorf("domria: fetcher failed to close the response body, %v", err)
 	}
 	return &search, nil
 }
