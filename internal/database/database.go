@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // Postgres driver along with the DB constructor.
 	gourl "net/url"
 )
 
