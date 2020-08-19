@@ -12,20 +12,50 @@ func NewGauger() *Gauger {
 		&http.Client{Timeout: 35 * time.Second},
 		make(chan *intent, 600),
 		misc.Set{"Київ": struct{}{}},
+		time.Second,
+		1500,
+		0,
+		2000,
+		0.000004,
+		1200,
+		0.00001,
 	}
 	go gauger.run()
 	return gauger
 }
 
 type Gauger struct {
-	client        *http.Client
-	intentChannel chan *intent
-	subwayCities  misc.Set
+	client                     *http.Client
+	intentChannel              chan *intent
+	subwayCities               misc.Set
+	period                     time.Duration
+	subwayStationSearchRadius  float64
+	subwayStationMinArea       float64
+	industrialZoneSearchRadius float64
+	industrialZoneMinArea      float64
+	greenZoneSearchRadius      float64
+	greenZoneMinArea           float64
 }
 
 func (gauger *Gauger) run() {
-	for range gauger.intentChannel {
+	ticker := time.NewTicker(gauger.period)
+	for intent := range gauger.intentChannel {
+		<-ticker.C
+		go gauger.gaugeIntent(intent)
+	}
+}
 
+func (gauger *Gauger) gaugeIntent(intent *intent) {
+	switch intent.target {
+	case subwayStationDistance:
+
+		break
+	case industrialZoneDistance:
+
+		break
+	case greenZoneDistance:
+
+		break
 	}
 }
 
