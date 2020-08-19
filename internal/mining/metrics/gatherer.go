@@ -11,35 +11,35 @@ func NewGatherer(miner string, db *sql.DB) *Gatherer {
 }
 
 type Gatherer struct {
-	miner                               string
-	stateSanitationNumber               int
-	citySanitationNumber                int
-	districtSanitationNumber            int
-	swapSanitationNumber                int
-	streetSanitationNumber              int
-	houseNumberSanitationNumber         int
-	locatedGeocodingNumber              int
-	unlocatedGeocodingNumber            int
-	failedGeocodingNumber               int
-	inconclusiveGeocodingNumber         int
-	successfulGeocodingNumber           int
-	approvedValidationNumber            int
-	deniedValidationNumber              int
-	createdStoringNumber                int
-	updatedStoringNumber                int
-	unalteredStoringNumber              int
-	failedStoringNumber                 int
-	fetchingDuration                    float64
-	geocodingDurationSum                float64
-	geocodingDurationCount              float64
-	readingDurationSum                  float64
-	readingDurationCount                float64
-	creationDurationSum                 float64
-	creationDurationCount               float64
-	updateDurationSum                   float64
-	updateDurationCount                 float64
-	totalDuration                       float64
-	db                                  *sql.DB
+	miner                       string
+	stateSanitationNumber       int
+	citySanitationNumber        int
+	districtSanitationNumber    int
+	swapSanitationNumber        int
+	streetSanitationNumber      int
+	houseNumberSanitationNumber int
+	locatedGeocodingNumber      int
+	unlocatedGeocodingNumber    int
+	failedGeocodingNumber       int
+	inconclusiveGeocodingNumber int
+	successfulGeocodingNumber   int
+	approvedValidationNumber    int
+	deniedValidationNumber      int
+	createdStoringNumber        int
+	updatedStoringNumber        int
+	unalteredStoringNumber      int
+	failedStoringNumber         int
+	fetchingDuration            float64
+	geocodingDurationSum        float64
+	geocodingDurationCount      float64
+	readingDurationSum          float64
+	readingDurationCount        float64
+	creationDurationSum         float64
+	creationDurationCount       float64
+	updateDurationSum           float64
+	updateDurationCount         float64
+	totalDuration               float64
+	db                          *sql.DB
 }
 
 func (gatherer *Gatherer) GatherStateSanitation() {

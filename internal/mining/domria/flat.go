@@ -7,25 +7,25 @@ import (
 )
 
 type Flat struct {
-	OriginURL              string
-	ImageURL               string
-	UpdateTime             time.Time
-	Price                  float64
-	TotalArea              float64
-	LivingArea             float64
-	KitchenArea            float64
-	RoomNumber             int
-	Floor                  int
-	TotalFloor             int
-	Housing                string
-	Complex                string
-	Point                  orb.Point
-	State                  string
-	City                   string
-	District               string
-	Street                 string
-	HouseNumber            string
-	Source                 string
+	OriginURL   string
+	ImageURL    string
+	UpdateTime  time.Time
+	Price       float64
+	TotalArea   float64
+	LivingArea  float64
+	KitchenArea float64
+	RoomNumber  int
+	Floor       int
+	TotalFloor  int
+	Housing     string
+	Complex     string
+	Point       orb.Point
+	State       string
+	City        string
+	District    string
+	Street      string
+	HouseNumber string
+	Source      string
 }
 
 func (flat *Flat) URL() string {
