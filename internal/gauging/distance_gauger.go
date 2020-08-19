@@ -13,82 +13,16 @@ import (
 	"math"
 	"net/http"
 	gourl "net/url"
-	"time"
 )
 
-func NewGauger() *Gauger {
-	gauger := &Gauger{
-		&http.Client{Timeout: 35 * time.Second},
-		misc.Headers{},
-		"https://overpass-api.de/api/interpreter?data=%s",
-		make(chan *intent, 600),
-		misc.Set{"Київ": struct{}{}},
-		time.Second,
-		-1,
-		1500,
-		0,
-		2000,
-		0.000004,
-		1200,
-		0.00001,
-	}
-	go gauger.run()
-	return gauger
+type distanceGauger struct {
+	client         *http.Client
+	headers        misc.Headers
+	interpreterURL string
+	noDistance     float64
 }
 
-type Gauger struct {
-	client                     *http.Client
-	headers                    misc.Headers
-	interpreterURL             string
-	intentChannel              chan *intent
-	subwayCities               misc.Set
-	period                     time.Duration
-	noDistance                 float64
-	subwayStationSearchRadius  float64
-	subwayStationMinArea       float64
-	industrialZoneSearchRadius float64
-	industrialZoneMinArea      float64
-	greenZoneSearchRadius      float64
-	greenZoneMinArea           float64
-}
-
-func (gauger *Gauger) run() {
-	ticker := time.NewTicker(gauger.period)
-	for intent := range gauger.intentChannel {
-		<-ticker.C
-		go gauger.gaugeIntent(intent)
-	}
-}
-
-func (gauger *Gauger) gaugeIntent(intent *intent) {
-	switch intent.target {
-	case subwayStationDistance:
-
-		break
-	case industrialZoneDistance:
-
-		break
-	case greenZoneDistance:
-
-		break
-	}
-}
-
-func (gauger *Gauger) GaugeFlats(flats []*dto.Flat) {
-	for _, flat := range flats {
-		if gauger.subwayCities.Contains(flat.City) {
-			gauger.intentChannel <- &intent{subwayStationDistance, flat}
-		}
-		gauger.intentChannel <- &intent{industrialZoneDistance, flat}
-		gauger.intentChannel <- &intent{greenZoneDistance, flat}
-	}
-}
-
-func (gauger *Gauger) gaugeSubwayStationDistance(flat *dto.Flat) float64 {
-	return gauger.noDistance
-}
-
-func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.FeatureCollection, error) {
+func (gauger *distanceGauger) queryCollection(query string, params ...interface{}) (*geojson.FeatureCollection, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf(gauger.interpreterURL, gourl.QueryEscape(fmt.Sprintf(query, params...))),
@@ -114,19 +48,14 @@ func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.Featu
 	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("gauging: gauger failed to close the response body, %v", err)
 	}
-	collection, err := osmgeojson.Convert(
-		&o,
-		osmgeojson.NoID(true),
-		osmgeojson.NoMeta(true),
-		osmgeojson.NoRelationMembership(true),
-	)
+	collection, err := osmgeojson.Convert(&o, osmgeojson.NoMeta(true))
 	if err != nil {
 		return nil, fmt.Errorf("gauging: gauger failed to convert to geojson, %v", err)
 	}
 	return collection, nil
 }
 
-func (gauger *Gauger) gaugeDistance(
+func (gauger *distanceGauger) gaugeDistance(
 	flat *dto.Flat,
 	collection *geojson.FeatureCollection,
 	minArea float64,

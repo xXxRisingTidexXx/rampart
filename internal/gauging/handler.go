@@ -7,25 +7,21 @@ import (
 	"net/http"
 )
 
-func newHandler(gauger *Gauger) *handler {
-	return &handler{gauger}
-}
-
 type handler struct {
-	gauger *Gauger
+	scheduler *Scheduler
 }
 
 func (handler *handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != http.MethodPost {
 		writer.WriteHeader(http.StatusMethodNotAllowed)
-		log.Errorf("gauging: received invalid request method, %s", request.Method)
+		log.Errorf("gauging: handler received invalid request method, %s", request.Method)
 		return
 	}
 	flats := make([]*dto.Flat, 0)
 	if err := json.NewDecoder(request.Body).Decode(&flats); err != nil {
 		writer.WriteHeader(http.StatusBadRequest)
-		log.Errorf("gauging: failed to unmarshal the flats, %v", err)
+		log.Errorf("gauging: handler failed to unmarshal the flats, %v", err)
 		return
 	}
-	go handler.gauger.GaugeFlats(flats)
+	go handler.scheduler.ScheduleFlats(flats)
 }
