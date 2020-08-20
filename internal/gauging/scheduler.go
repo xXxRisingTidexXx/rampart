@@ -10,13 +10,16 @@ import (
 func NewScheduler() *Scheduler {
 	client := &http.Client{Timeout: 35 * time.Second}
 	scheduler := &Scheduler{
-		gaugingChannel:               make(chan *intent, 600),
-		updateChannel:                make(chan *intent, 600),
-		period:                       time.Second,
-		subwayCities:                 misc.Set{"Київ": struct{}{}},
-		subwayStationDistanceGauger:  NewSubwayStationDistanceGauger(client),
-		industrialZoneDistanceGauger: NewIndustrialZoneDistanceGauger(client),
-		greenZoneDistanceGauger:      NewGreenZoneDistanceGauger(client),
+		make(chan *intent, 600),
+		make(chan *intent, 600),
+		time.Second,
+		misc.Set{"Київ": struct{}{}},
+		NewSubwayStationDistanceGauger(client),
+		NewIndustrialZoneDistanceGauger(client),
+		NewGreenZoneDistanceGauger(client),
+		nil,
+		nil,
+		nil,
 	}
 	go scheduler.runGauging()
 	go scheduler.runUpdate()
