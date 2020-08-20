@@ -8,6 +8,7 @@ import (
 	"github.com/paulmach/orb/planar"
 	"github.com/paulmach/osm"
 	"github.com/paulmach/osm/osmgeojson"
+	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"math"
@@ -56,19 +57,23 @@ func (gauger *distanceGauger) queryCollection(query string, params ...interface{
 }
 
 func (gauger *distanceGauger) gaugeDistance(flat *dto.Flat, collection *geojson.FeatureCollection) float64 {
-	geometries := make([]orb.Geometry, 0)
+	features := make([]*geojson.Feature, 0)
 	for _, feature := range collection.Features {
 		if planar.Area(feature.Geometry) >= gauger.minArea {
-			geometries = append(geometries, feature.Geometry)
+			features = append(features, feature)
 		}
 	}
-	if len(geometries) == 0 {
+	if len(features) == 0 {
 		return misc.DistanceUnknown
 	}
 	point := orb.Point(flat.Point)
-	distance := planar.DistanceFrom(geometries[0], point)
-	for _, geometry := range geometries {
-		distance = math.Min(distance, planar.DistanceFrom(geometry, point))
+	id, distance := features[0].ID, planar.DistanceFrom(features[0].Geometry, point)
+	for _, feature := range features {
+		if planar.DistanceFrom(feature.Geometry, point) < distance {
+			id = feature.ID
+		}
+		distance = math.Min(distance, planar.DistanceFrom(feature.Geometry, point))
 	}
+	log.WithFields(log.Fields{"point": flat.Point, "id": id, "distance": distance}).Info("gauging: gauged distance")
 	return distance
 }
