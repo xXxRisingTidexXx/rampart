@@ -14,7 +14,7 @@ type handler struct {
 func (handler *handler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != http.MethodPost {
 		writer.WriteHeader(http.StatusMethodNotAllowed)
-		log.Errorf("gauging: handler received invalid request method, %s", request.Method)
+		log.WithField("method", request.Method).Errorf("gauging: handler received invalid request method")
 		return
 	}
 	flats := make([]*dto.Flat, 0)
