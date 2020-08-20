@@ -2,12 +2,12 @@ package metrics
 
 import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
-	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"net/http"
 )
 
-func RunServer(config *config.Server, logger *logging.Logger) {
+func RunServer(config *config.Server, logger log.FieldLogger) {
 	server := &http.Server{
 		Addr:           config.Address,
 		ReadTimeout:    config.ReadTimeout,
