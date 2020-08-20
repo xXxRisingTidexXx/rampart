@@ -27,7 +27,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	gauging.RunServer(cfg.Gauging.HTTPServer, gauging.NewScheduler())
+	gauging.RunServer(cfg.Gauging.HTTPServer, gauging.NewScheduler(db))
 	metrics.RunServer(cfg.Gauging.MetricsServer)
 	signalChannel := make(chan os.Signal, 1)
 	signal.Notify(signalChannel, os.Interrupt, syscall.SIGTERM)

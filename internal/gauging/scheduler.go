@@ -1,13 +1,14 @@
 package gauging
 
 import (
+	"database/sql"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
 	"time"
 )
 
-func NewScheduler() *Scheduler {
+func NewScheduler(db *sql.DB) *Scheduler {
 	client := &http.Client{Timeout: 35 * time.Second}
 	scheduler := &Scheduler{
 		make(chan *intent, 600),
