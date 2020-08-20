@@ -209,6 +209,7 @@ gauging:
       searchRadius: 2000
       minArea: 0.000004
     greenZoneDistanceGauger:
+      <<: *gauger
       searchRadius: 1200
       minArea: 0.00001
   httpServer:
