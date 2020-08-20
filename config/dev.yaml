@@ -189,15 +189,15 @@ gauging:
     <<: *dsnParams
     connect_timeout: '12'
   scheduler:
-    timeout: 35s
+    timeout: 40s
     capacity: 600
-    period: 1s
+    period: 2s
     subwayCities:
       - Київ
       - Харків
       - Дніпро
     gauger: &gauger
-      interpreterURL: https://overpass-api.de/api/interpreter?data=%s
+      interpreterURL: https://overpass.kumi.systems/api/interpreter?data=%s
       headers:
         User-Agent: rampart-gauging-bot/1.0.0
     subwayStationDistanceGauger:
