@@ -207,11 +207,11 @@ gauging:
     industrialZoneDistanceGauger:
       <<: *gauger
       searchRadius: 4000
-      minArea: 0.000004
+      minArea: 35000
     greenZoneDistanceGauger:
       <<: *gauger
       searchRadius: 2000
-      minArea: 0.00001
+      minArea: 50000
   httpServer:
     address: :9003
     readTimeout: 5s

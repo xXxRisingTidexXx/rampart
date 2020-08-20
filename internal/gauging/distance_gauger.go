@@ -15,7 +15,6 @@ import (
 	gourl "net/url"
 )
 
-// TODO: transform min area square degrees into square meters.
 type distanceGauger struct {
 	client         *http.Client
 	headers        misc.Headers
