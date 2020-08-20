@@ -44,7 +44,7 @@ func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) float64 {
 		point.Lon(),
 	)
 	if err != nil {
-		log.Error(err)
+		log.Error(err) // TODO: add logger with field url.
 		return gauger.noDistance
 	}
 	return gauger.gaugeDistance(flat, collection, gauger.minArea)
