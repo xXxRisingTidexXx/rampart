@@ -6,17 +6,17 @@ import (
 	"net/http"
 )
 
-func RunServer(config *config.Server, scheduler *Scheduler) {
+func RunServer(config *config.Server, scheduler *Scheduler, logger log.FieldLogger) {
 	server := &http.Server{
 		Addr:           config.Address,
 		ReadTimeout:    config.ReadTimeout,
 		WriteTimeout:   config.WriteTimeout,
 		MaxHeaderBytes: config.MaxHeaderBytes,
-		Handler:        &handler{scheduler},
+		Handler:        &handler{scheduler, logger},
 	}
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			log.Fatalf("httpserve: server met an error, %v", err)
+			logger.Fatalf("gauging: server met an error, %v", err)
 		}
 	}()
 }

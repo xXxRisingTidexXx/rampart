@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func NewScheduler(db *sql.DB) *Scheduler {
+func NewScheduler(db *sql.DB, logger log.FieldLogger) *Scheduler {
 	client := &http.Client{Timeout: 35 * time.Second}
 	scheduler := &Scheduler{
 		make(chan *intent, 600),
@@ -22,6 +22,7 @@ func NewScheduler(db *sql.DB) *Scheduler {
 		NewSubwayStationDistanceUpdater(db),
 		NewIndustrialZoneDistanceUpdater(db),
 		NewGreenZoneDistanceUpdater(db),
+		logger,
 	}
 	go scheduler.runGauging()
 	go scheduler.runUpdate()
@@ -39,6 +40,7 @@ type Scheduler struct {
 	subwayStationDistanceUpdater  Updater
 	industrialZoneDistanceUpdater Updater
 	greenZoneDistanceUpdater      Updater
+	logger                        log.FieldLogger
 }
 
 func (scheduler *Scheduler) runGauging() {
@@ -52,7 +54,7 @@ func (scheduler *Scheduler) runGauging() {
 func (scheduler *Scheduler) gaugeFlat(i *intent) {
 	value, err := i.gauger.GaugeFlat(i.flat)
 	if err != nil {
-		log.WithField("url", i.flat.OriginURL).Error(err)
+		scheduler.logger.WithField("url", i.flat.OriginURL).Error(err)
 	}
 	scheduler.updateChannel <- &intent{i.flat, value, i.gauger, i.updater}
 }
@@ -60,7 +62,7 @@ func (scheduler *Scheduler) gaugeFlat(i *intent) {
 func (scheduler *Scheduler) runUpdate() {
 	for intent := range scheduler.updateChannel {
 		if err := intent.updater.UpdateFlat(intent.flat, intent.value); err != nil {
-			log.WithField("url", intent.flat.OriginURL).Error(err)
+			scheduler.logger.WithField("url", intent.flat.OriginURL).Error(err)
 		}
 	}
 }

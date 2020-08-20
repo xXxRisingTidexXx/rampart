@@ -11,14 +11,13 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/secrets"
 )
 
-// TODO: set service label for various logs.
 func main() {
 	isOnce := flag.Bool("once", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
 	flag.Parse()
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
-	entry := log.WithField("miner", *alias)
+	entry := log.WithFields(log.Fields{"app": "mining", "miner": *alias})
 	scr, err := secrets.NewSecrets()
 	if err != nil {
 		entry.Fatal(err)
