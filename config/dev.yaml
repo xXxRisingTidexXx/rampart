@@ -10,7 +10,7 @@ mining:
   domriaMiner: &domriaMiner
     fetcher:
       timeout: 40s
-      portion: 5
+      portion: 100
       flags:
         primary: newbuildings=1
         secondary: secondary=1
@@ -192,20 +192,29 @@ gauging:
   dsnParams:
     <<: *dsnParams
     connect_timeout: '12'
-  gauger:
+  scheduler:
     timeout: 35s
-    headers:
-      User-Agent: rampart-gauging-bot/1.0.0
-    interpreterURL: https://overpass-api.de/api/interpreter?data=%s
+    capacity: 600
+    period: 1s
     subwayCities:
       - Київ
       - Харків
       - Дніпро
-    subwayStationSearchRadius: 1500
-    industrialZoneSearchRadius: 2000
-    industrialZoneMinArea: 0.000004
-    greenZoneSearchRadius: 1200
-    greenZoneMinArea: 0.00001
+    gauger: &gauger
+      interpreterURL: https://overpass-api.de/api/interpreter?data=%s
+      headers:
+        User-Agent: rampart-gauging-bot/1.0.0
+    subwayStationDistanceGauger:
+      <<: *gauger
+      searchRadius: 1500
+      minArea: 0
+    industrialZoneDistanceGauger:
+      <<: *gauger
+      searchRadius: 2000
+      minArea: 0.000004
+    greenZoneDistanceGauger:
+      searchRadius: 1200
+      minArea: 0.00001
   httpServer:
     address: :9003
     readTimeout: 5s
