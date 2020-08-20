@@ -20,7 +20,6 @@ type distanceGauger struct {
 	headers        misc.Headers
 	interpreterURL string
 	minArea        float64
-	noDistance     float64
 }
 
 func (gauger *distanceGauger) queryCollection(query string, params ...interface{}) (*geojson.FeatureCollection, error) {
@@ -64,7 +63,7 @@ func (gauger *distanceGauger) gaugeDistance(flat *dto.Flat, collection *geojson.
 		}
 	}
 	if len(geometries) == 0 {
-		return gauger.noDistance
+		return misc.DistanceUnknown
 	}
 	point := orb.Point(flat.Point)
 	distance := planar.DistanceFrom(geometries[0], point)

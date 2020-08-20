@@ -5,6 +5,7 @@ import (
 	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
 )
 
@@ -15,7 +16,6 @@ func NewIndustrialZoneDistanceGauger(config *config.Gauger, client *http.Client)
 			config.Headers,
 			config.InterpreterURL,
 			config.MinArea,
-			-1,
 		},
 		config.SearchRadius,
 	}
@@ -43,7 +43,7 @@ func (gauger *industrialZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, 
 		point.Lon(),
 	)
 	if err != nil {
-		return gauger.noDistance, fmt.Errorf(
+		return misc.DistanceUnknown, fmt.Errorf(
 			"gauging: industrial zone distance gauger failed to gauge flat, %v",
 			err,
 		)

@@ -5,6 +5,7 @@ import (
 	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
 )
 
@@ -15,7 +16,6 @@ func NewGreenZoneDistanceGauger(config *config.Gauger, client *http.Client) Gaug
 			config.Headers,
 			config.InterpreterURL,
 			config.MinArea,
-			-1,
 		},
 		config.SearchRadius,
 	}
@@ -43,7 +43,7 @@ func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error
 		point.Lon(),
 	)
 	if err != nil {
-		return gauger.noDistance, fmt.Errorf(
+		return misc.DistanceUnknown, fmt.Errorf(
 			"gauging: green zone distance gauger failed to gauge flat, %v",
 			err,
 		)
