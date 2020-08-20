@@ -202,15 +202,15 @@ gauging:
         User-Agent: rampart-gauging-bot/1.0.0
     subwayStationDistanceGauger:
       <<: *gauger
-      searchRadius: 1500
+      searchRadius: 2500
       minArea: 0
     industrialZoneDistanceGauger:
       <<: *gauger
-      searchRadius: 2000
+      searchRadius: 4000
       minArea: 0.000004
     greenZoneDistanceGauger:
       <<: *gauger
-      searchRadius: 1200
+      searchRadius: 2000
       minArea: 0.00001
   httpServer:
     address: :9003
