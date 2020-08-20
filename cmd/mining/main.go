@@ -32,10 +32,20 @@ func main() {
 	if err != nil {
 		logger.Fatal(err)
 	}
-	short, gatherer := cfg.Mining.Miners, metrics.NewGatherer(*alias, db)
+	gatherer := metrics.NewGatherer(*alias, db)
 	jobs := map[string]gocron.Job{
-		short.DomriaPrimary.Name():   domria.NewMiner(short.DomriaPrimary, db, gatherer, logger),
-		short.DomriaSecondary.Name(): domria.NewMiner(short.DomriaSecondary, db, gatherer, logger),
+		cfg.Mining.DomriaPrimaryMiner.Name(): domria.NewMiner(
+			cfg.Mining.DomriaPrimaryMiner,
+			db,
+			gatherer,
+			logger,
+		),
+		cfg.Mining.DomriaSecondaryMiner.Name(): domria.NewMiner(
+			cfg.Mining.DomriaSecondaryMiner,
+			db,
+			gatherer,
+			logger,
+		),
 	}
 	job, ok := jobs[*alias]
 	if !ok {
@@ -44,8 +54,8 @@ func main() {
 		return
 	}
 	miners := map[string]config.Miner{
-		short.DomriaPrimary.Name():   short.DomriaPrimary,
-		short.DomriaSecondary.Name(): short.DomriaSecondary,
+		cfg.Mining.DomriaPrimaryMiner.Name():   cfg.Mining.DomriaPrimaryMiner,
+		cfg.Mining.DomriaSecondaryMiner.Name(): cfg.Mining.DomriaSecondaryMiner,
 	}
 	miner := miners[*alias]
 	if *isOnce {

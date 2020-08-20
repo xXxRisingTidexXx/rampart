@@ -5,10 +5,16 @@ import (
 )
 
 type Mining struct {
-	DSNParams map[string]string `yaml:"dsnParams"`
-	Miners    *Miners           `yaml:"miners"`
+	DSNParams            map[string]string `yaml:"dsnParams"`
+	DomriaPrimaryMiner   *DomriaMiner      `yaml:"domriaPrimaryMiner"`
+	DomriaSecondaryMiner *DomriaMiner      `yaml:"domriaSecondaryMiner"`
 }
 
 func (mining *Mining) String() string {
-	return fmt.Sprintf("{%v %v}", mining.DSNParams, mining.Miners)
+	return fmt.Sprintf(
+		"{%v %v %v}",
+		mining.DSNParams,
+		mining.DomriaPrimaryMiner,
+		mining.DomriaSecondaryMiner,
+	)
 }
