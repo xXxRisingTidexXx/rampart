@@ -1,6 +1,7 @@
 package gauging
 
 import (
+	"fmt"
 	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
@@ -34,7 +35,10 @@ func (gauger *subwayStationDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, e
 		point.Lon(),
 	)
 	if err != nil {
-		return gauger.noDistance, err
+		return gauger.noDistance, fmt.Errorf(
+			"gauging: subway station distance gauger failed to gauge flat, %v",
+			err,
+		)
 	}
 	return gauger.gaugeDistance(flat, collection), nil
 }

@@ -1,6 +1,7 @@
 package gauging
 
 import (
+	"fmt"
 	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
@@ -42,7 +43,10 @@ func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error
 		point.Lon(),
 	)
 	if err != nil {
-		return gauger.noDistance, err
+		return gauger.noDistance, fmt.Errorf(
+			"gauging: green zone distance gauger failed to gauge flat, %v",
+			err,
+		)
 	}
 	return gauger.gaugeDistance(flat, collection), nil
 }

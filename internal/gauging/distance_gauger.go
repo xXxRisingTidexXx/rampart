@@ -30,12 +30,12 @@ func (gauger *distanceGauger) queryCollection(query string, params ...interface{
 		nil,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("gauging: gauger failed to construct a request, %v", err)
+		return nil, err
 	}
 	gauger.headers.Inject(request)
 	response, err := gauger.client.Do(request)
 	if err != nil {
-		return nil, fmt.Errorf("gauging: gauger failed to perform a request, %v", err)
+		return nil, err
 	}
 	if response.StatusCode != http.StatusOK {
 		_ = response.Body.Close()
@@ -44,14 +44,14 @@ func (gauger *distanceGauger) queryCollection(query string, params ...interface{
 	o := osm.OSM{}
 	if err := xml.NewDecoder(response.Body).Decode(&o); err != nil {
 		_ = response.Body.Close()
-		return nil, fmt.Errorf("gauging: gauger failed to unmarshal the osm, %v", err)
+		return nil, err
 	}
 	if err := response.Body.Close(); err != nil {
-		return nil, fmt.Errorf("gauging: gauger failed to close the response body, %v", err)
+		return nil, err
 	}
 	collection, err := osmgeojson.Convert(&o, osmgeojson.NoMeta(true))
 	if err != nil {
-		return nil, fmt.Errorf("gauging: gauger failed to convert to geojson, %v", err)
+		return nil, err
 	}
 	return collection, nil
 }

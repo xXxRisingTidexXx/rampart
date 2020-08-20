@@ -21,7 +21,7 @@ func (updater *greenZoneDistanceUpdater) UpdateFlat(flat *dto.Flat, value float6
 		flat.OriginURL,
 	)
 	if err != nil {
-		return fmt.Errorf("gauging: updater failed to update flat's green zone distance, %v", err)
+		return fmt.Errorf("gauging: green zone distance updater failed to update flat, %v", err)
 	}
 	return nil
 }
