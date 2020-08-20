@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/paulmach/orb"
+	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
-	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func NewGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger *logging.Logger) *Geocoder {
+func NewGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger log.FieldLogger) *Geocoder {
 	return &Geocoder{
 		&http.Client{Timeout: config.Timeout},
 		config.Headers,
@@ -30,7 +30,7 @@ type Geocoder struct {
 	statelessCities misc.Set
 	searchURL       string
 	gatherer        *metrics.Gatherer
-	logger          *logging.Logger
+	logger          log.FieldLogger
 }
 
 func (geocoder *Geocoder) GeocodeFlats(flats []*Flat) []*Flat {
@@ -60,7 +60,7 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 	positions, err := geocoder.getPositions(flat)
 	geocoder.gatherer.GatherGeocodingDuration(start)
 	if err != nil {
-		geocoder.logger.Problem(flat, err)
+		geocoder.logger.WithFields(log.Fields{"url": flat.OriginURL, "source": flat.Source}).Error(err)
 		geocoder.gatherer.GatherFailedGeocoding()
 		return nil
 	}

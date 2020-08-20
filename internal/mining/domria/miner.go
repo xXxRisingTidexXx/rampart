@@ -2,8 +2,8 @@ package domria
 
 import (
 	"database/sql"
+	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
-	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"time"
 )
@@ -12,7 +12,7 @@ func NewMiner(
 	config *config.DomriaMiner,
 	db *sql.DB,
 	gatherer *metrics.Gatherer,
-	logger *logging.Logger,
+	logger log.FieldLogger,
 ) *Miner {
 	return &Miner{
 		string(config.Housing),
@@ -36,7 +36,7 @@ type Miner struct {
 	storer    *Storer
 	gauger    *Dumper
 	gatherer  *metrics.Gatherer
-	logger    *logging.Logger
+	logger    log.FieldLogger
 }
 
 func (miner *Miner) Run() {
