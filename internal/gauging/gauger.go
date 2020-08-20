@@ -5,5 +5,5 @@ import (
 )
 
 type Gauger interface {
-	GaugeFlat(flat *dto.Flat) float64
+	GaugeFlat(flat *dto.Flat) (float64, error)
 }
