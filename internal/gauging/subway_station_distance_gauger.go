@@ -3,21 +3,21 @@ package gauging
 import (
 	"fmt"
 	"github.com/paulmach/orb"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
 )
 
-func NewSubwayStationDistanceGauger(client *http.Client) Gauger {
+func NewSubwayStationDistanceGauger(config *config.Gauger, client *http.Client) Gauger {
 	return &subwayStationDistanceGauger{
 		distanceGauger{
 			client,
-			misc.Headers{},
-			"",
-			0,
+			config.Headers,
+			config.InterpreterURL,
+			config.MinArea,
 			-1,
 		},
-		1200,
+		config.SearchRadius,
 	}
 }
 

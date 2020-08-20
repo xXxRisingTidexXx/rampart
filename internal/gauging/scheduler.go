@@ -3,22 +3,23 @@ package gauging
 import (
 	"database/sql"
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
 	"time"
 )
 
-func NewScheduler(db *sql.DB, logger log.FieldLogger) *Scheduler {
-	client := &http.Client{Timeout: 35 * time.Second}
+func NewScheduler(config *config.Scheduler, db *sql.DB, logger log.FieldLogger) *Scheduler {
+	client := &http.Client{Timeout: config.Timeout}
 	scheduler := &Scheduler{
-		make(chan *intent, 600),
-		make(chan *intent, 600),
-		time.Second,
-		misc.Set{"Київ": struct{}{}},
-		NewSubwayStationDistanceGauger(client),
-		NewIndustrialZoneDistanceGauger(client),
-		NewGreenZoneDistanceGauger(client),
+		make(chan *intent, config.Capacity),
+		make(chan *intent, config.Capacity),
+		config.Period,
+		config.SubwayCities,
+		NewSubwayStationDistanceGauger(config.SubwayStationDistanceGauger, client),
+		NewIndustrialZoneDistanceGauger(config.IndustrialZoneDistanceGauger, client),
+		NewGreenZoneDistanceGauger(config.GreenZoneDistanceGauger, client),
 		NewSubwayStationDistanceUpdater(db),
 		NewIndustrialZoneDistanceUpdater(db),
 		NewGreenZoneDistanceUpdater(db),
