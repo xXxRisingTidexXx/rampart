@@ -18,9 +18,9 @@ func NewScheduler(db *sql.DB) *Scheduler {
 		NewSubwayStationDistanceGauger(client),
 		NewIndustrialZoneDistanceGauger(client),
 		NewGreenZoneDistanceGauger(client),
-		nil,
-		nil,
-		nil,
+		NewSubwayStationDistanceUpdater(db),
+		NewIndustrialZoneDistanceUpdater(db),
+		NewGreenZoneDistanceUpdater(db),
 	}
 	go scheduler.runGauging()
 	go scheduler.runUpdate()
