@@ -2,7 +2,6 @@ package gauging
 
 import (
 	"github.com/paulmach/orb"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
@@ -25,7 +24,7 @@ type subwayStationDistanceGauger struct {
 	searchRadius float64
 }
 
-func (gauger *subwayStationDistanceGauger) GaugeFlat(flat *dto.Flat) float64 {
+func (gauger *subwayStationDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error) {
 	point := orb.Point(flat.Point)
 	collection, err := gauger.queryCollection(
 		"node[station=subway](around:%f,%f,%f);out;",
@@ -34,8 +33,7 @@ func (gauger *subwayStationDistanceGauger) GaugeFlat(flat *dto.Flat) float64 {
 		point.Lon(),
 	)
 	if err != nil {
-		log.Error(err)
-		return gauger.noDistance
+		return gauger.noDistance, err
 	}
-	return gauger.gaugeDistance(flat, collection, 0)
+	return gauger.gaugeDistance(flat, collection, 0), nil
 }

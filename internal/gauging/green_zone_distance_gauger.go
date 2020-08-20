@@ -2,7 +2,6 @@ package gauging
 
 import (
 	"github.com/paulmach/orb"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
@@ -27,7 +26,7 @@ type greenZoneDistanceGauger struct {
 	minArea      float64
 }
 
-func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) float64 {
+func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error) {
 	point := orb.Point(flat.Point)
 	collection, err := gauger.queryCollection(
 		`(
@@ -44,8 +43,7 @@ func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) float64 {
 		point.Lon(),
 	)
 	if err != nil {
-		log.Error(err) // TODO: add logger with field url.
-		return gauger.noDistance
+		return gauger.noDistance, err
 	}
-	return gauger.gaugeDistance(flat, collection, gauger.minArea)
+	return gauger.gaugeDistance(flat, collection, gauger.minArea), nil // TODO: move min area to distance gauger.
 }

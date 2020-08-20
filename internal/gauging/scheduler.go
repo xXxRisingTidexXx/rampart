@@ -2,6 +2,7 @@ package gauging
 
 import (
 	"database/sql"
+	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
@@ -49,12 +50,18 @@ func (scheduler *Scheduler) runGauging() {
 }
 
 func (scheduler *Scheduler) gaugeFlat(i *intent) {
-	scheduler.updateChannel <- &intent{i.flat, i.gauger.GaugeFlat(i.flat), i.gauger, i.updater}
+	value, err := i.gauger.GaugeFlat(i.flat)
+	if err != nil {
+		log.Error(err) // TODO: add logger with field url.
+	}
+	scheduler.updateChannel <- &intent{i.flat, value, i.gauger, i.updater}
 }
 
 func (scheduler *Scheduler) runUpdate() {
 	for intent := range scheduler.updateChannel {
-		intent.updater.UpdateFlat(intent.flat, intent.value)
+		if err := intent.updater.UpdateFlat(intent.flat, intent.value); err != nil {
+			log.Error(err) // TODO: add logger with field url.
+		}
 	}
 }
 
