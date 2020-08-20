@@ -3,15 +3,20 @@ package gauging
 import (
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"net/http"
 	"time"
 )
 
 func NewScheduler() *Scheduler {
+	client := &http.Client{Timeout: 35 * time.Second}
 	scheduler := &Scheduler{
-		gaugingChannel: make(chan *intent, 600),
-		updateChannel:  make(chan *intent, 600),
-		period:         time.Second,
-		subwayCities:   misc.Set{"Київ": struct{}{}},
+		gaugingChannel:               make(chan *intent, 600),
+		updateChannel:                make(chan *intent, 600),
+		period:                       time.Second,
+		subwayCities:                 misc.Set{"Київ": struct{}{}},
+		subwayStationDistanceGauger:  NewSubwayStationDistanceGauger(client),
+		industrialZoneDistanceGauger: NewIndustrialZoneDistanceGauger(client),
+		greenZoneDistanceGauger:      NewGreenZoneDistanceGauger(client),
 	}
 	go scheduler.runGauging()
 	go scheduler.runUpdate()
