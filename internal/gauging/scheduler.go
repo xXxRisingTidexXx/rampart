@@ -52,7 +52,7 @@ func (scheduler *Scheduler) runGauging() {
 func (scheduler *Scheduler) gaugeFlat(i *intent) {
 	value, err := i.gauger.GaugeFlat(i.flat)
 	if err != nil {
-		log.Error(err) // TODO: add logger with field url.
+		log.WithField("url", i.flat.OriginURL).Error(err)
 	}
 	scheduler.updateChannel <- &intent{i.flat, value, i.gauger, i.updater}
 }
@@ -60,7 +60,7 @@ func (scheduler *Scheduler) gaugeFlat(i *intent) {
 func (scheduler *Scheduler) runUpdate() {
 	for intent := range scheduler.updateChannel {
 		if err := intent.updater.UpdateFlat(intent.flat, intent.value); err != nil {
-			log.Error(err) // TODO: add logger with field url.
+			log.WithField("url", intent.flat.OriginURL).Error(err)
 		}
 	}
 }
