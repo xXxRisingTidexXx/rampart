@@ -13,17 +13,16 @@ func NewIndustrialZoneDistanceGauger(client *http.Client) Gauger {
 			client,
 			misc.Headers{},
 			"",
+			0.0004,
 			-1,
 		},
 		2000,
-		0.001,
 	}
 }
 
 type industrialZoneDistanceGauger struct {
 	distanceGauger
 	searchRadius float64
-	minArea      float64
 }
 
 func (gauger *industrialZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error) {
@@ -45,5 +44,5 @@ func (gauger *industrialZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, 
 	if err != nil {
 		return gauger.noDistance, err  // TODO: add concrete value name in errorf.
 	}
-	return gauger.gaugeDistance(flat, collection, gauger.minArea), nil
+	return gauger.gaugeDistance(flat, collection), nil
 }

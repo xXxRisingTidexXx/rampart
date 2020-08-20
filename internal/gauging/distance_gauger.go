@@ -19,6 +19,7 @@ type distanceGauger struct {
 	client         *http.Client
 	headers        misc.Headers
 	interpreterURL string
+	minArea        float64
 	noDistance     float64
 }
 
@@ -55,14 +56,10 @@ func (gauger *distanceGauger) queryCollection(query string, params ...interface{
 	return collection, nil
 }
 
-func (gauger *distanceGauger) gaugeDistance(
-	flat *dto.Flat,
-	collection *geojson.FeatureCollection,
-	minArea float64,
-) float64 {
+func (gauger *distanceGauger) gaugeDistance(flat *dto.Flat, collection *geojson.FeatureCollection) float64 {
 	geometries := make([]orb.Geometry, 0)
 	for _, feature := range collection.Features {
-		if planar.Area(feature.Geometry) >= minArea {
+		if planar.Area(feature.Geometry) >= gauger.minArea {
 			geometries = append(geometries, feature.Geometry)
 		}
 	}

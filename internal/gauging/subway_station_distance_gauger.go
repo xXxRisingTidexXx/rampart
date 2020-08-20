@@ -13,6 +13,7 @@ func NewSubwayStationDistanceGauger(client *http.Client) Gauger {
 			client,
 			misc.Headers{},
 			"",
+			0,
 			-1,
 		},
 		1200,
@@ -35,5 +36,5 @@ func (gauger *subwayStationDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, e
 	if err != nil {
 		return gauger.noDistance, err
 	}
-	return gauger.gaugeDistance(flat, collection, 0), nil
+	return gauger.gaugeDistance(flat, collection), nil
 }

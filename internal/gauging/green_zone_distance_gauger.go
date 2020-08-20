@@ -13,17 +13,16 @@ func NewGreenZoneDistanceGauger(client *http.Client) Gauger {
 			client,
 			misc.Headers{},
 			"",
+			0.00001,
 			-1,
 		},
 		1500,
-		0.0004,
 	}
 }
 
 type greenZoneDistanceGauger struct {
 	distanceGauger
 	searchRadius float64
-	minArea      float64
 }
 
 func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error) {
@@ -45,5 +44,5 @@ func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error
 	if err != nil {
 		return gauger.noDistance, err
 	}
-	return gauger.gaugeDistance(flat, collection, gauger.minArea), nil // TODO: move min area to distance gauger.
+	return gauger.gaugeDistance(flat, collection), nil
 }
