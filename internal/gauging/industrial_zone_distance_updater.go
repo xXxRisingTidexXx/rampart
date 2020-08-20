@@ -21,6 +21,6 @@ func (updater *industrialZoneDistanceUpdater) UpdateFlat(flat *dto.Flat, value f
 		flat.OriginURL,
 	)
 	if err != nil {
-		log.Errorf("gauging: updater failed to update flat, %v", err)
+		log.Errorf("gauging: updater failed to update flat's industrial zone distance, %v", err)
 	}
 }

@@ -21,6 +21,6 @@ func (updater *subwayStationDistanceUpdater) UpdateFlat(flat *dto.Flat, value fl
 		flat.OriginURL,
 	)
 	if err != nil {
-		log.Errorf("gauging: updater failed to update flat, %v", err)
+		log.Errorf("gauging: updater failed to update flat's subway station distance, %v", err)
 	}
 }
