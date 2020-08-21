@@ -8,7 +8,6 @@ import (
 	"github.com/paulmach/orb/geojson"
 	"github.com/paulmach/osm"
 	"github.com/paulmach/osm/osmgeojson"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
@@ -65,19 +64,13 @@ func (gauger *distanceGauger) gaugeDistance(
 			features = append(features, feature)
 		}
 	}
-	point, id, distance := orb.Point(flat.Point), "", misc.DistanceUnknown
+	point, distance := orb.Point(flat.Point), misc.DistanceUnknown
 	for _, feature := range features {
 		newDistance := gauger.gaugeGeoDistance(feature.Geometry, point)
 		if gauger.isLower(newDistance, distance) {
-			if newID, ok := feature.ID.(string); ok {
-				id = newID
-			} else {
-				id = ""
-			}
 			distance = newDistance
 		}
 	}
-	log.WithFields(log.Fields{"point": point, "id": id, "distance": distance}).Info("gauging: gauged distance")
 	return distance
 }
 
