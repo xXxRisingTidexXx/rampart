@@ -5,6 +5,7 @@ import (
 	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
+	"github.com/xXxRisingTidexXx/rampart/internal/gauging/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
 )
@@ -43,10 +44,16 @@ func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error
 		point.Lon(),
 	)
 	if err != nil {
+		metrics.GreenZoneDistance.WithLabelValues("failed").Inc()
 		return misc.DistanceUnknown, fmt.Errorf(
 			"gauging: green zone distance gauger failed to gauge flat, %v",
 			err,
 		)
 	}
-	return gauger.gaugeDistance(flat, collection), nil
+	distance, category := gauger.gaugeDistance(flat, collection), "successful"
+	if distance == misc.DistanceUnknown {
+		category = "inconclusive"
+	}
+	metrics.GreenZoneDistance.WithLabelValues(category).Inc()
+	return distance, nil
 }

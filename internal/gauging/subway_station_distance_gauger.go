@@ -5,6 +5,7 @@ import (
 	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
+	"github.com/xXxRisingTidexXx/rampart/internal/gauging/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
 )
@@ -35,10 +36,16 @@ func (gauger *subwayStationDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, e
 		point.Lon(),
 	)
 	if err != nil {
+		metrics.SubwayStationDistance.WithLabelValues("failed").Inc()
 		return misc.DistanceUnknown, fmt.Errorf(
 			"gauging: subway station distance gauger failed to gauge flat, %v",
 			err,
 		)
 	}
-	return gauger.gaugeDistance(flat, collection), nil
+	distance, category := gauger.gaugeDistance(flat, collection), "successful"
+	if distance == misc.DistanceUnknown {
+		category = "inconclusive"
+	}
+	metrics.SubwayStationDistance.WithLabelValues(category).Inc()
+	return distance, nil
 }

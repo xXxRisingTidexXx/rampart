@@ -13,7 +13,7 @@ var SubwayStationDistance = promauto.NewCounterVec(
 	[]string{"status"},
 )
 
-var InduztrialZoneDistance = promauto.NewCounterVec(
+var IndustrialZoneDistance = promauto.NewCounterVec(
 	prometheus.CounterOpts{
 		Name: "rampart_gauging_industrial_zone_distance_count",
 		Help: "Counts industrial zone distance gauging results",
