@@ -50,10 +50,10 @@ func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error
 			err,
 		)
 	}
-	distance, category := gauger.gaugeDistance(flat, collection), "successful"
+	distance, status := gauger.gaugeDistance(flat, collection), "successful"
 	if distance == misc.DistanceUnknown {
-		category = "inconclusive"
+		status = "inconclusive"
 	}
-	metrics.GreenZoneDistance.WithLabelValues(category).Inc()
+	metrics.GreenZoneDistance.WithLabelValues(status).Inc()
 	return distance, nil
 }

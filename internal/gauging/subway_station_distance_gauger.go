@@ -42,10 +42,10 @@ func (gauger *subwayStationDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, e
 			err,
 		)
 	}
-	distance, category := gauger.gaugeDistance(flat, collection), "successful"
+	distance, status := gauger.gaugeDistance(flat, collection), "successful"
 	if distance == misc.DistanceUnknown {
-		category = "inconclusive"
+		status = "inconclusive"
 	}
-	metrics.SubwayStationDistance.WithLabelValues(category).Inc()
+	metrics.SubwayStationDistance.WithLabelValues(status).Inc()
 	return distance, nil
 }
