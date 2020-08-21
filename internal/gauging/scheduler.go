@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/dto"
+	"github.com/xXxRisingTidexXx/rampart/internal/gauging/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
 	"time"
@@ -76,6 +77,8 @@ func (scheduler *Scheduler) ScheduleFlats(flats []*dto.Flat) {
 				gauger:  scheduler.subwayStationDistanceGauger,
 				updater: scheduler.subwayStationDistanceUpdater,
 			}
+		} else {
+			metrics.SubwayStationDistance.WithLabelValues("subwayless").Inc()
 		}
 		scheduler.gaugingChannel <- &intent{
 			flat:    flat,
