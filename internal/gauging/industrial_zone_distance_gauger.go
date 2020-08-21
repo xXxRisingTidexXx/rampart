@@ -44,7 +44,7 @@ func (gauger *industrialZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, 
 		point.Lon(),
 	)
 	if err != nil {
-		metrics.IndustrialZoneDistance.WithLabelValues("failed")
+		metrics.IndustrialZoneDistanceGauging.WithLabelValues("failed")
 		return misc.DistanceUnknown, fmt.Errorf(
 			"gauging: industrial zone distance gauger failed to gauge flat, %v",
 			err,
@@ -54,6 +54,6 @@ func (gauger *industrialZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, 
 	if distance == misc.DistanceUnknown {
 		status = "inconclusive"
 	}
-	metrics.IndustrialZoneDistance.WithLabelValues(status).Inc()
+	metrics.IndustrialZoneDistanceGauging.WithLabelValues(status).Inc()
 	return distance, nil
 }

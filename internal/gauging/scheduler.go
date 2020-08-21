@@ -78,7 +78,7 @@ func (scheduler *Scheduler) ScheduleFlats(flats []*dto.Flat) {
 				updater: scheduler.subwayStationDistanceUpdater,
 			}
 		} else {
-			metrics.SubwayStationDistance.WithLabelValues("subwayless").Inc()
+			metrics.SubwayStationDistanceGauging.WithLabelValues("subwayless").Inc()
 		}
 		scheduler.gaugingChannel <- &intent{
 			flat:    flat,

@@ -36,7 +36,7 @@ func (gauger *subwayStationDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, e
 		point.Lon(),
 	)
 	if err != nil {
-		metrics.SubwayStationDistance.WithLabelValues("failed").Inc()
+		metrics.SubwayStationDistanceGauging.WithLabelValues("failed").Inc()
 		return misc.DistanceUnknown, fmt.Errorf(
 			"gauging: subway station distance gauger failed to gauge flat, %v",
 			err,
@@ -46,6 +46,6 @@ func (gauger *subwayStationDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, e
 	if distance == misc.DistanceUnknown {
 		status = "inconclusive"
 	}
-	metrics.SubwayStationDistance.WithLabelValues(status).Inc()
+	metrics.SubwayStationDistanceGauging.WithLabelValues(status).Inc()
 	return distance, nil
 }

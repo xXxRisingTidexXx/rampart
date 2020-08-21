@@ -44,7 +44,7 @@ func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error
 		point.Lon(),
 	)
 	if err != nil {
-		metrics.GreenZoneDistance.WithLabelValues("failed").Inc()
+		metrics.GreenZoneDistanceGauging.WithLabelValues("failed").Inc()
 		return misc.DistanceUnknown, fmt.Errorf(
 			"gauging: green zone distance gauger failed to gauge flat, %v",
 			err,
@@ -54,6 +54,6 @@ func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error
 	if distance == misc.DistanceUnknown {
 		status = "inconclusive"
 	}
-	metrics.GreenZoneDistance.WithLabelValues(status).Inc()
+	metrics.GreenZoneDistanceGauging.WithLabelValues(status).Inc()
 	return distance, nil
 }
