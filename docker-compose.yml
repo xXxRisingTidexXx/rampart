@@ -36,6 +36,10 @@ services:
     volumes:
       - .:/go/src/app
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/gauging
+    ports:
+      - 9003:9003
+      - 9004:9004
+    restart: on-failure
   mining-domria-primary:
     image: rampart-backend
     container_name: rampart-mining-domria-primary
