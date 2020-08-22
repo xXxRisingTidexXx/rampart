@@ -38,6 +38,23 @@ var IndustrialZoneDistanceGauging = promauto.NewCounterVec(
 	[]string{"status"},
 )
 
+var IndustrialZoneDistanceUpdate = promauto.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "rampart_gauging_industrial_zone_distance_update_count",
+		Help: "Counts industrial zone distance update results",
+	},
+	[]string{"status"},
+)
+
+var IndustrialZoneDistanceDuration = promauto.NewHistogramVec(
+	prometheus.HistogramOpts{
+		Name:    "rampart_gauging_industrial_zone_distance_duration_seconds",
+		Help:    "Stage duration spent for industrial zone distance tracking",
+		Buckets: []float64{0.001, 0.005, 0.05, 0.5, 1, 5, 10, 20, 30},
+	},
+	[]string{"stage"},
+)
+
 var GreenZoneDistanceGauging = promauto.NewCounterVec(
 	prometheus.CounterOpts{
 		Name: "rampart_gauging_green_zone_distance_gauging_count",
@@ -46,11 +63,19 @@ var GreenZoneDistanceGauging = promauto.NewCounterVec(
 	[]string{"status"},
 )
 
-//var UpdaterQueryDuration = promauto.NewHistogramVec(
-//	prometheus.HistogramOpts{
-//		Name:    "rampart_gauging_updater_query_duration_seconds",
-//		Help:    "Database SQL query timing",
-//		Buckets: []float64{0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1},
-//	},
-//	[]string{"feature"},
-//)
+var GreenZoneDistanceUpdate = promauto.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "rampart_gauging_green_zone_distance_update_count",
+		Help: "Counts green zone distance update results",
+	},
+	[]string{"status"},
+)
+
+var GreenZoneDistanceDuration = promauto.NewHistogramVec(
+	prometheus.HistogramOpts{
+		Name:    "rampart_gauging_green_zone_distance_duration_seconds",
+		Help:    "Stage duration spent for green zone distance tracking",
+		Buckets: []float64{0.001, 0.005, 0.05, 0.5, 1, 5, 10, 20, 30},
+	},
+	[]string{"stage"},
+)
