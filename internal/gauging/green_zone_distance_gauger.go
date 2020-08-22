@@ -33,10 +33,11 @@ func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error
 	collection, err := gauger.queryCollection(
 		`(
 		  way[leisure=park](around:%f,%f,%f);
+		  >;
 		  relation[leisure=park](around:%f,%f,%f);
 		  >;
 		);
-		out geom;`,
+		out;`,
 		gauger.searchRadius,
 		point.Lat(),
 		point.Lon(),

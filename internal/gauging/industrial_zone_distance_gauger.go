@@ -33,10 +33,11 @@ func (gauger *industrialZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, 
 	collection, err := gauger.queryCollection(
 		`(
 		  way[landuse=industrial](around:%f,%f,%f);
+		  >;
 		  relation[landuse=industrial](around:%f,%f,%f);
 		  >;
 		);
-		out geom;`,
+		out;`,
 		gauger.searchRadius,
 		point.Lat(),
 		point.Lon(),
