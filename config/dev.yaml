@@ -206,7 +206,7 @@ gauging:
       minArea: 0
     industrialZoneDistanceGauger:
       <<: *gauger
-      searchRadius: 4000
+      searchRadius: 3000
       minArea: 35000
     greenZoneDistanceGauger:
       <<: *gauger
