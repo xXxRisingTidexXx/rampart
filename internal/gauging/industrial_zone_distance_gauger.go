@@ -8,6 +8,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/gauging/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
+	"time"
 )
 
 func NewIndustrialZoneDistanceGauger(config *config.Gauger, client *http.Client) Gauger {
@@ -28,7 +29,7 @@ type industrialZoneDistanceGauger struct {
 }
 
 func (gauger *industrialZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error) {
-	point := orb.Point(flat.Point)
+	point, start := orb.Point(flat.Point), time.Now()
 	collection, err := gauger.queryCollection(
 		`(
 		  way[landuse=industrial](around:%f,%f,%f);
@@ -43,6 +44,7 @@ func (gauger *industrialZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, 
 		point.Lat(),
 		point.Lon(),
 	)
+	metrics.IndustrialZoneDistanceDuration.WithLabelValues("gauging").Observe(time.Since(start).Seconds())
 	if err != nil {
 		metrics.IndustrialZoneDistanceGauging.WithLabelValues("failed")
 		return misc.DistanceUnknown, fmt.Errorf(

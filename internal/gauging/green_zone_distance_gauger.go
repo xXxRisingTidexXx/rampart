@@ -8,6 +8,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/gauging/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"net/http"
+	"time"
 )
 
 func NewGreenZoneDistanceGauger(config *config.Gauger, client *http.Client) Gauger {
@@ -28,7 +29,7 @@ type greenZoneDistanceGauger struct {
 }
 
 func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error) {
-	point := orb.Point(flat.Point)
+	point, start := orb.Point(flat.Point), time.Now()
 	collection, err := gauger.queryCollection(
 		`(
 		  way[leisure=park](around:%f,%f,%f);
@@ -43,6 +44,7 @@ func (gauger *greenZoneDistanceGauger) GaugeFlat(flat *dto.Flat) (float64, error
 		point.Lat(),
 		point.Lon(),
 	)
+	metrics.GreenZoneDistanceDuration.WithLabelValues("gauging").Observe(time.Since(start).Seconds())
 	if err != nil {
 		metrics.GreenZoneDistanceGauging.WithLabelValues("failed").Inc()
 		return misc.DistanceUnknown, fmt.Errorf(
