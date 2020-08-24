@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func RunServer(config *config.Server, logger log.FieldLogger) {
+func RunServer(config *config.Server) {
 	server := &http.Server{
 		Addr:           config.Address,
 		ReadTimeout:    config.ReadTimeout,
@@ -17,7 +17,7 @@ func RunServer(config *config.Server, logger log.FieldLogger) {
 	}
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			logger.Fatalf("metrics: server met an error, %v", err)
+			log.Fatalf("metrics: server met an error, %v", err)
 		}
 	}()
 }
