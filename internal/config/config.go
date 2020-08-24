@@ -22,8 +22,9 @@ func NewConfig() (*Config, error) {
 type Config struct {
 	Mining     *Mining     `yaml:"mining"`
 	Migrations *Migrations `yaml:"migrations"`
+	Gauging    *Gauging    `yaml:"gauging"`
 }
 
 func (config *Config) String() string {
-	return fmt.Sprintf("{%v %v}", config.Mining, config.Migrations)
+	return fmt.Sprintf("{%v %v %v}", config.Mining, config.Migrations, config.Gauging)
 }

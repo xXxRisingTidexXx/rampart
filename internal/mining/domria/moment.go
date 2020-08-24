@@ -9,29 +9,22 @@ import (
 
 type moment time.Time
 
-const (
-	momentLength     = 3
-	dateTimingLength = 2
-	dateLength       = 3
-	timingLength     = 3
-)
-
 func (m *moment) UnmarshalJSON(bytes []byte) error {
 	length := len(bytes)
-	if length < momentLength {
+	if length < 3 {
 		return fmt.Errorf("domria: moment string is too short, %d", length)
 	}
 	s := string(bytes[1 : length-1])
 	dateTiming := strings.Split(s, " ")
-	if len(dateTiming) != dateTimingLength {
+	if len(dateTiming) != 2 {
 		return fmt.Errorf("domria: moment can't split date & timing, %s", s)
 	}
 	date := strings.Split(dateTiming[0], "-")
-	if len(date) != dateLength {
+	if len(date) != 3 {
 		return fmt.Errorf("domria: moment cannot split date, %s", s)
 	}
 	timing := strings.Split(dateTiming[1], ":")
-	if len(timing) != timingLength {
+	if len(timing) != 3 {
 		return fmt.Errorf("domria: moment cannot split timing, %s", s)
 	}
 	year, err := strconv.Atoi(date[0])

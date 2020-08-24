@@ -4,17 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/paulmach/orb"
+	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
-	"github.com/xXxRisingTidexXx/rampart/internal/mining/logging"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
 )
 
-func NewGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger *logging.Logger) *Geocoder {
+func NewGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger log.FieldLogger) *Geocoder {
 	return &Geocoder{
 		&http.Client{Timeout: config.Timeout},
 		config.Headers,
@@ -31,7 +30,7 @@ type Geocoder struct {
 	statelessCities misc.Set
 	searchURL       string
 	gatherer        *metrics.Gatherer
-	logger          *logging.Logger
+	logger          log.FieldLogger
 }
 
 func (geocoder *Geocoder) GeocodeFlats(flats []*Flat) []*Flat {
@@ -58,14 +57,14 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 		return nil
 	}
 	start := time.Now()
-	locations, err := geocoder.getLocations(flat)
+	positions, err := geocoder.getPositions(flat)
 	geocoder.gatherer.GatherGeocodingDuration(start)
 	if err != nil {
-		geocoder.logger.Problem(flat, err)
+		geocoder.logger.WithFields(log.Fields{"url": flat.OriginURL, "source": flat.Source}).Error(err)
 		geocoder.gatherer.GatherFailedGeocoding()
 		return nil
 	}
-	if len(locations) == 0 {
+	if len(positions) == 0 {
 		geocoder.gatherer.GatherInconclusiveGeocoding()
 		return nil
 	}
@@ -83,7 +82,7 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 		TotalFloor:  flat.TotalFloor,
 		Housing:     flat.Housing,
 		Complex:     flat.Complex,
-		Point:       orb.Point{float64(locations[0].Lon), float64(locations[0].Lat)},
+		Point:       orb.Point{float64(positions[0].Lon), float64(positions[0].Lat)},
 		State:       flat.State,
 		City:        flat.City,
 		District:    flat.District,
@@ -93,7 +92,7 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 	}
 }
 
-func (geocoder *Geocoder) getLocations(flat *Flat) ([]*location, error) {
+func (geocoder *Geocoder) getPositions(flat *Flat) ([]*position, error) {
 	whitespace, plus, state := " ", "+", ""
 	if !geocoder.statelessCities.Contains(flat.City) {
 		state = strings.ReplaceAll(flat.State, whitespace, plus)
@@ -122,17 +121,13 @@ func (geocoder *Geocoder) getLocations(flat *Flat) ([]*location, error) {
 		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: geocoder got response with status %s", response.Status)
 	}
-	bytes, err := ioutil.ReadAll(response.Body)
-	if err != nil {
+	positions := make([]*position, 0)
+	if err = json.NewDecoder(response.Body).Decode(&positions); err != nil {
 		_ = response.Body.Close()
-		return nil, fmt.Errorf("domria: geocoder failed to read the response body, %v", err)
+		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the positions, %v", err)
 	}
 	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to close the response body, %v", err)
 	}
-	locations := make([]*location, 0)
-	if err := json.Unmarshal(bytes, &locations); err != nil {
-		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the locations, %v", err)
-	}
-	return locations, nil
+	return positions, nil
 }
