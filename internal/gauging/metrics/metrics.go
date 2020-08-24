@@ -79,3 +79,30 @@ var GreenZoneDistanceDuration = promauto.NewHistogramVec(
 	},
 	[]string{"stage"},
 )
+
+func init() {
+	SubwayStationDistanceGauging.WithLabelValues("successful")
+	SubwayStationDistanceGauging.WithLabelValues("subwayless")
+	SubwayStationDistanceGauging.WithLabelValues("inconclusive")
+	SubwayStationDistanceGauging.WithLabelValues("failed")
+	SubwayStationDistanceUpdate.WithLabelValues("successful")
+	SubwayStationDistanceUpdate.WithLabelValues("failed")
+	SubwayStationDistanceDuration.WithLabelValues("gauging")
+	SubwayStationDistanceDuration.WithLabelValues("update")
+	IndustrialZoneDistanceGauging.WithLabelValues("successful")
+	IndustrialZoneDistanceGauging.WithLabelValues("subwayless")
+	IndustrialZoneDistanceGauging.WithLabelValues("inconclusive")
+	IndustrialZoneDistanceGauging.WithLabelValues("failed")
+	IndustrialZoneDistanceUpdate.WithLabelValues("successful")
+	IndustrialZoneDistanceUpdate.WithLabelValues("failed")
+	IndustrialZoneDistanceDuration.WithLabelValues("gauging")
+	IndustrialZoneDistanceDuration.WithLabelValues("update")
+	GreenZoneDistanceGauging.WithLabelValues("successful")
+	GreenZoneDistanceGauging.WithLabelValues("subwayless")
+	GreenZoneDistanceGauging.WithLabelValues("inconclusive")
+	GreenZoneDistanceGauging.WithLabelValues("failed")
+	GreenZoneDistanceUpdate.WithLabelValues("successful")
+	GreenZoneDistanceUpdate.WithLabelValues("failed")
+	GreenZoneDistanceDuration.WithLabelValues("gauging")
+	GreenZoneDistanceDuration.WithLabelValues("update")
+}
