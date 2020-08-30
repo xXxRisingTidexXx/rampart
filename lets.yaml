@@ -18,14 +18,10 @@ commands:
       sleep 1
   migrations:
     description: Upgrade the DB schema to the newest version
-    cmd: |
-      docker-compose up migrations
-      docker rm rampart-migrations || true
+    cmd: docker-compose run --rm migrations
   mining:
     description: Run the data mining app single workflow
-    cmd: |
-      docker-compose up mining
-      docker rm rampart-mining || true
+    cmd: docker-compose run --rm mining
   gauging:
     description: Up Overpass API client & distance measurer
     cmd: |
