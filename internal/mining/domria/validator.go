@@ -7,6 +7,7 @@ import (
 
 func NewValidator(config *config.Validator, gatherer *metrics.Gatherer) *Validator {
 	return &Validator{
+		config.MinMediaCount,
 		config.MinPrice,
 		config.MinTotalArea,
 		config.MaxTotalArea,
@@ -28,6 +29,7 @@ func NewValidator(config *config.Validator, gatherer *metrics.Gatherer) *Validat
 }
 
 type Validator struct {
+	minMediaCount   int
 	minPrice        float64
 	minTotalArea    float64
 	maxTotalArea    float64
@@ -62,7 +64,7 @@ func (validator *Validator) ValidateFlats(flats []*Flat) []*Flat {
 
 //nolint:gocognit
 func (validator *Validator) validateFlat(flat *Flat) bool {
-	if flat.RoomNumber == 0 {
+	if flat.RoomNumber == 0 || flat.MediaCount < validator.minMediaCount {
 		return false
 	}
 	specificArea := flat.TotalArea / float64(flat.RoomNumber)
