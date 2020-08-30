@@ -8,6 +8,8 @@ import (
 type item struct {
 	BeautifulURL        string
 	MainPhoto           string
+	Photos              map[string]*photo
+	Panoramas           []*panorama
 	UpdatedAt           moment
 	PriceArr            *prices
 	TotalSquareMeters   float64
@@ -35,6 +37,8 @@ func (item *item) UnmarshalJSON(bytes []byte) error {
 	}
 	item.BeautifulURL = sourceless.BeautifulURL
 	item.MainPhoto = sourceless.MainPhoto
+	item.Photos = sourceless.Photos
+	item.Panoramas = sourceless.Panoramas
 	item.UpdatedAt = sourceless.UpdatedAt
 	item.PriceArr = sourceless.PriceArr
 	item.TotalSquareMeters = sourceless.TotalSquareMeters
@@ -58,9 +62,11 @@ func (item *item) UnmarshalJSON(bytes []byte) error {
 
 func (item *item) String() string {
 	return fmt.Sprintf(
-		"{%s %s %s %v %.1f %.1f %.1f %d %d %d %s %.6f %.6f %s %s %s %s %s %s %s}",
+		"{%s %s %v %v %s %v %.1f %.1f %.1f %d %d %d %s %.6f %.6f %s %s %s %s %s %s %s}",
 		item.BeautifulURL,
 		item.MainPhoto,
+		item.Photos,
+		item.Panoramas,
 		item.UpdatedAt,
 		item.PriceArr,
 		item.TotalSquareMeters,

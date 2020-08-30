@@ -97,6 +97,8 @@ mining:
         - вулиця
         - ул.
         - улица
+        - бульв.
+        - бульвар
       houseNumberReplacements:
         - №
         - ''
@@ -137,6 +139,7 @@ mining:
         - Київ
       searchURL: https://nominatim.openstreetmap.org/search?state=%s&city=%s&county=%s&street=%s+%s&format=json&countrycodes=ua
     validator:
+      minMediaCount: 5
       minPrice: 1
       minTotalArea: 12
       maxTotalArea: 560
@@ -168,7 +171,7 @@ mining:
     <<: *domriaMiner
     alias: domria-primary
     housing: primary
-    spec: '0-59/4 * * * *'
+    spec: '0-59/10 * * * *'
     server:
       <<: *server
       address: :9001
@@ -176,7 +179,7 @@ mining:
     <<: *domriaMiner
     alias: domria-secondary
     housing: secondary
-    spec: '1-59/4 * * * *'
+    spec: '5-59/10 * * * *'
     server:
       <<: *server
       address: :9002

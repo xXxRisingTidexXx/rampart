@@ -72,6 +72,7 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 	return &Flat{
 		OriginURL:   flat.OriginURL,
 		ImageURL:    flat.ImageURL,
+		MediaCount:  flat.MediaCount,
 		UpdateTime:  flat.UpdateTime,
 		Price:       flat.Price,
 		TotalArea:   flat.TotalArea,

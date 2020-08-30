@@ -100,6 +100,7 @@ func (fetcher *Fetcher) getFlats(search *search, housing string) []*Flat {
 		flats[i] = &Flat{
 			OriginURL:   item.BeautifulURL,
 			ImageURL:    item.MainPhoto,
+			MediaCount:  len(item.Photos) + len(item.Panoramas),
 			UpdateTime:  time.Time(item.UpdatedAt),
 			Price:       price,
 			TotalArea:   item.TotalSquareMeters,

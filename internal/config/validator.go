@@ -5,6 +5,7 @@ import (
 )
 
 type Validator struct {
+	MinMediaCount   int     `yaml:"minMediaCount"`
 	MinPrice        float64 `yaml:"minPrice"`
 	MinTotalArea    float64 `yaml:"minTotalArea"`
 	MaxTotalArea    float64 `yaml:"maxTotalArea"`
@@ -25,7 +26,8 @@ type Validator struct {
 
 func (validator *Validator) String() string {
 	return fmt.Sprintf(
-		"{%.1f %.1f %.1f %.1f %.1f %d %d %.1f %.1f %d %d %d %.1f %.1f %.1f %.1f}",
+		"{%d %.1f %.1f %.1f %.1f %.1f %d %d %.1f %.1f %d %d %d %.1f %.1f %.1f %.1f}",
+		validator.MinMediaCount,
 		validator.MinPrice,
 		validator.MinTotalArea,
 		validator.MaxTotalArea,
