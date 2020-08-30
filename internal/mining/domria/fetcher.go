@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/paulmach/orb"
+	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
@@ -100,6 +101,7 @@ func (fetcher *Fetcher) getFlats(search *search, housing string) []*Flat {
 		flats[i] = &Flat{
 			OriginURL:   item.BeautifulURL,
 			ImageURL:    item.MainPhoto,
+			MediaCount:  len(item.Photos) + len(item.Panoramas),
 			UpdateTime:  time.Time(item.UpdatedAt),
 			Price:       price,
 			TotalArea:   item.TotalSquareMeters,
@@ -118,6 +120,7 @@ func (fetcher *Fetcher) getFlats(search *search, housing string) []*Flat {
 			HouseNumber: item.BuildingNumberStr,
 			Source:      item.Source,
 		}
+		log.Info(flats[i].MediaCount)
 	}
 	return flats
 }
