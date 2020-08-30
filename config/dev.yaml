@@ -137,6 +137,7 @@ mining:
         - Київ
       searchURL: https://nominatim.openstreetmap.org/search?state=%s&city=%s&county=%s&street=%s+%s&format=json&countrycodes=ua
     validator:
+      minMediaCount: 5
       minPrice: 1
       minTotalArea: 12
       maxTotalArea: 560
