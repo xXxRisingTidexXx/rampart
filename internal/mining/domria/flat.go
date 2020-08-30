@@ -9,6 +9,7 @@ import (
 type Flat struct {
 	OriginURL   string
 	ImageURL    string
+	MediaCount  int
 	UpdateTime  time.Time
 	Price       float64
 	TotalArea   float64
@@ -30,9 +31,10 @@ type Flat struct {
 
 func (flat *Flat) String() string {
 	return fmt.Sprintf(
-		"{%s %s %s %.2f %.1f %.1f %.1f %d %d %d %s %s %v %s %s %s %s %s %s}",
+		"{%s %s %d %s %.2f %.1f %.1f %.1f %d %d %d %s %s %v %s %s %s %s %s %s}",
 		flat.OriginURL,
 		flat.ImageURL,
+		flat.MediaCount,
 		flat.UpdateTime,
 		flat.Price,
 		flat.TotalArea,
