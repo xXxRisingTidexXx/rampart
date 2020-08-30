@@ -2,13 +2,13 @@ package secrets
 
 import (
 	"fmt"
-	"github.com/xXxRisingTidexXx/rampart/internal/homedir"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 )
 
 func NewSecrets() (*Secrets, error) {
-	bytes, err := ioutil.ReadFile(homedir.Resolve("secrets/dev.yaml"))
+	bytes, err := ioutil.ReadFile(misc.ResolvePath("secrets/dev.yaml"))
 	if err != nil {
 		return nil, fmt.Errorf("secrets: failed to read the secrets file, %v", err)
 	}

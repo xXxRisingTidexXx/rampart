@@ -2,13 +2,13 @@ package config
 
 import (
 	"fmt"
-	"github.com/xXxRisingTidexXx/rampart/internal/homedir"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 )
 
 func NewConfig() (*Config, error) {
-	bytes, err := ioutil.ReadFile(homedir.Resolve("config/dev.yaml"))
+	bytes, err := ioutil.ReadFile(misc.ResolvePath("config/dev.yaml"))
 	if err != nil {
 		return nil, fmt.Errorf("config: failed to read the config file, %v", err)
 	}
