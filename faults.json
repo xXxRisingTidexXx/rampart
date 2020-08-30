@@ -1,0 +1,29 @@
+[
+  {
+    "urls": [
+      "https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-darnitskiy-dneprovskaya-nab-18-17559030.html",
+      "https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-darnitskiy-dneprovskaya-nab-25-17558588.html",
+      "https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-darnitskiy-dneprovskaya-nab-18-17559285.html",
+      "https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-darnitskiy-dneprovskaya-nab-16g-17096694.html"
+    ],
+    "description": "Invalid location, should be Osokorki / Slavutych instead."
+  },
+  {
+    "urls": [
+      "https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-shevchenkovskiy-pobedy-prospekt-17505683.html",
+      "https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-dneprovskiy-jmachenko-generala-ul-17579796.html",
+      "https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-shevchenkovskiy-pobedy-prospekt-17505683.html",
+      "https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-darnitskiy-malozemelnaya-ulitsa-17315847.html"
+    ],
+    "description": "No renovation. Not a single idea how to check :("
+  },
+  {
+    "urls": [
+      "https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-pecherskiy-drujby-narodov-14-16-17481355.html",
+      "https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-pecherskiy-drujby-narodov-7-17351462.html",
+      "https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-pecherskiy-drujby-narodov-14-16-17573746.html",
+      "https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-pecherskiy-drujby-narodov-14-16-17581011.html"
+    ],
+    "description": "Probably, missing accurate location. Duplicated coordinates."
+  }
+]
