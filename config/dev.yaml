@@ -97,6 +97,8 @@ mining:
         - вулиця
         - ул.
         - улица
+        - бульв.
+        - бульвар
       houseNumberReplacements:
         - №
         - ''
