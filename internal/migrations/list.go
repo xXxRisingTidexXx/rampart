@@ -2,7 +2,7 @@ package migrations
 
 import (
 	"fmt"
-	"github.com/xXxRisingTidexXx/rampart/internal/homedir"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"io/ioutil"
 	"path/filepath"
 	"sort"
@@ -11,7 +11,7 @@ import (
 )
 
 func listVersions() ([]*version, error) {
-	versionsDir := homedir.Resolve("internal/migrations/versions")
+	versionsDir := misc.ResolvePath("internal/migrations/versions")
 	fileInfos, err := ioutil.ReadDir(versionsDir)
 	if err != nil {
 		return nil, fmt.Errorf("migrations: failed to list the versions, %v", err)
