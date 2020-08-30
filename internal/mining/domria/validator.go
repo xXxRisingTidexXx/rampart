@@ -54,9 +54,6 @@ func (validator *Validator) ValidateFlats(flats []*Flat) []*Flat {
 	for _, flat := range flats {
 		if validator.validateFlat(flat) {
 			newFlats = append(newFlats, flat)
-			validator.gatherer.GatherApprovedValidation()
-		} else {
-			validator.gatherer.GatherDeniedValidation()
 		}
 	}
 	return newFlats
@@ -64,29 +61,40 @@ func (validator *Validator) ValidateFlats(flats []*Flat) []*Flat {
 
 //nolint:gocognit
 func (validator *Validator) validateFlat(flat *Flat) bool {
-	if flat.RoomNumber == 0 || flat.MediaCount < validator.minMediaCount {
+	if flat.RoomNumber == 0 {
+		validator.gatherer.GatherDeniedValidation()
 		return false
 	}
 	specificArea := flat.TotalArea / float64(flat.RoomNumber)
-	return flat.OriginURL != "" &&
-		validator.minPrice <= flat.Price &&
-		validator.minTotalArea <= flat.TotalArea &&
-		flat.TotalArea <= validator.maxTotalArea &&
-		validator.minLivingArea <= flat.LivingArea &&
-		flat.LivingArea < flat.TotalArea &&
-		validator.minKitchenArea <= flat.KitchenArea &&
-		flat.KitchenArea < flat.TotalArea &&
-		validator.minRoomNumber <= flat.RoomNumber &&
-		flat.RoomNumber <= validator.maxRoomNumber &&
-		validator.minSpecificArea <= specificArea &&
-		specificArea <= validator.maxSpecificArea &&
-		validator.minFloor <= flat.Floor &&
-		flat.Floor <= flat.TotalFloor &&
-		validator.minTotalFloor <= flat.TotalFloor &&
-		flat.TotalFloor <= validator.maxTotalFloor &&
-		validator.minLongitude <= flat.Point.Lon() &&
-		flat.Point.Lon() <= validator.maxLongitude &&
-		validator.minLatitude <= flat.Point.Lat() &&
-		flat.Point.Y() <= validator.maxLatitude &&
-		(flat.Point.Lon() != 0 || flat.Point.Lat() != 0)
+	if flat.OriginURL == "" ||
+		validator.minPrice > flat.Price ||
+		validator.minTotalArea > flat.TotalArea ||
+		flat.TotalArea > validator.maxTotalArea ||
+		validator.minLivingArea > flat.LivingArea ||
+		flat.LivingArea >= flat.TotalArea ||
+		validator.minKitchenArea > flat.KitchenArea ||
+		flat.KitchenArea >= flat.TotalArea ||
+		validator.minRoomNumber > flat.RoomNumber ||
+		flat.RoomNumber > validator.maxRoomNumber ||
+		validator.minSpecificArea > specificArea ||
+		specificArea > validator.maxSpecificArea ||
+		validator.minFloor > flat.Floor ||
+		flat.Floor > flat.TotalFloor ||
+		validator.minTotalFloor > flat.TotalFloor ||
+		flat.TotalFloor > validator.maxTotalFloor ||
+		validator.minLongitude > flat.Point.Lon() ||
+		flat.Point.Lon() > validator.maxLongitude ||
+		validator.minLatitude > flat.Point.Lat() ||
+		flat.Point.Y() > validator.maxLatitude ||
+		flat.Point.Lon() == 0 &&
+			flat.Point.Lat() == 0 {
+		validator.gatherer.GatherDeniedValidation()
+		return false
+	}
+	if flat.MediaCount < validator.minMediaCount {
+		validator.gatherer.GatherUninformativeValidation()
+		return false
+	}
+	validator.gatherer.GatherApprovedValidation()
+	return true
 }
