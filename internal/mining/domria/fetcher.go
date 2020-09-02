@@ -102,6 +102,7 @@ func (fetcher *Fetcher) getFlats(search *search, housing string) []*Flat {
 			ImageURL:    item.MainPhoto,
 			MediaCount:  len(item.Photos) + len(item.Panoramas),
 			UpdateTime:  time.Time(item.UpdatedAt),
+			IsInspected: item.Inspected == 1,
 			Price:       price,
 			TotalArea:   item.TotalSquareMeters,
 			LivingArea:  item.LivingSquareMeters,

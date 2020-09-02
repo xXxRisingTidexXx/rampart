@@ -101,6 +101,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 		ImageURL:    imageURL,
 		MediaCount:  flat.MediaCount,
 		UpdateTime:  flat.UpdateTime,
+		IsInspected: flat.IsInspected,
 		Price:       flat.Price,
 		TotalArea:   flat.TotalArea,
 		LivingArea:  flat.LivingArea,

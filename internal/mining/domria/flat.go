@@ -11,6 +11,7 @@ type Flat struct {
 	ImageURL    string
 	MediaCount  int
 	UpdateTime  time.Time
+	IsInspected bool
 	Price       float64
 	TotalArea   float64
 	LivingArea  float64
@@ -31,11 +32,12 @@ type Flat struct {
 
 func (flat *Flat) String() string {
 	return fmt.Sprintf(
-		"{%s %s %d %s %.2f %.1f %.1f %.1f %d %d %d %s %s %v %s %s %s %s %s %s}",
+		"{%s %s %d %s %t %.2f %.1f %.1f %.1f %d %d %d %s %s %v %s %s %s %s %s %s}",
 		flat.OriginURL,
 		flat.ImageURL,
 		flat.MediaCount,
 		flat.UpdateTime,
+		flat.IsInspected,
 		flat.Price,
 		flat.TotalArea,
 		flat.LivingArea,
