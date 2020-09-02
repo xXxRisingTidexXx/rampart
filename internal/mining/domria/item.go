@@ -11,6 +11,7 @@ type item struct {
 	Photos              map[string]*photo
 	Panoramas           []*panorama
 	UpdatedAt           moment
+	Inspected           int
 	PriceArr            *prices
 	TotalSquareMeters   float64
 	LivingSquareMeters  float64
@@ -40,6 +41,7 @@ func (item *item) UnmarshalJSON(bytes []byte) error {
 	item.Photos = sourceless.Photos
 	item.Panoramas = sourceless.Panoramas
 	item.UpdatedAt = sourceless.UpdatedAt
+	item.Inspected = sourceless.Inspected
 	item.PriceArr = sourceless.PriceArr
 	item.TotalSquareMeters = sourceless.TotalSquareMeters
 	item.LivingSquareMeters = sourceless.LivingSquareMeters
@@ -62,12 +64,13 @@ func (item *item) UnmarshalJSON(bytes []byte) error {
 
 func (item *item) String() string {
 	return fmt.Sprintf(
-		"{%s %s %v %v %s %v %.1f %.1f %.1f %d %d %d %s %.6f %.6f %s %s %s %s %s %s %s}",
+		"{%s %s %v %v %s %d %v %.1f %.1f %.1f %d %d %d %s %.6f %.6f %s %s %s %s %s %s %s}",
 		item.BeautifulURL,
 		item.MainPhoto,
 		item.Photos,
 		item.Panoramas,
 		item.UpdatedAt,
+		item.Inspected,
 		item.PriceArr,
 		item.TotalSquareMeters,
 		item.LivingSquareMeters,

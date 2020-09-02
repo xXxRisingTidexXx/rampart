@@ -10,6 +10,7 @@ type sourcelessItem struct {
 	Photos              map[string]*photo `json:"photos"`
 	Panoramas           []*panorama       `json:"panoramas"`
 	UpdatedAt           moment            `json:"updated_at"`
+	Inspected           int               `json:"inspected"`
 	PriceArr            *prices           `json:"priceArr"`
 	TotalSquareMeters   float64           `json:"total_square_meters"`
 	LivingSquareMeters  float64           `json:"living_square_meters"`
@@ -30,12 +31,13 @@ type sourcelessItem struct {
 
 func (item *sourcelessItem) String() string {
 	return fmt.Sprintf(
-		"{%s %s %v %v %s %v %.1f %.1f %.1f %d %d %d %s %.6f %.6f %s %s %s %s %s %s}",
+		"{%s %s %v %v %s %d %v %.1f %.1f %.1f %d %d %d %s %.6f %.6f %s %s %s %s %s %s}",
 		item.BeautifulURL,
 		item.MainPhoto,
 		item.Photos,
 		item.Panoramas,
 		item.UpdatedAt,
+		item.Inspected,
 		item.PriceArr,
 		item.TotalSquareMeters,
 		item.LivingSquareMeters,
