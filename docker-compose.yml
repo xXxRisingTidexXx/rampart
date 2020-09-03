@@ -29,7 +29,7 @@ services:
     container_name: rampart-mining
     volumes:
       - .:/go/src/app
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -once -miner domria-primary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -debug -miner domria-primary
   gauging:
     image: rampart-backend
     container_name: rampart-gauging

@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	isOnce := flag.Bool("once", false, "Execute a single workflow instead of the whole schedule")
+	isDebug := flag.Bool("debug", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
 	flag.Parse()
 	log.SetFormatter(&log.JSONFormatter{})
@@ -56,7 +56,7 @@ func main() {
 		cfg.Mining.DomriaSecondaryMiner.Name(): cfg.Mining.DomriaSecondaryMiner,
 	}
 	miner := miners[*alias]
-	if *isOnce {
+	if *isDebug {
 		job.Run()
 	} else {
 		cron := gocron.New()
