@@ -44,15 +44,11 @@ func (geocoder *Geocoder) GeocodeFlats(flats []*Flat) []*Flat {
 }
 
 func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
-	if flat.Point.Lon() != 0 || flat.Point.Lat() != 0 {
+	if flat.IsInspected && flat.IsLocated() {
 		geocoder.gatherer.GatherLocatedGeocoding()
 		return flat
 	}
-	if flat.State == "" ||
-		flat.City == "" ||
-		flat.District == "" ||
-		flat.Street == "" ||
-		flat.HouseNumber == "" {
+	if !flat.IsAddressable() {
 		geocoder.gatherer.GatherUnlocatedGeocoding()
 		return nil
 	}
