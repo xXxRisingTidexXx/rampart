@@ -30,6 +30,14 @@ type Flat struct {
 	Source      string
 }
 
+func (flat *Flat) IsLocated() bool {
+	return flat.Point.Lon() != 0 || flat.Point.Lat() != 0
+}
+
+func (flat *Flat) IsAddressable() bool {
+	return flat.State != "" && flat.City != "" && flat.Street != "" && flat.HouseNumber != ""
+}
+
 func (flat *Flat) String() string {
 	return fmt.Sprintf(
 		"{%s %s %d %s %t %.2f %.1f %.1f %.1f %d %d %d %s %s %v %s %s %s %s %s %s}",

@@ -86,8 +86,7 @@ func (validator *Validator) validateFlat(flat *Flat) bool {
 		flat.Point.Lon() > validator.maxLongitude ||
 		validator.minLatitude > flat.Point.Lat() ||
 		flat.Point.Y() > validator.maxLatitude ||
-		flat.Point.Lon() == 0 &&
-			flat.Point.Lat() == 0 {
+		!flat.IsLocated() {
 		validator.gatherer.GatherDeniedValidation()
 		return false
 	}
