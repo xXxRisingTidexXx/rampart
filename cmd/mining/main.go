@@ -8,7 +8,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/database"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/domria"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
-	"github.com/xXxRisingTidexXx/rampart/internal/secrets"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
 	entry := log.WithFields(log.Fields{"app": "mining", "miner": *alias})
-	scr, err := secrets.NewSecrets()
+	dsn, err := misc.GetEnv("RAMPART_DATABASE_DSN")
 	if err != nil {
 		entry.Fatal(err)
 	}
@@ -26,7 +26,7 @@ func main() {
 	if err != nil {
 		entry.Fatal(err)
 	}
-	db, err := database.NewDatabase(scr.DSN, cfg.Mining.DSNParams)
+	db, err := database.NewDatabase(dsn, cfg.Mining.DSNParams)
 	if err != nil {
 		entry.Fatal(err)
 	}

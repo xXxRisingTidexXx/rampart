@@ -5,7 +5,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/database"
 	"github.com/xXxRisingTidexXx/rampart/internal/migrations"
-	"github.com/xXxRisingTidexXx/rampart/internal/secrets"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
 // TODO: try to use this instead: https://github.com/golang-migrate/migrate .
@@ -13,7 +13,7 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
 	entry := log.WithField("app", "migrations")
-	scr, err := secrets.NewSecrets()
+	dsn, err := misc.GetEnv("RAMPART_DATABASE_DSN")
 	if err != nil {
 		entry.Fatal(err)
 	}
@@ -21,7 +21,7 @@ func main() {
 	if err != nil {
 		entry.Fatal(err)
 	}
-	db, err := database.NewDatabase(scr.DSN, cfg.Migrations.DSNParams)
+	db, err := database.NewDatabase(dsn, cfg.Migrations.DSNParams)
 	if err != nil {
 		entry.Fatal(err)
 	}

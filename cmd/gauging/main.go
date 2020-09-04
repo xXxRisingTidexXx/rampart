@@ -6,7 +6,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/database"
 	"github.com/xXxRisingTidexXx/rampart/internal/gauging"
 	"github.com/xXxRisingTidexXx/rampart/internal/gauging/metrics"
-	"github.com/xXxRisingTidexXx/rampart/internal/secrets"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,7 +16,7 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
 	entry := log.WithField("app", "gauging")
-	scr, err := secrets.NewSecrets()
+	dsn, err := misc.GetEnv("RAMPART_DATABASE_DSN")
 	if err != nil {
 		entry.Fatal(err)
 	}
@@ -24,7 +24,7 @@ func main() {
 	if err != nil {
 		entry.Fatal(err)
 	}
-	db, err := database.NewDatabase(scr.DSN, cfg.Gauging.DSNParams)
+	db, err := database.NewDatabase(dsn, cfg.Gauging.DSNParams)
 	if err != nil {
 		entry.Fatal(err)
 	}
