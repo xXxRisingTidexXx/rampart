@@ -13,6 +13,9 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
 	entry := log.WithField("app", "tgbot")
+	if err := tgbotapi.SetLogger(entry); err != nil {
+		entry.Fatalf("main: tgbot failed to set the logger, %v", err)
+	}
 	bot, err := tgbotapi.NewBotAPI(os.Getenv("RAMPART_TGBOT_TOKEN"))
 	if err != nil {
 		entry.Fatalf("main: tgbot failed to start, %v", err)
