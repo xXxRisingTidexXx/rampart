@@ -24,7 +24,7 @@ func main() {
 	updatesChannel, _ := bot.GetUpdatesChan(tgbotapi.UpdateConfig{Timeout: 60})
 	for update := range updatesChannel {
 		chatID := update.Message.Chat.ID
-		if _, err := bot.Send(tgbotapi.NewMessage(chatID, "привіт, єбанько!")); err != nil {
+		if _, err := bot.Send(tgbotapi.NewMessage(chatID, "Привіт, солоденький!")); err != nil {
 			userID := 0
 			if update.Message.From != nil {
 				userID = update.Message.From.ID
