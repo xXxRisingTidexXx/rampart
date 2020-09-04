@@ -1,4 +1,10 @@
 version: '3.7'
+x-backend: &backend
+  image: rampart-backend
+  volumes:
+    - .:/go/src/app
+  env_file:
+    - .env
 services:
   database:
     image: postgis/postgis:12-master
@@ -19,41 +25,36 @@ services:
       dockerfile: docker/backend.dockerfile
     image: rampart-backend
   migrations:
-    image: rampart-backend
+    <<: *backend
     container_name: rampart-migrations
-    volumes:
-      - .:/go/src/app
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/migrations
   mining:
-    image: rampart-backend
+    <<: *backend
     container_name: rampart-mining
-    volumes:
-      - .:/go/src/app
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -once -miner domria-primary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -debug -miner domria-primary
   gauging:
-    image: rampart-backend
+    <<: *backend
     container_name: rampart-gauging
-    volumes:
-      - .:/go/src/app
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/gauging
     ports:
       - 9003:9003
       - 9004:9004
     restart: on-failure
+  tgbot:
+    <<: *backend
+    container_name: rampart-tgbot
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/tgbot -debug
+    restart: on-failure
   mining-domria-primary:
-    image: rampart-backend
+    <<: *backend
     container_name: rampart-mining-domria-primary
-    volumes:
-      - .:/go/src/app
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-primary
     ports:
       - 9001:9001
     restart: on-failure
   mining-domria-secondary:
-    image: rampart-backend
+    <<: *backend
     container_name: rampart-mining-domria-secondary
-    volumes:
-      - .:/go/src/app
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-secondary
     ports:
       - 9002:9002
@@ -86,9 +87,7 @@ services:
       context: .
       dockerfile: docker/notebook.dockerfile
     image: rampart-notebook
-  jupyter:
-    image: rampart-notebook
-    container_name: rampart-jupyter
+    container_name: rampart-notebook
     volumes:
       - ./notebooks:/home/jovyan
     ports:
