@@ -87,9 +87,7 @@ services:
       context: .
       dockerfile: docker/notebook.dockerfile
     image: rampart-notebook
-  jupyter:
-    image: rampart-notebook
-    container_name: rampart-jupyter
+    container_name: rampart-notebook
     volumes:
       - ./notebooks:/home/jovyan
     ports:
