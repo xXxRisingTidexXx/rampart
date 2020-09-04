@@ -46,6 +46,8 @@ services:
     volumes:
       - .:/go/src/app
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/tgbot -debug
+    env_file:
+      - .env
   mining-domria-primary:
     image: rampart-backend
     container_name: rampart-mining-domria-primary

@@ -26,15 +26,17 @@ commands:
     description: Up Overpass API client & distance measurer
     cmd: |
       docker-compose up gauging
-      docker rm rampart-gauging || true
+      docker rm rampart-gauging
   tgbot:
     description: Activate the telegram bot
-    cmd: docker-compose run --rm tgbot
+    cmd: |
+      docker-compose up tgbot
+      docker rm rampart-tgbot
   run:
     description: Activate the whole rampart ecosystem
     cmd: |
       docker-compose up gauging mining-domria-primary mining-domria-secondary
-      docker rm rampart-mining-domria-primary rampart-mining-domria-secondary rampart-gauging || true
+      docker rm rampart-mining-domria-primary rampart-mining-domria-secondary rampart-gauging
   stop:
     description: Dispose all docker stuff
     cmd: docker-compose down
@@ -51,4 +53,4 @@ commands:
     description: Run Jupyter Lab server
     cmd: |
       docker-compose up jupyter
-      docker rm rampart-jupyter || true
+      docker rm rampart-jupyter
