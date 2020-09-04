@@ -27,6 +27,9 @@ commands:
     cmd: |
       docker-compose up gauging
       docker rm rampart-gauging || true
+  tgbot:
+    description: Activate the telegram bot
+    cmd: docker-compose run --rm tgbot
   run:
     description: Activate the whole rampart ecosystem
     cmd: |
