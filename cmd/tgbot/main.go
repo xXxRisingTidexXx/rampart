@@ -4,7 +4,7 @@ import (
 	"flag"
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
-	"os"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
 func main() {
@@ -16,7 +16,11 @@ func main() {
 	if err := tgbotapi.SetLogger(entry); err != nil {
 		entry.Fatalf("main: tgbot failed to set the logger, %v", err)
 	}
-	bot, err := tgbotapi.NewBotAPI(os.Getenv("RAMPART_TGBOT_TOKEN"))
+	token, err := misc.GetEnv("RAMPART_TGBOT_TOKEN")
+	if err != nil {
+		entry.Fatal(err)
+	}
+	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		entry.Fatalf("main: tgbot failed to start, %v", err)
 	}
