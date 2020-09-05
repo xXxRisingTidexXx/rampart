@@ -26,30 +26,26 @@ type Storer struct {
 	logger   log.FieldLogger
 }
 
-func (storer *Storer) StoreFlats(flats []*Flat) []*Flat {
-	newFlats := make([]*Flat, 0)
+func (storer *Storer) StoreFlats(flats []*Flat) {
 	for _, flat := range flats {
-		if ok, err := storer.storeFlat(flat); err != nil {
+		if err := storer.storeFlat(flat); err != nil {
 			storer.logger.WithFields(log.Fields{"url": flat.OriginURL, "source": flat.Source}).Error(err)
 			storer.gatherer.GatherFailedStoring()
-		} else if ok {
-			newFlats = append(newFlats, flat)
 		}
 	}
-	return newFlats
 }
 
-func (storer *Storer) storeFlat(flat *Flat) (bool, error) {
+func (storer *Storer) storeFlat(flat *Flat) error {
 	tx, err := storer.db.Begin()
 	if err != nil {
-		return false, fmt.Errorf("domria: storer failed to begin a transaction, %v", err)
+		return fmt.Errorf("domria: storer failed to begin a transaction, %v", err)
 	}
 	start := time.Now()
 	origin, err := storer.readFlat(tx, flat)
 	storer.gatherer.GatherReadingDuration(start)
 	if err != nil {
 		_ = tx.Rollback()
-		return false, err
+		return err
 	}
 	message := "domria: storer failed to commit a transaction, %v"
 	if origin == nil {
@@ -58,13 +54,13 @@ func (storer *Storer) storeFlat(flat *Flat) (bool, error) {
 		storer.gatherer.GatherCreationDuration(start)
 		if err != nil {
 			_ = tx.Rollback()
-			return false, err
+			return err
 		}
 		if err = tx.Commit(); err != nil {
-			return false, fmt.Errorf(message, err)
+			return fmt.Errorf(message, err)
 		}
 		storer.gatherer.GatherCreatedStoring()
-		return true, nil
+		return nil
 	}
 	if flat.UpdateTime.After(origin.updateTime) {
 		start := time.Now()
@@ -72,19 +68,19 @@ func (storer *Storer) storeFlat(flat *Flat) (bool, error) {
 		storer.gatherer.GatherUpdateDuration(start)
 		if err != nil {
 			_ = tx.Rollback()
-			return false, err
+			return err
 		}
 		if err = tx.Commit(); err != nil {
-			return false, fmt.Errorf(message, err)
+			return fmt.Errorf(message, err)
 		}
 		storer.gatherer.GatherUpdatedStoring()
-		return true, nil
+		return nil
 	}
 	if err = tx.Commit(); err != nil {
-		return false, fmt.Errorf(message, err)
+		return fmt.Errorf(message, err)
 	}
 	storer.gatherer.GatherUnalteredStoring()
-	return false, nil
+	return nil
 }
 
 func (storer *Storer) readFlat(tx *sql.Tx, flat *Flat) (*origin, error) {
