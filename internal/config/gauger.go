@@ -3,14 +3,22 @@ package config
 import (
 	"fmt"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"time"
 )
 
 type Gauger struct {
-	InterpreterURL string       `yaml:"interpreterURL"`
-	Headers        misc.Headers `yaml:"headers"`
-	SearchRadius   float64      `yaml:"searchRadius"`
+	Timeout        time.Duration `yaml:"timeout"`
+	Headers        misc.Headers  `yaml:"headers"`
+	InterpreterURL string        `yaml:"interpreterURL"`
+	SubwayCities   misc.Set      `yaml:"subwayCities"`
 }
 
 func (gauger *Gauger) String() string {
-	return fmt.Sprintf("{%s %v %f}", gauger.InterpreterURL, gauger.Headers, gauger.SearchRadius)
+	return fmt.Sprintf(
+		"{%s %v %s %v}",
+		gauger.Timeout,
+		gauger.Headers,
+		gauger.InterpreterURL,
+		gauger.SubwayCities,
+	)
 }
