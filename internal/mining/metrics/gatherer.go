@@ -180,6 +180,21 @@ func (gatherer *Gatherer) GatherGeocodingDuration(start time.Time) {
 	gatherer.geocodingDurationCount++
 }
 
+func (gatherer *Gatherer) GatherSSFGaugingDuration(start time.Time) {
+	gatherer.ssfGaugingDurationSum += time.Since(start).Seconds()
+	gatherer.ssfGaugingDurationCount++
+}
+
+func (gatherer *Gatherer) GatherIZFGaugingDuration(start time.Time) {
+	gatherer.izfGaugingDurationSum += time.Since(start).Seconds()
+	gatherer.izfGaugingDurationCount++
+}
+
+func (gatherer *Gatherer) GatherGZFGaugingDuration(start time.Time) {
+	gatherer.gzfGaugingDurationSum += time.Since(start).Seconds()
+	gatherer.gzfGaugingDurationCount++
+}
+
 func (gatherer *Gatherer) GatherReadingDuration(start time.Time) {
 	gatherer.readingDurationSum += time.Since(start).Seconds()
 	gatherer.readingDurationCount++
@@ -271,6 +286,16 @@ func (gatherer *Gatherer) Flush() error {
 	gatherer.failedGeocodingNumber = 0
 	gatherer.inconclusiveGeocodingNumber = 0
 	gatherer.successfulGeocodingNumber = 0
+	gatherer.subwaylessSSFGaugingNumber = 0
+	gatherer.failedSSFGaugingNumber = 0
+	gatherer.inconclusiveSSFGaugingNumber = 0
+	gatherer.successfulSSFGaugingNumber = 0
+	gatherer.failedIZFGaugingNumber = 0
+	gatherer.inconclusiveIZFGaugingNumber = 0
+	gatherer.successfulIZFGaugingNumber = 0
+	gatherer.failedGZFGaugingNumber = 0
+	gatherer.inconclusiveGZFGaugingNumber = 0
+	gatherer.successfulGZFGaugingNumber = 0
 	gatherer.approvedValidationNumber = 0
 	gatherer.uninformativeValidationNumber = 0
 	gatherer.deniedValidationNumber = 0
@@ -281,6 +306,12 @@ func (gatherer *Gatherer) Flush() error {
 	gatherer.fetchingDuration = 0
 	gatherer.geocodingDurationSum = 0
 	gatherer.geocodingDurationCount = 0
+	gatherer.ssfGaugingDurationSum = 0
+	gatherer.ssfGaugingDurationCount = 0
+	gatherer.izfGaugingDurationSum = 0
+	gatherer.izfGaugingDurationCount = 0
+	gatherer.gzfGaugingDurationSum = 0
+	gatherer.gzfGaugingDurationCount = 0
 	gatherer.readingDurationSum = 0
 	gatherer.readingDurationCount = 0
 	gatherer.creationDurationSum = 0
