@@ -35,7 +35,7 @@ commands:
   stop:
     description: Dispose all docker stuff
     cmd: docker-compose down
-  format:
+  gofmt:
     description: Format the source code
     cmd: docker-compose run --rm gofmt
   lint:
