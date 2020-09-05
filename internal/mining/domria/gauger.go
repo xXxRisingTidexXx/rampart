@@ -20,18 +20,40 @@ func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger log.Fie
 		config.Headers,
 		config.InterpreterURL,
 		config.SubwayCities,
+		2000,
+		25,
+		1000,
+		3000,
+		35000,
+		30,
+		1000000000,
+		2500,
+		50000,
+		20,
+		0.001,
 		gatherer,
 		logger,
 	}
 }
 
 type Gauger struct {
-	client         *http.Client
-	headers        misc.Headers
-	interpreterURL string
-	subwayCities   misc.Set
-	gatherer       *metrics.Gatherer
-	logger         log.FieldLogger
+	client          *http.Client
+	headers         misc.Headers
+	interpreterURL  string
+	subwayCities    misc.Set
+	ssfSearchRadius float64
+	ssfMinDistance  float64
+	ssfModifier     float64
+	izfSearchRadius float64
+	izfMinArea      float64
+	izfMinDistance  float64
+	izfModifier     float64
+	gzfSearchRadius float64
+	gzfMinArea      float64
+	gzfMinDistance  float64
+	gzfModifier     float64
+	gatherer        *metrics.Gatherer
+	logger          log.FieldLogger
 }
 
 func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
@@ -69,6 +91,13 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 
 func (gauger *Gauger) gaugeSSF(flat *Flat) float64 {
 	if !gauger.subwayCities.Contains(flat.City) {
+		return 0
+	}
+	collection, err := gauger.query("")
+	if err != nil {
+		gauger.logger.WithFields(
+			log.Fields{"source": flat.Source, "origin_url": flat.OriginURL, "feature": "ssf"},
+		).Errorf("domria: gauger failed to gauge, %v", err)
 		return 0
 	}
 	return 1
