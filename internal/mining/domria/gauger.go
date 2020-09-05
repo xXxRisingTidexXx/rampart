@@ -3,6 +3,8 @@ package domria
 import (
 	"encoding/xml"
 	"fmt"
+	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/geo"
 	"github.com/paulmach/orb/geojson"
 	"github.com/paulmach/osm"
 	"github.com/paulmach/osm/osmgeojson"
@@ -20,6 +22,7 @@ func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger log.Fie
 		config.Headers,
 		config.InterpreterURL,
 		config.SubwayCities,
+		-1,
 		2000,
 		25,
 		1000,
@@ -41,6 +44,7 @@ type Gauger struct {
 	headers         misc.Headers
 	interpreterURL  string
 	subwayCities    misc.Set
+	unknownDistance float64
 	ssfSearchRadius float64
 	ssfMinDistance  float64
 	ssfModifier     float64
@@ -106,7 +110,9 @@ func (gauger *Gauger) gaugeSSF(flat *Flat) float64 {
 		return 0
 	}
 	ssf := 0.0
+	for _, feature := range collection.Features {
 
+	}
 	return ssf
 }
 
@@ -141,6 +147,76 @@ func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.Featu
 		return nil, fmt.Errorf("domria: gauger failed to convert from osm to geojson, %v", err)
 	}
 	return collection, nil
+}
+
+func (gauger *Gauger) gaugeGeoDistance(geometry orb.Geometry, point orb.Point) float64 {
+	distance := gauger.unknownDistance
+	switch geometry := geometry.(type) {
+	case nil:
+		return distance
+	case orb.Point:
+		return geo.DistanceHaversine(geometry, point)
+	case orb.MultiPoint:
+		return gauger.gaugeGeoDistanceToPoints(geometry, point)
+	case orb.LineString:
+		return gauger.gaugeGeoDistanceToPoints(geometry, point)
+	case orb.MultiLineString:
+		distance := gauger.unknownDistance
+		for _, lineString := range geometry {
+			newDistance := gauger.gaugeGeoDistanceToPoints(lineString, point)
+			if gauger.isLower(newDistance, distance) {
+				distance = newDistance
+			}
+		}
+		return distance
+	case orb.Ring:
+		return gauger.gaugeGeoDistanceToPoints(geometry, point)
+	case orb.Polygon:
+		for _, ring := range geometry {
+			newDistance := gauger.gaugeGeoDistanceToPoints(ring, point)
+			if gauger.isLower(newDistance, distance) {
+				distance = newDistance
+			}
+		}
+		return distance
+	case orb.MultiPolygon:
+		for _, polygon := range geometry {
+			for _, ring := range polygon {
+				newDistance := gauger.gaugeGeoDistanceToPoints(ring, point)
+				if gauger.isLower(newDistance, distance) {
+					distance = newDistance
+				}
+			}
+		}
+		return distance
+	case orb.Collection:
+		for _, newGeometry := range geometry {
+			newDistance := gauger.gaugeGeoDistance(newGeometry, point)
+			if gauger.isLower(newDistance, distance) {
+				distance = newDistance
+			}
+		}
+		return distance
+	case orb.Bound:
+		return gauger.gaugeGeoDistanceToPoints(geometry.ToRing(), point)
+	default:
+		return distance
+	}
+}
+
+func (gauger *Gauger) isLower(distance1, distance2 float64) bool {
+	return distance1 < distance2 || distance2 == gauger.unknownDistance && distance2 < distance1
+}
+
+func (gauger *Gauger) gaugeGeoDistanceToPoints(points []orb.Point, point orb.Point) float64 {
+	distance := gauger.unknownDistance
+	for _, newPoint := range points {
+		newDistance := geo.DistanceHaversine(newPoint, point)
+		if gauger.isLower(newDistance, distance) {
+			distance = newDistance
+		}
+	}
+	return distance
 }
 
 func (gauger *Gauger) gaugeIZF(flat *Flat) float64 {
