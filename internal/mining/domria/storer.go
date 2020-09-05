@@ -99,28 +99,29 @@ func (storer *Storer) readFlat(tx *sql.Tx, flat *Flat) (*origin, error) {
 func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 	_, err := tx.Exec(
 		`update flats 
-		set image_url = $1,
-		    update_time = $2,
+		set image_url = $2,
+		    update_time = $3,
 		    parsing_time = now() at time zone 'utc',
-		    price = $3,
-		    total_area = $4,
-		    living_area = $5,
-		    kitchen_area = $6,
-		    room_number = $7,
-		    floor = $8,
-		    total_floor = $9,
-		    housing = $10,
-		    complex = $11,
-		    point = st_geomfromwkb($12, $13),
-		    subway_station_distance = default,
-		    industrial_zone_distance = default,
-		    green_zone_distance = default,
-		    state = $14,
-		    city = $15,
-		    district = $16,
-		    street = $17,
-		    house_number = $18
-		where origin_url = $19`,
+		    price = $4,
+		    total_area = $5,
+		    living_area = $6,
+		    kitchen_area = $7,
+		    room_number = $8,
+		    floor = $9,
+		    total_floor = $10,
+		    housing = $11,
+		    complex = $12,
+		    point = st_geomfromwkb($13, $14),
+		    state = $15,
+		    city = $16,
+		    district = $17,
+		    street = $18,
+		    house_number = $19,
+		    ssf = $20,
+		    izf = $21,
+		    gzf = $22
+		where origin_url = $1`,
+		flat.OriginURL,
 		flat.ImageURL,
 		flat.UpdateTime,
 		flat.Price,
@@ -139,7 +140,9 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 		flat.District,
 		flat.Street,
 		flat.HouseNumber,
-		flat.OriginURL,
+		flat.SSF,
+		flat.IZF,
+		flat.GZF,
 	)
 	if err != nil {
 		return fmt.Errorf("domria: storer failed to update the flat, %v", err)
@@ -153,12 +156,12 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
         (
          	origin_url, image_url, update_time, parsing_time, price, total_area, living_area, kitchen_area,
             room_number, floor, total_floor, housing, complex, point, state, city, district, street,
-            house_number
+            house_number, ssf, izf, gzf
         )
         values 
 		(
 		    $1, $2, $3, now() at time zone 'utc', $4, $5, $6, $7, $8, $9, $10, $11, $12, 
-		    st_geomfromwkb($13, $14), $15, $16, $17, $18, $19
+		    st_geomfromwkb($13, $14), $15, $16, $17, $18, $19, $20, $21, $22
 		)`,
 		flat.OriginURL,
 		flat.ImageURL,
@@ -179,6 +182,9 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 		flat.District,
 		flat.Street,
 		flat.HouseNumber,
+		flat.SSF,
+		flat.IZF,
+		flat.GZF,
 	)
 	if err != nil {
 		return fmt.Errorf("domria: storer failed to create the flat, %v", err)
