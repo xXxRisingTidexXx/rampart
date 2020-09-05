@@ -144,6 +144,17 @@ mining:
         - Київ
         - Харків
         - Дніпро
+      ssfSearchRadius: 2000
+      ssfMinDistance: 25
+      ssfModifier: 1000
+      izfSearchRadius: 3000
+      izfMinArea: 35000
+      izfMinDistance: 30
+      izfModifier: 0.001
+      gzfSearchRadius: 2500
+      gzfMinArea: 50000
+      gzfMinDistance: 20
+      gzfModifier: 0.001
     validator:
       minMediaCount: 5
       minPrice: 1
