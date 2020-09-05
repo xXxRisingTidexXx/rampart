@@ -59,10 +59,10 @@ func (gauger *Gauger) queryCollection(query string, params ...interface{}) (*geo
 	o := osm.OSM{}
 	if err := xml.NewDecoder(response.Body).Decode(&o); err != nil {
 		_ = response.Body.Close()
-		return nil, fmt.Errorf("domria: gauger failed to unmarshal the xml, %v", err)
+		return nil, err
 	}
 	if err := response.Body.Close(); err != nil {
-		return nil, fmt.Errorf("domria: gauger failed to close the response body, %v", err)
+		return nil, err
 	}
 	collection, err := osmgeojson.Convert(&o, osmgeojson.NoMeta(true))
 	if err != nil {
