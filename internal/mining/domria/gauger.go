@@ -97,7 +97,7 @@ func (gauger *Gauger) gaugeSSF(flat *Flat) float64 {
 	if err != nil {
 		gauger.logger.WithFields(
 			log.Fields{"source": flat.Source, "origin_url": flat.OriginURL, "feature": "ssf"},
-		).Errorf("domria: gauger failed to gauge, %v", err)
+		).Error(err)
 		return 0
 	}
 	return 1
@@ -110,12 +110,12 @@ func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.Featu
 		nil,
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("domria: gauger failed to construct a request, %v", err)
 	}
 	gauger.headers.Inject(request)
 	response, err := gauger.client.Do(request)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("domria: gauger failed to perform a request, %v", err)
 	}
 	if response.StatusCode != http.StatusOK {
 		_ = response.Body.Close()
@@ -124,14 +124,14 @@ func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.Featu
 	o := osm.OSM{}
 	if err := xml.NewDecoder(response.Body).Decode(&o); err != nil {
 		_ = response.Body.Close()
-		return nil, err
+		return nil, fmt.Errorf("domria: gauger failed to unmarshal the xml, %v", err)
 	}
 	if err := response.Body.Close(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("domria: gauger failed to close the response body, %v", err)
 	}
 	collection, err := osmgeojson.Convert(&o, osmgeojson.NoMeta(true))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("domria: gauger failed to convert from osm to geojson, %v", err)
 	}
 	return collection, nil
 }
