@@ -35,10 +35,46 @@ type Gauger struct {
 }
 
 func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
-	return flats
+	newFlats := make([]*Flat, len(flats))
+	for i, flat := range flats {
+		newFlats[i] = &Flat{
+			Source:      flat.Source,
+			OriginURL:   flat.OriginURL,
+			ImageURL:    flat.ImageURL,
+			MediaCount:  flat.MediaCount,
+			UpdateTime:  flat.UpdateTime,
+			IsInspected: flat.IsInspected,
+			Price:       flat.Price,
+			TotalArea:   flat.TotalArea,
+			LivingArea:  flat.LivingArea,
+			KitchenArea: flat.KitchenArea,
+			RoomNumber:  flat.RoomNumber,
+			Floor:       flat.Floor,
+			TotalFloor:  flat.TotalFloor,
+			Housing:     flat.Housing,
+			Complex:     flat.Complex,
+			Point:       flat.Point,
+			State:       flat.State,
+			City:        flat.City,
+			District:    flat.District,
+			Street:      flat.Street,
+			HouseNumber: flat.HouseNumber,
+			SSF:         gauger.gaugeSSF(flat),
+			IZF:         gauger.gaugeIZF(flat),
+			GZF:         gauger.gaugeGZF(flat),
+		}
+	}
+	return newFlats
 }
 
-func (gauger *Gauger) queryCollection(query string, params ...interface{}) (*geojson.FeatureCollection, error) {
+func (gauger *Gauger) gaugeSSF(flat *Flat) float64 {
+	if !gauger.subwayCities.Contains(flat.City) {
+		return 0
+	}
+	return 1
+}
+
+func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.FeatureCollection, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf(gauger.interpreterURL, gourl.QueryEscape(fmt.Sprintf(query, params...))),
@@ -69,4 +105,12 @@ func (gauger *Gauger) queryCollection(query string, params ...interface{}) (*geo
 		return nil, err
 	}
 	return collection, nil
+}
+
+func (gauger *Gauger) gaugeIZF(flat *Flat) float64 {
+	return 0
+}
+
+func (gauger *Gauger) gaugeGZF(flat *Flat) float64 {
+	return 0
 }
