@@ -23,6 +23,16 @@ type Gatherer struct {
 	failedGeocodingNumber         int
 	inconclusiveGeocodingNumber   int
 	successfulGeocodingNumber     int
+	subwaylessSSFGaugingNumber    int
+	failedSSFGaugingNumber        int
+	inconclusiveSSFGaugingNumber  int
+	successfulSSFGaugingNumber    int
+	failedIZFGaugingNumber        int
+	inconclusiveIZFGaugingNumber  int
+	successfulIZFGaugingNumber    int
+	failedGZFGaugingNumber        int
+	inconclusiveGZFGaugingNumber  int
+	successfulGZFGaugingNumber    int
 	approvedValidationNumber      int
 	uninformativeValidationNumber int
 	deniedValidationNumber        int
@@ -33,6 +43,12 @@ type Gatherer struct {
 	fetchingDuration              float64
 	geocodingDurationSum          float64
 	geocodingDurationCount        float64
+	ssfGaugingDurationSum         float64
+	ssfGaugingDurationCount       float64
+	izfGaugingDurationSum         float64
+	izfGaugingDurationCount       float64
+	gzfGaugingDurationSum         float64
+	gzfGaugingDurationCount       float64
 	readingDurationSum            float64
 	readingDurationCount          float64
 	creationDurationSum           float64
