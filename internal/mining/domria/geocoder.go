@@ -56,7 +56,7 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 	positions, err := geocoder.getPositions(flat)
 	geocoder.gatherer.GatherGeocodingDuration(start)
 	if err != nil {
-		geocoder.logger.WithFields(log.Fields{"url": flat.OriginURL, "source": flat.Source}).Error(err)
+		geocoder.logger.WithFields(log.Fields{"source": flat.Source, "url": flat.OriginURL}).Error(err)
 		geocoder.gatherer.GatherFailedGeocoding()
 		return nil
 	}

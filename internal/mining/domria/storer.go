@@ -29,7 +29,7 @@ type Storer struct {
 func (storer *Storer) StoreFlats(flats []*Flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {
-			storer.logger.WithFields(log.Fields{"url": flat.OriginURL, "source": flat.Source}).Error(err)
+			storer.logger.WithFields(log.Fields{"source": flat.Source, "url": flat.OriginURL}).Error(err)
 			storer.gatherer.GatherFailedStoring()
 		}
 	}
