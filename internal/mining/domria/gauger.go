@@ -93,14 +93,21 @@ func (gauger *Gauger) gaugeSSF(flat *Flat) float64 {
 	if !gauger.subwayCities.Contains(flat.City) {
 		return 0
 	}
-	collection, err := gauger.query("")
+	collection, err := gauger.query(
+		"node[station=subway](around:%f,%f,%f);out;",
+		gauger.ssfSearchRadius,
+		flat.Point.Lat(),
+		flat.Point.Lon(),
+	)
 	if err != nil {
 		gauger.logger.WithFields(
 			log.Fields{"source": flat.Source, "origin_url": flat.OriginURL, "feature": "ssf"},
 		).Error(err)
 		return 0
 	}
-	return 1
+	ssf := 0.0
+
+	return ssf
 }
 
 func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.FeatureCollection, error) {
@@ -137,9 +144,53 @@ func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.Featu
 }
 
 func (gauger *Gauger) gaugeIZF(flat *Flat) float64 {
+	collection, err := gauger.query(
+		`(
+		  way[landuse=industrial](around:%f,%f,%f);
+		  >;
+		  relation[landuse=industrial](around:%f,%f,%f);
+		  >;
+		);
+		out;`,
+		gauger.izfSearchRadius,
+		flat.Point.Lat(),
+		flat.Point.Lon(),
+		gauger.izfSearchRadius,
+		flat.Point.Lat(),
+		flat.Point.Lon(),
+	)
+	if err != nil {
+		gauger.logger.WithFields(
+			log.Fields{"source": flat.Source, "origin_url": flat.OriginURL, "feature": "izf"},
+		).Error(err)
+		return 0
+	}
+
 	return 0
 }
 
 func (gauger *Gauger) gaugeGZF(flat *Flat) float64 {
+	collection, err := gauger.query(
+		`(
+		  way[leisure=park](around:%f,%f,%f);
+		  >;
+		  relation[leisure=park](around:%f,%f,%f);
+		  >;
+		);
+		out;`,
+		gauger.gzfSearchRadius,
+		flat.Point.Lat(),
+		flat.Point.Lon(),
+		gauger.gzfSearchRadius,
+		flat.Point.Lat(),
+		flat.Point.Lon(),
+	)
+	if err != nil {
+		gauger.logger.WithFields(
+			log.Fields{"source": flat.Source, "origin_url": flat.OriginURL, "feature": "gzf"},
+		).Error(err)
+		return 0
+	}
+
 	return 0
 }
