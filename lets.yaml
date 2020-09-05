@@ -22,11 +22,6 @@ commands:
   mining:
     description: Run the data mining app single workflow
     cmd: docker-compose run --rm mining
-  gauging:
-    description: Up Overpass API client & distance measurer
-    cmd: |
-      docker-compose up gauging
-      docker rm rampart-gauging
   tgbot:
     description: Activate the telegram bot
     cmd: |
@@ -35,8 +30,8 @@ commands:
   run:
     description: Activate the whole rampart ecosystem
     cmd: |
-      docker-compose up gauging mining-domria-primary mining-domria-secondary
-      docker rm rampart-mining-domria-primary rampart-mining-domria-secondary rampart-gauging
+      docker-compose up mining-domria-primary mining-domria-secondary
+      docker rm rampart-mining-domria-primary rampart-mining-domria-secondary
   stop:
     description: Dispose all docker stuff
     cmd: docker-compose down
