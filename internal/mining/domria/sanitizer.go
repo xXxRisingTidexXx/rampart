@@ -97,6 +97,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 		houseNumber = string(runes[:sanitizer.houseNumberMaxLength])
 	}
 	return &Flat{
+		Source:      flat.Source,
 		OriginURL:   originURL,
 		ImageURL:    imageURL,
 		MediaCount:  flat.MediaCount,
@@ -117,7 +118,6 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 		District:    district,
 		Street:      strings.TrimSpace(sanitizer.streetReplacer.Replace(street)),
 		HouseNumber: houseNumber,
-		Source:      flat.Source,
 	}
 }
 

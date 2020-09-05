@@ -98,6 +98,7 @@ func (fetcher *Fetcher) getFlats(search *search, housing string) []*Flat {
 			street = item.StreetName
 		}
 		flats[i] = &Flat{
+			Source:      item.Source,
 			OriginURL:   item.BeautifulURL,
 			ImageURL:    item.MainPhoto,
 			MediaCount:  len(item.Photos) + len(item.Panoramas),
@@ -118,7 +119,6 @@ func (fetcher *Fetcher) getFlats(search *search, housing string) []*Flat {
 			District:    item.DistrictNameUK,
 			Street:      street,
 			HouseNumber: item.BuildingNumberStr,
-			Source:      item.Source,
 		}
 	}
 	return flats
