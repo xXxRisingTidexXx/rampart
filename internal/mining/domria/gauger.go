@@ -12,6 +12,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"math"
 	"net/http"
 	gourl "net/url"
 )
@@ -29,7 +30,7 @@ func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger log.Fie
 		3000,
 		35000,
 		30,
-		1000000000,
+		0.001,
 		2500,
 		50000,
 		20,
@@ -111,9 +112,12 @@ func (gauger *Gauger) gaugeSSF(flat *Flat) float64 {
 	}
 	ssf := 0.0
 	for _, feature := range collection.Features {
-
+		distance := gauger.gaugeGeoDistance(feature.Geometry, flat.Point)
+		if distance != gauger.unknownDistance {
+			ssf += 1 / math.Max(distance, gauger.ssfMinDistance)
+		}
 	}
-	return ssf
+	return ssf * gauger.ssfModifier
 }
 
 func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.FeatureCollection, error) {
@@ -241,8 +245,16 @@ func (gauger *Gauger) gaugeIZF(flat *Flat) float64 {
 		).Error(err)
 		return 0
 	}
-
-	return 0
+	izf := 0.0
+	for _, feature := range collection.Features {
+		if area := geo.Area(feature.Geometry); area >= gauger.izfMinArea {
+			distance := gauger.gaugeGeoDistance(feature.Geometry, flat.Point)
+			if distance != gauger.unknownDistance {
+				izf += area / math.Max(distance, gauger.izfMinDistance)
+			}
+		}
+	}
+	return izf * gauger.izfModifier
 }
 
 func (gauger *Gauger) gaugeGZF(flat *Flat) float64 {
@@ -267,6 +279,14 @@ func (gauger *Gauger) gaugeGZF(flat *Flat) float64 {
 		).Error(err)
 		return 0
 	}
-
-	return 0
+	gzf := 0.0
+	for _, feature := range collection.Features {
+		if area := geo.Area(feature.Geometry); area >= gauger.gzfMinArea {
+			distance := gauger.gaugeGeoDistance(feature.Geometry, flat.Point)
+			if distance != gauger.unknownDistance {
+				gzf += area / math.Max(distance, gauger.gzfMinDistance)
+			}
+		}
+	}
+	return gzf * gauger.gzfModifier
 }
