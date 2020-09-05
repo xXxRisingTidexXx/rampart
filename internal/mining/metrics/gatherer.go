@@ -103,6 +103,46 @@ func (gatherer *Gatherer) GatherSuccessfulGeocoding() {
 	gatherer.successfulGeocodingNumber++
 }
 
+func (gatherer *Gatherer) GatherSubwaylessSSFGauging() {
+	gatherer.subwaylessSSFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherFailedSSFGauging() {
+	gatherer.failedSSFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherInconclusiveSSFGauging() {
+	gatherer.inconclusiveSSFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherSuccessfulSSFGauging() {
+	gatherer.successfulSSFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherFailedIZFGauging() {
+	gatherer.failedIZFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherInconclusiveIZFGauging() {
+	gatherer.inconclusiveIZFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherSuccessfulIZFGauging() {
+	gatherer.successfulIZFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherFailedGZFGauging() {
+	gatherer.failedGZFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherInconclusiveGZFGauging() {
+	gatherer.inconclusiveGZFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherSuccessfulGZFGauging() {
+	gatherer.successfulGZFGaugingNumber++
+}
+
 func (gatherer *Gatherer) GatherApprovedValidation() {
 	gatherer.approvedValidationNumber++
 }
