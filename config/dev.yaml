@@ -183,7 +183,7 @@ mining:
     <<: *domriaMiner
     alias: domria-primary
     housing: primary
-    spec: '0-59/10 * * * *'
+    spec: '0-59/12 * * * *'
     server:
       <<: *server
       address: :9001
@@ -191,7 +191,7 @@ mining:
     <<: *domriaMiner
     alias: domria-secondary
     housing: secondary
-    spec: '5-59/10 * * * *'
+    spec: '6-59/12 * * * *'
     server:
       <<: *server
       address: :9002
