@@ -26,7 +26,7 @@ type Gauger struct {
 
 func (gauger *Gauger) String() string {
 	return fmt.Sprintf(
-		"{%s %v %s %v %f %f %f %f %f %f %f %f %f %f %f}",
+		"{%s %v %s %v %.1f %.1f %.3f %.1f %.1f %.1f %.3f %.1f %.1f %.1f %.3f}",
 		gauger.Timeout,
 		gauger.Headers,
 		gauger.InterpreterURL,
