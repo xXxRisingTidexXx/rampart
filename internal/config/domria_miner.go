@@ -12,9 +12,9 @@ type DomriaMiner struct {
 	Fetcher   *Fetcher   `yaml:"fetcher"`
 	Sanitizer *Sanitizer `yaml:"sanitizer"`
 	Geocoder  *Geocoder  `yaml:"geocoder"`
+	Gauger    *Gauger    `yaml:"gauger"`
 	Validator *Validator `yaml:"validator"`
 	Storer    *Storer    `yaml:"storer"`
-	Dumper    *Dumper    `yaml:"dumper"`
 }
 
 func (miner *DomriaMiner) Name() string {
@@ -39,8 +39,8 @@ func (miner *DomriaMiner) String() string {
 		miner.Fetcher,
 		miner.Sanitizer,
 		miner.Geocoder,
+		miner.Gauger,
 		miner.Validator,
 		miner.Storer,
-		miner.Dumper,
 	)
 }

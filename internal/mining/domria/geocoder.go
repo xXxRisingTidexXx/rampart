@@ -56,7 +56,7 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 	positions, err := geocoder.getPositions(flat)
 	geocoder.gatherer.GatherGeocodingDuration(start)
 	if err != nil {
-		geocoder.logger.WithFields(log.Fields{"url": flat.OriginURL, "source": flat.Source}).Error(err)
+		geocoder.logger.WithFields(log.Fields{"source": flat.Source, "url": flat.OriginURL}).Error(err)
 		geocoder.gatherer.GatherFailedGeocoding()
 		return nil
 	}
@@ -66,6 +66,7 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 	}
 	geocoder.gatherer.GatherSuccessfulGeocoding()
 	return &Flat{
+		Source:      flat.Source,
 		OriginURL:   flat.OriginURL,
 		ImageURL:    flat.ImageURL,
 		MediaCount:  flat.MediaCount,
@@ -86,7 +87,6 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 		District:    flat.District,
 		Street:      flat.Street,
 		HouseNumber: flat.HouseNumber,
-		Source:      flat.Source,
 	}
 }
 

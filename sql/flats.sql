@@ -43,39 +43,26 @@ from flats
 group by city, district
 order by flat_count desc;
 
--- Explore cities with subway stations.
-select city, count(*) as flat_count
+-- Reflect the closest to subway stations flats.
+select origin_url, concat(st_y(point), ',', st_x(point)) as point, ssf
 from flats
-where subway_station_distance != -1
-group by city
-order by flat_count desc;
-
--- View flats near subway from cities without subway
-select origin_url, st_astext(point) as point
-from flats
-where city not in ('Київ', 'Харків', 'Дніпро')
-  and subway_station_distance != -1;
-
-select origin_url, concat(st_y(point), ',', st_x(point)) as point, subway_station_distance
-from flats
-where subway_station_distance != -1
-order by subway_station_distance
+order by ssf desc
 limit 30;
 
-select origin_url, concat(st_y(point), ',', st_x(point)) as point, industrial_zone_distance
+-- View the furthest to industrial zones flats.
+select origin_url, concat(st_y(point), ',', st_x(point)) as point, izf
 from flats
-where industrial_zone_distance != -1
-order by industrial_zone_distance
+order by izf
 limit 30;
 
-select origin_url, concat(st_y(point), ',', st_x(point)) as point, industrial_zone_distance
+-- Print the closest to industrial zones flats;
+select origin_url, concat(st_y(point), ',', st_x(point)) as point, izf
 from flats
-where industrial_zone_distance != -1
-order by industrial_zone_distance desc
+order by izf desc
 limit 30;
 
-select origin_url, concat(st_y(point), ',', st_x(point)) as point, green_zone_distance
+-- Discover the closest to parks apartments.
+select origin_url, concat(st_y(point), ',', st_x(point)) as point, gzf
 from flats
-where green_zone_distance != -1
-order by green_zone_distance
+order by gzf desc
 limit 30;

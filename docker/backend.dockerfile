@@ -11,6 +11,5 @@ COPY go.sum .
 COPY cmd cmd
 COPY internal internal
 COPY config config
-COPY secrets secrets
 
-RUN go get -t ./...
+RUN go get ./...

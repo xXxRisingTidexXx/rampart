@@ -13,8 +13,7 @@ mining:
       flags:
         primary: newbuildings=1
         secondary: secondary=1
-      headers:
-        <<: *headers
+      headers: *headers
       searchURL: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d
     sanitizer:
       originURLPrefix: https://dom.ria.com/uk/
@@ -133,11 +132,29 @@ mining:
       houseNumberMaxLength: 20
     geocoder:
       timeout: 10s
-      headers:
-        <<: *headers
+      headers: *headers
       statelessCities:
         - Київ
       searchURL: https://nominatim.openstreetmap.org/search?state=%s&city=%s&county=%s&street=%s+%s&format=json&countrycodes=ua
+    gauger:
+      timeout: 40s
+      headers: *headers
+      interpreterURL: https://overpass.kumi.systems/api/interpreter?data=%s
+      subwayCities:
+        - Київ
+        - Харків
+        - Дніпро
+      ssfSearchRadius: 2000
+      ssfMinDistance: 25
+      ssfModifier: 1000
+      izfSearchRadius: 3000
+      izfMinArea: 35000
+      izfMinDistance: 30
+      izfModifier: 0.001
+      gzfSearchRadius: 2500
+      gzfMinArea: 50000
+      gzfMinDistance: 20
+      gzfModifier: 0.001
     validator:
       minMediaCount: 5
       minPrice: 1
@@ -158,11 +175,6 @@ mining:
       maxLatitude: 90
     storer:
       srid: 4326
-    dumper:
-      timeout: 5s
-      gaugingURL: http://rampart-gauging:9003
-      headers:
-        Content-Type: application/json
   server: &server
     readTimeout: 5s
     writeTimeout: 5s
@@ -171,7 +183,7 @@ mining:
     <<: *domriaMiner
     alias: domria-primary
     housing: primary
-    spec: '0-59/10 * * * *'
+    spec: '0-59/12 * * * *'
     server:
       <<: *server
       address: :9001
@@ -179,7 +191,7 @@ mining:
     <<: *domriaMiner
     alias: domria-secondary
     housing: secondary
-    spec: '5-59/10 * * * *'
+    spec: '6-59/12 * * * *'
     server:
       <<: *server
       address: :9002
@@ -187,41 +199,3 @@ migrations:
   dsnParams:
     <<: *dsnParams
     connect_timeout: '15'
-gauging:
-  dsnParams:
-    <<: *dsnParams
-    connect_timeout: '12'
-  scheduler:
-    timeout: 40s
-    capacity: 600
-    period: 2s
-    subwayCities:
-      - Київ
-      - Харків
-      - Дніпро
-    gauger: &gauger
-      interpreterURL: https://overpass.kumi.systems/api/interpreter?data=%s
-      headers:
-        User-Agent: rampart-gauging-bot/1.0.0
-    subwayStationDistanceGauger:
-      <<: *gauger
-      searchRadius: 2500
-      minArea: 0
-    industrialZoneDistanceGauger:
-      <<: *gauger
-      searchRadius: 3000
-      minArea: 35000
-    greenZoneDistanceGauger:
-      <<: *gauger
-      searchRadius: 2000
-      minArea: 50000
-  httpServer:
-    address: :9003
-    readTimeout: 5s
-    writeTimeout: 5s
-    maxHeaderBytes: 1048576
-  metricsServer:
-    address: :9004
-    readTimeout: 5s
-    writeTimeout: 5s
-    maxHeaderBytes: 1048576

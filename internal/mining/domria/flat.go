@@ -7,6 +7,7 @@ import (
 )
 
 type Flat struct {
+	Source      string
 	OriginURL   string
 	ImageURL    string
 	MediaCount  int
@@ -27,7 +28,9 @@ type Flat struct {
 	District    string
 	Street      string
 	HouseNumber string
-	Source      string
+	SSF         float64
+	IZF         float64
+	GZF         float64
 }
 
 func (flat *Flat) IsLocated() bool {
@@ -40,7 +43,8 @@ func (flat *Flat) IsAddressable() bool {
 
 func (flat *Flat) String() string {
 	return fmt.Sprintf(
-		"{%s %s %d %s %t %.2f %.1f %.1f %.1f %d %d %d %s %s %v %s %s %s %s %s %s}",
+		"{%s %s %s %d %s %t %.2f %.1f %.1f %.1f %d %d %d %s %s %v %s %s %s %s %s %.6f %.6f %.6f}",
+		flat.Source,
 		flat.OriginURL,
 		flat.ImageURL,
 		flat.MediaCount,
@@ -61,6 +65,8 @@ func (flat *Flat) String() string {
 		flat.District,
 		flat.Street,
 		flat.HouseNumber,
-		flat.Source,
+		flat.SSF,
+		flat.IZF,
+		flat.GZF,
 	)
 }

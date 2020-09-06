@@ -32,14 +32,6 @@ services:
     <<: *backend
     container_name: rampart-mining
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -debug -miner domria-primary
-  gauging:
-    <<: *backend
-    container_name: rampart-gauging
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/gauging
-    ports:
-      - 9003:9003
-      - 9004:9004
-    restart: on-failure
   tgbot:
     <<: *backend
     container_name: rampart-tgbot
@@ -81,7 +73,7 @@ services:
     container_name: rampart-test
     volumes:
       - .:/go/src/app
-    command: richgo test github.com/xXxRisingTidexXx/rampart/internal/mining/osmgeo
+    command: richgo test github.com/xXxRisingTidexXx/rampart/internal/mining/domria
   notebook:
     build:
       context: .

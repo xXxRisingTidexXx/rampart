@@ -6,6 +6,7 @@ import (
 )
 
 type item struct {
+	Source              string
 	BeautifulURL        string
 	MainPhoto           string
 	Photos              map[string]*photo
@@ -28,7 +29,6 @@ type item struct {
 	StreetNameUK        string
 	StreetName          string
 	BuildingNumberStr   string
-	Source              string
 }
 
 func (item *item) UnmarshalJSON(bytes []byte) error {
@@ -36,6 +36,7 @@ func (item *item) UnmarshalJSON(bytes []byte) error {
 	if err := json.Unmarshal(bytes, &sourceless); err != nil {
 		return err
 	}
+	item.Source = string(bytes)
 	item.BeautifulURL = sourceless.BeautifulURL
 	item.MainPhoto = sourceless.MainPhoto
 	item.Photos = sourceless.Photos
@@ -58,7 +59,6 @@ func (item *item) UnmarshalJSON(bytes []byte) error {
 	item.StreetNameUK = sourceless.StreetNameUK
 	item.StreetName = sourceless.StreetName
 	item.BuildingNumberStr = sourceless.BuildingNumberStr
-	item.Source = string(bytes)
 	return nil
 }
 

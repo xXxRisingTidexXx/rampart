@@ -23,6 +23,16 @@ type Gatherer struct {
 	failedGeocodingNumber         int
 	inconclusiveGeocodingNumber   int
 	successfulGeocodingNumber     int
+	subwaylessSSFGaugingNumber    int
+	failedSSFGaugingNumber        int
+	inconclusiveSSFGaugingNumber  int
+	successfulSSFGaugingNumber    int
+	failedIZFGaugingNumber        int
+	inconclusiveIZFGaugingNumber  int
+	successfulIZFGaugingNumber    int
+	failedGZFGaugingNumber        int
+	inconclusiveGZFGaugingNumber  int
+	successfulGZFGaugingNumber    int
 	approvedValidationNumber      int
 	uninformativeValidationNumber int
 	deniedValidationNumber        int
@@ -33,6 +43,12 @@ type Gatherer struct {
 	fetchingDuration              float64
 	geocodingDurationSum          float64
 	geocodingDurationCount        float64
+	ssfGaugingDurationSum         float64
+	ssfGaugingDurationCount       float64
+	izfGaugingDurationSum         float64
+	izfGaugingDurationCount       float64
+	gzfGaugingDurationSum         float64
+	gzfGaugingDurationCount       float64
 	readingDurationSum            float64
 	readingDurationCount          float64
 	creationDurationSum           float64
@@ -87,6 +103,46 @@ func (gatherer *Gatherer) GatherSuccessfulGeocoding() {
 	gatherer.successfulGeocodingNumber++
 }
 
+func (gatherer *Gatherer) GatherSubwaylessSSFGauging() {
+	gatherer.subwaylessSSFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherFailedSSFGauging() {
+	gatherer.failedSSFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherInconclusiveSSFGauging() {
+	gatherer.inconclusiveSSFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherSuccessfulSSFGauging() {
+	gatherer.successfulSSFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherFailedIZFGauging() {
+	gatherer.failedIZFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherInconclusiveIZFGauging() {
+	gatherer.inconclusiveIZFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherSuccessfulIZFGauging() {
+	gatherer.successfulIZFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherFailedGZFGauging() {
+	gatherer.failedGZFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherInconclusiveGZFGauging() {
+	gatherer.inconclusiveGZFGaugingNumber++
+}
+
+func (gatherer *Gatherer) GatherSuccessfulGZFGauging() {
+	gatherer.successfulGZFGaugingNumber++
+}
+
 func (gatherer *Gatherer) GatherApprovedValidation() {
 	gatherer.approvedValidationNumber++
 }
@@ -124,6 +180,21 @@ func (gatherer *Gatherer) GatherGeocodingDuration(start time.Time) {
 	gatherer.geocodingDurationCount++
 }
 
+func (gatherer *Gatherer) GatherSSFGaugingDuration(start time.Time) {
+	gatherer.ssfGaugingDurationSum += time.Since(start).Seconds()
+	gatherer.ssfGaugingDurationCount++
+}
+
+func (gatherer *Gatherer) GatherIZFGaugingDuration(start time.Time) {
+	gatherer.izfGaugingDurationSum += time.Since(start).Seconds()
+	gatherer.izfGaugingDurationCount++
+}
+
+func (gatherer *Gatherer) GatherGZFGaugingDuration(start time.Time) {
+	gatherer.gzfGaugingDurationSum += time.Since(start).Seconds()
+	gatherer.gzfGaugingDurationCount++
+}
+
 func (gatherer *Gatherer) GatherReadingDuration(start time.Time) {
 	gatherer.readingDurationSum += time.Since(start).Seconds()
 	gatherer.readingDurationCount++
@@ -149,6 +220,18 @@ func (gatherer *Gatherer) Flush() error {
 	if gatherer.geocodingDurationCount != 0 {
 		geocodingDuration = gatherer.geocodingDurationSum / gatherer.geocodingDurationCount
 	}
+	ssfGaugingDuration := 0.0
+	if gatherer.ssfGaugingDurationCount != 0 {
+		ssfGaugingDuration = gatherer.ssfGaugingDurationSum / gatherer.ssfGaugingDurationCount
+	}
+	izfGaugingDuration := 0.0
+	if gatherer.izfGaugingDurationCount != 0 {
+		izfGaugingDuration = gatherer.izfGaugingDurationSum / gatherer.izfGaugingDurationCount
+	}
+	gzfGaugingDuration := 0.0
+	if gatherer.gzfGaugingDurationCount != 0 {
+		gzfGaugingDuration = gatherer.gzfGaugingDurationSum / gatherer.gzfGaugingDurationCount
+	}
 	readingDuration := 0.0
 	if gatherer.readingDurationCount != 0 {
 		readingDuration = gatherer.readingDurationSum / gatherer.readingDurationCount
@@ -168,15 +251,20 @@ func (gatherer *Gatherer) Flush() error {
     	    district_sanitation_number, swap_sanitation_number, street_sanitation_number,
     	    house_number_sanitation_number, located_geocoding_number, unlocated_geocoding_number,
     	    failed_geocoding_number, inconclusive_geocoding_number, successful_geocoding_number,
-    	    approved_validation_number, uninformative_validation_number, denied_validation_number,
-    	    created_storing_number, updated_storing_number, unaltered_storing_number,
-    	    failed_storing_number, fetching_duration, geocoding_duration, reading_duration,
+    	    subwayless_ssf_gauging_number, failed_ssf_gauging_number, inconclusive_ssf_gauging_number,
+    	    successful_ssf_gauging_number, failed_izf_gauging_number, inconclusive_izf_gauging_number,
+    	    successful_izf_gauging_number, failed_gzf_gauging_number, inconclusive_gzf_gauging_number,
+    	    successful_gzf_gauging_number, approved_validation_number, uninformative_validation_number,
+    	    denied_validation_number, created_storing_number, updated_storing_number,
+    	    unaltered_storing_number, failed_storing_number, fetching_duration, geocoding_duration,
+    	    ssf_gauging_duration, izf_gauging_duration, gzf_gauging_duration, reading_duration,
     	    creation_duration, update_duration, total_duration
     	)
     	values
     	(
     		now() at time zone 'utc', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
-    	    $17, $18, $19, $20, $21, $22, $23, $24, $25
+    	    $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35,
+    	    $36, $37, $38
     	)`,
 		gatherer.miner,
 		gatherer.stateSanitationNumber,
@@ -190,6 +278,16 @@ func (gatherer *Gatherer) Flush() error {
 		gatherer.failedGeocodingNumber,
 		gatherer.inconclusiveGeocodingNumber,
 		gatherer.successfulGeocodingNumber,
+		gatherer.subwaylessSSFGaugingNumber,
+		gatherer.failedSSFGaugingNumber,
+		gatherer.inconclusiveSSFGaugingNumber,
+		gatherer.successfulSSFGaugingNumber,
+		gatherer.failedIZFGaugingNumber,
+		gatherer.inconclusiveIZFGaugingNumber,
+		gatherer.successfulIZFGaugingNumber,
+		gatherer.failedGZFGaugingNumber,
+		gatherer.inconclusiveGZFGaugingNumber,
+		gatherer.successfulGZFGaugingNumber,
 		gatherer.approvedValidationNumber,
 		gatherer.uninformativeValidationNumber,
 		gatherer.deniedValidationNumber,
@@ -199,6 +297,9 @@ func (gatherer *Gatherer) Flush() error {
 		gatherer.failedStoringNumber,
 		gatherer.fetchingDuration,
 		geocodingDuration,
+		ssfGaugingDuration,
+		izfGaugingDuration,
+		gzfGaugingDuration,
 		readingDuration,
 		creationDuration,
 		updateDuration,
@@ -215,6 +316,16 @@ func (gatherer *Gatherer) Flush() error {
 	gatherer.failedGeocodingNumber = 0
 	gatherer.inconclusiveGeocodingNumber = 0
 	gatherer.successfulGeocodingNumber = 0
+	gatherer.subwaylessSSFGaugingNumber = 0
+	gatherer.failedSSFGaugingNumber = 0
+	gatherer.inconclusiveSSFGaugingNumber = 0
+	gatherer.successfulSSFGaugingNumber = 0
+	gatherer.failedIZFGaugingNumber = 0
+	gatherer.inconclusiveIZFGaugingNumber = 0
+	gatherer.successfulIZFGaugingNumber = 0
+	gatherer.failedGZFGaugingNumber = 0
+	gatherer.inconclusiveGZFGaugingNumber = 0
+	gatherer.successfulGZFGaugingNumber = 0
 	gatherer.approvedValidationNumber = 0
 	gatherer.uninformativeValidationNumber = 0
 	gatherer.deniedValidationNumber = 0
@@ -225,6 +336,12 @@ func (gatherer *Gatherer) Flush() error {
 	gatherer.fetchingDuration = 0
 	gatherer.geocodingDurationSum = 0
 	gatherer.geocodingDurationCount = 0
+	gatherer.ssfGaugingDurationSum = 0
+	gatherer.ssfGaugingDurationCount = 0
+	gatherer.izfGaugingDurationSum = 0
+	gatherer.izfGaugingDurationCount = 0
+	gatherer.gzfGaugingDurationSum = 0
+	gatherer.gzfGaugingDurationCount = 0
 	gatherer.readingDurationSum = 0
 	gatherer.readingDurationCount = 0
 	gatherer.creationDurationSum = 0
