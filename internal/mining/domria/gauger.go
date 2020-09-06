@@ -15,6 +15,7 @@ import (
 	"math"
 	"net/http"
 	gourl "net/url"
+	"time"
 )
 
 func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger log.FieldLogger) *Gauger {
@@ -96,15 +97,19 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 
 func (gauger *Gauger) gaugeSSF(flat *Flat) float64 {
 	if !gauger.subwayCities.Contains(flat.City) {
+		gauger.gatherer.GatherSubwaylessSSFGauging()
 		return 0
 	}
+	start := time.Now()
 	collection, err := gauger.query(
 		"node[station=subway](around:%f,%f,%f);out;",
 		gauger.ssfSearchRadius,
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
+	gauger.gatherer.GatherSSFGaugingDuration(start)
 	if err != nil {
+		gauger.gatherer.GatherFailedSSFGauging()
 		gauger.logger.WithFields(
 			log.Fields{"source": flat.Source, "origin_url": flat.OriginURL, "feature": "ssf"},
 		).Error(err)
@@ -117,6 +122,11 @@ func (gauger *Gauger) gaugeSSF(flat *Flat) float64 {
 			ssf += 1 / math.Max(distance, gauger.ssfMinDistance)
 		}
 	}
+	if ssf == 0 {
+		gauger.gatherer.GatherInconclusiveSSFGauging()
+		return 0
+	}
+	gauger.gatherer.GatherSuccessfulSSFGauging()
 	return ssf * gauger.ssfModifier
 }
 
@@ -224,6 +234,7 @@ func (gauger *Gauger) gaugeGeoDistanceToPoints(points []orb.Point, point orb.Poi
 }
 
 func (gauger *Gauger) gaugeIZF(flat *Flat) float64 {
+	start := time.Now()
 	collection, err := gauger.query(
 		`(
 		  way[landuse=industrial](around:%f,%f,%f);
@@ -239,7 +250,9 @@ func (gauger *Gauger) gaugeIZF(flat *Flat) float64 {
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
+	gauger.gatherer.GatherIZFGaugingDuration(start)
 	if err != nil {
+		gauger.gatherer.GatherFailedIZFGauging()
 		gauger.logger.WithFields(
 			log.Fields{"source": flat.Source, "origin_url": flat.OriginURL, "feature": "izf"},
 		).Error(err)
@@ -254,10 +267,16 @@ func (gauger *Gauger) gaugeIZF(flat *Flat) float64 {
 			}
 		}
 	}
+	if izf == 0 {
+		gauger.gatherer.GatherInconclusiveIZFGauging()
+		return 0
+	}
+	gauger.gatherer.GatherSuccessfulIZFGauging()
 	return izf * gauger.izfModifier
 }
 
 func (gauger *Gauger) gaugeGZF(flat *Flat) float64 {
+	start := time.Now()
 	collection, err := gauger.query(
 		`(
 		  way[leisure=park](around:%f,%f,%f);
@@ -273,7 +292,9 @@ func (gauger *Gauger) gaugeGZF(flat *Flat) float64 {
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
+	gauger.gatherer.GatherGZFGaugingDuration(start)
 	if err != nil {
+		gauger.gatherer.GatherFailedGZFGauging()
 		gauger.logger.WithFields(
 			log.Fields{"source": flat.Source, "origin_url": flat.OriginURL, "feature": "gzf"},
 		).Error(err)
@@ -288,5 +309,10 @@ func (gauger *Gauger) gaugeGZF(flat *Flat) float64 {
 			}
 		}
 	}
+	if gzf == 0 {
+		gauger.gatherer.GatherInconclusiveGZFGauging()
+		return 0
+	}
+	gauger.gatherer.GatherSuccessfulGZFGauging()
 	return gzf * gauger.gzfModifier
 }
