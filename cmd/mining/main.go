@@ -5,7 +5,6 @@ import (
 	gocron "github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
-	"github.com/xXxRisingTidexXx/rampart/internal/database"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/domria"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
@@ -26,7 +25,7 @@ func main() {
 	if err != nil {
 		entry.Fatal(err)
 	}
-	db, err := database.NewDatabase(dsn, cfg.Mining.DSNParams)
+	db, err := misc.OpenDB(dsn, cfg.Mining.DSNParams)
 	if err != nil {
 		entry.Fatal(err)
 	}
@@ -67,7 +66,7 @@ func main() {
 		metrics.RunServer(miner.Metrics(), entry)
 		cron.Run()
 	}
-	if err = database.CloseDatabase(db); err != nil {
+	if err = misc.CloseDB(db); err != nil {
 		entry.Fatal(err)
 	}
 }
