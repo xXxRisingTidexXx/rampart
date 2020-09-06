@@ -6,7 +6,7 @@ import (
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geo"
 	"github.com/paulmach/orb/geojson"
-	"github.com/paulmach/osm"
+	gosm "github.com/paulmach/osm"
 	"github.com/paulmach/osm/osmgeojson"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
@@ -148,15 +148,15 @@ func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.Featu
 		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: gauger got response with status %s", response.Status)
 	}
-	o := osm.OSM{}
-	if err := xml.NewDecoder(response.Body).Decode(&o); err != nil {
+	osm := gosm.OSM{}
+	if err := xml.NewDecoder(response.Body).Decode(&osm); err != nil {
 		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: gauger failed to unmarshal the xml, %v", err)
 	}
 	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to close the response body, %v", err)
 	}
-	collection, err := osmgeojson.Convert(&o, osmgeojson.NoMeta(true))
+	collection, err := osmgeojson.Convert(&osm, osmgeojson.NoMeta(true))
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to convert from osm to geojson, %v", err)
 	}
