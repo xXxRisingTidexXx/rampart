@@ -1,5 +1,11 @@
 version: '3.7'
-x-backend: &backend
+x-migrate: &x-migrate
+  image: migrate/migrate:v4.12.2
+  volumes:
+    - ./migrations:/migrations
+  env_file:
+    - .env
+x-backend: &x-backend
   image: rampart-backend
   volumes:
     - .:/go/src/app
@@ -19,33 +25,36 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       PGDATA: /var/lib/postgresql/data
+  migrate:
+    <<: *x-migrate
+    container_name: rampart-migrate
+    command: -path migrations -database $RAMPART_DATABASE_DSN up
+  generate:
+    <<: *x-migrate
+    container_name: rampart-generate
   backend:
     build:
       context: .
       dockerfile: docker/backend.dockerfile
     image: rampart-backend
-  migrations:
-    <<: *backend
-    container_name: rampart-migrations
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/migrations
   mining:
-    <<: *backend
+    <<: *x-backend
     container_name: rampart-mining
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -debug -miner domria-primary
   tgbot:
-    <<: *backend
+    <<: *x-backend
     container_name: rampart-tgbot
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/tgbot -debug
     restart: on-failure
   mining-domria-primary:
-    <<: *backend
+    <<: *x-backend
     container_name: rampart-mining-domria-primary
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-primary
     ports:
       - 9001:9001
     restart: on-failure
   mining-domria-secondary:
-    <<: *backend
+    <<: *x-backend
     container_name: rampart-mining-domria-secondary
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-secondary
     ports:

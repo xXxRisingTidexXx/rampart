@@ -17,15 +17,15 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
 	entry := log.WithFields(log.Fields{"app": "mining", "miner": *alias})
-	dsn, err := misc.GetEnv("RAMPART_DATABASE_DSN")
-	if err != nil {
-		entry.Fatal(err)
-	}
 	cfg, err := config.NewConfig()
 	if err != nil {
 		entry.Fatal(err)
 	}
-	db, err := misc.OpenDB(dsn, cfg.Mining.DSNParams)
+	dsn, err := misc.GetEnv("RAMPART_DATABASE_DSN")
+	if err != nil {
+		entry.Fatal(err)
+	}
+	db, err := misc.OpenDB(dsn)
 	if err != nil {
 		entry.Fatal(err)
 	}

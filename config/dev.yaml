@@ -1,12 +1,7 @@
-dsnParams: &dsnParams
-  sslmode: disable
 mining:
-  dsnParams:
-    <<: *dsnParams
-    connect_timeout: '10'
-  headers: &headers
-    User-Agent: rampart-mining-bot/1.0.0
   domriaMiner: &domriaMiner
+    headers: &headers
+      User-Agent: rampart-mining-bot/1.0.0
     fetcher:
       timeout: 40s
       portion: 100
@@ -195,7 +190,3 @@ mining:
     server:
       <<: *server
       address: :9002
-migrations:
-  dsnParams:
-    <<: *dsnParams
-    connect_timeout: '15'
