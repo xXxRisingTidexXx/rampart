@@ -17,7 +17,8 @@ commands:
     cmd: |
       printf 'Enter new migration name: ' && \
       read RAMPART_MIGRATION_NAME && \
-      docker-compose run --rm generate create -ext sql -dir /migrations $RAMPART_MIGRATION_NAME
+      docker-compose run --rm generate create -ext sql -dir /migrations $RAMPART_MIGRATION_NAME && \
+      sudo chown -R $USER:$USER migrations
   mining:
     description: Run the data mining app single workflow
     cmd: docker-compose run --rm mining
