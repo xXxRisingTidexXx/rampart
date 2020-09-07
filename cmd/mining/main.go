@@ -10,6 +10,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
+// TODO: measure flat url column widths to reduce allocated space.
 func main() {
 	isDebug := flag.Bool("debug", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
