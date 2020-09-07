@@ -9,16 +9,15 @@ commands:
   psql:
     description: Run PostgreSQL CLI
     cmd: docker exec -it rampart-database psql rampart postgres
-  generate:
-    description: Generate a new SQL migration file
-    cmd: |
-      mkdir -p internal/migrations/versions && \
-      VERSION=$(date +"%s") && \
-      touch internal/migrations/versions/$VERSION.sql && \
-      sleep 1
-  migrations:
+  migrate:
     description: Upgrade the DB schema to the newest version
-    cmd: docker-compose run --rm migrations
+    cmd: docker-compose run --rm migrate
+  generate:
+    description: Create the brand new migration files
+    cmd: |
+      printf 'Enter new migration name: ' && \
+      read RAMPART_MIGRATION_NAME && \
+      docker-compose run --rm generate create -ext sql -dir /migrations $RAMPART_MIGRATION_NAME
   mining:
     description: Run the data mining app single workflow
     cmd: docker-compose run --rm mining
