@@ -1,7 +1,9 @@
 package main
 
 import (
+	"database/sql"
 	"flag"
+	_ "github.com/lib/pq"
 	gocron "github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
@@ -26,9 +28,13 @@ func main() {
 	if err != nil {
 		entry.Fatal(err)
 	}
-	db, err := misc.OpenDB(dsn)
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		entry.Fatal(err)
+		entry.Fatalf("main: mining failed to open the db, %v", err)
+	}
+	if err := db.Ping(); err != nil {
+		_ = db.Close()
+		entry.Fatalf("main: mining failed to ping the db, %v", err)
 	}
 	gatherer := metrics.NewGatherer(*alias, db)
 	jobs := map[string]gocron.Job{
@@ -67,7 +73,7 @@ func main() {
 		metrics.RunServer(miner.Metrics(), entry)
 		cron.Run()
 	}
-	if err = misc.CloseDB(db); err != nil {
-		entry.Fatal(err)
+	if err = db.Close(); err != nil {
+		entry.Fatalf("main: mining failed to close the db, %v", err)
 	}
 }
