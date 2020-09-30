@@ -13,6 +13,7 @@ import (
 )
 
 // TODO: measure flat url column widths to reduce allocated space.
+// TODO: replace config & flat passed types with values.
 func main() {
 	isDebug := flag.Bool("debug", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
