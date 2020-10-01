@@ -16,6 +16,7 @@ import (
 // TODO: replace config & flat passed types with values.
 // TODO: relative city center distance feature (with city diameter).
 // TODO: distance to workplace feature.
+// TODO: floor factor, f: floor, tf: total_floor; ff(f, tf) = tf / (tf - f + 1).
 func main() {
 	isDebug := flag.Bool("debug", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
