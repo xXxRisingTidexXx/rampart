@@ -214,7 +214,6 @@ func (gatherer *Gatherer) GatherTotalDuration(start time.Time) {
 	gatherer.totalDuration = time.Since(start).Seconds()
 }
 
-//nolint:funlen
 func (gatherer *Gatherer) Flush() error {
 	geocodingDuration := 0.0
 	if gatherer.geocodingDurationCount != 0 {
