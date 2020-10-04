@@ -18,6 +18,7 @@ import (
 // TODO: distance to workplace feature.
 // TODO: floor factor, f: floor, tf: total floor; ff = tf / (tf - f + 1).
 // TODO: price factor, ap: actual price, up: utmost price; pf = e ^ (1 - ap / up).
+// TODO: filter by "sale_date".
 func main() {
 	isDebug := flag.Bool("debug", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
