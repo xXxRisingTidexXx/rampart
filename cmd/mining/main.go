@@ -12,7 +12,8 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
-// TODO: measure flat url column widths to reduce allocated space.
+// TODO: shorten url column widths to 256.
+// TODO: separate image table & origin_url -> url.
 // TODO: replace config & flat passed types with values.
 // TODO: relative city center distance feature (with city diameter).
 // TODO: distance to workplace feature.
