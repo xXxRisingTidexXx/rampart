@@ -16,7 +16,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	bytes, err := ioutil.ReadFile("datasets/outdated.txt")
+	bytes, err := ioutil.ReadFile(".twinkle/outdated.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
