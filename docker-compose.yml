@@ -11,6 +11,10 @@ x-backend: &x-backend
     - .:/go/src/app
   env_file:
     - .env
+x-checks: &x-checks
+  image: rampart-checks
+  volumes:
+    - .:/go/src/app
 services:
   database:
     image: postgis/postgis:12-master
@@ -45,43 +49,34 @@ services:
     <<: *x-backend
     container_name: rampart-tgbot
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/tgbot -debug
-    restart: on-failure
   mining-domria-primary:
     <<: *x-backend
     container_name: rampart-mining-domria-primary
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-primary
     ports:
       - 9001:9001
-    restart: on-failure
   mining-domria-secondary:
     <<: *x-backend
     container_name: rampart-mining-domria-secondary
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-secondary
     ports:
       - 9002:9002
-    restart: on-failure
   checks:
     build:
       context: .
       dockerfile: docker/checks.dockerfile
     image: rampart-checks
   gofmt:
-    image: rampart-checks
+    <<: *x-checks
     container_name: rampart-gofmt
-    volumes:
-      - .:/go/src/app
     command: gofmt -w -s .
   lint:
-    image: rampart-checks
+    <<: *x-checks
     container_name: rampart-lint
-    volumes:
-      - .:/go/src/app
     command: golangci-lint run
   test:
-    image: rampart-checks
+    <<: *x-checks
     container_name: rampart-test
-    volumes:
-      - .:/go/src/app
     command: richgo test github.com/xXxRisingTidexXx/rampart/internal/mining/domria
   notebook:
     build:
@@ -95,6 +90,8 @@ services:
       - 8888:8888
     environment:
       JUPYTER_ENABLE_LAB: 'yes'
+    env_file:
+      - .env
 volumes:
   database:
     name: rampart-database
