@@ -1,5 +1,5 @@
 mining:
-  domriaMiner: &domriaMiner
+  domria-miner: &domria-miner
     headers: &headers
       User-Agent: rampart-mining-bot/1.0.0
     fetcher:
@@ -9,11 +9,10 @@ mining:
         primary: newbuildings=1
         secondary: secondary=1
       headers: *headers
-      searchURL: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d
+      search-url: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d
     sanitizer:
-      originURLPrefix: https://dom.ria.com/uk/
-      imageURLPrefix: https://cdn.riastatic.com/photos/
-      stateDictionary:
+      url-prefix: https://dom.ria.com/uk/
+      state-map:
         Київськ��: Київська
         Одес��ка: Одеська
         Одеськ��: Одеська
@@ -27,8 +26,8 @@ mining:
         О��еська: Одеська
         Київс��ка: Київська
         Киї��ська: Київська
-      stateSuffix: ' область'
-      cityDictionary:
+      state-suffix: ' область'
+      city-map:
         Киє��о-Святошинський: Києво-Святошинський
         Івано-Франк��вськ: Івано-Франківськ
         Л��вів: Львів
@@ -42,7 +41,7 @@ mining:
         Дніпропетровськ: Дніпро
         Од��са: Одеса
         Івано-Франківсь��а: Івано-Франківська
-      districtDictionary:
+      district-dictionary:
         Петрівське (нов. Святопетрівське): Святопетрівське
         Вознесенівський (Орджонікідзевський): Вознесенівський
         Дніпровський (Ленінський): Дніпровський
@@ -66,11 +65,11 @@ mining:
         Шевчен��івський: Шевченківський
         Дарниц��кий: Дарницький
         Ірпінь: ''
-      districtCitySwaps:
+      district-city-swaps:
         - Києво-Святошинський
-      districtEnding: ий
-      districtSuffix: ' район'
-      streetReplacements:
+      district-ending: ий
+      district-suffix: ' район'
+      street-replacements:
         - пр-т
         - проспект
         - просп.
@@ -93,7 +92,7 @@ mining:
         - улица
         - бульв.
         - бульвар
-      houseNumberReplacements:
+      house-number-replacements:
         - №
         - ''
         - _
@@ -124,66 +123,66 @@ mining:
         - ''
         - ' '
         - ''
-      houseNumberMaxLength: 20
+      house-number-max-length: 20
     geocoder:
       timeout: 10s
       headers: *headers
-      statelessCities:
+      stateless-cities:
         - Київ
-      searchURL: https://nominatim.openstreetmap.org/search?state=%s&city=%s&county=%s&street=%s+%s&format=json&countrycodes=ua
+      search-url: https://nominatim.openstreetmap.org/search?state=%s&city=%s&county=%s&street=%s+%s&format=json&countrycodes=ua
     gauger:
       timeout: 40s
       headers: *headers
-      interpreterURL: https://overpass.kumi.systems/api/interpreter?data=%s
-      subwayCities:
+      interpreter-url: https://overpass.kumi.systems/api/interpreter?data=%s
+      subway-cities:
         - Київ
         - Харків
         - Дніпро
-      ssfSearchRadius: 2000
-      ssfMinDistance: 25
-      ssfModifier: 1000
-      izfSearchRadius: 3000
-      izfMinArea: 35000
-      izfMinDistance: 30
-      izfModifier: 0.001
-      gzfSearchRadius: 2500
-      gzfMinArea: 50000
-      gzfMinDistance: 20
-      gzfModifier: 0.001
+      ssf-search-radius: 2000
+      ssf-min-distance: 25
+      ssf-modifier: 1000
+      izf-search-radius: 3000
+      izf-min-area: 35000
+      izf-min-distance: 30
+      izf-modifier: 0.001
+      gzf-search-radius: 2500
+      gzf-min-area: 50000
+      gzf-min-distance: 20
+      gzf-modifier: 0.001
     validator:
-      minMediaCount: 5
-      minPrice: 1
-      minTotalArea: 12
-      maxTotalArea: 560
-      minLivingArea: 0
-      minKitchenArea: 0
-      minRoomNumber: 1
-      maxRoomNumber: 9
-      minSpecificArea: 12
-      maxSpecificArea: 130
-      minFloor: 1
-      minTotalFloor: 2
-      maxTotalFloor: 50
-      minLongitude: -180
-      maxLongitude: 180
-      minLatitude: -90
-      maxLatitude: 90
+      min-media-count: 5
+      min-price: 1
+      min-total-area: 12
+      max-total-area: 560
+      min-living-area: 0
+      min-kitchen-area: 0
+      min-room-number: 1
+      max-room-number: 9
+      min-specific-area: 12
+      max-specific-area: 130
+      min-floor: 1
+      min-total-floor: 2
+      max-total-floor: 50
+      min-longitude: -180
+      max-longitude: 180
+      min-latitude: -90
+      max-latitude: 90
     storer:
       srid: 4326
   server: &server
-    readTimeout: 5s
-    writeTimeout: 5s
-    maxHeaderBytes: 1048576
-  domriaPrimaryMiner:
-    <<: *domriaMiner
+    read-timeout: 5s
+    write-timeout: 5s
+    max-header-bytes: 1048576
+  domria-primary-miner:
+    <<: *domria-miner
     alias: domria-primary
     housing: primary
     spec: '0-59/12 * * * *'
     server:
       <<: *server
       address: :9001
-  domriaSecondaryMiner:
-    <<: *domriaMiner
+  domria-secondary-miner:
+    <<: *domria-miner
     alias: domria-secondary
     housing: secondary
     spec: '6-59/12 * * * *'
