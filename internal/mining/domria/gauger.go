@@ -62,10 +62,10 @@ type Gauger struct {
 	logger          log.FieldLogger
 }
 
-func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
-	newFlats := make([]*Flat, len(flats))
+func (gauger *Gauger) GaugeFlats(flats []Flat) []Flat {
+	newFlats := make([]Flat, len(flats))
 	for i, flat := range flats {
-		newFlats[i] = &Flat{
+		newFlats[i] = Flat{
 			Source:      flat.Source,
 			OriginURL:   flat.OriginURL,
 			ImageURL:    flat.ImageURL,
@@ -95,7 +95,7 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 	return newFlats
 }
 
-func (gauger *Gauger) gaugeSSF(flat *Flat) float64 {
+func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 	if !gauger.subwayCities.Contains(flat.City) {
 		gauger.gatherer.GatherSubwaylessSSFGauging()
 		return 0
@@ -111,7 +111,7 @@ func (gauger *Gauger) gaugeSSF(flat *Flat) float64 {
 	if err != nil {
 		gauger.gatherer.GatherFailedSSFGauging()
 		gauger.logger.WithFields(
-			log.Fields{"source": flat.Source, "origin_url": flat.OriginURL, "feature": "ssf"},
+			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "ssf"},
 		).Error(err)
 		return 0
 	}
@@ -221,8 +221,8 @@ func (gauger *Gauger) gaugeGeoDistance(geometry orb.Geometry, point orb.Point) f
 	}
 }
 
-func (gauger *Gauger) isLower(distance1, distance2 float64) bool {
-	return distance1 < distance2 || distance2 == gauger.unknownDistance && distance2 < distance1
+func (gauger *Gauger) isLower(d1, d2 float64) bool {
+	return d1 < d2 || d2 == gauger.unknownDistance && d2 < d1
 }
 
 func (gauger *Gauger) gaugeGeoDistanceToPoints(points []orb.Point, point orb.Point) float64 {
@@ -236,7 +236,7 @@ func (gauger *Gauger) gaugeGeoDistanceToPoints(points []orb.Point, point orb.Poi
 	return distance
 }
 
-func (gauger *Gauger) gaugeIZF(flat *Flat) float64 {
+func (gauger *Gauger) gaugeIZF(flat Flat) float64 {
 	start := time.Now()
 	collection, err := gauger.query(
 		`(
@@ -257,7 +257,7 @@ func (gauger *Gauger) gaugeIZF(flat *Flat) float64 {
 	if err != nil {
 		gauger.gatherer.GatherFailedIZFGauging()
 		gauger.logger.WithFields(
-			log.Fields{"source": flat.Source, "origin_url": flat.OriginURL, "feature": "izf"},
+			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "izf"},
 		).Error(err)
 		return 0
 	}
@@ -278,7 +278,7 @@ func (gauger *Gauger) gaugeIZF(flat *Flat) float64 {
 	return izf * gauger.izfModifier
 }
 
-func (gauger *Gauger) gaugeGZF(flat *Flat) float64 {
+func (gauger *Gauger) gaugeGZF(flat Flat) float64 {
 	start := time.Now()
 	collection, err := gauger.query(
 		`(
@@ -299,7 +299,7 @@ func (gauger *Gauger) gaugeGZF(flat *Flat) float64 {
 	if err != nil {
 		gauger.gatherer.GatherFailedGZFGauging()
 		gauger.logger.WithFields(
-			log.Fields{"source": flat.Source, "origin_url": flat.OriginURL, "feature": "gzf"},
+			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "gzf"},
 		).Error(err)
 		return 0
 	}
