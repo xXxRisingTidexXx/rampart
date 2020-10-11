@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// TODO: rename to drain.
 func NewGatherer(miner string, db *sql.DB) *Gatherer {
 	return &Gatherer{miner: miner, db: db}
 }
