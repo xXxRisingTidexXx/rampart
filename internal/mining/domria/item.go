@@ -2,18 +2,17 @@ package domria
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 type item struct {
 	Source              string
 	BeautifulURL        string
 	MainPhoto           string
-	Photos              map[string]*photo
-	Panoramas           []*panorama
+	Photos              map[string]photo
+	Panoramas           []panorama
 	UpdatedAt           moment
 	Inspected           int
-	PriceArr            *prices
+	PriceArr            prices
 	TotalSquareMeters   float64
 	LivingSquareMeters  float64
 	KitchenSquareMeters float64
@@ -32,7 +31,7 @@ type item struct {
 }
 
 func (item *item) UnmarshalJSON(bytes []byte) error {
-	sourceless := sourcelessItem{}
+	sourceless := publication{}
 	if err := json.Unmarshal(bytes, &sourceless); err != nil {
 		return err
 	}
@@ -60,33 +59,4 @@ func (item *item) UnmarshalJSON(bytes []byte) error {
 	item.StreetName = sourceless.StreetName
 	item.BuildingNumberStr = sourceless.BuildingNumberStr
 	return nil
-}
-
-func (item *item) String() string {
-	return fmt.Sprintf(
-		"{%s %s %v %v %s %d %v %.1f %.1f %.1f %d %d %d %s %.6f %.6f %s %s %s %s %s %s %s}",
-		item.BeautifulURL,
-		item.MainPhoto,
-		item.Photos,
-		item.Panoramas,
-		item.UpdatedAt,
-		item.Inspected,
-		item.PriceArr,
-		item.TotalSquareMeters,
-		item.LivingSquareMeters,
-		item.KitchenSquareMeters,
-		item.RoomsCount,
-		item.Floor,
-		item.FloorsCount,
-		item.UserNewbuildNameUK,
-		item.Longitude,
-		item.Latitude,
-		item.StateNameUK,
-		item.CityNameUK,
-		item.DistrictNameUK,
-		item.StreetNameUK,
-		item.StreetName,
-		item.BuildingNumberStr,
-		item.Source,
-	)
 }
