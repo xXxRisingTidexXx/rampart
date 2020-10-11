@@ -39,15 +39,15 @@ type Sanitizer struct {
 	gatherer             *metrics.Gatherer
 }
 
-func (sanitizer *Sanitizer) SanitizeFlats(flats []*Flat) []*Flat {
-	newFlats := make([]*Flat, len(flats))
+func (sanitizer *Sanitizer) SanitizeFlats(flats []Flat) []Flat {
+	newFlats := make([]Flat, len(flats))
 	for i, flat := range flats {
 		newFlats[i] = sanitizer.sanitizeFlat(flat)
 	}
 	return newFlats
 }
 
-func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
+func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	originURL := flat.OriginURL
 	if originURL != "" {
 		originURL = sanitizer.urlPrefix + originURL
@@ -90,7 +90,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 	if runes := []rune(houseNumber); len(runes) > sanitizer.houseNumberMaxLength {
 		houseNumber = string(runes[:sanitizer.houseNumberMaxLength])
 	}
-	return &Flat{
+	return Flat{
 		Source:      flat.Source,
 		OriginURL:   originURL,
 		ImageURL:    flat.ImageURL,
