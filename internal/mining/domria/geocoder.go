@@ -14,7 +14,11 @@ import (
 )
 
 // TODO: try to remove district from search to increase lookup.
-func NewGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger log.FieldLogger) *Geocoder {
+func NewGeocoder(
+	config config.Geocoder,
+	gatherer *metrics.Gatherer,
+	logger log.FieldLogger,
+) *Geocoder {
 	return &Geocoder{
 		&http.Client{Timeout: config.Timeout},
 		config.Headers,

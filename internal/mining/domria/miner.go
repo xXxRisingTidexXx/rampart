@@ -9,7 +9,7 @@ import (
 )
 
 func NewMiner(
-	config *config.DomriaMiner,
+	config config.DomriaMiner,
 	db *sql.DB,
 	gatherer *metrics.Gatherer,
 	logger log.FieldLogger,

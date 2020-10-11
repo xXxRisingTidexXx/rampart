@@ -7,14 +7,13 @@ import (
 	"strings"
 )
 
-func NewSanitizer(config *config.Sanitizer, gatherer *metrics.Gatherer) *Sanitizer {
+func NewSanitizer(config config.Sanitizer, gatherer *metrics.Gatherer) *Sanitizer {
 	return &Sanitizer{
-		config.OriginURLPrefix,
-		config.ImageURLPrefix,
-		config.StateDictionary,
+		config.URLPrefix,
+		config.StateMap,
 		config.StateSuffix,
-		config.CityDictionary,
-		config.DistrictDictionary,
+		config.CityMap,
+		config.DistrictMap,
 		config.DistrictCitySwaps,
 		config.DistrictEnding,
 		config.DistrictSuffix,
@@ -26,13 +25,12 @@ func NewSanitizer(config *config.Sanitizer, gatherer *metrics.Gatherer) *Sanitiz
 }
 
 type Sanitizer struct {
-	originURLPrefix      string
-	imageURLPrefix       string
-	stateDictionary      map[string]string
+	urlPrefix            string
+	stateMap             map[string]string
 	stateSuffix          string
-	cityDictionary       map[string]string
-	districtDictionary   map[string]string
-	districtCitySwaps    *misc.Set
+	cityMap              map[string]string
+	districtMap          map[string]string
+	districtCitySwaps    misc.Set
 	districtEnding       string
 	districtSuffix       string
 	streetReplacer       *strings.Replacer
@@ -52,14 +50,10 @@ func (sanitizer *Sanitizer) SanitizeFlats(flats []*Flat) []*Flat {
 func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 	originURL := flat.OriginURL
 	if originURL != "" {
-		originURL = sanitizer.originURLPrefix + originURL
-	}
-	imageURL := flat.ImageURL
-	if imageURL != "" {
-		imageURL = sanitizer.imageURLPrefix + imageURL
+		originURL = sanitizer.urlPrefix + originURL
 	}
 	state := strings.TrimSpace(flat.State)
-	if value, ok := sanitizer.stateDictionary[state]; ok {
+	if value, ok := sanitizer.stateMap[state]; ok {
 		state = value
 		sanitizer.gatherer.GatherStateSanitation()
 	}
@@ -67,12 +61,12 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 		state += sanitizer.stateSuffix
 	}
 	city := strings.TrimSpace(flat.City)
-	if value, ok := sanitizer.cityDictionary[city]; ok {
+	if value, ok := sanitizer.cityMap[city]; ok {
 		city = value
 		sanitizer.gatherer.GatherCitySanitation()
 	}
 	district := strings.TrimSpace(flat.District)
-	if value, ok := sanitizer.districtDictionary[district]; ok {
+	if value, ok := sanitizer.districtMap[district]; ok {
 		district = value
 		sanitizer.gatherer.GatherDistrictSanitation()
 	}
@@ -99,7 +93,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 	return &Flat{
 		Source:      flat.Source,
 		OriginURL:   originURL,
-		ImageURL:    imageURL,
+		ImageURL:    flat.ImageURL,
 		MediaCount:  flat.MediaCount,
 		UpdateTime:  flat.UpdateTime,
 		IsInspected: flat.IsInspected,

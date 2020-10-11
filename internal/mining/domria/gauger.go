@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger log.FieldLogger) *Gauger {
+func NewGauger(config config.Gauger, gatherer *metrics.Gatherer, logger log.FieldLogger) *Gauger {
 	return &Gauger{
 		&http.Client{Timeout: config.Timeout},
 		config.Headers,
@@ -130,7 +130,10 @@ func (gauger *Gauger) gaugeSSF(flat *Flat) float64 {
 	return ssf * gauger.ssfModifier
 }
 
-func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.FeatureCollection, error) {
+func (gauger *Gauger) query(
+	query string,
+	params ...interface{},
+) (*geojson.FeatureCollection, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf(gauger.interpreterURL, gourl.QueryEscape(fmt.Sprintf(query, params...))),

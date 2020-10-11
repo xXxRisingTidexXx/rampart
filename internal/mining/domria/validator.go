@@ -5,8 +5,8 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 )
 
-// TODO: try to filter out outdated publications.
-func NewValidator(config *config.Validator, gatherer *metrics.Gatherer) *Validator {
+// TODO: filter by "sale_date".
+func NewValidator(config config.Validator, gatherer *metrics.Gatherer) *Validator {
 	return &Validator{
 		config.MinMediaCount,
 		config.MinPrice,

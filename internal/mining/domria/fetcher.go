@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func NewFetcher(config *config.Fetcher, gatherer *metrics.Gatherer) *Fetcher {
+func NewFetcher(config config.Fetcher, gatherer *metrics.Gatherer) *Fetcher {
 	flags := make(map[string]string, len(config.Flags))
 	for key, value := range config.Flags {
 		flags[string(key)] = value

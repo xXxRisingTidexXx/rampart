@@ -11,7 +11,7 @@ import (
 )
 
 func NewStorer(
-	config *config.Storer,
+	config config.Storer,
 	db *sql.DB,
 	gatherer *metrics.Gatherer,
 	logger log.FieldLogger,
@@ -29,7 +29,9 @@ type Storer struct {
 func (storer *Storer) StoreFlats(flats []*Flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {
-			storer.logger.WithFields(log.Fields{"source": flat.Source, "url": flat.OriginURL}).Error(err)
+			storer.logger.WithFields(
+				log.Fields{"source": flat.Source, "url": flat.OriginURL},
+			).Error(err)
 			storer.gatherer.GatherFailedStoring()
 		}
 	}
@@ -154,9 +156,9 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 	_, err := tx.Exec(
 		`insert into flats
         (
-         	origin_url, image_url, update_time, parsing_time, price, total_area, living_area, kitchen_area,
-            room_number, floor, total_floor, housing, complex, point, state, city, district, street,
-            house_number, ssf, izf, gzf
+         	origin_url, image_url, update_time, parsing_time, price, total_area, living_area,
+            kitchen_area, room_number, floor, total_floor, housing, complex, point, state, city,
+            district, street, house_number, ssf, izf, gzf
         )
         values 
 		(
