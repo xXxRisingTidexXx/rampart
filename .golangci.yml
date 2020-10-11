@@ -2,6 +2,8 @@ run:
   concurrency: 4
   timeout: 30s
 linters-settings:
+  lll:
+    line-length: 100
 linters:
   enable-all: true
   disable:
