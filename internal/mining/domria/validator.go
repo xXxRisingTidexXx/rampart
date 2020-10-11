@@ -50,8 +50,8 @@ type Validator struct {
 	gatherer        *metrics.Gatherer
 }
 
-func (validator *Validator) ValidateFlats(flats []*Flat) []*Flat {
-	newFlats := make([]*Flat, 0, len(flats))
+func (validator *Validator) ValidateFlats(flats []Flat) []Flat {
+	newFlats := make([]Flat, 0, len(flats))
 	for _, flat := range flats {
 		if validator.validateFlat(flat) {
 			newFlats = append(newFlats, flat)
@@ -61,7 +61,7 @@ func (validator *Validator) ValidateFlats(flats []*Flat) []*Flat {
 }
 
 //nolint:gocognit
-func (validator *Validator) validateFlat(flat *Flat) bool {
+func (validator *Validator) validateFlat(flat Flat) bool {
 	if flat.RoomNumber == 0 {
 		validator.gatherer.GatherDeniedValidation()
 		return false
