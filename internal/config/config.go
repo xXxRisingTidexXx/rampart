@@ -7,22 +7,18 @@ import (
 	"io/ioutil"
 )
 
-func NewConfig() (*Config, error) {
+func NewConfig() (Config, error) {
+	config := Config{}
 	bytes, err := ioutil.ReadFile(misc.ResolvePath("config/dev.yaml"))
 	if err != nil {
-		return nil, fmt.Errorf("config: failed to read the config file, %v", err)
+		return config, fmt.Errorf("config: failed to read the config file, %v", err)
 	}
-	config := Config{}
-	if err = yaml.Unmarshal(bytes, &config); err != nil {
-		return nil, fmt.Errorf("config: failed to unmarshal the config file, %v", err)
+	if err := yaml.Unmarshal(bytes, &config); err != nil {
+		return config, fmt.Errorf("config: failed to unmarshal the config file, %v", err)
 	}
-	return &config, nil
+	return config, nil
 }
 
 type Config struct {
-	Mining *Mining `yaml:"mining"`
-}
-
-func (config *Config) String() string {
-	return fmt.Sprintf("{%v}", config.Mining)
+	Mining Mining `yaml:"mining"`
 }
