@@ -4,6 +4,8 @@ run:
 linters-settings:
   lll:
     line-length: 100
+  gocognit:
+    min-complexity: 45
 linters:
   enable-all: true
   disable:
