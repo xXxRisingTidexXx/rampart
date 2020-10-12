@@ -14,16 +14,16 @@ const (
 	FailedGeocodingNumber
 	InconclusiveGeocodingNumber
 	SuccessfulGeocodingNumber
-	SubwaylessSSFNumber
-	FailedSSFNumber
-	InconclusiveSSFNumber
-	SuccessfulSSFNumber
-	FailedIZFNumber
-	InconclusiveIZFNumber
-	SuccessfulIZFNumber
-	FailedGZFNumber
-	InconclusiveGZFNumber
-	SuccessfulGZFNumber
+	SubwaylessSSFGaugingNumber
+	FailedSSFGaugingNumber
+	InconclusiveSSFGaugingNumber
+	SuccessfulSSFGaugingNumber
+	FailedIZFGaugingNumber
+	InconclusiveIZFGaugingNumber
+	SuccessfulIZFGaugingNumber
+	FailedGZFGaugingNumber
+	InconclusiveGZFGaugingNumber
+	SuccessfulGZFGaugingNumber
 	ApprovedValidationNumber
 	UninformativeValidationNumber
 	DeniedValidationNumber
@@ -45,16 +45,16 @@ var numberViews = map[Number]string{
 	FailedGeocodingNumber:         "failed geocoding",
 	InconclusiveGeocodingNumber:   "inconclusive geocoding",
 	SuccessfulGeocodingNumber:     "successful geocoding",
-	SubwaylessSSFNumber:           "subwayless ssf",
-	FailedSSFNumber:               "failed ssf",
-	InconclusiveSSFNumber:         "inconclusive ssf",
-	SuccessfulSSFNumber:           "successful ssf",
-	FailedIZFNumber:               "failed izf",
-	InconclusiveIZFNumber:         "inconclusive izf",
-	SuccessfulIZFNumber:           "successful izf",
-	FailedGZFNumber:               "failed gzf",
-	InconclusiveGZFNumber:         "inconclusive gzf",
-	SuccessfulGZFNumber:           "successful gzf",
+	SubwaylessSSFGaugingNumber:    "subwayless ssf gauging",
+	FailedSSFGaugingNumber:        "failed ssf gauging",
+	InconclusiveSSFGaugingNumber:  "inconclusive ssf gauging",
+	SuccessfulSSFGaugingNumber:    "successful ssf gauging",
+	FailedIZFGaugingNumber:        "failed izf gauging",
+	InconclusiveIZFGaugingNumber:  "inconclusive izf gauging",
+	SuccessfulIZFGaugingNumber:    "successful izf gauging",
+	FailedGZFGaugingNumber:        "failed gzf gauging",
+	InconclusiveGZFGaugingNumber:  "inconclusive gzf gauging",
+	SuccessfulGZFGaugingNumber:    "successful gzf gauging",
 	ApprovedValidationNumber:      "approved validation",
 	UninformativeValidationNumber: "uninformative validation",
 	DeniedValidationNumber:        "denied validation",
