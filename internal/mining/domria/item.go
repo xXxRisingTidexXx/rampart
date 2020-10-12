@@ -30,33 +30,33 @@ type item struct {
 	BuildingNumberStr   string
 }
 
-func (item *item) UnmarshalJSON(bytes []byte) error {
-	sourceless := publication{}
-	if err := json.Unmarshal(bytes, &sourceless); err != nil {
+func (i *item) UnmarshalJSON(bytes []byte) error {
+	p := publication{}
+	if err := json.Unmarshal(bytes, &p); err != nil {
 		return err
 	}
-	item.Source = string(bytes)
-	item.BeautifulURL = sourceless.BeautifulURL
-	item.MainPhoto = sourceless.MainPhoto
-	item.Photos = sourceless.Photos
-	item.Panoramas = sourceless.Panoramas
-	item.UpdatedAt = sourceless.UpdatedAt
-	item.Inspected = sourceless.Inspected
-	item.PriceArr = sourceless.PriceArr
-	item.TotalSquareMeters = sourceless.TotalSquareMeters
-	item.LivingSquareMeters = sourceless.LivingSquareMeters
-	item.KitchenSquareMeters = sourceless.KitchenSquareMeters
-	item.RoomsCount = sourceless.RoomsCount
-	item.Floor = sourceless.Floor
-	item.FloorsCount = sourceless.FloorsCount
-	item.UserNewbuildNameUK = sourceless.UserNewbuildNameUK
-	item.Longitude = sourceless.Longitude
-	item.Latitude = sourceless.Latitude
-	item.StateNameUK = sourceless.StateNameUK
-	item.CityNameUK = sourceless.CityNameUK
-	item.DistrictNameUK = sourceless.DistrictNameUK
-	item.StreetNameUK = sourceless.StreetNameUK
-	item.StreetName = sourceless.StreetName
-	item.BuildingNumberStr = sourceless.BuildingNumberStr
+	i.Source = string(bytes)
+	i.BeautifulURL = p.BeautifulURL
+	i.MainPhoto = p.MainPhoto
+	i.Photos = p.Photos
+	i.Panoramas = p.Panoramas
+	i.UpdatedAt = p.UpdatedAt
+	i.Inspected = p.Inspected
+	i.PriceArr = p.PriceArr
+	i.TotalSquareMeters = p.TotalSquareMeters
+	i.LivingSquareMeters = p.LivingSquareMeters
+	i.KitchenSquareMeters = p.KitchenSquareMeters
+	i.RoomsCount = p.RoomsCount
+	i.Floor = p.Floor
+	i.FloorsCount = p.FloorsCount
+	i.UserNewbuildNameUK = p.UserNewbuildNameUK
+	i.Longitude = p.Longitude
+	i.Latitude = p.Latitude
+	i.StateNameUK = p.StateNameUK
+	i.CityNameUK = p.CityNameUK
+	i.DistrictNameUK = p.DistrictNameUK
+	i.StreetNameUK = p.StreetNameUK
+	i.StreetName = p.StreetName
+	i.BuildingNumberStr = p.BuildingNumberStr
 	return nil
 }
