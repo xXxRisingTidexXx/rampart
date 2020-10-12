@@ -12,8 +12,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
-// TODO: shorten url column widths to 256.
-// TODO: separate image table & origin_url -> url.
+// TODO: create photo & panorama table(s).
 // TODO: relative city center distance feature (with city diameter).
 // TODO: distance to workplace feature.
 // TODO: shorten house number column (but research the actual width before).
