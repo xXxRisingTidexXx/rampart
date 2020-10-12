@@ -13,7 +13,6 @@ import (
 	"time"
 )
 
-// TODO: try to remove district from search to increase lookup.
 func NewGeocoder(
 	config config.Geocoder,
 	drain *metrics.Drain,
@@ -108,7 +107,6 @@ func (geocoder *Geocoder) getPositions(flat Flat) ([]position, error) {
 			geocoder.searchURL,
 			state,
 			strings.ReplaceAll(flat.City, " ", "+"),
-			strings.ReplaceAll(flat.District, " ", "+"),
 			strings.ReplaceAll(flat.Street, " ", "+"),
 			strings.ReplaceAll(flat.HouseNumber, " ", "+"),
 		),
