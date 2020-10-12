@@ -11,7 +11,7 @@ const (
 	HouseNumberSanitation
 )
 
-var views = map[Sanitation]string{
+var sanitationViews = map[Sanitation]string{
 	StateSanitation:       "state",
 	CitySanitation:        "city",
 	DistrictSanitation:    "district",
@@ -21,7 +21,7 @@ var views = map[Sanitation]string{
 }
 
 func (sanitation Sanitation) String() string {
-	if view, ok := views[sanitation]; ok {
+	if view, ok := sanitationViews[sanitation]; ok {
 		return view
 	}
 	return "undefined"
