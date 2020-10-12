@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/paulmach/orb"
+	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
@@ -11,7 +12,11 @@ import (
 	"time"
 )
 
-func NewFetcher(config config.Fetcher, drain *metrics.Drain) *Fetcher {
+func NewFetcher(
+	config config.Fetcher,
+	drain *metrics.Drain,
+	logger log.FieldLogger,
+) *Fetcher {
 	flags := make(map[string]string, len(config.Flags))
 	for key, value := range config.Flags {
 		flags[string(key)] = value
@@ -24,6 +29,7 @@ func NewFetcher(config config.Fetcher, drain *metrics.Drain) *Fetcher {
 		config.Headers,
 		config.SearchURL,
 		drain,
+		logger,
 	}
 }
 
@@ -35,18 +41,23 @@ type Fetcher struct {
 	headers   misc.Headers
 	searchURL string
 	drain     *metrics.Drain
+	logger    log.FieldLogger
 }
 
-func (fetcher *Fetcher) FetchFlats(housing string) ([]Flat, error) {
+func (fetcher *Fetcher) FetchFlats(housing string) []Flat {
 	flag, ok := fetcher.flags[housing]
 	if !ok {
-		return nil, fmt.Errorf("domria: fetcher doesn't accept housing %s", housing)
+		fetcher.logger.WithField("housing", housing).Error(
+			"domria: fetcher doesn't accept housing",
+		)
+		return make([]Flat, 0)
 	}
 	start := time.Now()
 	search, err := fetcher.getSearch(flag)
 	fetcher.drain.GatherFetchingDuration(start)
 	if err != nil {
-		return nil, err
+		fetcher.logger.Error(err)
+		return make([]Flat, 0)
 	}
 	flats := fetcher.getFlats(search, housing)
 	if len(flats) > 0 {
@@ -54,7 +65,7 @@ func (fetcher *Fetcher) FetchFlats(housing string) ([]Flat, error) {
 	} else {
 		fetcher.page = 0
 	}
-	return flats, nil
+	return flats
 }
 
 func (fetcher *Fetcher) getSearch(flag string) (search, error) {

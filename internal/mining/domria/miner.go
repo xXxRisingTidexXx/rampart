@@ -16,14 +16,13 @@ func NewMiner(
 ) *Miner {
 	return &Miner{
 		string(config.Housing),
-		NewFetcher(config.Fetcher, drain),
+		NewFetcher(config.Fetcher, drain, logger),
 		NewSanitizer(config.Sanitizer, drain),
 		NewGeocoder(config.Geocoder, drain, logger),
 		NewGauger(config.Gauger, drain, logger),
 		NewValidator(config.Validator, drain),
 		NewStorer(config.Storer, db, drain, logger),
 		drain,
-		logger,
 	}
 }
 
@@ -36,15 +35,11 @@ type Miner struct {
 	validator *Validator
 	storer    *Storer
 	drain     *metrics.Drain
-	logger    log.FieldLogger
 }
 
 func (miner *Miner) Run() {
 	start := time.Now()
-	flats, err := miner.fetcher.FetchFlats(miner.housing)
-	if err != nil {
-		miner.logger.Error(err)
-	}
+	flats := miner.fetcher.FetchFlats(miner.housing)
 	flats = miner.sanitizer.SanitizeFlats(flats)
 	flats = miner.geocoder.GeocodeFlats(flats)
 	flats = miner.gauger.GaugeFlats(flats)
