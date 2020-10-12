@@ -74,7 +74,6 @@ func (geocoder *Geocoder) geocodeFlat(flat Flat) (Flat, bool) {
 	return Flat{
 		Source:      flat.Source,
 		URL:         flat.URL,
-		ImageURL:    flat.ImageURL,
 		MediaCount:  flat.MediaCount,
 		UpdateTime:  flat.UpdateTime,
 		IsInspected: flat.IsInspected,
