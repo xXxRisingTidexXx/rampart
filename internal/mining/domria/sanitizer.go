@@ -55,7 +55,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	state := strings.TrimSpace(flat.State)
 	if value, ok := sanitizer.stateMap[state]; ok {
 		state = value
-		sanitizer.drain.GatherStateSanitation()
+		sanitizer.drain.DrainNumber(metrics.StateSanitationNumber)
 	}
 	if state != "" {
 		state += sanitizer.stateSuffix
@@ -63,16 +63,16 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	city := strings.TrimSpace(flat.City)
 	if value, ok := sanitizer.cityMap[city]; ok {
 		city = value
-		sanitizer.drain.GatherCitySanitation()
+		sanitizer.drain.DrainNumber(metrics.CitySanitationNumber)
 	}
 	district := strings.TrimSpace(flat.District)
 	if value, ok := sanitizer.districtMap[district]; ok {
 		district = value
-		sanitizer.drain.GatherDistrictSanitation()
+		sanitizer.drain.DrainNumber(metrics.DistrictSanitationNumber)
 	}
 	if sanitizer.districtCitySwaps.Contains(city) {
 		city, district = district, ""
-		sanitizer.drain.GatherSwapSanitation()
+		sanitizer.drain.DrainNumber(metrics.SwapSanitationNumber)
 	}
 	if strings.HasSuffix(district, sanitizer.districtEnding) {
 		district += sanitizer.districtSuffix
@@ -80,11 +80,11 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	street, houseNumber := flat.Street, sanitizer.sanitizeHouseNumber(flat.HouseNumber)
 	if index := strings.Index(flat.Street, ","); index != -1 {
 		street = flat.Street[:index]
-		sanitizer.drain.GatherStreetSanitation()
+		sanitizer.drain.DrainNumber(metrics.StreetSanitationNumber)
 		extraNumber := sanitizer.sanitizeHouseNumber(flat.Street[index+1:])
 		if houseNumber == "" && extraNumber != "" && extraNumber[0] >= '0' && extraNumber[0] <= '9' {
 			houseNumber = extraNumber
-			sanitizer.drain.GatherHouseNumberSanitation()
+			sanitizer.drain.DrainNumber(metrics.HouseNumberSanitationNumber)
 		}
 	}
 	if runes := []rune(houseNumber); len(runes) > sanitizer.houseNumberMaxLength {

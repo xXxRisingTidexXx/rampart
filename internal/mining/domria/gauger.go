@@ -6,7 +6,7 @@ import (
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geo"
 	"github.com/paulmach/orb/geojson"
-	gosm "github.com/paulmach/osm"
+	"github.com/paulmach/osm"
 	"github.com/paulmach/osm/osmgeojson"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
@@ -97,7 +97,7 @@ func (gauger *Gauger) GaugeFlats(flats []Flat) []Flat {
 
 func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 	if !gauger.subwayCities.Contains(flat.City) {
-		gauger.drain.GatherSubwaylessSSFGauging()
+		gauger.drain.DrainNumber(metrics.SubwaylessSSFGaugingNumber)
 		return 0
 	}
 	start := time.Now()
@@ -107,9 +107,9 @@ func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
-	gauger.drain.GatherSSFGaugingDuration(start)
+	gauger.drain.DrainDuration(metrics.SSFGaugingDuration, start)
 	if err != nil {
-		gauger.drain.GatherFailedSSFGauging()
+		gauger.drain.DrainNumber(metrics.FailedSSFGaugingNumber)
 		gauger.logger.WithFields(
 			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "ssf"},
 		).Error(err)
@@ -123,10 +123,10 @@ func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 		}
 	}
 	if ssf == 0 {
-		gauger.drain.GatherInconclusiveSSFGauging()
+		gauger.drain.DrainNumber(metrics.InconclusiveSSFGaugingNumber)
 		return 0
 	}
-	gauger.drain.GatherSuccessfulSSFGauging()
+	gauger.drain.DrainNumber(metrics.SuccessfulSSFGaugingNumber)
 	return ssf * gauger.ssfModifier
 }
 
@@ -151,15 +151,15 @@ func (gauger *Gauger) query(
 		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: gauger got response with status %s", response.Status)
 	}
-	osm := gosm.OSM{}
-	if err := xml.NewDecoder(response.Body).Decode(&osm); err != nil {
+	o := osm.OSM{}
+	if err := xml.NewDecoder(response.Body).Decode(&o); err != nil {
 		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: gauger failed to unmarshal the xml, %v", err)
 	}
 	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to close the response body, %v", err)
 	}
-	collection, err := osmgeojson.Convert(&osm, osmgeojson.NoMeta(true))
+	collection, err := osmgeojson.Convert(&o, osmgeojson.NoMeta(true))
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to convert from osm to geojson, %v", err)
 	}
@@ -253,9 +253,9 @@ func (gauger *Gauger) gaugeIZF(flat Flat) float64 {
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
-	gauger.drain.GatherIZFGaugingDuration(start)
+	gauger.drain.DrainDuration(metrics.IZFGaugingDuration, start)
 	if err != nil {
-		gauger.drain.GatherFailedIZFGauging()
+		gauger.drain.DrainNumber(metrics.FailedIZFGaugingNumber)
 		gauger.logger.WithFields(
 			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "izf"},
 		).Error(err)
@@ -271,10 +271,10 @@ func (gauger *Gauger) gaugeIZF(flat Flat) float64 {
 		}
 	}
 	if izf == 0 {
-		gauger.drain.GatherInconclusiveIZFGauging()
+		gauger.drain.DrainNumber(metrics.InconclusiveIZFGaugingNumber)
 		return 0
 	}
-	gauger.drain.GatherSuccessfulIZFGauging()
+	gauger.drain.DrainNumber(metrics.SuccessfulIZFGaugingNumber)
 	return izf * gauger.izfModifier
 }
 
@@ -295,9 +295,9 @@ func (gauger *Gauger) gaugeGZF(flat Flat) float64 {
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
-	gauger.drain.GatherGZFGaugingDuration(start)
+	gauger.drain.DrainDuration(metrics.GZFGaugingDuration, start)
 	if err != nil {
-		gauger.drain.GatherFailedGZFGauging()
+		gauger.drain.DrainNumber(metrics.FailedGZFGaugingNumber)
 		gauger.logger.WithFields(
 			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "gzf"},
 		).Error(err)
@@ -313,9 +313,9 @@ func (gauger *Gauger) gaugeGZF(flat Flat) float64 {
 		}
 	}
 	if gzf == 0 {
-		gauger.drain.GatherInconclusiveGZFGauging()
+		gauger.drain.DrainNumber(metrics.InconclusiveGZFGaugingNumber)
 		return 0
 	}
-	gauger.drain.GatherSuccessfulGZFGauging()
+	gauger.drain.DrainNumber(metrics.SuccessfulGZFGaugingNumber)
 	return gzf * gauger.gzfModifier
 }

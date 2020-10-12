@@ -32,7 +32,7 @@ func (storer *Storer) StoreFlats(flats []Flat) {
 			storer.logger.WithFields(
 				log.Fields{"source": flat.Source, "url": flat.OriginURL},
 			).Error(err)
-			storer.drain.GatherFailedStoring()
+			storer.drain.DrainNumber(metrics.FailedStoringNumber)
 		}
 	}
 }
@@ -44,7 +44,7 @@ func (storer *Storer) storeFlat(flat Flat) error {
 	}
 	start := time.Now()
 	o, err := storer.readFlat(tx, flat)
-	storer.drain.GatherReadingDuration(start)
+	storer.drain.DrainDuration(metrics.ReadingDuration, start)
 	if err != nil {
 		_ = tx.Rollback()
 		return err
@@ -53,7 +53,7 @@ func (storer *Storer) storeFlat(flat Flat) error {
 	if !o.isFound {
 		start := time.Now()
 		err = storer.createFlat(tx, flat)
-		storer.drain.GatherCreationDuration(start)
+		storer.drain.DrainDuration(metrics.CreationDuration, start)
 		if err != nil {
 			_ = tx.Rollback()
 			return err
@@ -61,13 +61,13 @@ func (storer *Storer) storeFlat(flat Flat) error {
 		if err = tx.Commit(); err != nil {
 			return fmt.Errorf(message, err)
 		}
-		storer.drain.GatherCreatedStoring()
+		storer.drain.DrainNumber(metrics.CreatedStoringNumber)
 		return nil
 	}
 	if flat.UpdateTime.After(o.updateTime) {
 		start := time.Now()
 		err = storer.updateFlat(tx, flat)
-		storer.drain.GatherUpdateDuration(start)
+		storer.drain.DrainDuration(metrics.UpdateDuration, start)
 		if err != nil {
 			_ = tx.Rollback()
 			return err
@@ -75,13 +75,13 @@ func (storer *Storer) storeFlat(flat Flat) error {
 		if err = tx.Commit(); err != nil {
 			return fmt.Errorf(message, err)
 		}
-		storer.drain.GatherUpdatedStoring()
+		storer.drain.DrainNumber(metrics.UpdatedStoringNumber)
 		return nil
 	}
 	if err = tx.Commit(); err != nil {
 		return fmt.Errorf(message, err)
 	}
-	storer.drain.GatherUnalteredStoring()
+	storer.drain.DrainNumber(metrics.UnalteredStoringNumber)
 	return nil
 }
 

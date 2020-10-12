@@ -50,28 +50,28 @@ func (geocoder *Geocoder) GeocodeFlats(flats []Flat) []Flat {
 
 func (geocoder *Geocoder) geocodeFlat(flat Flat) (Flat, bool) {
 	if flat.IsInspected && flat.IsLocated() {
-		geocoder.drain.GatherLocatedGeocoding()
+		geocoder.drain.DrainNumber(metrics.LocatedGeocodingNumber)
 		return flat, true
 	}
 	if !flat.IsAddressable() {
-		geocoder.drain.GatherUnlocatedGeocoding()
+		geocoder.drain.DrainNumber(metrics.UnlocatedGeocodingNumber)
 		return Flat{}, false
 	}
 	start := time.Now()
 	positions, err := geocoder.getPositions(flat)
-	geocoder.drain.GatherGeocodingDuration(start)
+	geocoder.drain.DrainDuration(metrics.GeocodingDuration, start)
 	if err != nil {
 		geocoder.logger.WithFields(
 			log.Fields{"source": flat.Source, "url": flat.OriginURL},
 		).Error(err)
-		geocoder.drain.GatherFailedGeocoding()
+		geocoder.drain.DrainNumber(metrics.FailedGeocodingNumber)
 		return Flat{}, false
 	}
 	if len(positions) == 0 {
-		geocoder.drain.GatherInconclusiveGeocoding()
+		geocoder.drain.DrainNumber(metrics.InconclusiveGeocodingNumber)
 		return Flat{}, false
 	}
-	geocoder.drain.GatherSuccessfulGeocoding()
+	geocoder.drain.DrainNumber(metrics.SuccessfulGeocodingNumber)
 	return Flat{
 		Source:      flat.Source,
 		OriginURL:   flat.OriginURL,

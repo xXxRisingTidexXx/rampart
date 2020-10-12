@@ -54,7 +54,7 @@ func (fetcher *Fetcher) FetchFlats(housing string) []Flat {
 	}
 	start := time.Now()
 	search, err := fetcher.getSearch(flag)
-	fetcher.drain.GatherFetchingDuration(start)
+	fetcher.drain.DrainDuration(metrics.FetchingDuration, start)
 	if err != nil {
 		fetcher.logger.Error(err)
 		return make([]Flat, 0)

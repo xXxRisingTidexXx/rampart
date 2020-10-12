@@ -60,10 +60,9 @@ func (validator *Validator) ValidateFlats(flats []Flat) []Flat {
 	return newFlats
 }
 
-//nolint:gocognit
 func (validator *Validator) validateFlat(flat Flat) bool {
 	if flat.RoomNumber == 0 {
-		validator.drain.GatherDeniedValidation()
+		validator.drain.DrainNumber(metrics.DeniedValidationNumber)
 		return false
 	}
 	specificArea := flat.TotalArea / float64(flat.RoomNumber)
@@ -88,13 +87,13 @@ func (validator *Validator) validateFlat(flat Flat) bool {
 		validator.minLatitude > flat.Point.Lat() ||
 		flat.Point.Y() > validator.maxLatitude ||
 		!flat.IsLocated() {
-		validator.drain.GatherDeniedValidation()
+		validator.drain.DrainNumber(metrics.DeniedValidationNumber)
 		return false
 	}
 	if flat.MediaCount < validator.minMediaCount {
-		validator.drain.GatherUninformativeValidation()
+		validator.drain.DrainNumber(metrics.UninformativeValidationNumber)
 		return false
 	}
-	validator.drain.GatherApprovedValidation()
+	validator.drain.DrainNumber(metrics.ApprovedValidationNumber)
 	return true
 }

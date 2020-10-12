@@ -45,6 +45,6 @@ func (miner *Miner) Run() {
 	flats = miner.gauger.GaugeFlats(flats)
 	flats = miner.validator.ValidateFlats(flats)
 	miner.storer.StoreFlats(flats)
-	miner.drain.GatherTotalDuration(start)
+	miner.drain.DrainDuration(metrics.TotalDuration, start)
 	miner.drain.Flush()
 }
