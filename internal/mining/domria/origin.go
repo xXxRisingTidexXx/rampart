@@ -5,7 +5,6 @@ import (
 )
 
 type origin struct {
-	id         int
 	updateTime time.Time
 	isFound    bool
 }

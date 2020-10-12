@@ -482,7 +482,8 @@ package domria_test
 //
 //func TestUnmarshalSearchLeadingZerosUpdatedAt(t *testing.T) {
 //	fetcher := newDefaultFetcher()
-//	flats, err := fetcher.unmarshalSearch(readAll(t, "leading_zeros_updated_at"), misc.HousingPrimary)
+//	flats, err := fetcher.unmarshalSearch(readAll(t, "leading_zeros_updated_at"),
+//	misc.HousingPrimary)
 //	if err != nil {
 //		t.Fatalf("domria: unexpected error, %v", err)
 //	}
@@ -519,7 +520,8 @@ package domria_test
 //
 //func TestUnmarshalSearchMissingShapesUpdatedAt(t *testing.T) {
 //	fetcher := newDefaultFetcher()
-//	flats, err := fetcher.unmarshalSearch(readAll(t, "missing_shapes_updated_at"), misc.HousingPrimary)
+//	flats, err := fetcher.unmarshalSearch(readAll(t, "missing_shapes_updated_at"),
+//	misc.HousingPrimary)
 //	if err == nil || err.Error() != "domria: fetcher failed to unmarshal "+
 //		"the search, domria: moment cannot split date, 2020- 07:53" {
 //		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -678,7 +680,8 @@ package domria_test
 //
 //func TestUnmarshalSearchWhitespacePricePriceArr(t *testing.T) {
 //	fetcher := newDefaultFetcher()
-//	flats, err := fetcher.unmarshalSearch(readAll(t, "whitespace_price_price_arr"), misc.HousingSecondary)
+//	flats, err := fetcher.unmarshalSearch(readAll(t, "whitespace_price_price_arr"),
+//	misc.HousingSecondary)
 //	if err == nil || err.Error() != "domria: fetcher failed to unmarshal th"+
 //		"e search, strconv.ParseFloat: parsing \"\": invalid syntax" {
 //		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -702,7 +705,8 @@ package domria_test
 //
 //func TestUnmarshalSearchNegativePricePriceArr(t *testing.T) {
 //	fetcher := newDefaultFetcher()
-//	flats, err := fetcher.unmarshalSearch(readAll(t, "negative_price_price_arr"), misc.HousingPrimary)
+//	flats, err := fetcher.unmarshalSearch(readAll(t, "negative_price_price_arr"),
+//	misc.HousingPrimary)
 //	if err != nil {
 //		t.Fatalf("domria: unexpected error, %v", err)
 //	}
@@ -739,7 +743,8 @@ package domria_test
 //
 //func TestUnmarshalSearchTrashTotalSquareMeters(t *testing.T) {
 //	fetcher := newDefaultFetcher()
-//	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_total_square_meters"), misc.HousingSecondary)
+//	flats, err := fetcher.unmarshalSearch(readAll(t, "trash_total_square_meters"),
+//	misc.HousingSecondary)
 //	if err == nil || err.Error() != "domria: fetcher failed to unmarshal the"+
 //		" search, invalid character '-' after object key:value pair" {
 //		t.Fatalf("domria: absent or invalid error, %v", err)
@@ -751,7 +756,8 @@ package domria_test
 //
 //func TestUnmarshalSearchSupremeKitchenSquareMeters(t *testing.T) {
 //	fetcher := newDefaultFetcher()
-//	flats, err := fetcher.unmarshalSearch(readAll(t, "supreme_kitchen_square_meters"), misc.HousingSecondary)
+//	flats, err := fetcher.unmarshalSearch(readAll(t, "supreme_kitchen_square_meters"),
+//	misc.HousingSecondary)
 //	if err != nil {
 //		t.Fatalf("domria: unexpected error, %v", err)
 //	}
@@ -910,7 +916,8 @@ package domria_test
 //		t,
 //		flats[0],
 //		&Flat{
-//			"realty-perevireno-prodaja-kvartira-hmelnitskiy-vyistavka-starokostyantinovskoe-shosse-16982542.html",
+//			"realty-perevireno-prodaja-kvartira-hmelnitskiy-vyistavka-starokos
+//			tyantinovskoe-shosse-16982542.html",
 //			"dom/photo/11243/1124301/112430139/112430139.jpg",
 //			time.Date(2020, time.June, 5, 22, 36, 29, 0, time.Local).UTC(),
 //			44000,
@@ -973,7 +980,8 @@ package domria_test
 //
 //func TestUnmarshalSearchEmptyStringCoordinates(t *testing.T) {
 //	fetcher := newDefaultFetcher()
-//	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_string_coordinates"), misc.HousingSecondary)
+//	flats, err := fetcher.unmarshalSearch(readAll(t, "empty_string_coordinates"),
+//	misc.HousingSecondary)
 //	if err != nil {
 //		t.Fatalf("domria: unexpected error, %v", err)
 //	}
