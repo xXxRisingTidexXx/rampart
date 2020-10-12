@@ -17,9 +17,9 @@ func NewFetcher(
 	drain *metrics.Drain,
 	logger log.FieldLogger,
 ) *Fetcher {
-	flags := make(map[string]string, len(config.Flags))
+	flags := make(map[misc.Housing]string, len(config.Flags))
 	for key, value := range config.Flags {
-		flags[string(key)] = value
+		flags[key] = value
 	}
 	return &Fetcher{
 		&http.Client{Timeout: config.Timeout},
@@ -37,14 +37,14 @@ type Fetcher struct {
 	client    *http.Client
 	page      int
 	portion   int
-	flags     map[string]string
+	flags     map[misc.Housing]string
 	headers   misc.Headers
 	searchURL string
 	drain     *metrics.Drain
 	logger    log.FieldLogger
 }
 
-func (fetcher *Fetcher) FetchFlats(housing string) []Flat {
+func (fetcher *Fetcher) FetchFlats(housing misc.Housing) []Flat {
 	flag, ok := fetcher.flags[housing]
 	if !ok {
 		fetcher.logger.WithField("housing", housing).Error(
@@ -97,7 +97,7 @@ func (fetcher *Fetcher) getSearch(flag string) (search, error) {
 	return s, nil
 }
 
-func (fetcher *Fetcher) getFlats(s search, housing string) []Flat {
+func (fetcher *Fetcher) getFlats(s search, housing misc.Housing) []Flat {
 	flats := make([]Flat, len(s.Items))
 	for j, i := range s.Items {
 		street := i.StreetNameUK

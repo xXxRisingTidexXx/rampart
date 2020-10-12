@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"time"
 )
 
@@ -15,7 +16,7 @@ func NewMiner(
 	logger log.FieldLogger,
 ) *Miner {
 	return &Miner{
-		string(config.Housing),
+		config.Housing,
 		NewFetcher(config.Fetcher, drain, logger),
 		NewSanitizer(config.Sanitizer, drain),
 		NewGeocoder(config.Geocoder, drain, logger),
@@ -27,7 +28,7 @@ func NewMiner(
 }
 
 type Miner struct {
-	housing   string
+	housing   misc.Housing
 	fetcher   *Fetcher
 	sanitizer *Sanitizer
 	geocoder  *Geocoder
