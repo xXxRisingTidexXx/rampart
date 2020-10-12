@@ -50,7 +50,7 @@ func (storer *Storer) storeFlat(flat Flat) error {
 		return err
 	}
 	message := "domria: storer failed to commit a transaction, %v"
-	if o.isFound {
+	if !o.isFound {
 		start := time.Now()
 		err = storer.createFlat(tx, flat)
 		storer.gatherer.GatherCreationDuration(start)
