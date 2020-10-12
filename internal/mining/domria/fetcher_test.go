@@ -190,8 +190,8 @@ package domria_test
 //	if expected == nil {
 //		t.Fatal("domria: empty expected")
 //	}
-//	if actual.OriginURL != expected.OriginURL {
-//		t.Errorf("domria: invalid origin url, %s != %s", actual.OriginURL, expected.OriginURL)
+//	if actual.URL != expected.URL {
+//		t.Errorf("domria: invalid url, %s != %s", actual.URL, expected.URL)
 //	}
 //	if actual.ImageURL != expected.ImageURL {
 //		t.Errorf("domria: invalid image url, %s != %s", actual.ImageURL, expected.ImageURL)

@@ -8,8 +8,7 @@ import (
 
 type Flat struct {
 	Source      string
-	OriginURL   string
-	ImageURL    string
+	URL         string
 	MediaCount  int
 	UpdateTime  time.Time
 	IsInspected bool

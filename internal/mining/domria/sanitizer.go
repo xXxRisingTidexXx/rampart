@@ -48,9 +48,9 @@ func (sanitizer *Sanitizer) SanitizeFlats(flats []Flat) []Flat {
 }
 
 func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
-	originURL := flat.OriginURL
-	if originURL != "" {
-		originURL = sanitizer.urlPrefix + originURL
+	url := flat.URL
+	if url != "" {
+		url = sanitizer.urlPrefix + url
 	}
 	state := strings.TrimSpace(flat.State)
 	if value, ok := sanitizer.stateMap[state]; ok {
@@ -92,8 +92,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	}
 	return Flat{
 		Source:      flat.Source,
-		OriginURL:   originURL,
-		ImageURL:    flat.ImageURL,
+		URL:         url,
 		MediaCount:  flat.MediaCount,
 		UpdateTime:  flat.UpdateTime,
 		IsInspected: flat.IsInspected,

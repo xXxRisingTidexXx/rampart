@@ -30,7 +30,7 @@ func (storer *Storer) StoreFlats(flats []Flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {
 			storer.logger.WithFields(
-				log.Fields{"source": flat.Source, "url": flat.OriginURL},
+				log.Fields{"source": flat.Source, "url": flat.URL},
 			).Error(err)
 			storer.drain.DrainNumber(metrics.FailedStoringNumber)
 		}
@@ -86,7 +86,7 @@ func (storer *Storer) storeFlat(flat Flat) error {
 }
 
 func (storer *Storer) readFlat(tx *sql.Tx, flat Flat) (origin, error) {
-	row := tx.QueryRow(`select update_time from flats where url = $1`, flat.OriginURL)
+	row := tx.QueryRow(`select update_time from flats where url = $1`, flat.URL)
 	o := origin{}
 	switch err := row.Scan(&o.updateTime); err {
 	case sql.ErrNoRows:
@@ -123,7 +123,7 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat Flat) error {
 		    izf = $20,
 		    gzf = $21
 		where url = $1`,
-		flat.OriginURL,
+		flat.URL,
 		flat.UpdateTime,
 		flat.Price,
 		flat.TotalArea,
@@ -164,7 +164,7 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat Flat) error {
 		    $1, $2, now() at time zone 'utc', $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 
 		    st_geomfromwkb($13, $14), $15, $16, $17, $18, $19, $20, $21
 		)`,
-		flat.OriginURL,
+		flat.URL,
 		flat.UpdateTime,
 		flat.Price,
 		flat.TotalArea,
