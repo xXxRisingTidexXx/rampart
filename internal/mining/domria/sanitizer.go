@@ -7,78 +7,72 @@ import (
 	"strings"
 )
 
-func NewSanitizer(config *config.Sanitizer, gatherer *metrics.Gatherer) *Sanitizer {
+func NewSanitizer(config config.Sanitizer, drain *metrics.Drain) *Sanitizer {
 	return &Sanitizer{
-		config.OriginURLPrefix,
-		config.ImageURLPrefix,
-		config.StateDictionary,
+		config.URLPrefix,
+		config.StateMap,
 		config.StateSuffix,
-		config.CityDictionary,
-		config.DistrictDictionary,
+		config.CityMap,
+		config.DistrictMap,
 		config.DistrictCitySwaps,
 		config.DistrictEnding,
 		config.DistrictSuffix,
 		strings.NewReplacer(config.StreetReplacements...),
 		strings.NewReplacer(config.HouseNumberReplacements...),
 		config.HouseNumberMaxLength,
-		gatherer,
+		drain,
 	}
 }
 
 type Sanitizer struct {
-	originURLPrefix      string
-	imageURLPrefix       string
-	stateDictionary      map[string]string
+	urlPrefix            string
+	stateMap             map[string]string
 	stateSuffix          string
-	cityDictionary       map[string]string
-	districtDictionary   map[string]string
-	districtCitySwaps    *misc.Set
+	cityMap              map[string]string
+	districtMap          map[string]string
+	districtCitySwaps    misc.Set
 	districtEnding       string
 	districtSuffix       string
 	streetReplacer       *strings.Replacer
 	houseNumberReplacer  *strings.Replacer
 	houseNumberMaxLength int
-	gatherer             *metrics.Gatherer
+	drain                *metrics.Drain
 }
 
-func (sanitizer *Sanitizer) SanitizeFlats(flats []*Flat) []*Flat {
-	newFlats := make([]*Flat, len(flats))
+func (sanitizer *Sanitizer) SanitizeFlats(flats []Flat) []Flat {
+	newFlats := make([]Flat, len(flats))
 	for i, flat := range flats {
 		newFlats[i] = sanitizer.sanitizeFlat(flat)
 	}
 	return newFlats
 }
 
-func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
+func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	originURL := flat.OriginURL
 	if originURL != "" {
-		originURL = sanitizer.originURLPrefix + originURL
-	}
-	imageURL := flat.ImageURL
-	if imageURL != "" {
-		imageURL = sanitizer.imageURLPrefix + imageURL
+		originURL = sanitizer.urlPrefix + originURL
 	}
 	state := strings.TrimSpace(flat.State)
-	if value, ok := sanitizer.stateDictionary[state]; ok {
+	if value, ok := sanitizer.stateMap[state]; ok {
 		state = value
-		sanitizer.gatherer.GatherStateSanitation()
+		sanitizer.drain.DrainNumber(metrics.StateSanitationNumber)
 	}
 	if state != "" {
 		state += sanitizer.stateSuffix
 	}
 	city := strings.TrimSpace(flat.City)
-	if value, ok := sanitizer.cityDictionary[city]; ok {
+	if value, ok := sanitizer.cityMap[city]; ok {
 		city = value
-		sanitizer.gatherer.GatherCitySanitation()
+		sanitizer.drain.DrainNumber(metrics.CitySanitationNumber)
 	}
 	district := strings.TrimSpace(flat.District)
-	if value, ok := sanitizer.districtDictionary[district]; ok {
+	if value, ok := sanitizer.districtMap[district]; ok {
 		district = value
-		sanitizer.gatherer.GatherDistrictSanitation()
+		sanitizer.drain.DrainNumber(metrics.DistrictSanitationNumber)
 	}
 	if sanitizer.districtCitySwaps.Contains(city) {
 		city, district = district, ""
-		sanitizer.gatherer.GatherSwapSanitation()
+		sanitizer.drain.DrainNumber(metrics.SwapSanitationNumber)
 	}
 	if strings.HasSuffix(district, sanitizer.districtEnding) {
 		district += sanitizer.districtSuffix
@@ -86,20 +80,20 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat *Flat) *Flat {
 	street, houseNumber := flat.Street, sanitizer.sanitizeHouseNumber(flat.HouseNumber)
 	if index := strings.Index(flat.Street, ","); index != -1 {
 		street = flat.Street[:index]
-		sanitizer.gatherer.GatherStreetSanitation()
+		sanitizer.drain.DrainNumber(metrics.StreetSanitationNumber)
 		extraNumber := sanitizer.sanitizeHouseNumber(flat.Street[index+1:])
 		if houseNumber == "" && extraNumber != "" && extraNumber[0] >= '0' && extraNumber[0] <= '9' {
 			houseNumber = extraNumber
-			sanitizer.gatherer.GatherHouseNumberSanitation()
+			sanitizer.drain.DrainNumber(metrics.HouseNumberSanitationNumber)
 		}
 	}
 	if runes := []rune(houseNumber); len(runes) > sanitizer.houseNumberMaxLength {
 		houseNumber = string(runes[:sanitizer.houseNumberMaxLength])
 	}
-	return &Flat{
+	return Flat{
 		Source:      flat.Source,
 		OriginURL:   originURL,
-		ImageURL:    imageURL,
+		ImageURL:    flat.ImageURL,
 		MediaCount:  flat.MediaCount,
 		UpdateTime:  flat.UpdateTime,
 		IsInspected: flat.IsInspected,

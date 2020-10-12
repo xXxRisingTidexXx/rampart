@@ -2,18 +2,17 @@ package domria
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 type item struct {
 	Source              string
 	BeautifulURL        string
 	MainPhoto           string
-	Photos              map[string]*photo
-	Panoramas           []*panorama
+	Photos              map[string]photo
+	Panoramas           []panorama
 	UpdatedAt           moment
 	Inspected           int
-	PriceArr            *prices
+	PriceArr            prices
 	TotalSquareMeters   float64
 	LivingSquareMeters  float64
 	KitchenSquareMeters float64
@@ -31,62 +30,33 @@ type item struct {
 	BuildingNumberStr   string
 }
 
-func (item *item) UnmarshalJSON(bytes []byte) error {
-	sourceless := sourcelessItem{}
-	if err := json.Unmarshal(bytes, &sourceless); err != nil {
+func (i *item) UnmarshalJSON(bytes []byte) error {
+	p := publication{}
+	if err := json.Unmarshal(bytes, &p); err != nil {
 		return err
 	}
-	item.Source = string(bytes)
-	item.BeautifulURL = sourceless.BeautifulURL
-	item.MainPhoto = sourceless.MainPhoto
-	item.Photos = sourceless.Photos
-	item.Panoramas = sourceless.Panoramas
-	item.UpdatedAt = sourceless.UpdatedAt
-	item.Inspected = sourceless.Inspected
-	item.PriceArr = sourceless.PriceArr
-	item.TotalSquareMeters = sourceless.TotalSquareMeters
-	item.LivingSquareMeters = sourceless.LivingSquareMeters
-	item.KitchenSquareMeters = sourceless.KitchenSquareMeters
-	item.RoomsCount = sourceless.RoomsCount
-	item.Floor = sourceless.Floor
-	item.FloorsCount = sourceless.FloorsCount
-	item.UserNewbuildNameUK = sourceless.UserNewbuildNameUK
-	item.Longitude = sourceless.Longitude
-	item.Latitude = sourceless.Latitude
-	item.StateNameUK = sourceless.StateNameUK
-	item.CityNameUK = sourceless.CityNameUK
-	item.DistrictNameUK = sourceless.DistrictNameUK
-	item.StreetNameUK = sourceless.StreetNameUK
-	item.StreetName = sourceless.StreetName
-	item.BuildingNumberStr = sourceless.BuildingNumberStr
+	i.Source = string(bytes)
+	i.BeautifulURL = p.BeautifulURL
+	i.MainPhoto = p.MainPhoto
+	i.Photos = p.Photos
+	i.Panoramas = p.Panoramas
+	i.UpdatedAt = p.UpdatedAt
+	i.Inspected = p.Inspected
+	i.PriceArr = p.PriceArr
+	i.TotalSquareMeters = p.TotalSquareMeters
+	i.LivingSquareMeters = p.LivingSquareMeters
+	i.KitchenSquareMeters = p.KitchenSquareMeters
+	i.RoomsCount = p.RoomsCount
+	i.Floor = p.Floor
+	i.FloorsCount = p.FloorsCount
+	i.UserNewbuildNameUK = p.UserNewbuildNameUK
+	i.Longitude = p.Longitude
+	i.Latitude = p.Latitude
+	i.StateNameUK = p.StateNameUK
+	i.CityNameUK = p.CityNameUK
+	i.DistrictNameUK = p.DistrictNameUK
+	i.StreetNameUK = p.StreetNameUK
+	i.StreetName = p.StreetName
+	i.BuildingNumberStr = p.BuildingNumberStr
 	return nil
-}
-
-func (item *item) String() string {
-	return fmt.Sprintf(
-		"{%s %s %v %v %s %d %v %.1f %.1f %.1f %d %d %d %s %.6f %.6f %s %s %s %s %s %s %s}",
-		item.BeautifulURL,
-		item.MainPhoto,
-		item.Photos,
-		item.Panoramas,
-		item.UpdatedAt,
-		item.Inspected,
-		item.PriceArr,
-		item.TotalSquareMeters,
-		item.LivingSquareMeters,
-		item.KitchenSquareMeters,
-		item.RoomsCount,
-		item.Floor,
-		item.FloorsCount,
-		item.UserNewbuildNameUK,
-		item.Longitude,
-		item.Latitude,
-		item.StateNameUK,
-		item.CityNameUK,
-		item.DistrictNameUK,
-		item.StreetNameUK,
-		item.StreetName,
-		item.BuildingNumberStr,
-		item.Source,
-	)
 }

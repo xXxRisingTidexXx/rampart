@@ -6,7 +6,7 @@ import (
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geo"
 	"github.com/paulmach/orb/geojson"
-	gosm "github.com/paulmach/osm"
+	"github.com/paulmach/osm"
 	"github.com/paulmach/osm/osmgeojson"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger log.FieldLogger) *Gauger {
+func NewGauger(config config.Gauger, drain *metrics.Drain, logger log.FieldLogger) *Gauger {
 	return &Gauger{
 		&http.Client{Timeout: config.Timeout},
 		config.Headers,
@@ -36,7 +36,7 @@ func NewGauger(config *config.Gauger, gatherer *metrics.Gatherer, logger log.Fie
 		config.GZFMinArea,
 		config.GZFMinDistance,
 		config.GZFModifier,
-		gatherer,
+		drain,
 		logger,
 	}
 }
@@ -58,14 +58,14 @@ type Gauger struct {
 	gzfMinArea      float64
 	gzfMinDistance  float64
 	gzfModifier     float64
-	gatherer        *metrics.Gatherer
+	drain           *metrics.Drain
 	logger          log.FieldLogger
 }
 
-func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
-	newFlats := make([]*Flat, len(flats))
+func (gauger *Gauger) GaugeFlats(flats []Flat) []Flat {
+	newFlats := make([]Flat, len(flats))
 	for i, flat := range flats {
-		newFlats[i] = &Flat{
+		newFlats[i] = Flat{
 			Source:      flat.Source,
 			OriginURL:   flat.OriginURL,
 			ImageURL:    flat.ImageURL,
@@ -95,9 +95,9 @@ func (gauger *Gauger) GaugeFlats(flats []*Flat) []*Flat {
 	return newFlats
 }
 
-func (gauger *Gauger) gaugeSSF(flat *Flat) float64 {
+func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 	if !gauger.subwayCities.Contains(flat.City) {
-		gauger.gatherer.GatherSubwaylessSSFGauging()
+		gauger.drain.DrainNumber(metrics.SubwaylessSSFGaugingNumber)
 		return 0
 	}
 	start := time.Now()
@@ -107,11 +107,11 @@ func (gauger *Gauger) gaugeSSF(flat *Flat) float64 {
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
-	gauger.gatherer.GatherSSFGaugingDuration(start)
+	gauger.drain.DrainDuration(metrics.SSFGaugingDuration, start)
 	if err != nil {
-		gauger.gatherer.GatherFailedSSFGauging()
+		gauger.drain.DrainNumber(metrics.FailedSSFGaugingNumber)
 		gauger.logger.WithFields(
-			log.Fields{"source": flat.Source, "origin_url": flat.OriginURL, "feature": "ssf"},
+			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "ssf"},
 		).Error(err)
 		return 0
 	}
@@ -123,14 +123,17 @@ func (gauger *Gauger) gaugeSSF(flat *Flat) float64 {
 		}
 	}
 	if ssf == 0 {
-		gauger.gatherer.GatherInconclusiveSSFGauging()
+		gauger.drain.DrainNumber(metrics.InconclusiveSSFGaugingNumber)
 		return 0
 	}
-	gauger.gatherer.GatherSuccessfulSSFGauging()
+	gauger.drain.DrainNumber(metrics.SuccessfulSSFGaugingNumber)
 	return ssf * gauger.ssfModifier
 }
 
-func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.FeatureCollection, error) {
+func (gauger *Gauger) query(
+	query string,
+	params ...interface{},
+) (*geojson.FeatureCollection, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf(gauger.interpreterURL, gourl.QueryEscape(fmt.Sprintf(query, params...))),
@@ -148,15 +151,15 @@ func (gauger *Gauger) query(query string, params ...interface{}) (*geojson.Featu
 		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: gauger got response with status %s", response.Status)
 	}
-	osm := gosm.OSM{}
-	if err := xml.NewDecoder(response.Body).Decode(&osm); err != nil {
+	o := osm.OSM{}
+	if err := xml.NewDecoder(response.Body).Decode(&o); err != nil {
 		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: gauger failed to unmarshal the xml, %v", err)
 	}
 	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to close the response body, %v", err)
 	}
-	collection, err := osmgeojson.Convert(&osm, osmgeojson.NoMeta(true))
+	collection, err := osmgeojson.Convert(&o, osmgeojson.NoMeta(true))
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to convert from osm to geojson, %v", err)
 	}
@@ -218,8 +221,8 @@ func (gauger *Gauger) gaugeGeoDistance(geometry orb.Geometry, point orb.Point) f
 	}
 }
 
-func (gauger *Gauger) isLower(distance1, distance2 float64) bool {
-	return distance1 < distance2 || distance2 == gauger.unknownDistance && distance2 < distance1
+func (gauger *Gauger) isLower(d1, d2 float64) bool {
+	return d1 < d2 || d2 == gauger.unknownDistance && d2 < d1
 }
 
 func (gauger *Gauger) gaugeGeoDistanceToPoints(points []orb.Point, point orb.Point) float64 {
@@ -233,7 +236,7 @@ func (gauger *Gauger) gaugeGeoDistanceToPoints(points []orb.Point, point orb.Poi
 	return distance
 }
 
-func (gauger *Gauger) gaugeIZF(flat *Flat) float64 {
+func (gauger *Gauger) gaugeIZF(flat Flat) float64 {
 	start := time.Now()
 	collection, err := gauger.query(
 		`(
@@ -250,11 +253,11 @@ func (gauger *Gauger) gaugeIZF(flat *Flat) float64 {
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
-	gauger.gatherer.GatherIZFGaugingDuration(start)
+	gauger.drain.DrainDuration(metrics.IZFGaugingDuration, start)
 	if err != nil {
-		gauger.gatherer.GatherFailedIZFGauging()
+		gauger.drain.DrainNumber(metrics.FailedIZFGaugingNumber)
 		gauger.logger.WithFields(
-			log.Fields{"source": flat.Source, "origin_url": flat.OriginURL, "feature": "izf"},
+			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "izf"},
 		).Error(err)
 		return 0
 	}
@@ -268,14 +271,14 @@ func (gauger *Gauger) gaugeIZF(flat *Flat) float64 {
 		}
 	}
 	if izf == 0 {
-		gauger.gatherer.GatherInconclusiveIZFGauging()
+		gauger.drain.DrainNumber(metrics.InconclusiveIZFGaugingNumber)
 		return 0
 	}
-	gauger.gatherer.GatherSuccessfulIZFGauging()
+	gauger.drain.DrainNumber(metrics.SuccessfulIZFGaugingNumber)
 	return izf * gauger.izfModifier
 }
 
-func (gauger *Gauger) gaugeGZF(flat *Flat) float64 {
+func (gauger *Gauger) gaugeGZF(flat Flat) float64 {
 	start := time.Now()
 	collection, err := gauger.query(
 		`(
@@ -292,11 +295,11 @@ func (gauger *Gauger) gaugeGZF(flat *Flat) float64 {
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
-	gauger.gatherer.GatherGZFGaugingDuration(start)
+	gauger.drain.DrainDuration(metrics.GZFGaugingDuration, start)
 	if err != nil {
-		gauger.gatherer.GatherFailedGZFGauging()
+		gauger.drain.DrainNumber(metrics.FailedGZFGaugingNumber)
 		gauger.logger.WithFields(
-			log.Fields{"source": flat.Source, "origin_url": flat.OriginURL, "feature": "gzf"},
+			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "gzf"},
 		).Error(err)
 		return 0
 	}
@@ -310,9 +313,9 @@ func (gauger *Gauger) gaugeGZF(flat *Flat) float64 {
 		}
 	}
 	if gzf == 0 {
-		gauger.gatherer.GatherInconclusiveGZFGauging()
+		gauger.drain.DrainNumber(metrics.InconclusiveGZFGaugingNumber)
 		return 0
 	}
-	gauger.gatherer.GatherSuccessfulGZFGauging()
+	gauger.drain.DrainNumber(metrics.SuccessfulGZFGaugingNumber)
 	return gzf * gauger.gzfModifier
 }

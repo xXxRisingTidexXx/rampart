@@ -11,47 +11,49 @@ import (
 )
 
 func NewStorer(
-	config *config.Storer,
+	config config.Storer,
 	db *sql.DB,
-	gatherer *metrics.Gatherer,
+	drain *metrics.Drain,
 	logger log.FieldLogger,
 ) *Storer {
-	return &Storer{config.SRID, db, gatherer, logger}
+	return &Storer{config.SRID, db, drain, logger}
 }
 
 type Storer struct {
-	srid     int
-	db       *sql.DB
-	gatherer *metrics.Gatherer
-	logger   log.FieldLogger
+	srid   int
+	db     *sql.DB
+	drain  *metrics.Drain
+	logger log.FieldLogger
 }
 
-func (storer *Storer) StoreFlats(flats []*Flat) {
+func (storer *Storer) StoreFlats(flats []Flat) {
 	for _, flat := range flats {
 		if err := storer.storeFlat(flat); err != nil {
-			storer.logger.WithFields(log.Fields{"source": flat.Source, "url": flat.OriginURL}).Error(err)
-			storer.gatherer.GatherFailedStoring()
+			storer.logger.WithFields(
+				log.Fields{"source": flat.Source, "url": flat.OriginURL},
+			).Error(err)
+			storer.drain.DrainNumber(metrics.FailedStoringNumber)
 		}
 	}
 }
 
-func (storer *Storer) storeFlat(flat *Flat) error {
+func (storer *Storer) storeFlat(flat Flat) error {
 	tx, err := storer.db.Begin()
 	if err != nil {
 		return fmt.Errorf("domria: storer failed to begin a transaction, %v", err)
 	}
 	start := time.Now()
-	origin, err := storer.readFlat(tx, flat)
-	storer.gatherer.GatherReadingDuration(start)
+	o, err := storer.readFlat(tx, flat)
+	storer.drain.DrainDuration(metrics.ReadingDuration, start)
 	if err != nil {
 		_ = tx.Rollback()
 		return err
 	}
 	message := "domria: storer failed to commit a transaction, %v"
-	if origin == nil {
+	if !o.isFound {
 		start := time.Now()
 		err = storer.createFlat(tx, flat)
-		storer.gatherer.GatherCreationDuration(start)
+		storer.drain.DrainDuration(metrics.CreationDuration, start)
 		if err != nil {
 			_ = tx.Rollback()
 			return err
@@ -59,13 +61,13 @@ func (storer *Storer) storeFlat(flat *Flat) error {
 		if err = tx.Commit(); err != nil {
 			return fmt.Errorf(message, err)
 		}
-		storer.gatherer.GatherCreatedStoring()
+		storer.drain.DrainNumber(metrics.CreatedStoringNumber)
 		return nil
 	}
-	if flat.UpdateTime.After(origin.updateTime) {
+	if flat.UpdateTime.After(o.updateTime) {
 		start := time.Now()
 		err = storer.updateFlat(tx, flat)
-		storer.gatherer.GatherUpdateDuration(start)
+		storer.drain.DrainDuration(metrics.UpdateDuration, start)
 		if err != nil {
 			_ = tx.Rollback()
 			return err
@@ -73,30 +75,31 @@ func (storer *Storer) storeFlat(flat *Flat) error {
 		if err = tx.Commit(); err != nil {
 			return fmt.Errorf(message, err)
 		}
-		storer.gatherer.GatherUpdatedStoring()
+		storer.drain.DrainNumber(metrics.UpdatedStoringNumber)
 		return nil
 	}
 	if err = tx.Commit(); err != nil {
 		return fmt.Errorf(message, err)
 	}
-	storer.gatherer.GatherUnalteredStoring()
+	storer.drain.DrainNumber(metrics.UnalteredStoringNumber)
 	return nil
 }
 
-func (storer *Storer) readFlat(tx *sql.Tx, flat *Flat) (*origin, error) {
+func (storer *Storer) readFlat(tx *sql.Tx, flat Flat) (origin, error) {
 	row := tx.QueryRow(`select update_time from flats where origin_url = $1`, flat.OriginURL)
-	origin := origin{}
-	switch err := row.Scan(&origin.updateTime); err {
+	o := origin{}
+	switch err := row.Scan(&o.updateTime); err {
 	case sql.ErrNoRows:
-		return nil, nil
+		return o, nil
 	case nil:
-		return &origin, nil
+		o.isFound = true
+		return o, nil
 	default:
-		return nil, fmt.Errorf("domria: storer failed to read the flat, %v", err)
+		return o, fmt.Errorf("domria: storer failed to read the flat, %v", err)
 	}
 }
 
-func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
+func (storer *Storer) updateFlat(tx *sql.Tx, flat Flat) error {
 	_, err := tx.Exec(
 		`update flats 
 		set image_url = $2,
@@ -131,7 +134,7 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 		flat.RoomNumber,
 		flat.Floor,
 		flat.TotalFloor,
-		flat.Housing,
+		flat.Housing.String(),
 		flat.Complex,
 		wkb.Value(flat.Point),
 		storer.srid,
@@ -150,13 +153,13 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat *Flat) error {
 	return nil
 }
 
-func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
+func (storer *Storer) createFlat(tx *sql.Tx, flat Flat) error {
 	_, err := tx.Exec(
 		`insert into flats
         (
-         	origin_url, image_url, update_time, parsing_time, price, total_area, living_area, kitchen_area,
-            room_number, floor, total_floor, housing, complex, point, state, city, district, street,
-            house_number, ssf, izf, gzf
+         	origin_url, image_url, update_time, parsing_time, price, total_area, living_area,
+            kitchen_area, room_number, floor, total_floor, housing, complex, point, state, city,
+            district, street, house_number, ssf, izf, gzf
         )
         values 
 		(
@@ -173,7 +176,7 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat *Flat) error {
 		flat.RoomNumber,
 		flat.Floor,
 		flat.TotalFloor,
-		flat.Housing,
+		flat.Housing.String(),
 		flat.Complex,
 		wkb.Value(flat.Point),
 		storer.srid,

@@ -14,12 +14,9 @@ import (
 
 // TODO: shorten url column widths to 256.
 // TODO: separate image table & origin_url -> url.
-// TODO: replace config & flat passed types with values.
 // TODO: relative city center distance feature (with city diameter).
 // TODO: distance to workplace feature.
-// TODO: floor factor, f: floor, tf: total floor; ff = tf / (tf - f + 1).
-// TODO: price factor, ap: actual price, up: utmost price; pf = e ^ (1 - ap / up).
-// TODO: filter by "sale_date".
+// TODO: shorten house number column (but research the actual width before).
 func main() {
 	isDebug := flag.Bool("debug", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
@@ -43,18 +40,18 @@ func main() {
 		_ = db.Close()
 		entry.Fatalf("main: mining failed to ping the db, %v", err)
 	}
-	gatherer := metrics.NewGatherer(*alias, db)
+	drain := metrics.NewDrain(*alias, db, entry)
 	jobs := map[string]gocron.Job{
 		cfg.Mining.DomriaPrimaryMiner.Name(): domria.NewMiner(
 			cfg.Mining.DomriaPrimaryMiner,
 			db,
-			gatherer,
+			drain,
 			entry,
 		),
 		cfg.Mining.DomriaSecondaryMiner.Name(): domria.NewMiner(
 			cfg.Mining.DomriaSecondaryMiner,
 			db,
-			gatherer,
+			drain,
 			entry,
 		),
 	}

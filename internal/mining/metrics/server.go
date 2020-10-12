@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func RunServer(config *config.Server, logger log.FieldLogger) {
+func RunServer(config config.Server, logger log.FieldLogger) {
 	server := &http.Server{
 		Addr:           config.Address,
 		ReadTimeout:    config.ReadTimeout,

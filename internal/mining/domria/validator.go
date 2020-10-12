@@ -5,8 +5,8 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 )
 
-// TODO: try to filter out outdated publications.
-func NewValidator(config *config.Validator, gatherer *metrics.Gatherer) *Validator {
+// TODO: filter by "sale_date".
+func NewValidator(config config.Validator, drain *metrics.Drain) *Validator {
 	return &Validator{
 		config.MinMediaCount,
 		config.MinPrice,
@@ -25,7 +25,7 @@ func NewValidator(config *config.Validator, gatherer *metrics.Gatherer) *Validat
 		config.MaxLongitude,
 		config.MinLatitude,
 		config.MaxLatitude,
-		gatherer,
+		drain,
 	}
 }
 
@@ -47,11 +47,11 @@ type Validator struct {
 	maxLongitude    float64
 	minLatitude     float64
 	maxLatitude     float64
-	gatherer        *metrics.Gatherer
+	drain           *metrics.Drain
 }
 
-func (validator *Validator) ValidateFlats(flats []*Flat) []*Flat {
-	newFlats := make([]*Flat, 0, len(flats))
+func (validator *Validator) ValidateFlats(flats []Flat) []Flat {
+	newFlats := make([]Flat, 0, len(flats))
 	for _, flat := range flats {
 		if validator.validateFlat(flat) {
 			newFlats = append(newFlats, flat)
@@ -60,10 +60,9 @@ func (validator *Validator) ValidateFlats(flats []*Flat) []*Flat {
 	return newFlats
 }
 
-//nolint:gocognit
-func (validator *Validator) validateFlat(flat *Flat) bool {
+func (validator *Validator) validateFlat(flat Flat) bool {
 	if flat.RoomNumber == 0 {
-		validator.gatherer.GatherDeniedValidation()
+		validator.drain.DrainNumber(metrics.DeniedValidationNumber)
 		return false
 	}
 	specificArea := flat.TotalArea / float64(flat.RoomNumber)
@@ -88,13 +87,13 @@ func (validator *Validator) validateFlat(flat *Flat) bool {
 		validator.minLatitude > flat.Point.Lat() ||
 		flat.Point.Y() > validator.maxLatitude ||
 		!flat.IsLocated() {
-		validator.gatherer.GatherDeniedValidation()
+		validator.drain.DrainNumber(metrics.DeniedValidationNumber)
 		return false
 	}
 	if flat.MediaCount < validator.minMediaCount {
-		validator.gatherer.GatherUninformativeValidation()
+		validator.drain.DrainNumber(metrics.UninformativeValidationNumber)
 		return false
 	}
-	validator.gatherer.GatherApprovedValidation()
+	validator.drain.DrainNumber(metrics.ApprovedValidationNumber)
 	return true
 }

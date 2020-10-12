@@ -14,13 +14,17 @@ import (
 )
 
 // TODO: try to remove district from search to increase lookup.
-func NewGeocoder(config *config.Geocoder, gatherer *metrics.Gatherer, logger log.FieldLogger) *Geocoder {
+func NewGeocoder(
+	config config.Geocoder,
+	drain *metrics.Drain,
+	logger log.FieldLogger,
+) *Geocoder {
 	return &Geocoder{
 		&http.Client{Timeout: config.Timeout},
 		config.Headers,
 		config.StatelessCities,
 		config.SearchURL,
-		gatherer,
+		drain,
 		logger,
 	}
 }
@@ -30,43 +34,45 @@ type Geocoder struct {
 	headers         misc.Headers
 	statelessCities misc.Set
 	searchURL       string
-	gatherer        *metrics.Gatherer
+	drain           *metrics.Drain
 	logger          log.FieldLogger
 }
 
-func (geocoder *Geocoder) GeocodeFlats(flats []*Flat) []*Flat {
-	newFlats := make([]*Flat, 0, len(flats))
+func (geocoder *Geocoder) GeocodeFlats(flats []Flat) []Flat {
+	newFlats := make([]Flat, 0, len(flats))
 	for _, flat := range flats {
-		if newFlat := geocoder.geocodeFlat(flat); newFlat != nil {
+		if newFlat, ok := geocoder.geocodeFlat(flat); ok {
 			newFlats = append(newFlats, newFlat)
 		}
 	}
 	return newFlats
 }
 
-func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
+func (geocoder *Geocoder) geocodeFlat(flat Flat) (Flat, bool) {
 	if flat.IsInspected && flat.IsLocated() {
-		geocoder.gatherer.GatherLocatedGeocoding()
-		return flat
+		geocoder.drain.DrainNumber(metrics.LocatedGeocodingNumber)
+		return flat, true
 	}
 	if !flat.IsAddressable() {
-		geocoder.gatherer.GatherUnlocatedGeocoding()
-		return nil
+		geocoder.drain.DrainNumber(metrics.UnlocatedGeocodingNumber)
+		return Flat{}, false
 	}
 	start := time.Now()
 	positions, err := geocoder.getPositions(flat)
-	geocoder.gatherer.GatherGeocodingDuration(start)
+	geocoder.drain.DrainDuration(metrics.GeocodingDuration, start)
 	if err != nil {
-		geocoder.logger.WithFields(log.Fields{"source": flat.Source, "url": flat.OriginURL}).Error(err)
-		geocoder.gatherer.GatherFailedGeocoding()
-		return nil
+		geocoder.logger.WithFields(
+			log.Fields{"source": flat.Source, "url": flat.OriginURL},
+		).Error(err)
+		geocoder.drain.DrainNumber(metrics.FailedGeocodingNumber)
+		return Flat{}, false
 	}
 	if len(positions) == 0 {
-		geocoder.gatherer.GatherInconclusiveGeocoding()
-		return nil
+		geocoder.drain.DrainNumber(metrics.InconclusiveGeocodingNumber)
+		return Flat{}, false
 	}
-	geocoder.gatherer.GatherSuccessfulGeocoding()
-	return &Flat{
+	geocoder.drain.DrainNumber(metrics.SuccessfulGeocodingNumber)
+	return Flat{
 		Source:      flat.Source,
 		OriginURL:   flat.OriginURL,
 		ImageURL:    flat.ImageURL,
@@ -88,23 +94,23 @@ func (geocoder *Geocoder) geocodeFlat(flat *Flat) *Flat {
 		District:    flat.District,
 		Street:      flat.Street,
 		HouseNumber: flat.HouseNumber,
-	}
+	}, true
 }
 
-func (geocoder *Geocoder) getPositions(flat *Flat) ([]*position, error) {
-	whitespace, plus, state := " ", "+", ""
+func (geocoder *Geocoder) getPositions(flat Flat) ([]position, error) {
+	state := ""
 	if !geocoder.statelessCities.Contains(flat.City) {
-		state = strings.ReplaceAll(flat.State, whitespace, plus)
+		state = strings.ReplaceAll(flat.State, " ", "+")
 	}
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf(
 			geocoder.searchURL,
 			state,
-			strings.ReplaceAll(flat.City, whitespace, plus),
-			strings.ReplaceAll(flat.District, whitespace, plus),
-			strings.ReplaceAll(flat.Street, whitespace, plus),
-			strings.ReplaceAll(flat.HouseNumber, whitespace, plus),
+			strings.ReplaceAll(flat.City, " ", "+"),
+			strings.ReplaceAll(flat.District, " ", "+"),
+			strings.ReplaceAll(flat.Street, " ", "+"),
+			strings.ReplaceAll(flat.HouseNumber, " ", "+"),
 		),
 		nil,
 	)
@@ -120,7 +126,7 @@ func (geocoder *Geocoder) getPositions(flat *Flat) ([]*position, error) {
 		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: geocoder got response with status %s", response.Status)
 	}
-	positions := make([]*position, 0)
+	positions := make([]position, 0)
 	if err = json.NewDecoder(response.Body).Decode(&positions); err != nil {
 		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: fetcher failed to unmarshal the positions, %v", err)
