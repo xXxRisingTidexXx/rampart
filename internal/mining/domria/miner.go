@@ -51,7 +51,5 @@ func (miner *Miner) Run() {
 	flats = miner.validator.ValidateFlats(flats)
 	miner.storer.StoreFlats(flats)
 	miner.drain.GatherTotalDuration(start)
-	if err := miner.drain.Flush(); err != nil {
-		miner.logger.Error(err)
-	}
+	miner.drain.Flush()
 }
