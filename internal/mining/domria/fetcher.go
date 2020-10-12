@@ -48,7 +48,7 @@ func (fetcher *Fetcher) FetchFlats(housing string) []Flat {
 	flag, ok := fetcher.flags[housing]
 	if !ok {
 		fetcher.logger.WithField("housing", housing).Error(
-			"domria: fetcher doesn't accept housing",
+			"domria: fetcher doesn't accept the housing",
 		)
 		return make([]Flat, 0)
 	}

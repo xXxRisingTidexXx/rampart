@@ -31,7 +31,7 @@ func (drain *Drain) DrainNumber(number Number) {
 		drain.numbers[number]++
 	} else {
 		drain.logger.WithField("number", number).Errorf(
-			"metrics: drain failed to drain the number",
+			"metrics: drain doesn't accept the number",
 		)
 	}
 }
@@ -41,7 +41,7 @@ func (drain *Drain) DrainDuration(duration Duration, start time.Time) {
 		b.span(start)
 	} else {
 		drain.logger.WithField("duration", duration).Errorf(
-			"metrics: drain failed to drain the duration",
+			"metrics: drain doesn't accept the duration",
 		)
 	}
 }
