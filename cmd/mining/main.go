@@ -39,18 +39,18 @@ func main() {
 		_ = db.Close()
 		entry.Fatalf("main: mining failed to ping the db, %v", err)
 	}
-	gatherer := metrics.NewGatherer(*alias, db)
+	drain := metrics.NewDrain(*alias, db)
 	jobs := map[string]gocron.Job{
 		cfg.Mining.DomriaPrimaryMiner.Name(): domria.NewMiner(
 			cfg.Mining.DomriaPrimaryMiner,
 			db,
-			gatherer,
+			drain,
 			entry,
 		),
 		cfg.Mining.DomriaSecondaryMiner.Name(): domria.NewMiner(
 			cfg.Mining.DomriaSecondaryMiner,
 			db,
-			gatherer,
+			drain,
 			entry,
 		),
 	}

@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-func NewGauger(config config.Gauger, gatherer *metrics.Gatherer, logger log.FieldLogger) *Gauger {
+func NewGauger(config config.Gauger, drain *metrics.Drain, logger log.FieldLogger) *Gauger {
 	return &Gauger{
 		&http.Client{Timeout: config.Timeout},
 		config.Headers,
@@ -36,7 +36,7 @@ func NewGauger(config config.Gauger, gatherer *metrics.Gatherer, logger log.Fiel
 		config.GZFMinArea,
 		config.GZFMinDistance,
 		config.GZFModifier,
-		gatherer,
+		drain,
 		logger,
 	}
 }
@@ -58,7 +58,7 @@ type Gauger struct {
 	gzfMinArea      float64
 	gzfMinDistance  float64
 	gzfModifier     float64
-	gatherer        *metrics.Gatherer
+	drain           *metrics.Drain
 	logger          log.FieldLogger
 }
 
@@ -97,7 +97,7 @@ func (gauger *Gauger) GaugeFlats(flats []Flat) []Flat {
 
 func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 	if !gauger.subwayCities.Contains(flat.City) {
-		gauger.gatherer.GatherSubwaylessSSFGauging()
+		gauger.drain.GatherSubwaylessSSFGauging()
 		return 0
 	}
 	start := time.Now()
@@ -107,9 +107,9 @@ func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
-	gauger.gatherer.GatherSSFGaugingDuration(start)
+	gauger.drain.GatherSSFGaugingDuration(start)
 	if err != nil {
-		gauger.gatherer.GatherFailedSSFGauging()
+		gauger.drain.GatherFailedSSFGauging()
 		gauger.logger.WithFields(
 			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "ssf"},
 		).Error(err)
@@ -123,10 +123,10 @@ func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 		}
 	}
 	if ssf == 0 {
-		gauger.gatherer.GatherInconclusiveSSFGauging()
+		gauger.drain.GatherInconclusiveSSFGauging()
 		return 0
 	}
-	gauger.gatherer.GatherSuccessfulSSFGauging()
+	gauger.drain.GatherSuccessfulSSFGauging()
 	return ssf * gauger.ssfModifier
 }
 
@@ -253,9 +253,9 @@ func (gauger *Gauger) gaugeIZF(flat Flat) float64 {
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
-	gauger.gatherer.GatherIZFGaugingDuration(start)
+	gauger.drain.GatherIZFGaugingDuration(start)
 	if err != nil {
-		gauger.gatherer.GatherFailedIZFGauging()
+		gauger.drain.GatherFailedIZFGauging()
 		gauger.logger.WithFields(
 			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "izf"},
 		).Error(err)
@@ -271,10 +271,10 @@ func (gauger *Gauger) gaugeIZF(flat Flat) float64 {
 		}
 	}
 	if izf == 0 {
-		gauger.gatherer.GatherInconclusiveIZFGauging()
+		gauger.drain.GatherInconclusiveIZFGauging()
 		return 0
 	}
-	gauger.gatherer.GatherSuccessfulIZFGauging()
+	gauger.drain.GatherSuccessfulIZFGauging()
 	return izf * gauger.izfModifier
 }
 
@@ -295,9 +295,9 @@ func (gauger *Gauger) gaugeGZF(flat Flat) float64 {
 		flat.Point.Lat(),
 		flat.Point.Lon(),
 	)
-	gauger.gatherer.GatherGZFGaugingDuration(start)
+	gauger.drain.GatherGZFGaugingDuration(start)
 	if err != nil {
-		gauger.gatherer.GatherFailedGZFGauging()
+		gauger.drain.GatherFailedGZFGauging()
 		gauger.logger.WithFields(
 			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "gzf"},
 		).Error(err)
@@ -313,9 +313,9 @@ func (gauger *Gauger) gaugeGZF(flat Flat) float64 {
 		}
 	}
 	if gzf == 0 {
-		gauger.gatherer.GatherInconclusiveGZFGauging()
+		gauger.drain.GatherInconclusiveGZFGauging()
 		return 0
 	}
-	gauger.gatherer.GatherSuccessfulGZFGauging()
+	gauger.drain.GatherSuccessfulGZFGauging()
 	return gzf * gauger.gzfModifier
 }

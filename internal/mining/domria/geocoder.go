@@ -16,7 +16,7 @@ import (
 // TODO: try to remove district from search to increase lookup.
 func NewGeocoder(
 	config config.Geocoder,
-	gatherer *metrics.Gatherer,
+	drain *metrics.Drain,
 	logger log.FieldLogger,
 ) *Geocoder {
 	return &Geocoder{
@@ -24,7 +24,7 @@ func NewGeocoder(
 		config.Headers,
 		config.StatelessCities,
 		config.SearchURL,
-		gatherer,
+		drain,
 		logger,
 	}
 }
@@ -34,7 +34,7 @@ type Geocoder struct {
 	headers         misc.Headers
 	statelessCities misc.Set
 	searchURL       string
-	gatherer        *metrics.Gatherer
+	drain           *metrics.Drain
 	logger          log.FieldLogger
 }
 
@@ -50,28 +50,28 @@ func (geocoder *Geocoder) GeocodeFlats(flats []Flat) []Flat {
 
 func (geocoder *Geocoder) geocodeFlat(flat Flat) (Flat, bool) {
 	if flat.IsInspected && flat.IsLocated() {
-		geocoder.gatherer.GatherLocatedGeocoding()
+		geocoder.drain.GatherLocatedGeocoding()
 		return flat, true
 	}
 	if !flat.IsAddressable() {
-		geocoder.gatherer.GatherUnlocatedGeocoding()
+		geocoder.drain.GatherUnlocatedGeocoding()
 		return Flat{}, false
 	}
 	start := time.Now()
 	positions, err := geocoder.getPositions(flat)
-	geocoder.gatherer.GatherGeocodingDuration(start)
+	geocoder.drain.GatherGeocodingDuration(start)
 	if err != nil {
 		geocoder.logger.WithFields(
 			log.Fields{"source": flat.Source, "url": flat.OriginURL},
 		).Error(err)
-		geocoder.gatherer.GatherFailedGeocoding()
+		geocoder.drain.GatherFailedGeocoding()
 		return Flat{}, false
 	}
 	if len(positions) == 0 {
-		geocoder.gatherer.GatherInconclusiveGeocoding()
+		geocoder.drain.GatherInconclusiveGeocoding()
 		return Flat{}, false
 	}
-	geocoder.gatherer.GatherSuccessfulGeocoding()
+	geocoder.drain.GatherSuccessfulGeocoding()
 	return Flat{
 		Source:      flat.Source,
 		OriginURL:   flat.OriginURL,

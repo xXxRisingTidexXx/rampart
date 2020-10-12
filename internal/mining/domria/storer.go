@@ -13,17 +13,17 @@ import (
 func NewStorer(
 	config config.Storer,
 	db *sql.DB,
-	gatherer *metrics.Gatherer,
+	drain *metrics.Drain,
 	logger log.FieldLogger,
 ) *Storer {
-	return &Storer{config.SRID, db, gatherer, logger}
+	return &Storer{config.SRID, db, drain, logger}
 }
 
 type Storer struct {
-	srid     int
-	db       *sql.DB
-	gatherer *metrics.Gatherer
-	logger   log.FieldLogger
+	srid   int
+	db     *sql.DB
+	drain  *metrics.Drain
+	logger log.FieldLogger
 }
 
 func (storer *Storer) StoreFlats(flats []Flat) {
@@ -32,7 +32,7 @@ func (storer *Storer) StoreFlats(flats []Flat) {
 			storer.logger.WithFields(
 				log.Fields{"source": flat.Source, "url": flat.OriginURL},
 			).Error(err)
-			storer.gatherer.GatherFailedStoring()
+			storer.drain.GatherFailedStoring()
 		}
 	}
 }
@@ -44,7 +44,7 @@ func (storer *Storer) storeFlat(flat Flat) error {
 	}
 	start := time.Now()
 	o, err := storer.readFlat(tx, flat)
-	storer.gatherer.GatherReadingDuration(start)
+	storer.drain.GatherReadingDuration(start)
 	if err != nil {
 		_ = tx.Rollback()
 		return err
@@ -53,7 +53,7 @@ func (storer *Storer) storeFlat(flat Flat) error {
 	if !o.isFound {
 		start := time.Now()
 		err = storer.createFlat(tx, flat)
-		storer.gatherer.GatherCreationDuration(start)
+		storer.drain.GatherCreationDuration(start)
 		if err != nil {
 			_ = tx.Rollback()
 			return err
@@ -61,13 +61,13 @@ func (storer *Storer) storeFlat(flat Flat) error {
 		if err = tx.Commit(); err != nil {
 			return fmt.Errorf(message, err)
 		}
-		storer.gatherer.GatherCreatedStoring()
+		storer.drain.GatherCreatedStoring()
 		return nil
 	}
 	if flat.UpdateTime.After(o.updateTime) {
 		start := time.Now()
 		err = storer.updateFlat(tx, flat)
-		storer.gatherer.GatherUpdateDuration(start)
+		storer.drain.GatherUpdateDuration(start)
 		if err != nil {
 			_ = tx.Rollback()
 			return err
@@ -75,13 +75,13 @@ func (storer *Storer) storeFlat(flat Flat) error {
 		if err = tx.Commit(); err != nil {
 			return fmt.Errorf(message, err)
 		}
-		storer.gatherer.GatherUpdatedStoring()
+		storer.drain.GatherUpdatedStoring()
 		return nil
 	}
 	if err = tx.Commit(); err != nil {
 		return fmt.Errorf(message, err)
 	}
-	storer.gatherer.GatherUnalteredStoring()
+	storer.drain.GatherUnalteredStoring()
 	return nil
 }
 

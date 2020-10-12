@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func NewSanitizer(config config.Sanitizer, gatherer *metrics.Gatherer) *Sanitizer {
+func NewSanitizer(config config.Sanitizer, drain *metrics.Drain) *Sanitizer {
 	return &Sanitizer{
 		config.URLPrefix,
 		config.StateMap,
@@ -20,7 +20,7 @@ func NewSanitizer(config config.Sanitizer, gatherer *metrics.Gatherer) *Sanitize
 		strings.NewReplacer(config.StreetReplacements...),
 		strings.NewReplacer(config.HouseNumberReplacements...),
 		config.HouseNumberMaxLength,
-		gatherer,
+		drain,
 	}
 }
 
@@ -36,7 +36,7 @@ type Sanitizer struct {
 	streetReplacer       *strings.Replacer
 	houseNumberReplacer  *strings.Replacer
 	houseNumberMaxLength int
-	gatherer             *metrics.Gatherer
+	drain                *metrics.Drain
 }
 
 func (sanitizer *Sanitizer) SanitizeFlats(flats []Flat) []Flat {
@@ -55,7 +55,7 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	state := strings.TrimSpace(flat.State)
 	if value, ok := sanitizer.stateMap[state]; ok {
 		state = value
-		sanitizer.gatherer.GatherStateSanitation()
+		sanitizer.drain.GatherStateSanitation()
 	}
 	if state != "" {
 		state += sanitizer.stateSuffix
@@ -63,16 +63,16 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	city := strings.TrimSpace(flat.City)
 	if value, ok := sanitizer.cityMap[city]; ok {
 		city = value
-		sanitizer.gatherer.GatherCitySanitation()
+		sanitizer.drain.GatherCitySanitation()
 	}
 	district := strings.TrimSpace(flat.District)
 	if value, ok := sanitizer.districtMap[district]; ok {
 		district = value
-		sanitizer.gatherer.GatherDistrictSanitation()
+		sanitizer.drain.GatherDistrictSanitation()
 	}
 	if sanitizer.districtCitySwaps.Contains(city) {
 		city, district = district, ""
-		sanitizer.gatherer.GatherSwapSanitation()
+		sanitizer.drain.GatherSwapSanitation()
 	}
 	if strings.HasSuffix(district, sanitizer.districtEnding) {
 		district += sanitizer.districtSuffix
@@ -80,11 +80,11 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	street, houseNumber := flat.Street, sanitizer.sanitizeHouseNumber(flat.HouseNumber)
 	if index := strings.Index(flat.Street, ","); index != -1 {
 		street = flat.Street[:index]
-		sanitizer.gatherer.GatherStreetSanitation()
+		sanitizer.drain.GatherStreetSanitation()
 		extraNumber := sanitizer.sanitizeHouseNumber(flat.Street[index+1:])
 		if houseNumber == "" && extraNumber != "" && extraNumber[0] >= '0' && extraNumber[0] <= '9' {
 			houseNumber = extraNumber
-			sanitizer.gatherer.GatherHouseNumberSanitation()
+			sanitizer.drain.GatherHouseNumberSanitation()
 		}
 	}
 	if runes := []rune(houseNumber); len(runes) > sanitizer.houseNumberMaxLength {

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func NewFetcher(config config.Fetcher, gatherer *metrics.Gatherer) *Fetcher {
+func NewFetcher(config config.Fetcher, drain *metrics.Drain) *Fetcher {
 	flags := make(map[string]string, len(config.Flags))
 	for key, value := range config.Flags {
 		flags[string(key)] = value
@@ -23,7 +23,7 @@ func NewFetcher(config config.Fetcher, gatherer *metrics.Gatherer) *Fetcher {
 		flags,
 		config.Headers,
 		config.SearchURL,
-		gatherer,
+		drain,
 	}
 }
 
@@ -34,7 +34,7 @@ type Fetcher struct {
 	flags     map[string]string
 	headers   misc.Headers
 	searchURL string
-	gatherer  *metrics.Gatherer
+	drain     *metrics.Drain
 }
 
 func (fetcher *Fetcher) FetchFlats(housing string) ([]Flat, error) {
@@ -44,7 +44,7 @@ func (fetcher *Fetcher) FetchFlats(housing string) ([]Flat, error) {
 	}
 	start := time.Now()
 	search, err := fetcher.getSearch(flag)
-	fetcher.gatherer.GatherFetchingDuration(start)
+	fetcher.drain.GatherFetchingDuration(start)
 	if err != nil {
 		return nil, err
 	}

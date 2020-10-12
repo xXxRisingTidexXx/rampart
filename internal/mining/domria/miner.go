@@ -11,18 +11,18 @@ import (
 func NewMiner(
 	config config.DomriaMiner,
 	db *sql.DB,
-	gatherer *metrics.Gatherer,
+	drain *metrics.Drain,
 	logger log.FieldLogger,
 ) *Miner {
 	return &Miner{
 		string(config.Housing),
-		NewFetcher(config.Fetcher, gatherer),
-		NewSanitizer(config.Sanitizer, gatherer),
-		NewGeocoder(config.Geocoder, gatherer, logger),
-		NewGauger(config.Gauger, gatherer, logger),
-		NewValidator(config.Validator, gatherer),
-		NewStorer(config.Storer, db, gatherer, logger),
-		gatherer,
+		NewFetcher(config.Fetcher, drain),
+		NewSanitizer(config.Sanitizer, drain),
+		NewGeocoder(config.Geocoder, drain, logger),
+		NewGauger(config.Gauger, drain, logger),
+		NewValidator(config.Validator, drain),
+		NewStorer(config.Storer, db, drain, logger),
+		drain,
 		logger,
 	}
 }
@@ -35,7 +35,7 @@ type Miner struct {
 	gauger    *Gauger
 	validator *Validator
 	storer    *Storer
-	gatherer  *metrics.Gatherer
+	drain     *metrics.Drain
 	logger    log.FieldLogger
 }
 
@@ -50,8 +50,8 @@ func (miner *Miner) Run() {
 	flats = miner.gauger.GaugeFlats(flats)
 	flats = miner.validator.ValidateFlats(flats)
 	miner.storer.StoreFlats(flats)
-	miner.gatherer.GatherTotalDuration(start)
-	if err := miner.gatherer.Flush(); err != nil {
+	miner.drain.GatherTotalDuration(start)
+	if err := miner.drain.Flush(); err != nil {
 		miner.logger.Error(err)
 	}
 }

@@ -6,7 +6,7 @@ import (
 )
 
 // TODO: filter by "sale_date".
-func NewValidator(config config.Validator, gatherer *metrics.Gatherer) *Validator {
+func NewValidator(config config.Validator, drain *metrics.Drain) *Validator {
 	return &Validator{
 		config.MinMediaCount,
 		config.MinPrice,
@@ -25,7 +25,7 @@ func NewValidator(config config.Validator, gatherer *metrics.Gatherer) *Validato
 		config.MaxLongitude,
 		config.MinLatitude,
 		config.MaxLatitude,
-		gatherer,
+		drain,
 	}
 }
 
@@ -47,7 +47,7 @@ type Validator struct {
 	maxLongitude    float64
 	minLatitude     float64
 	maxLatitude     float64
-	gatherer        *metrics.Gatherer
+	drain           *metrics.Drain
 }
 
 func (validator *Validator) ValidateFlats(flats []Flat) []Flat {
@@ -63,7 +63,7 @@ func (validator *Validator) ValidateFlats(flats []Flat) []Flat {
 //nolint:gocognit
 func (validator *Validator) validateFlat(flat Flat) bool {
 	if flat.RoomNumber == 0 {
-		validator.gatherer.GatherDeniedValidation()
+		validator.drain.GatherDeniedValidation()
 		return false
 	}
 	specificArea := flat.TotalArea / float64(flat.RoomNumber)
@@ -88,13 +88,13 @@ func (validator *Validator) validateFlat(flat Flat) bool {
 		validator.minLatitude > flat.Point.Lat() ||
 		flat.Point.Y() > validator.maxLatitude ||
 		!flat.IsLocated() {
-		validator.gatherer.GatherDeniedValidation()
+		validator.drain.GatherDeniedValidation()
 		return false
 	}
 	if flat.MediaCount < validator.minMediaCount {
-		validator.gatherer.GatherUninformativeValidation()
+		validator.drain.GatherUninformativeValidation()
 		return false
 	}
-	validator.gatherer.GatherApprovedValidation()
+	validator.drain.GatherApprovedValidation()
 	return true
 }
