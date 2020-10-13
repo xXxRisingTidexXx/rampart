@@ -4,7 +4,7 @@ mining:
       User-Agent: rampart-mining-bot/1.0.0
     fetcher:
       timeout: 40s
-      portion: 5
+      portion: 100
       flags:
         primary: newbuildings=1
         secondary: secondary=1
