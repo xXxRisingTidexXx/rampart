@@ -2,7 +2,6 @@ package domria
 
 type publication struct {
 	BeautifulURL        string           `json:"beautiful_url"`
-	MainPhoto           string           `json:"main_photo"`
 	Photos              map[string]photo `json:"photos"`
 	Panoramas           []panorama       `json:"panoramas"`
 	UpdatedAt           moment           `json:"updated_at"`

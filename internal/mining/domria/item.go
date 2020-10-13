@@ -7,7 +7,6 @@ import (
 type item struct {
 	Source              string
 	BeautifulURL        string
-	MainPhoto           string
 	Photos              map[string]photo
 	Panoramas           []panorama
 	UpdatedAt           moment
@@ -37,7 +36,6 @@ func (i *item) UnmarshalJSON(bytes []byte) error {
 	}
 	i.Source = string(bytes)
 	i.BeautifulURL = p.BeautifulURL
-	i.MainPhoto = p.MainPhoto
 	i.Photos = p.Photos
 	i.Panoramas = p.Panoramas
 	i.UpdatedAt = p.UpdatedAt

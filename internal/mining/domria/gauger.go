@@ -67,8 +67,7 @@ func (gauger *Gauger) GaugeFlats(flats []Flat) []Flat {
 	for i, flat := range flats {
 		newFlats[i] = Flat{
 			Source:      flat.Source,
-			OriginURL:   flat.OriginURL,
-			ImageURL:    flat.ImageURL,
+			URL:         flat.URL,
 			MediaCount:  flat.MediaCount,
 			UpdateTime:  flat.UpdateTime,
 			IsInspected: flat.IsInspected,
@@ -111,7 +110,7 @@ func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedSSFGaugingNumber)
 		gauger.logger.WithFields(
-			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "ssf"},
+			log.Fields{"source": flat.Source, "url": flat.URL, "feature": "ssf"},
 		).Error(err)
 		return 0
 	}
@@ -257,7 +256,7 @@ func (gauger *Gauger) gaugeIZF(flat Flat) float64 {
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedIZFGaugingNumber)
 		gauger.logger.WithFields(
-			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "izf"},
+			log.Fields{"source": flat.Source, "url": flat.URL, "feature": "izf"},
 		).Error(err)
 		return 0
 	}
@@ -299,7 +298,7 @@ func (gauger *Gauger) gaugeGZF(flat Flat) float64 {
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedGZFGaugingNumber)
 		gauger.logger.WithFields(
-			log.Fields{"source": flat.Source, "url": flat.OriginURL, "feature": "gzf"},
+			log.Fields{"source": flat.Source, "url": flat.URL, "feature": "gzf"},
 		).Error(err)
 		return 0
 	}

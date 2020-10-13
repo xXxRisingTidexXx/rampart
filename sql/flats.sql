@@ -44,25 +44,25 @@ group by city, district
 order by flat_count desc;
 
 -- Reflect the closest to subway stations flats.
-select origin_url, concat(st_y(point), ',', st_x(point)) as point, ssf
+select url, concat(st_y(point), ',', st_x(point)) as point, ssf
 from flats
 order by ssf desc
 limit 30;
 
 -- View the furthest to industrial zones flats.
-select origin_url, concat(st_y(point), ',', st_x(point)) as point, izf
+select url, concat(st_y(point), ',', st_x(point)) as point, izf
 from flats
 order by izf
 limit 30;
 
 -- Print the closest to industrial zones flats;
-select origin_url, concat(st_y(point), ',', st_x(point)) as point, izf
+select url, concat(st_y(point), ',', st_x(point)) as point, izf
 from flats
 order by izf desc
 limit 30;
 
 -- Discover the closest to parks apartments.
-select origin_url, concat(st_y(point), ',', st_x(point)) as point, gzf
+select url, concat(st_y(point), ',', st_x(point)) as point, gzf
 from flats
 order by gzf desc
 limit 30;
