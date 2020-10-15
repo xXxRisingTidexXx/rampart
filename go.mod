@@ -1,6 +1,6 @@
 module github.com/xXxRisingTidexXx/rampart
 
-go 1.14
+go 1.15
 
 require (
 	github.com/Syfaro/telegram-bot-api v4.6.4+incompatible
