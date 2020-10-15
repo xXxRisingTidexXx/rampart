@@ -26,6 +26,7 @@ const (
 	SuccessfulGZFGaugingNumber
 	ApprovedValidationNumber
 	UninformativeValidationNumber
+	SoldValidationNumber
 	DeniedValidationNumber
 	CreatedStoringNumber
 	UpdatedStoringNumber
@@ -57,6 +58,7 @@ var numberViews = map[Number]string{
 	SuccessfulGZFGaugingNumber:    "successful gzf gauging",
 	ApprovedValidationNumber:      "approved validation",
 	UninformativeValidationNumber: "uninformative validation",
+	SoldValidationNumber:          "sold validation",
 	DeniedValidationNumber:        "denied validation",
 	CreatedStoringNumber:          "created storing",
 	UpdatedStoringNumber:          "updated storing",
