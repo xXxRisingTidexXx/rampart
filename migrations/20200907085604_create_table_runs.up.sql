@@ -26,6 +26,7 @@ create table if not exists runs
     successful_gzf_gauging_number   smallint           not null check ( 0 <= successful_gzf_gauging_number ),
     approved_validation_number      smallint           not null check ( 0 <= approved_validation_number ),
     uninformative_validation_number smallint           not null check ( 0 <= uninformative_validation_number ),
+    sold_validation_number          smallint           not null check ( 0 <= sold_validation_number ),
     denied_validation_number        smallint           not null check ( 0 <= denied_validation_number ),
     created_storing_number          smallint           not null check ( 0 <= created_storing_number ),
     updated_storing_number          smallint           not null check ( 0 <= updated_storing_number ),

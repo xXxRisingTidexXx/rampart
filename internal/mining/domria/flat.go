@@ -11,6 +11,7 @@ type Flat struct {
 	URL         string
 	MediaCount  int
 	UpdateTime  time.Time
+	IsSold      bool
 	IsInspected bool
 	Price       float64
 	TotalArea   float64

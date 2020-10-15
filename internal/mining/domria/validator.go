@@ -5,7 +5,6 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 )
 
-// TODO: filter by "sale_date".
 func NewValidator(config config.Validator, drain *metrics.Drain) *Validator {
 	return &Validator{
 		config.MinMediaCount,
@@ -92,6 +91,10 @@ func (validator *Validator) validateFlat(flat Flat) bool {
 	}
 	if flat.MediaCount < validator.minMediaCount {
 		validator.drain.DrainNumber(metrics.UninformativeValidationNumber)
+		return false
+	}
+	if flat.IsSold {
+		validator.drain.DrainNumber(metrics.SoldValidationNumber)
 		return false
 	}
 	validator.drain.DrainNumber(metrics.ApprovedValidationNumber)

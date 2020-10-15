@@ -13,6 +13,7 @@ import (
 	"time"
 )
 
+// TODO: add new search endpoint at https://locationiq.com/ .
 func NewGeocoder(
 	config config.Geocoder,
 	drain *metrics.Drain,
