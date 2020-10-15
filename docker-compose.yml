@@ -44,21 +44,21 @@ services:
   mining:
     <<: *x-backend
     container_name: rampart-mining
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -debug -miner domria-primary
+    command: go run ${RAMPART_MODULE}/cmd/mining -debug -miner domria-primary
   tgbot:
     <<: *x-backend
     container_name: rampart-tgbot
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/tgbot -debug
+    command: go run ${RAMPART_MODULE}/cmd/tgbot -debug
   mining-domria-primary:
     <<: *x-backend
     container_name: rampart-mining-domria-primary
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-primary
+    command: go run ${RAMPART_MODULE}/cmd/mining -miner domria-primary
     ports:
       - 9001:9001
   mining-domria-secondary:
     <<: *x-backend
     container_name: rampart-mining-domria-secondary
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-secondary
+    command: go run ${RAMPART_MODULE}/cmd/mining -miner domria-secondary
     ports:
       - 9002:9002
   checks:
@@ -77,7 +77,7 @@ services:
   test:
     <<: *x-checks
     container_name: rampart-test
-    command: richgo test github.com/xXxRisingTidexXx/rampart/internal/mining/domria
+    command: richgo test ${RAMPART_MODULE}/internal/mining/domria ${RAMPART_MODULE}/internal/mining/metrics
   notebook:
     build:
       context: .

@@ -1,4 +1,6 @@
 shell: bash
+env:
+  RAMPART_MODULE: github.com/xXxRisingTidexXx/rampart
 commands:
   build:
     description: Construct/renovate all local docker images
