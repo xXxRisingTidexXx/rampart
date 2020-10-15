@@ -1,6 +1,28 @@
 package domria_test
 
-//
+// TODO: invalid flag; no request.
+// TODO: timeout; no response.
+// TODO: 502; any response.
+// TODO: 200; empty response.
+// TODO: 200; invalid JSON.
+// TODO: 200; empty items.
+// TODO: 200; ordinary flat.
+// TODO: 200; flat without beautiful url.
+// TODO: 200; sold flat.
+// TODO: 200; inspected flat.
+// TODO: 200; flat without coordinates.
+// TODO: 200; flat with string coordinates.
+// TODO: 200; flat without USD price.
+// TODO: 200; flat with invalid date/time.
+// TODO: 200; flat with 13 month in the update date.
+// TODO: 200; flat with negative floor.
+// TODO: 200; flat without kitchen & living areas.
+// TODO: 200; flat with just RU street.
+// TODO: 200; flat with joined street & house number.
+// TODO: 200; flat with terrible chars in city and/or district.
+// TODO: 200; flat without media.
+// TODO: 200; flat with just latitude, flat with equal total & living & kitchen areas, some flat.
+// TODO: 200, 200, 200; page reset (some flats - no flats - the same flats).
 //import (
 //	"fmt"
 //	"github.com/paulmach/orb"
@@ -182,7 +204,6 @@ package domria_test
 //	return bytes
 //}
 //
-//// TODO: add "source" assertion.
 //func testFlat(t *testing.T, actual *Flat, expected *Flat) {
 //	if actual == nil {
 //		t.Fatal("domria: empty actual")
