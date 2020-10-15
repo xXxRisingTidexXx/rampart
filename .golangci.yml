@@ -6,6 +6,9 @@ linters-settings:
     line-length: 100
   gocognit:
     min-complexity: 45
+  gocritic:
+    disabled-checks:
+      - commentFormatting
 linters:
   enable-all: true
   disable:

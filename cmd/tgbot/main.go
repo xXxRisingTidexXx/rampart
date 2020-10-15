@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	tgbotapi "github.com/Syfaro/telegram-bot-api"
+	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
