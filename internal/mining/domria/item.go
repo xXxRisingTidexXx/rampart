@@ -10,6 +10,7 @@ type item struct {
 	Photos              map[string]photo
 	Panoramas           []panorama
 	UpdatedAt           moment
+	SaleDate            string
 	Inspected           int
 	PriceArr            prices
 	TotalSquareMeters   float64
@@ -39,6 +40,7 @@ func (i *item) UnmarshalJSON(bytes []byte) error {
 	i.Photos = p.Photos
 	i.Panoramas = p.Panoramas
 	i.UpdatedAt = p.UpdatedAt
+	i.SaleDate = p.SaleDate
 	i.Inspected = p.Inspected
 	i.PriceArr = p.PriceArr
 	i.TotalSquareMeters = p.TotalSquareMeters

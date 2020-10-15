@@ -5,6 +5,7 @@ type publication struct {
 	Photos              map[string]photo `json:"photos"`
 	Panoramas           []panorama       `json:"panoramas"`
 	UpdatedAt           moment           `json:"updated_at"`
+	SaleDate            string           `json:"sale_date"`
 	Inspected           int              `json:"inspected"`
 	PriceArr            prices           `json:"priceArr"`
 	TotalSquareMeters   float64          `json:"total_square_meters"`
