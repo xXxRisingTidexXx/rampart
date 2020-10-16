@@ -89,7 +89,7 @@ func (validator *Validator) validateFlat(flat Flat) bool {
 		validator.drain.DrainNumber(metrics.DeniedValidationNumber)
 		return false
 	}
-	if flat.MediaCount() < validator.minImageCount {
+	if len(flat.Images) < validator.minImageCount {
 		validator.drain.DrainNumber(metrics.UninformativeValidationNumber)
 		return false
 	}
