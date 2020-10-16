@@ -155,7 +155,7 @@ mining:
       gzf-min-distance: 20
       gzf-modifier: 0.001
     validator:
-      min-media-count: 5
+      min-image-count: 4
       min-price: 1
       min-total-area: 12
       max-total-area: 560

@@ -1,7 +1,7 @@
 package config
 
 type Validator struct {
-	MinMediaCount   int     `yaml:"min-media-count"`
+	MinImageCount   int     `yaml:"min-image-count"`
 	MinPrice        float64 `yaml:"min-price"`
 	MinTotalArea    float64 `yaml:"min-total-area"`
 	MaxTotalArea    float64 `yaml:"max-total-area"`

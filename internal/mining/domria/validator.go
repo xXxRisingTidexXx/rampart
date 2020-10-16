@@ -7,7 +7,7 @@ import (
 
 func NewValidator(config config.Validator, drain *metrics.Drain) *Validator {
 	return &Validator{
-		config.MinMediaCount,
+		config.MinImageCount,
 		config.MinPrice,
 		config.MinTotalArea,
 		config.MaxTotalArea,
