@@ -29,7 +29,7 @@ func NewValidator(config config.Validator, drain *metrics.Drain) *Validator {
 }
 
 type Validator struct {
-	minMediaCount   int
+	minImageCount   int
 	minPrice        float64
 	minTotalArea    float64
 	maxTotalArea    float64
@@ -84,12 +84,12 @@ func (validator *Validator) validateFlat(flat Flat) bool {
 		validator.minLongitude > flat.Point.Lon() ||
 		flat.Point.Lon() > validator.maxLongitude ||
 		validator.minLatitude > flat.Point.Lat() ||
-		flat.Point.Y() > validator.maxLatitude ||
+		flat.Point.Lat() > validator.maxLatitude ||
 		!flat.IsLocated() {
 		validator.drain.DrainNumber(metrics.DeniedValidationNumber)
 		return false
 	}
-	if flat.MediaCount() < validator.minMediaCount {
+	if flat.MediaCount() < validator.minImageCount {
 		validator.drain.DrainNumber(metrics.UninformativeValidationNumber)
 		return false
 	}
