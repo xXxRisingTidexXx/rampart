@@ -98,7 +98,7 @@ func (fetcher *Fetcher) getSearch(flag string) (search, error) {
 }
 
 func (fetcher *Fetcher) getFlats(s search, housing misc.Housing) []Flat {
-	flats := make([]Flat, 0, len(s.Items))
+	flats := make([]Flat, len(s.Items))
 	for j, i := range s.Items {
 		photos := make([]string, 0, len(i.Photos))
 		for id := range i.Photos {
