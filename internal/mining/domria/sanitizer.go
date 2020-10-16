@@ -2,13 +2,18 @@ package domria
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"strings"
 )
 
-func NewSanitizer(config config.Sanitizer, drain *metrics.Drain) *Sanitizer {
+func NewSanitizer(
+	config config.Sanitizer,
+	drain *metrics.Drain,
+	logger log.FieldLogger,
+) *Sanitizer {
 	return &Sanitizer{
 		config.URLPrefix,
 		config.PhotoFormat,
@@ -25,6 +30,7 @@ func NewSanitizer(config config.Sanitizer, drain *metrics.Drain) *Sanitizer {
 		strings.NewReplacer(config.HouseNumberReplacements...),
 		config.HouseNumberMaxLength,
 		drain,
+		logger,
 	}
 }
 
@@ -44,6 +50,7 @@ type Sanitizer struct {
 	houseNumberReplacer  *strings.Replacer
 	houseNumberMaxLength int
 	drain                *metrics.Drain
+	logger               log.FieldLogger
 }
 
 func (sanitizer *Sanitizer) SanitizeFlats(flats []Flat) []Flat {
@@ -58,18 +65,35 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	url := flat.URL
 	if url != "" {
 		url = sanitizer.urlPrefix + url
+	} else {
+		sanitizer.logger.WithField("source", flat.Source).Warning(
+			"domria: sanitizer found flat without url",
+		)
 	}
-	photos := make([]string, 0)
+	images, slug := make([]Image, 0), ""
 	if index := strings.LastIndex(flat.URL, "-"); index != -1 {
-		slug := flat.URL[:index]
-		for _, p := range flat.Photos {
-			photos = append(photos, fmt.Sprintf(sanitizer.photoFormat, slug, p))
-		}
+		slug = flat.URL[:index]
+	} else {
+		sanitizer.logger.WithField("source", flat.Source).Warning(
+			"domria: sanitizer found flat without a dash in url",
+		)
 	}
-	panoramas := make([]string, len(flat.Panoramas))
-	for i, p := range flat.Panoramas {
-		panoramas[i] = sanitizer.panoramaPrefix +
-			strings.ReplaceAll(p, ".jpg", sanitizer.panoramaSuffix)
+	for _, image := range flat.Images {
+		if image.Kind == PanoramaKind {
+			images = append(
+				images,
+				Image{
+					URL: sanitizer.panoramaPrefix +
+						strings.ReplaceAll(image.URL, ".jpg", sanitizer.panoramaSuffix),
+					Kind: PanoramaKind,
+				},
+			)
+		} else if image.Kind == PhotoKind && slug != "" {
+			images = append(
+				images,
+				Image{URL: fmt.Sprintf(sanitizer.photoFormat, slug, image.URL), Kind: PhotoKind},
+			)
+		}
 	}
 	state := strings.TrimSpace(flat.State)
 	if value, ok := sanitizer.stateMap[state]; ok {
@@ -111,9 +135,8 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	}
 	return Flat{
 		Source:      flat.Source,
-		Photos:      photos,
-		Panoramas:   panoramas,
 		URL:         url,
+		Images:      images,
 		UpdateTime:  flat.UpdateTime,
 		IsInspected: flat.IsInspected,
 		Price:       flat.Price,

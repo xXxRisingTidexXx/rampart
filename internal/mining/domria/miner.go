@@ -18,7 +18,7 @@ func NewMiner(
 	return &Miner{
 		config.Housing,
 		NewFetcher(config.Fetcher, drain, logger),
-		NewSanitizer(config.Sanitizer, drain),
+		NewSanitizer(config.Sanitizer, drain, logger),
 		NewGeocoder(config.Geocoder, drain, logger),
 		NewGauger(config.Gauger, drain, logger),
 		NewValidator(config.Validator, drain),
