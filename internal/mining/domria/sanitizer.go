@@ -67,33 +67,24 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 		url = sanitizer.urlPrefix + url
 	} else {
 		sanitizer.logger.WithField("source", flat.Source).Warning(
-			"domria: sanitizer found flat without url",
+			"domria: sanitizer found a flat without an url",
 		)
 	}
-	images, slug := make([]Image, 0), ""
+	photos := make([]string, 0)
 	if index := strings.LastIndex(flat.URL, "-"); index != -1 {
-		slug = flat.URL[:index]
-	} else {
+		slug := flat.URL[:index]
+		for _, p := range flat.Photos {
+			photos = append(photos, fmt.Sprintf(sanitizer.photoFormat, slug, p))
+		}
+	} else if flat.URL != "" {
 		sanitizer.logger.WithField("source", flat.Source).Warning(
-			"domria: sanitizer found flat without a dash in url",
+			"domria: sanitizer found a flat without a dash in the url",
 		)
 	}
-	for _, image := range flat.Images {
-		if image.Kind == PanoramaKind {
-			images = append(
-				images,
-				Image{
-					URL: sanitizer.panoramaPrefix +
-						strings.ReplaceAll(image.URL, ".jpg", sanitizer.panoramaSuffix),
-					Kind: PanoramaKind,
-				},
-			)
-		} else if image.Kind == PhotoKind && slug != "" {
-			images = append(
-				images,
-				Image{URL: fmt.Sprintf(sanitizer.photoFormat, slug, image.URL), Kind: PhotoKind},
-			)
-		}
+	panoramas := make([]string, len(flat.Panoramas))
+	for i, p := range flat.Panoramas {
+		panoramas[i] = sanitizer.panoramaPrefix +
+			strings.ReplaceAll(p, ".jpg", sanitizer.panoramaSuffix)
 	}
 	state := strings.TrimSpace(flat.State)
 	if value, ok := sanitizer.stateMap[state]; ok {
@@ -125,7 +116,10 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 		street = flat.Street[:index]
 		sanitizer.drain.DrainNumber(metrics.StreetSanitationNumber)
 		extraNumber := sanitizer.sanitizeHouseNumber(flat.Street[index+1:])
-		if houseNumber == "" && extraNumber != "" && extraNumber[0] >= '0' && extraNumber[0] <= '9' {
+		if houseNumber == "" &&
+			extraNumber != "" &&
+			extraNumber[0] >= '0' &&
+			extraNumber[0] <= '9' {
 			houseNumber = extraNumber
 			sanitizer.drain.DrainNumber(metrics.HouseNumberSanitationNumber)
 		}
@@ -136,7 +130,8 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	return Flat{
 		Source:      flat.Source,
 		URL:         url,
-		Images:      images,
+		Photos:      photos,
+		Panoramas:   panoramas,
 		UpdateTime:  flat.UpdateTime,
 		IsInspected: flat.IsInspected,
 		Price:       flat.Price,

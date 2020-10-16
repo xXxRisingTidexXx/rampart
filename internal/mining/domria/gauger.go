@@ -68,7 +68,8 @@ func (gauger *Gauger) GaugeFlats(flats []Flat) []Flat {
 		newFlats[i] = Flat{
 			Source:      flat.Source,
 			URL:         flat.URL,
-			Images:      flat.Images,
+			Photos:      flat.Photos,
+			Panoramas:   flat.Panoramas,
 			UpdateTime:  flat.UpdateTime,
 			IsInspected: flat.IsInspected,
 			Price:       flat.Price,
