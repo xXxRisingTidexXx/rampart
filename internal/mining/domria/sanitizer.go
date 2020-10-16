@@ -1,6 +1,7 @@
 package domria
 
 import (
+	"fmt"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
@@ -56,6 +57,17 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	if url != "" {
 		url = sanitizer.urlPrefix + url
 	}
+	photos := make([]string, 0)
+	if index := strings.LastIndex(flat.URL, "-"); index != -1 {
+		slug := flat.URL[:index]
+		for _, p := range flat.Photos {
+			photos = append(photos, fmt.Sprintf(sanitizer.photoFormat, slug, p))
+		}
+	}
+	panoramas := make([]string, len(flat.Panoramas))
+	for i, p := range flat.Panoramas {
+		panoramas[i] = sanitizer.panoramaPrefix + p
+	}
 	state := strings.TrimSpace(flat.State)
 	if value, ok := sanitizer.stateMap[state]; ok {
 		state = value
@@ -96,6 +108,8 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	}
 	return Flat{
 		Source:      flat.Source,
+		Photos:      photos,
+		Panoramas:   panoramas,
 		URL:         url,
 		UpdateTime:  flat.UpdateTime,
 		IsInspected: flat.IsInspected,
