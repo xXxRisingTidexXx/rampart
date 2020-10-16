@@ -98,8 +98,16 @@ func (fetcher *Fetcher) getSearch(flag string) (search, error) {
 }
 
 func (fetcher *Fetcher) getFlats(s search, housing misc.Housing) []Flat {
-	flats := make([]Flat, len(s.Items))
+	flats := make([]Flat, 0, len(s.Items))
 	for j, i := range s.Items {
+		photos := make([]string, 0, len(i.Photos))
+		for id := range i.Photos {
+			photos = append(photos, id)
+		}
+		panoramas := make([]string, len(i.Panoramas))
+		for k := range i.Panoramas {
+			panoramas[k] = i.Panoramas[k].Img
+		}
 		street := i.StreetNameUK
 		if street == "" && i.StreetName != "" {
 			street = i.StreetName
@@ -107,6 +115,8 @@ func (fetcher *Fetcher) getFlats(s search, housing misc.Housing) []Flat {
 		flats[j] = Flat{
 			Source:      i.Source,
 			URL:         i.BeautifulURL,
+			Photos:      photos,
+			Panoramas:   panoramas,
 			UpdateTime:  time.Time(i.UpdatedAt),
 			IsSold:      i.SaleDate != "",
 			IsInspected: i.Inspected == 1,
