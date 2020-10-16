@@ -23,7 +23,7 @@ func NewGeocoder(
 		&http.Client{Timeout: config.Timeout},
 		config.Headers,
 		config.StatelessCities,
-		config.SearchURL,
+		config.SearchFormat,
 		drain,
 		logger,
 	}

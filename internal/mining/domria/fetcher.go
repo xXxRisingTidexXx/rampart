@@ -27,7 +27,7 @@ func NewFetcher(
 		config.Portion,
 		flags,
 		config.Headers,
-		config.SearchURL,
+		config.SearchFormat,
 		drain,
 		logger,
 	}

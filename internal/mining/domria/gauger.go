@@ -22,7 +22,7 @@ func NewGauger(config config.Gauger, drain *metrics.Drain, logger log.FieldLogge
 	return &Gauger{
 		&http.Client{Timeout: config.Timeout},
 		config.Headers,
-		config.InterpreterURL,
+		config.InterpreterPrefix,
 		config.SubwayCities,
 		-1,
 		config.SSFSearchRadius,
