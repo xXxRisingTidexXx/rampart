@@ -34,14 +34,14 @@ func NewFetcher(
 }
 
 type Fetcher struct {
-	client    *http.Client
-	page      int
-	portion   int
-	flags     map[misc.Housing]string
-	headers   misc.Headers
-	searchURL string
-	drain     *metrics.Drain
-	logger    log.FieldLogger
+	client       *http.Client
+	page         int
+	portion      int
+	flags        map[misc.Housing]string
+	headers      misc.Headers
+	searchFormat string
+	drain        *metrics.Drain
+	logger       log.FieldLogger
 }
 
 func (fetcher *Fetcher) FetchFlats(housing misc.Housing) []Flat {
@@ -72,7 +72,7 @@ func (fetcher *Fetcher) getSearch(flag string) (search, error) {
 	s := search{}
 	request, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf(fetcher.searchURL, flag, fetcher.page, fetcher.portion),
+		fmt.Sprintf(fetcher.searchFormat, flag, fetcher.page, fetcher.portion),
 		nil,
 	)
 	if err != nil {

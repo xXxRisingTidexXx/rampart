@@ -42,24 +42,24 @@ func NewGauger(config config.Gauger, drain *metrics.Drain, logger log.FieldLogge
 }
 
 type Gauger struct {
-	client          *http.Client
-	headers         misc.Headers
-	interpreterURL  string
-	subwayCities    misc.Set
-	unknownDistance float64
-	ssfSearchRadius float64
-	ssfMinDistance  float64
-	ssfModifier     float64
-	izfSearchRadius float64
-	izfMinArea      float64
-	izfMinDistance  float64
-	izfModifier     float64
-	gzfSearchRadius float64
-	gzfMinArea      float64
-	gzfMinDistance  float64
-	gzfModifier     float64
-	drain           *metrics.Drain
-	logger          log.FieldLogger
+	client            *http.Client
+	headers           misc.Headers
+	interpreterPrefix string
+	subwayCities      misc.Set
+	unknownDistance   float64
+	ssfSearchRadius   float64
+	ssfMinDistance    float64
+	ssfModifier       float64
+	izfSearchRadius   float64
+	izfMinArea        float64
+	izfMinDistance    float64
+	izfModifier       float64
+	gzfSearchRadius   float64
+	gzfMinArea        float64
+	gzfMinDistance    float64
+	gzfModifier       float64
+	drain             *metrics.Drain
+	logger            log.FieldLogger
 }
 
 func (gauger *Gauger) GaugeFlats(flats []Flat) []Flat {
@@ -135,7 +135,7 @@ func (gauger *Gauger) query(
 ) (*geojson.FeatureCollection, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf(gauger.interpreterURL, gourl.QueryEscape(fmt.Sprintf(query, params...))),
+		gauger.interpreterPrefix+gourl.QueryEscape(fmt.Sprintf(query, params...)),
 		nil,
 	)
 	if err != nil {

@@ -14,6 +14,7 @@ import (
 )
 
 // TODO: add new search endpoint at https://locationiq.com/ .
+// TODO: check unstructured query.
 func NewGeocoder(
 	config config.Geocoder,
 	drain *metrics.Drain,
@@ -33,7 +34,7 @@ type Geocoder struct {
 	client          *http.Client
 	headers         misc.Headers
 	statelessCities misc.Set
-	searchURL       string
+	searchFormat    string
 	drain           *metrics.Drain
 	logger          log.FieldLogger
 }
@@ -104,7 +105,7 @@ func (geocoder *Geocoder) getPositions(flat Flat) ([]position, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf(
-			geocoder.searchURL,
+			geocoder.searchFormat,
 			state,
 			strings.ReplaceAll(flat.City, " ", "+"),
 			strings.ReplaceAll(flat.Street, " ", "+"),

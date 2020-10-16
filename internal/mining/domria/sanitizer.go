@@ -10,6 +10,8 @@ import (
 func NewSanitizer(config config.Sanitizer, drain *metrics.Drain) *Sanitizer {
 	return &Sanitizer{
 		config.URLPrefix,
+		config.PhotoFormat,
+		config.PanoramaPrefix,
 		config.StateMap,
 		config.StateSuffix,
 		config.CityMap,
@@ -26,6 +28,8 @@ func NewSanitizer(config config.Sanitizer, drain *metrics.Drain) *Sanitizer {
 
 type Sanitizer struct {
 	urlPrefix            string
+	photoFormat          string
+	panoramaPrefix       string
 	stateMap             map[string]string
 	stateSuffix          string
 	cityMap              map[string]string
