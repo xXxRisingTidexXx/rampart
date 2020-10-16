@@ -13,6 +13,7 @@ func NewSanitizer(config config.Sanitizer, drain *metrics.Drain) *Sanitizer {
 		config.URLPrefix,
 		config.PhotoFormat,
 		config.PanoramaPrefix,
+		config.PanoramaSuffix,
 		config.StateMap,
 		config.StateSuffix,
 		config.CityMap,
@@ -31,6 +32,7 @@ type Sanitizer struct {
 	urlPrefix            string
 	photoFormat          string
 	panoramaPrefix       string
+	panoramaSuffix       string
 	stateMap             map[string]string
 	stateSuffix          string
 	cityMap              map[string]string
@@ -66,7 +68,8 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	}
 	panoramas := make([]string, len(flat.Panoramas))
 	for i, p := range flat.Panoramas {
-		panoramas[i] = sanitizer.panoramaPrefix + p
+		panoramas[i] = sanitizer.panoramaPrefix +
+			strings.ReplaceAll(p, ".jpg", sanitizer.panoramaSuffix)
 	}
 	state := strings.TrimSpace(flat.State)
 	if value, ok := sanitizer.stateMap[state]; ok {

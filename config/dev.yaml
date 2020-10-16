@@ -4,7 +4,7 @@ mining:
       User-Agent: rampart-mining-bot/1.0.0
     fetcher:
       timeout: 40s
-      portion: 100
+      portion: 10
       flags:
         primary: newbuildings=1
         secondary: secondary=1
@@ -14,6 +14,7 @@ mining:
       url-prefix: https://dom.ria.com/uk/
       photo-format: https://cdn.riastatic.com/photosnew/dom/photo/%s__%sfl.webp
       panorama-prefix: https://cdn.riastatic.com/photos/
+      panorama-suffix: s.jpg
       state-map:
         Київськ��: Київська
         Одес��ка: Одеська
