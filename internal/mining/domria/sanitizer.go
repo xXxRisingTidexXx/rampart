@@ -97,7 +97,6 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	return Flat{
 		Source:      flat.Source,
 		URL:         url,
-		MediaCount:  flat.MediaCount,
 		UpdateTime:  flat.UpdateTime,
 		IsInspected: flat.IsInspected,
 		Price:       flat.Price,

@@ -9,7 +9,8 @@ import (
 type Flat struct {
 	Source      string
 	URL         string
-	MediaCount  int
+	Photos      []string
+	Panoramas   []string
 	UpdateTime  time.Time
 	IsSold      bool
 	IsInspected bool
@@ -39,4 +40,8 @@ func (flat Flat) IsLocated() bool {
 
 func (flat Flat) IsAddressable() bool {
 	return flat.State != "" && flat.City != "" && flat.Street != "" && flat.HouseNumber != ""
+}
+
+func (flat Flat) MediaCount() int {
+	return len(flat.Photos) + len(flat.Panoramas)
 }

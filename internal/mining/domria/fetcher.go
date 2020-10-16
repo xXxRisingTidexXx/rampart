@@ -107,7 +107,6 @@ func (fetcher *Fetcher) getFlats(s search, housing misc.Housing) []Flat {
 		flats[j] = Flat{
 			Source:      i.Source,
 			URL:         i.BeautifulURL,
-			MediaCount:  len(i.Photos) + len(i.Panoramas),
 			UpdateTime:  time.Time(i.UpdatedAt),
 			IsSold:      i.SaleDate != "",
 			IsInspected: i.Inspected == 1,
