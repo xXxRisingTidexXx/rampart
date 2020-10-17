@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// TODO: add the fetcher page.
 func NewDrain(miner string, db *sql.DB, logger log.FieldLogger) *Drain {
 	numbers := make(map[Number]int, len(numberViews))
 	for number := range numberViews {
