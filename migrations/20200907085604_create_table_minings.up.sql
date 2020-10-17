@@ -1,4 +1,4 @@
-create table if not exists runs
+create table if not exists minings
 (
     id                              serial primary key not null,
     completion_time                 timestamp          not null,
