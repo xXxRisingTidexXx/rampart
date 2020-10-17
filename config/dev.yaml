@@ -9,9 +9,12 @@ mining:
         primary: newbuildings=1
         secondary: secondary=1
       headers: *headers
-      search-url: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d
+      search-format: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d
     sanitizer:
       url-prefix: https://dom.ria.com/uk/
+      photo-format: https://cdn.riastatic.com/photosnew/dom/photo/%s__%sfl.webp
+      panorama-prefix: https://cdn.riastatic.com/photos/
+      panorama-suffix: s.jpg
       state-map:
         Київськ��: Київська
         Одес��ка: Одеська
@@ -41,7 +44,7 @@ mining:
         Дніпропетровськ: Дніпро
         Од��са: Одеса
         Івано-Франківсь��а: Івано-Франківська
-      district-dictionary:
+      district-map:
         Петрівське (нов. Святопетрівське): Святопетрівське
         Вознесенівський (Орджонікідзевський): Вознесенівський
         Дніпровський (Ленінський): Дніпровський
@@ -131,11 +134,11 @@ mining:
       headers: *headers
       stateless-cities:
         - Київ
-      search-url: https://nominatim.openstreetmap.org/search?state=%s&city=%s&street=%s+%s&format=json&countrycodes=ua
+      search-format: https://nominatim.openstreetmap.org/search?state=%s&city=%s&street=%s+%s&format=json&countrycodes=ua
     gauger:
       timeout: 40s
       headers: *headers
-      interpreter-url: https://overpass.kumi.systems/api/interpreter?data=%s
+      interpreter-prefix: https://overpass.kumi.systems/api/interpreter?data=
       subway-cities:
         - Київ
         - Харків
@@ -152,7 +155,7 @@ mining:
       gzf-min-distance: 20
       gzf-modifier: 0.001
     validator:
-      min-media-count: 5
+      min-image-count: 4
       min-price: 1
       min-total-area: 12
       max-total-area: 560

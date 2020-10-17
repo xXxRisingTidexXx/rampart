@@ -27,21 +27,21 @@ func NewFetcher(
 		config.Portion,
 		flags,
 		config.Headers,
-		config.SearchURL,
+		config.SearchFormat,
 		drain,
 		logger,
 	}
 }
 
 type Fetcher struct {
-	client    *http.Client
-	page      int
-	portion   int
-	flags     map[misc.Housing]string
-	headers   misc.Headers
-	searchURL string
-	drain     *metrics.Drain
-	logger    log.FieldLogger
+	client       *http.Client
+	page         int
+	portion      int
+	flags        map[misc.Housing]string
+	headers      misc.Headers
+	searchFormat string
+	drain        *metrics.Drain
+	logger       log.FieldLogger
 }
 
 func (fetcher *Fetcher) FetchFlats(housing misc.Housing) []Flat {
@@ -56,6 +56,7 @@ func (fetcher *Fetcher) FetchFlats(housing misc.Housing) []Flat {
 	search, err := fetcher.getSearch(flag)
 	fetcher.drain.DrainDuration(metrics.FetchingDuration, start)
 	if err != nil {
+		fetcher.drain.DrainNumber(metrics.FailedFetchingNumber)
 		fetcher.logger.Error(err)
 		return make([]Flat, 0)
 	}
@@ -69,10 +70,10 @@ func (fetcher *Fetcher) FetchFlats(housing misc.Housing) []Flat {
 }
 
 func (fetcher *Fetcher) getSearch(flag string) (search, error) {
-	s := search{}
+	var s search
 	request, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf(fetcher.searchURL, flag, fetcher.page, fetcher.portion),
+		fmt.Sprintf(fetcher.searchFormat, flag, fetcher.page, fetcher.portion),
 		nil,
 	)
 	if err != nil {
@@ -100,6 +101,14 @@ func (fetcher *Fetcher) getSearch(flag string) (search, error) {
 func (fetcher *Fetcher) getFlats(s search, housing misc.Housing) []Flat {
 	flats := make([]Flat, len(s.Items))
 	for j, i := range s.Items {
+		photos := make([]string, 0, len(i.Photos))
+		for id := range i.Photos {
+			photos = append(photos, id)
+		}
+		panoramas := make([]string, len(i.Panoramas))
+		for k := range i.Panoramas {
+			panoramas[k] = i.Panoramas[k].Img
+		}
 		street := i.StreetNameUK
 		if street == "" && i.StreetName != "" {
 			street = i.StreetName
@@ -107,7 +116,8 @@ func (fetcher *Fetcher) getFlats(s search, housing misc.Housing) []Flat {
 		flats[j] = Flat{
 			Source:      i.Source,
 			URL:         i.BeautifulURL,
-			MediaCount:  len(i.Photos) + len(i.Panoramas),
+			Photos:      photos,
+			Panoramas:   panoramas,
 			UpdateTime:  time.Time(i.UpdatedAt),
 			IsSold:      i.SaleDate != "",
 			IsInspected: i.Inspected == 1,

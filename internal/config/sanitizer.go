@@ -6,6 +6,9 @@ import (
 
 type Sanitizer struct {
 	URLPrefix               string            `yaml:"url-prefix"`
+	PhotoFormat             string            `yaml:"photo-format"`
+	PanoramaPrefix          string            `yaml:"panorama-prefix"`
+	PanoramaSuffix          string            `yaml:"panorama-suffix"`
 	StateMap                map[string]string `yaml:"state-map"`
 	StateSuffix             string            `yaml:"state-suffix"`
 	CityMap                 map[string]string `yaml:"city-map"`

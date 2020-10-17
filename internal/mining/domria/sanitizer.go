@@ -1,15 +1,24 @@
 package domria
 
 import (
+	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"strings"
 )
 
-func NewSanitizer(config config.Sanitizer, drain *metrics.Drain) *Sanitizer {
+func NewSanitizer(
+	config config.Sanitizer,
+	drain *metrics.Drain,
+	logger log.FieldLogger,
+) *Sanitizer {
 	return &Sanitizer{
 		config.URLPrefix,
+		config.PhotoFormat,
+		config.PanoramaPrefix,
+		config.PanoramaSuffix,
 		config.StateMap,
 		config.StateSuffix,
 		config.CityMap,
@@ -21,11 +30,15 @@ func NewSanitizer(config config.Sanitizer, drain *metrics.Drain) *Sanitizer {
 		strings.NewReplacer(config.HouseNumberReplacements...),
 		config.HouseNumberMaxLength,
 		drain,
+		logger,
 	}
 }
 
 type Sanitizer struct {
 	urlPrefix            string
+	photoFormat          string
+	panoramaPrefix       string
+	panoramaSuffix       string
 	stateMap             map[string]string
 	stateSuffix          string
 	cityMap              map[string]string
@@ -37,6 +50,7 @@ type Sanitizer struct {
 	houseNumberReplacer  *strings.Replacer
 	houseNumberMaxLength int
 	drain                *metrics.Drain
+	logger               log.FieldLogger
 }
 
 func (sanitizer *Sanitizer) SanitizeFlats(flats []Flat) []Flat {
@@ -51,6 +65,26 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	url := flat.URL
 	if url != "" {
 		url = sanitizer.urlPrefix + url
+	} else {
+		sanitizer.logger.WithField("source", flat.Source).Warning(
+			"domria: sanitizer found a flat without an url",
+		)
+	}
+	photos := make([]string, 0)
+	if index := strings.LastIndex(flat.URL, "-"); index != -1 {
+		slug := flat.URL[:index]
+		for _, p := range flat.Photos {
+			photos = append(photos, fmt.Sprintf(sanitizer.photoFormat, slug, p))
+		}
+	} else if flat.URL != "" {
+		sanitizer.logger.WithField("source", flat.Source).Warning(
+			"domria: sanitizer found a flat without a dash in the url",
+		)
+	}
+	panoramas := make([]string, len(flat.Panoramas))
+	for i, p := range flat.Panoramas {
+		panoramas[i] = sanitizer.panoramaPrefix +
+			strings.ReplaceAll(p, ".jpg", sanitizer.panoramaSuffix)
 	}
 	state := strings.TrimSpace(flat.State)
 	if value, ok := sanitizer.stateMap[state]; ok {
@@ -82,7 +116,10 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 		street = flat.Street[:index]
 		sanitizer.drain.DrainNumber(metrics.StreetSanitationNumber)
 		extraNumber := sanitizer.sanitizeHouseNumber(flat.Street[index+1:])
-		if houseNumber == "" && extraNumber != "" && extraNumber[0] >= '0' && extraNumber[0] <= '9' {
+		if houseNumber == "" &&
+			extraNumber != "" &&
+			extraNumber[0] >= '0' &&
+			extraNumber[0] <= '9' {
 			houseNumber = extraNumber
 			sanitizer.drain.DrainNumber(metrics.HouseNumberSanitationNumber)
 		}
@@ -93,7 +130,8 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	return Flat{
 		Source:      flat.Source,
 		URL:         url,
-		MediaCount:  flat.MediaCount,
+		Photos:      photos,
+		Panoramas:   panoramas,
 		UpdateTime:  flat.UpdateTime,
 		IsInspected: flat.IsInspected,
 		Price:       flat.Price,
