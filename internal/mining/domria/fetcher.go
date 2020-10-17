@@ -56,6 +56,7 @@ func (fetcher *Fetcher) FetchFlats(housing misc.Housing) []Flat {
 	search, err := fetcher.getSearch(flag)
 	fetcher.drain.DrainDuration(metrics.FetchingDuration, start)
 	if err != nil {
+		fetcher.drain.DrainNumber(metrics.FailedFetchingNumber)
 		fetcher.logger.Error(err)
 		return make([]Flat, 0)
 	}

@@ -31,7 +31,7 @@ func (storer *Storer) StoreFlats(flats []Flat) {
 		entry := storer.logger.WithField("source", flat.Source)
 		if id, err := storer.storeFlat(flat); err != nil {
 			entry.WithField("url", flat.URL).Error(err)
-			storer.drain.DrainNumber(metrics.FailedStoringNumber)
+			storer.drain.DrainNumber(metrics.FailedFlatStoringNumber)
 		} else {
 			storer.storeImages(id, flat.Photos, PhotoKind, entry)
 			storer.storeImages(id, flat.Panoramas, PanoramaKind, entry)
@@ -46,45 +46,36 @@ func (storer *Storer) storeFlat(flat Flat) (int, error) {
 	}
 	start := time.Now()
 	o, err := storer.readFlat(tx, flat)
-	storer.drain.DrainDuration(metrics.ReadingDuration, start)
+	storer.drain.DrainDuration(metrics.ReadingFlatStoringDuration, start)
 	if err != nil {
 		_ = tx.Rollback()
 		return 0, err
 	}
-	message := "domria: storer failed to commit a transaction, %v"
+	id, number := o.id, metrics.UnalteredImageStoringNumber
 	if !o.isFound {
 		start := time.Now()
-		id, err := storer.createFlat(tx, flat)
-		storer.drain.DrainDuration(metrics.CreationDuration, start)
+		id, err = storer.createFlat(tx, flat)
+		storer.drain.DrainDuration(metrics.CreationFlatStoringDuration, start)
 		if err != nil {
 			_ = tx.Rollback()
 			return 0, err
 		}
-		if err = tx.Commit(); err != nil {
-			return 0, fmt.Errorf(message, err)
-		}
-		storer.drain.DrainNumber(metrics.CreatedStoringNumber)
-		return id, nil
-	}
-	if flat.UpdateTime.After(o.updateTime) {
+		number = metrics.CreatedFlatStoringNumber
+	} else if flat.UpdateTime.After(o.updateTime) {
 		start := time.Now()
-		err = storer.updateFlat(tx, flat)
-		storer.drain.DrainDuration(metrics.UpdateDuration, start)
+		err := storer.updateFlat(tx, flat)
+		storer.drain.DrainDuration(metrics.UpdateFlatStoringDuration, start)
 		if err != nil {
 			_ = tx.Rollback()
 			return 0, err
 		}
-		if err = tx.Commit(); err != nil {
-			return 0, fmt.Errorf(message, err)
-		}
-		storer.drain.DrainNumber(metrics.UpdatedStoringNumber)
-		return o.id, nil
+		number = metrics.UpdatedFlatStoringNumber
 	}
-	if err = tx.Commit(); err != nil {
-		return 0, fmt.Errorf(message, err)
+	if err := tx.Commit(); err != nil {
+		return 0, fmt.Errorf("domria: storer failed to commit a transaction, %v", err)
 	}
-	storer.drain.DrainNumber(metrics.UnalteredStoringNumber)
-	return o.id, nil
+	storer.drain.DrainNumber(number)
+	return id, nil
 }
 
 func (storer *Storer) readFlat(tx *sql.Tx, flat Flat) (origin, error) {
@@ -204,6 +195,7 @@ func (storer *Storer) storeImages(
 ) {
 	for _, url := range images {
 		if err := storer.storeImage(image{flatID, url, kind}); err != nil {
+			storer.drain.DrainNumber(metrics.FailedImageStoringNumber)
 			logger.WithField("url", url).Error(err)
 		}
 	}
@@ -214,20 +206,28 @@ func (storer *Storer) storeImage(i image) error {
 	if err != nil {
 		return fmt.Errorf("domria: storer failed to begin a transaction, %v", err)
 	}
+	start := time.Now()
 	isFound, err := storer.readImage(tx, i)
+	storer.drain.DrainDuration(metrics.ReadingImageStoringDuration, start)
 	if err != nil {
 		_ = tx.Rollback()
 		return err
 	}
+	number := metrics.UnalteredImageStoringNumber
 	if !isFound {
-		if err := storer.createImage(tx, i); err != nil {
+		start := time.Now()
+		err := storer.createImage(tx, i)
+		storer.drain.DrainDuration(metrics.CreationImageStoringDuration, start)
+		if err != nil {
 			_ = tx.Rollback()
 			return err
 		}
+		number = metrics.CreatedImageStoringNumber
 	}
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("domria: storer failed to commit a transaction, %v", err)
 	}
+	storer.drain.DrainNumber(number)
 	return nil
 }
 
