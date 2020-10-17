@@ -69,7 +69,7 @@ func (fetcher *Fetcher) FetchFlats(housing misc.Housing) []Flat {
 }
 
 func (fetcher *Fetcher) getSearch(flag string) (search, error) {
-	s := search{}
+	var s search
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf(fetcher.searchFormat, flag, fetcher.page, fetcher.portion),

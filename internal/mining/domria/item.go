@@ -31,7 +31,7 @@ type item struct {
 }
 
 func (i *item) UnmarshalJSON(bytes []byte) error {
-	p := publication{}
+	var p publication
 	if err := json.Unmarshal(bytes, &p); err != nil {
 		return err
 	}

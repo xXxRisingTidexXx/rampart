@@ -8,7 +8,7 @@ import (
 )
 
 func NewConfig() (Config, error) {
-	config := Config{}
+	var config Config
 	bytes, err := ioutil.ReadFile(misc.ResolvePath("config/dev.yaml"))
 	if err != nil {
 		return config, fmt.Errorf("config: failed to read the config file, %v", err)

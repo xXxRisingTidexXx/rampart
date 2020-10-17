@@ -87,7 +87,7 @@ func (storer *Storer) storeFlat(flat Flat) error {
 
 func (storer *Storer) readFlat(tx *sql.Tx, flat Flat) (origin, error) {
 	row := tx.QueryRow(`select update_time from flats where url = $1`, flat.URL)
-	o := origin{}
+	var o origin
 	switch err := row.Scan(&o.updateTime); err {
 	case sql.ErrNoRows:
 		return o, nil
