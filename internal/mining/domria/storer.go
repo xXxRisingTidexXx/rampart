@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// TODO: apply many-to-many between flats & images.
 func NewStorer(
 	config config.Storer,
 	db *sql.DB,
