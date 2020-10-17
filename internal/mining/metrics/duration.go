@@ -8,22 +8,26 @@ const (
 	SSFGaugingDuration
 	IZFGaugingDuration
 	GZFGaugingDuration
-	ReadingDuration
-	CreationDuration
-	UpdateDuration
+	ReadingFlatStoringDuration
+	CreationFlatStoringDuration
+	UpdateFlatStoringDuration
+	ReadingImageStoringDuration
+	CreationImageStoringDuration
 	TotalDuration
 )
 
 var durationViews = map[Duration]string{
-	FetchingDuration:   "fetching",
-	GeocodingDuration:  "geocoding",
-	SSFGaugingDuration: "ssf gauging",
-	IZFGaugingDuration: "izf gauging",
-	GZFGaugingDuration: "gzf gauging",
-	ReadingDuration:    "reading",
-	CreationDuration:   "creation",
-	UpdateDuration:     "update",
-	TotalDuration:      "total",
+	FetchingDuration:             "fetching",
+	GeocodingDuration:            "geocoding",
+	SSFGaugingDuration:           "ssf gauging",
+	IZFGaugingDuration:           "izf gauging",
+	GZFGaugingDuration:           "gzf gauging",
+	ReadingFlatStoringDuration:   "reading flat storing",
+	CreationFlatStoringDuration:  "creation flat storing",
+	UpdateFlatStoringDuration:    "update flat storing",
+	ReadingImageStoringDuration:  "reading image storing",
+	CreationImageStoringDuration: "creation image storing",
+	TotalDuration:                "total",
 }
 
 func (duration Duration) String() string {

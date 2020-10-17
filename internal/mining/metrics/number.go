@@ -3,7 +3,8 @@ package metrics
 type Number int
 
 const (
-	StateSanitationNumber Number = iota
+	FailedFetchingNumber Number = iota
+	StateSanitationNumber
 	CitySanitationNumber
 	DistrictSanitationNumber
 	SwapSanitationNumber
@@ -28,13 +29,17 @@ const (
 	UninformativeValidationNumber
 	SoldValidationNumber
 	DeniedValidationNumber
-	CreatedStoringNumber
-	UpdatedStoringNumber
-	UnalteredStoringNumber
-	FailedStoringNumber
+	CreatedFlatStoringNumber
+	UpdatedFlatStoringNumber
+	UnalteredFlatStoringNumber
+	FailedFlatStoringNumber
+	CreatedImageStoringNumber
+	UnalteredImageStoringNumber
+	FailedImageStoringNumber
 )
 
 var numberViews = map[Number]string{
+	FailedFetchingNumber:          "failed fetching",
 	StateSanitationNumber:         "state sanitation",
 	CitySanitationNumber:          "city sanitation",
 	DistrictSanitationNumber:      "district sanitation",
@@ -60,10 +65,13 @@ var numberViews = map[Number]string{
 	UninformativeValidationNumber: "uninformative validation",
 	SoldValidationNumber:          "sold validation",
 	DeniedValidationNumber:        "denied validation",
-	CreatedStoringNumber:          "created storing",
-	UpdatedStoringNumber:          "updated storing",
-	UnalteredStoringNumber:        "unaltered storing",
-	FailedStoringNumber:           "failed storing",
+	CreatedFlatStoringNumber:      "created flat storing",
+	UpdatedFlatStoringNumber:      "updated flat storing",
+	UnalteredFlatStoringNumber:    "unaltered flat storing",
+	FailedFlatStoringNumber:       "failed flat storing",
+	CreatedImageStoringNumber:     "created image storing",
+	UnalteredImageStoringNumber:   "unaltered image storing",
+	FailedImageStoringNumber:      "failed image storing",
 }
 
 func (number Number) String() string {
