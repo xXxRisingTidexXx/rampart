@@ -5,7 +5,7 @@ ARG CONDA_DIR=/opt/conda
 ENV PATH $CONDA_DIR/bin:$PATH
 
 COPY requirements.txt .
-COPY twinkle twinkle
+COPY rampart rampart
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends ca-certificates cmake build-essential gcc g++ git wget && \
