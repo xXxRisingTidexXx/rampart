@@ -27,7 +27,7 @@ package domria_test
 //	"fmt"
 //	"github.com/paulmach/orb"
 //	"github.com/xXxRisingTidexXx/rampart/internal/config"
-//	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
+//	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 //	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 //	"io/ioutil"
 //	"net/http"
