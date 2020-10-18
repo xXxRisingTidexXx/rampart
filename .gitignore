@@ -22,3 +22,5 @@ venv
 .env
 .twinkle
 __pycache__
+notebooks/training.csv
+notebooks/testing.csv
