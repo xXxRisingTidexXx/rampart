@@ -4,7 +4,7 @@ env:
 commands:
   build:
     description: Construct/renovate all local docker images
-    cmd: docker-compose build checks backend notebook
+    cmd: docker-compose build mining checks notebook
   database:
     description: Run the DB server
     cmd: docker-compose up -d database
@@ -24,11 +24,6 @@ commands:
   mining:
     description: Run the data mining app single workflow
     cmd: docker-compose run --rm mining
-  tgbot:
-    description: Activate the telegram bot
-    cmd: |
-      docker-compose up tgbot
-      docker rm rampart-tgbot
   run:
     description: Activate the whole rampart ecosystem
     cmd: |
