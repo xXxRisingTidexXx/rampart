@@ -1,12 +1,4 @@
 psycopg2-binary
 sqlalchemy
-shapely
-tabulate
-ppscore
-plotly
-numpy
-scipy
-scikit-learn
-matplotlib
 pandas
 lightgbm
