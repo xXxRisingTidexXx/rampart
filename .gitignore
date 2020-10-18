@@ -21,3 +21,4 @@ venv
 .ipython
 .env
 .twinkle
+__pycache__
