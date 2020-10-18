@@ -94,7 +94,7 @@ services:
     container_name: rampart-twinkle
     command: python -m rampart.twinkle
     volumes:
-      - ./rampart:/rampart
+      - ./rampart:/app/rampart
     env_file:
       - .env
 volumes:
