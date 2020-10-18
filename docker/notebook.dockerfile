@@ -1,7 +1,11 @@
 FROM jupyter/scipy-notebook:ea01ec4d9f57
 
-COPY requirements.txt /tmp/
+USER root
 
-RUN pip install --requirement /tmp/requirements.txt && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libgomp1 && \
+    rm -rf /var/lib/apt/lists/*
+
+USER $NB_UID
+
+RUN pip install psycopg2-binary tabulate shapely ppscore lightgbm
