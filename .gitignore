@@ -24,6 +24,7 @@ venv
 __pycache__
 notebooks/training.csv
 notebooks/testing.csv
-notebooks/training.bin
-notebooks/testing.bin
 notebooks/model.txt
+notebooks/training.conf
+notebooks/testing.conf
+notebooks/outdated.txt
