@@ -4,7 +4,7 @@ env:
 commands:
   build:
     description: Construct/renovate all local docker images
-    cmd: docker-compose build mining checks notebook
+    cmd: docker-compose build mining checks notebook twinkle
   database:
     description: Run the DB server
     cmd: docker-compose up -d database
@@ -46,3 +46,6 @@ commands:
     cmd: |
       docker-compose up notebook
       docker rm rampart-notebook
+  twinkle:
+    description: Run ranking module
+    cmd: docker-compose run --rm twinkle

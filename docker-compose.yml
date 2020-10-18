@@ -86,6 +86,16 @@ services:
       JUPYTER_ENABLE_LAB: 'yes'
     env_file:
       - .env
+  twinkle:
+    build:
+      context: .
+      dockerfile: docker/twinkle.dockerfile
+    image: rampart-twinkle
+    container_name: rampart-twinkle
+    volumes:
+      - ./twinkle:/twinkle
+    env_file:
+      - .env
 volumes:
   database:
     name: rampart-database
