@@ -7,4 +7,5 @@ COPY rampart rampart
 
 RUN apt-get update && \
     apt-get install -y libgomp1 && \
+    pip install -U pip && \
     pip install -r requirements.txt
