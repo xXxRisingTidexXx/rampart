@@ -86,13 +86,13 @@ services:
       JUPYTER_ENABLE_LAB: 'yes'
     env_file:
       - .env
-  twinkle:
+  telebot:
     build:
       context: .
-      dockerfile: docker/twinkle.dockerfile
-    image: rampart-twinkle
-    container_name: rampart-twinkle
-    command: python -m rampart.twinkle
+      dockerfile: docker/telebot.dockerfile
+    image: rampart-telebot
+    container_name: rampart-telebot
+    command: python -m rampart.telebot
     volumes:
       - ./rampart:/app/rampart
     env_file:
