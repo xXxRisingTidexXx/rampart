@@ -4,6 +4,10 @@ from telegram import Update
 from telegram.ext import (
     Updater, CommandHandler, CallbackContext, MessageHandler, Filters
 )
+from rampart.search import search_flats, Query
+
+_FLOORS = {'-': 0, 'низько': 1, 'високо': 2}
+_ROOM_NUMBERS = {'-': 0, 'одна': 1, 'дві': 2, 'три': 3, 'багато': 4}
 
 
 # TODO: leverage optuna to set the hyperparameters.
@@ -11,7 +15,7 @@ from telegram.ext import (
 def _main():
     updater = Updater(getenv('RAMPART_TELEBOT_TOKEN'))
     updater.dispatcher.add_handler(CommandHandler('start', _get_start))
-    updater.dispatcher.add_handler(CommandHandler('r', _get_r))
+    updater.dispatcher.add_handler(CommandHandler('search', _get_search))
     updater.dispatcher.add_handler(CommandHandler('help', _get_help))
     updater.dispatcher.add_handler(MessageHandler(~Filters.command, _get_default))
     updater.start_polling()
@@ -23,29 +27,65 @@ def _get_start(update: Update, _: CallbackContext):
         'Привіт\\! Дозволь ввести тебе в хід справ: я \\- щось по типу гугла, але для ву'
         'зької категорії речей :\\)\\. Та результати знаходжу так само \\- за текстовими'
         ' запитами; щоправда, в них доволі специфічний формат, менше схожий на природню '
-        'мову\\. Кожен запит має вигляд:```\n\n/r <місто> <ціна> <поверх> <кімнати>```\n'
-        '\nІєрогліфи в трикутних дужках \\- деякі шаблонні значення, котрі тобі варто за'
-        'мінити на власні\\. Якщо не знаєш чи не хочеш вказувати якийсь із пунктів, то п'
-        'остав `\\-` \\. Наприклад:```\n\n/r Київ 75000 високо \\-```\n\n Доступні значе'
-        'ння:\n\n\\- місто \\- актуальна назва довільного міста України\n\\- ціна \\- до'
-        'ступна для тебе сума в USD\n\\- поверх \\- одне з двох значень: `високо` чи `ни'
-        'зько`\n\\- кімнати \\- одне зі значень: `одна` , `дві` , `три` чи `багато`\n'
+        'мову\\. Кожен запит має вигляд:```\n\n/search <місто> <ціна> <поверх> <кімнати>'
+        '```\n\nІєрогліфи в трикутних дужках \\- деякі шаблонні значення, котрі тобі вар'
+        'то замінити на власні\\. Якщо не знаєш чи не хочеш вказувати якийсь із пунктів,'
+        ' то постав `\\-` \\. Наприклад:```\n\n/search Київ 75000 високо \\-```\n\n Дост'
+        'упні значення:\n\n\\- місто \\- актуальна назва довільного міста України\n\\- ц'
+        'іна \\- доступна для тебе сума в USD\n\\- поверх \\- одне з двох значень: `висо'
+        'ко` чи `низько`\n\\- кімнати \\- одне зі значень: `одна` , `дві` , `три` чи `ба'
+        'гато`\n'
     )
 
 
-def _get_r(update: Update, context: CallbackContext):
-    update.message.reply_text('Пошук')
+def _get_search(update: Update, context: CallbackContext):
+    if len(context.args) != 4:
+        update.message.reply_text(
+            f'Невірна кількість параметрів - ти надав {len(context.args)}, а треба 4.'
+        )
+        return
+    city = context.args[0]
+    if city == '-':
+        city = 'Київ'
+    price = _float(context.args[1])
+    if price < 0:
+        update.message.reply_text('Перевір, будь ласка, ціну - вона некоректна.')
+        return
+    floor = _FLOORS.get(context.args[2], -1)
+    if floor < 0:
+        update.message.reply_text(
+            'Хм, я не зрозумів отриманий ідентифікатор поверху (підглянь у /start).'
+        )
+        return
+    room_number = _ROOM_NUMBERS.get(context.args[3], -1)
+    if room_number < 0:
+        update.message.reply_text(
+            'Теекс, це якесь дивне число кімнат. Перевір введення (звірся зі /start).'
+        )
+        return
+    flats = search_flats(Query(city, price, floor, room_number))
+    if len(flats) == 0:
+        update.message.reply_text('На жаль, мені нічого не вдалося знайти.')
+
+
+def _float(value: str) -> float:
+    if value == '-':
+        return 0
+    try:
+        return float(value)
+    except ValueError:
+        return -1
 
 
 def _get_help(update: Update, _: CallbackContext):
     update.message.reply_text(
         'До твоїх послуг доступні такі команди:\n\n/start - довідка щодо формату пошуков'
-        'ого запиту\n/r - пошук житла\n/help - це повідомлення\n'
+        'ого запиту\n/search - пошук житла\n/help - це повідомлення\n'
     )
 
 
 def _get_default(update: Update, _: CallbackContext):
-    update.message.reply_text('Вибач, звісно, але я не зрозумів, що ти маєш на увазі\n')
+    update.message.reply_text('Вибач, але я не зрозумів, що ти маєш на увазі.\n')
 
 
 if __name__ == '__main__':
