@@ -11,7 +11,12 @@ _booster = Booster(model_file='model.txt')
 
 
 def search_flats(query: 'Query') -> List['Flat']:
-    info(_read_flats(query))
+    frame = _read_flats(query)
+    frame['score'] = _booster.predict(
+        frame.drop(columns=['url']),
+        num_iteration=_booster.best_iteration
+    )
+    info(frame.sort_values('score', ascending=False).head())
     return []
 
 
@@ -33,8 +38,10 @@ class Flat:
         'room_number',
         'floor',
         'total_floor',
-        'address',
     ]
+
+    def __init__(self):
+        pass
 
 
 def _read_flats(query: Query) -> DataFrame:
@@ -43,15 +50,15 @@ def _read_flats(query: Query) -> DataFrame:
             '''
             select url,
             price       as actual_price,
-            $1          as utmost_price,
+            %s          as utmost_price,
             total_area,
             living_area,
             kitchen_area,
             room_number as actual_room_number,
-            $2          as desired_room_number,
+            %s          as desired_room_number,
             floor       as actual_floor,
             total_floor,
-            $3          as desired_floor,
+            %s          as desired_floor,
             case
                 when housing = 'primary' then 0
                 else 1
@@ -60,8 +67,8 @@ def _read_flats(query: Query) -> DataFrame:
             izf,
             gzf
             from flats
-            where city = $4
+            where city = %s
             ''',
             connection,
-            [query.price, query.room_number, query.floor, query.city]
+            params=[query.price, query.room_number, query.floor, query.city]
         )

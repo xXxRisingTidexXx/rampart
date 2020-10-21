@@ -1,11 +1,10 @@
-from logging import basicConfig, INFO
+from logging import basicConfig, INFO, getLogger
 from os import getenv
 from telegram import Update
-from telegram.ext import (
-    Updater, CommandHandler, CallbackContext, MessageHandler, Filters
-)
+from telegram.ext import Updater, CommandHandler, CallbackContext
 from rampart.search import search_flats, Query
 
+_logger = getLogger('rampart.telebot')
 _FLOORS = {'-': 0, 'низько': 1, 'високо': 2}
 _ROOM_NUMBERS = {'-': 0, 'одна': 1, 'дві': 2, 'три': 3, 'багато': 4}
 
@@ -17,7 +16,6 @@ def _main():
     updater.dispatcher.add_handler(CommandHandler('start', _get_start))
     updater.dispatcher.add_handler(CommandHandler('search', _get_search))
     updater.dispatcher.add_handler(CommandHandler('help', _get_help))
-    updater.dispatcher.add_handler(MessageHandler(~Filters.command, _get_default))
     updater.start_polling()
     updater.idle()
 
@@ -34,7 +32,7 @@ def _get_start(update: Update, _: CallbackContext):
         'упні значення:\n\n\\- місто \\- актуальна назва довільного міста України\n\\- ц'
         'іна \\- доступна для тебе сума в USD\n\\- поверх \\- одне з двох значень: `висо'
         'ко` чи `низько`\n\\- кімнати \\- одне зі значень: `одна` , `дві` , `три` чи `ба'
-        'гато`\n'
+        'гато`\n\nP\\.S\\. Я ігнорую всі некомандні повідомлення, так усім жити легше\\.'
     )
 
 
@@ -82,10 +80,6 @@ def _get_help(update: Update, _: CallbackContext):
         'До твоїх послуг доступні такі команди:\n\n/start - довідка щодо формату пошуков'
         'ого запиту\n/search - пошук житла\n/help - це повідомлення\n'
     )
-
-
-def _get_default(update: Update, _: CallbackContext):
-    update.message.reply_text('Вибач, але я не зрозумів, що ти маєш на увазі.\n')
 
 
 if __name__ == '__main__':
