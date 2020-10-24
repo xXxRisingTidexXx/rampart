@@ -1,4 +1,3 @@
-from logging import info
 from os import getenv
 from typing import List
 from sqlalchemy import create_engine
@@ -13,11 +12,24 @@ _booster = Booster(model_file='model.txt')
 def search_flats(query: 'Query') -> List['Flat']:
     frame = _read_flats(query)
     frame['score'] = _booster.predict(
-        frame.drop(columns=['url']),
+        frame.drop(columns=['url', 'street', 'house_number']),
         num_iteration=_booster.best_iteration
     )
-    info(frame.sort_values('score', ascending=False).head())
-    return []
+    return [
+        Flat(
+            s['url'],
+            query.city,
+            s['street'],
+            s['house_number'],
+            s['actual_price'],
+            s['total_area'],
+            s['actual_room_number'],
+            s['actual_floor'],
+            s['total_floor']
+        )
+        for _, s
+        in frame.sort_values('score', ascending=False).head(3).iterrows()
+    ]
 
 
 class Query:
@@ -33,6 +45,9 @@ class Query:
 class Flat:
     __slots__ = [
         'url',
+        'city',
+        'street',
+        'house_number',
         'price',
         'total_area',
         'room_number',
@@ -40,8 +55,32 @@ class Flat:
         'total_floor',
     ]
 
-    def __init__(self):
-        pass
+    def __init__(
+        self,
+        url: str,
+        city: str,
+        street: str,
+        house_number: str,
+        price: float,
+        total_area: float,
+        room_number: int,
+        floor: int,
+        total_floor: int
+    ):
+        self.url = url
+        self.city = city
+        self.street = street
+        self.house_number = house_number
+        self.price = price
+        self.total_area = total_area
+        self.room_number = room_number
+        self.floor = floor
+        self.total_floor = total_floor
+
+    def address(self) -> str:
+        return ', '.join(
+            s for s in [self.city, self.street, self.house_number] if s != ''
+        )
 
 
 def _read_flats(query: Query) -> DataFrame:
@@ -49,6 +88,8 @@ def _read_flats(query: Query) -> DataFrame:
         return read_sql(
             '''
             select url,
+            street,
+            house_number,
             price       as actual_price,
             %s          as utmost_price,
             total_area,

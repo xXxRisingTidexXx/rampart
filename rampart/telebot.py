@@ -21,19 +21,8 @@ def _main():
 
 
 def _get_start(update: Update, _: CallbackContext):
-    update.message.reply_markdown_v2(
-        'Привіт\\! Дозволь ввести тебе в хід справ: я \\- щось по типу гугла, але для ву'
-        'зької категорії речей :\\)\\. Та результати знаходжу так само \\- за текстовими'
-        ' запитами; щоправда, в них доволі специфічний формат, менше схожий на природню '
-        'мову\\. Кожен запит має вигляд:```\n\n/search <місто> <ціна> <поверх> <кімнати>'
-        '```\n\nІєрогліфи в трикутних дужках \\- деякі шаблонні значення, котрі тобі вар'
-        'то замінити на власні\\. Якщо не знаєш чи не хочеш вказувати якийсь із пунктів,'
-        ' то постав `\\-` \\. Наприклад:```\n\n/search Київ 75000 високо \\-```\n\n Дост'
-        'упні значення:\n\n\\- місто \\- актуальна назва довільного міста України\n\\- ц'
-        'іна \\- доступна для тебе сума в USD\n\\- поверх \\- одне з двох значень: `висо'
-        'ко` чи `низько`\n\\- кімнати \\- одне зі значень: `одна` , `дві` , `три` чи `ба'
-        'гато`\n\nP\\.S\\. Я ігнорую всі некомандні повідомлення, так усім жити легше\\.'
-    )
+    with open('templates/start.html') as stream:
+        update.message.reply_html(stream.read())
 
 
 def _get_search(update: Update, context: CallbackContext):
@@ -64,6 +53,9 @@ def _get_search(update: Update, context: CallbackContext):
     flats = search_flats(Query(city, price, floor, room_number))
     if len(flats) == 0:
         update.message.reply_text('На жаль, мені нічого не вдалося знайти.')
+        return
+    for flat in flats:
+        update.message.reply_html(f'<b><a href={flat.url}>{flat.address()}</a></b>')
 
 
 def _float(value: str) -> float:
