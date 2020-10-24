@@ -9,8 +9,6 @@ _FLOORS = {'-': 0, 'низько': 1, 'високо': 2}
 _ROOM_NUMBERS = {'-': 0, 'одна': 1, 'дві': 2, 'три': 3, 'багато': 4}
 
 
-# TODO: leverage optuna to set the hyperparameters.
-# TODO: add JSON logging.
 def _main():
     updater = Updater(getenv('RAMPART_TELEBOT_TOKEN'))
     updater.dispatcher.add_handler(CommandHandler('start', _get_start))
@@ -72,8 +70,3 @@ def _get_help(update: Update, _: CallbackContext):
         'До твоїх послуг доступні такі команди:\n\n/start - довідка щодо формату пошуков'
         'ого запиту\n/search - пошук житла\n/help - це повідомлення\n'
     )
-
-
-if __name__ == '__main__':
-    basicConfig(level=INFO)
-    _main()
