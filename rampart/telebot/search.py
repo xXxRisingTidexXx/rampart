@@ -5,31 +5,66 @@ from lightgbm import Booster
 from pandas import read_sql, DataFrame
 from sqlalchemy.engine.base import Engine
 
-_engine: Engine = create_engine(getenv('RAMPART_DATABASE_DSN'))
-_booster = Booster(model_file='model.txt')
 
+class Searcher:
+    __slots__ = ['_engine', '_booster']
 
-def search_flats(query: 'Query') -> List['Flat']:
-    frame = _read_flats(query)
-    frame['score'] = _booster.predict(
-        frame.drop(columns=['url', 'street', 'house_number']),
-        num_iteration=_booster.best_iteration
-    )
-    return [
-        Flat(
-            s['url'],
-            query.city,
-            s['street'],
-            s['house_number'],
-            s['actual_price'],
-            s['total_area'],
-            s['actual_room_number'],
-            s['actual_floor'],
-            s['total_floor']
+    def __init__(self):
+        self._engine: Engine = create_engine(getenv('RAMPART_DATABASE_DSN'))
+        self._booster = Booster(model_file='model.txt')
+
+    def search_flats(self, query: 'Query') -> List['Flat']:
+        frame = self._read_flats(query)
+        frame['score'] = self._booster.predict(
+            frame.drop(columns=['url', 'street', 'house_number']),
+            num_iteration=self._booster.best_iteration
         )
-        for _, s
-        in frame.sort_values('score', ascending=False).head(3).iterrows()
-    ]
+        return [
+            Flat(
+                s['url'],
+                query.city,
+                s['street'],
+                s['house_number'],
+                s['actual_price'],
+                s['total_area'],
+                s['actual_room_number'],
+                s['actual_floor'],
+                s['total_floor']
+            )
+            for _, s
+            in frame.sort_values('score', ascending=False).head(3).iterrows()
+        ]
+
+    def _read_flats(self, query: 'Query') -> DataFrame:
+        with self._engine.connect() as connection:
+            return read_sql(
+                '''
+                select url,
+                street,
+                house_number,
+                price       as actual_price,
+                %s          as utmost_price,
+                total_area,
+                living_area,
+                kitchen_area,
+                room_number as actual_room_number,
+                %s          as desired_room_number,
+                floor       as actual_floor,
+                total_floor,
+                %s          as desired_floor,
+                case
+                    when housing = 'primary' then 0
+                    else 1
+                    end     as housing,
+                ssf,
+                izf,
+                gzf
+                from flats
+                where city = %s
+                ''',
+                connection,
+                params=[query.price, query.room_number, query.floor, query.city]
+            )
 
 
 class Query:
@@ -77,39 +112,8 @@ class Flat:
         self.floor = floor
         self.total_floor = total_floor
 
+    @property
     def address(self) -> str:
         return ', '.join(
             s for s in [self.city, self.street, self.house_number] if s != ''
-        )
-
-
-def _read_flats(query: Query) -> DataFrame:
-    with _engine.connect() as connection:
-        return read_sql(
-            '''
-            select url,
-            street,
-            house_number,
-            price       as actual_price,
-            %s          as utmost_price,
-            total_area,
-            living_area,
-            kitchen_area,
-            room_number as actual_room_number,
-            %s          as desired_room_number,
-            floor       as actual_floor,
-            total_floor,
-            %s          as desired_floor,
-            case
-                when housing = 'primary' then 0
-                else 1
-                end     as housing,
-            ssf,
-            izf,
-            gzf
-            from flats
-            where city = %s
-            ''',
-            connection,
-            params=[query.price, query.room_number, query.floor, query.city]
         )
