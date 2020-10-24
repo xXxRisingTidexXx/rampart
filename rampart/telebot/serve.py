@@ -12,7 +12,9 @@ def serve():
     updater.dispatcher.add_handler(CommandHandler('start', server.get_start))
     updater.dispatcher.add_handler(CommandHandler('help', server.get_help))
     filters = (
-        Filters.regex(r'^ *\*$') &
+        Filters.regex(
+            r'^ *\* +(\S+) +(\d+|-) +(-|низько|високо) +(-|одна|дві|три|багато) *$'
+        ) &
         ~Filters.forwarded &
         ~Filters.reply &
         ~Filters.update &
