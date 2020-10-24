@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY requirements.txt .
 COPY rampart rampart
+COPY templates templates
 
 RUN apt-get update && \
     apt-get install -y libgomp1 && \

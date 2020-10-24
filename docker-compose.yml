@@ -95,6 +95,7 @@ services:
     command: python -m rampart.telebot
     volumes:
       - ./rampart:/app/rampart
+      - ./templates:/app/templates
       - ./notebooks/model.txt:/app/model.txt
     env_file:
       - .env
