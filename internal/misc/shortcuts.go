@@ -1,8 +1,6 @@
 package misc
 
 import (
-	"fmt"
-	"os"
 	"path/filepath"
 	"runtime"
 )
@@ -16,13 +14,6 @@ func init() {
 }
 
 var rootDir = ""
-
-func GetEnv(key string) (string, error) {
-	if value := os.Getenv(key); value != "" {
-		return value, nil
-	}
-	return "", fmt.Errorf("misc: failed to find the env %s", key)
-}
 
 func ResolvePath(path string) string {
 	return filepath.Join(rootDir, path)

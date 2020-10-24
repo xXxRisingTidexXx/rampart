@@ -9,14 +9,12 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/domria"
 	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
 // TODO: create photo & panorama table(s).
 // TODO: relative city center distance feature (with city diameter).
 // TODO: distance to workplace feature.
 // TODO: shorten house number column (but research the actual width before).
-// TODO: add envs to config.
 func main() {
 	isDebug := flag.Bool("debug", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
@@ -28,11 +26,7 @@ func main() {
 	if err != nil {
 		entry.Fatal(err)
 	}
-	dsn, err := misc.GetEnv("RAMPART_DATABASE_DSN")
-	if err != nil {
-		entry.Fatal(err)
-	}
-	db, err := sql.Open("postgres", dsn)
+	db, err := sql.Open("postgres", cfg.DSN)
 	if err != nil {
 		entry.Fatalf("main: mining failed to open the db, %v", err)
 	}
