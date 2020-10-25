@@ -37,7 +37,12 @@ class Searcher:
                 s['house_number'],
             )
             for _, s
-            in frame.sort_values('score', ascending=False).head(7).iterrows()
+            in (
+                frame
+                .sort_values('score', ascending=False)
+                .iloc[query.lower:query.upper]
+                .iterrows()
+            )
         ]
 
     def _read_flats(self, query: 'Query') -> DataFrame:
@@ -73,10 +78,28 @@ class Searcher:
 
 
 class Query:
-    __slots__ = ['city', 'price', 'floor', 'room_number']
+    __slots__ = ['city', 'price', 'floor', 'room_number', 'limit', 'offset']
 
-    def __init__(self, city: str, price: float, floor: int, room_number: int):
+    def __init__(
+        self,
+        city: str,
+        price: float,
+        floor: int,
+        room_number: int,
+        limit: int = 10,
+        offset: int = 0
+    ):
         self.city = city
         self.price = price
         self.floor = floor
         self.room_number = room_number
+        self.limit = limit
+        self.offset = offset
+
+    @property
+    def lower(self) -> int:
+        return self.limit * self.offset
+
+    @property
+    def upper(self) -> int:
+        return self.limit * (self.offset + 1)
