@@ -79,7 +79,7 @@ services:
     image: rampart-notebook
     container_name: rampart-notebook
     volumes:
-      - ./notebooks:/home/jovyan
+      - .:/home/jovyan
     ports:
       - 8888:8888
     environment:
@@ -94,9 +94,7 @@ services:
     container_name: rampart-telebot
     command: python -m rampart.telebot
     volumes:
-      - ./rampart:/app/rampart
-      - ./templates:/app/templates
-      - ./notebooks/model.txt:/app/model.txt
+      - .:/app
     env_file:
       - .env
 volumes:
