@@ -3,6 +3,7 @@ FROM python:3.8-slim
 WORKDIR /app
 
 COPY requirements.txt .
+COPY model.txt .
 COPY rampart rampart
 COPY templates templates
 
