@@ -20,11 +20,7 @@ venv
 .ipynb_checkpoints
 .ipython
 .env
-.twinkle
 __pycache__
-notebooks/training.csv
-notebooks/testing.csv
-notebooks/model.txt
-notebooks/training.conf
-notebooks/testing.conf
-notebooks/outdated.txt
+training.csv
+testing.csv
+model.txt
