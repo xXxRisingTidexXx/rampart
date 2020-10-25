@@ -33,7 +33,7 @@ class TelebotConfig:
 
 def _get_env(key: str) -> str:
     value = getenv(key)
-    if value != '':
+    if value == '':
         raise RuntimeError(f'Environment variable \'{key}\' not set')
     return value
 
@@ -79,4 +79,4 @@ class SearcherConfig:
 
     def __init__(self):
         self.dsn = _get_env('RAMPART_DATABASE_DSN')
-        self.model_path = _root_path / 'model.txt'
+        self.model_path = str(_root_path / 'model.txt')
