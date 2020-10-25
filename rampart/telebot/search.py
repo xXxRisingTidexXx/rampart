@@ -32,7 +32,7 @@ class Searcher:
                 s['total_floor']
             )
             for _, s
-            in frame.sort_values('score', ascending=False).head(3).iterrows()
+            in frame.sort_values('score', ascending=False).head(7).iterrows()
         ]
 
     def _read_flats(self, query: 'Query') -> DataFrame:
