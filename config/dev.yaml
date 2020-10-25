@@ -194,3 +194,24 @@ mining:
     server:
       <<: *server
       address: :9002
+telebot:
+  start_command: start
+  help_command: help
+  search_pattern: '^\s*(\S+) +([1-9]\d*|0|-) +(-|низько|високо) +(-|одна|дві|три|багато)\s*$'
+  server:
+    any: &any '-'
+    cities:
+      *any: Київ
+    floors:
+      *any: 0
+      низько: 1
+      високо: 2
+    room_numbers:
+      *any: 0
+      одна: 1
+      дві: 2
+      три: 3
+      багато: 4
+    housings:
+      - первинка
+      - вторинка

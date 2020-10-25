@@ -1,52 +1,36 @@
-from os import getenv
 from telegram import Update
-from telegram.ext import (
-    Updater, CommandHandler, CallbackContext, MessageHandler, Filters
-)
-from rampart.telebot.search import Query, Searcher, Housing
-
-
-def serve():
-    server = Server()
-    updater = Updater(getenv('RAMPART_TELEBOT_TOKEN'))
-    updater.dispatcher.add_handler(CommandHandler('start', server.get_start))
-    updater.dispatcher.add_handler(CommandHandler('help', server.get_help))
-    filters = Filters.regex(
-        r'^\s*(\S+) +([1-9]\d*|0|-) +(-|низько|високо) +(-|одна|дві|три|багато)\s*$'
-    )
-    updater.dispatcher.add_handler(MessageHandler(filters, server.get_flats))
-    updater.dispatcher.add_handler(MessageHandler(~filters, server.get_confusion))
-    updater.start_polling()
-    updater.idle()
+from telegram.ext import CallbackContext
+from rampart.config import ServerConfig
+from rampart.search import Query, Searcher
 
 
 class Server:
     __slots__ = [
-        '_searcher',
+        '_any',
+        '_cities',
+        '_floors',
+        '_room_numbers',
+        '_housings',
         '_start_template',
         '_help_template',
         '_nothing_template',
         '_flat_template',
-        '_confusion_template'
+        '_confusion_template',
+        '_searcher'
     ]
-    _any = '-'
-    _cities = {_any: 'Київ'}
-    _floors = {_any: 0, 'низько': 1, 'високо': 2}
-    _room_numbers = {_any: 0, 'одна': 1, 'дві': 2, 'три': 3, 'багато': 4}
-    _housings = {Housing.primary: 'первинка', Housing.secondary: 'вторинка'}
 
-    def __init__(self):
-        self._searcher = Searcher()
-        with open('templates/start.html') as stream:
-            self._start_template = stream.read()
-        with open('templates/help.html') as stream:
-            self._help_template = stream.read()
-        with open('templates/nothing.html') as stream:
-            self._nothing_template = stream.read()
-        with open('templates/flat.html') as stream:
-            self._flat_template = stream.read()
-        with open('templates/confusion.html') as stream:
-            self._confusion_template = stream.read()
+    def __init__(self, config: ServerConfig):
+        self._any = config.any
+        self._cities = config.cities
+        self._floors = config.floors
+        self._room_numbers = config.room_numbers
+        self._housings = config.housings
+        self._start_template = config.start_template
+        self._help_template = config.help_template
+        self._nothing_template = config.nothing_template
+        self._flat_template = config.flat_template
+        self._confusion_template = config.confusion_template
+        self._searcher = Searcher(config.searcher)
 
     def get_start(self, update: Update, _: CallbackContext):
         update.message.reply_html(self._start_template)
@@ -54,7 +38,7 @@ class Server:
     def get_help(self, update: Update, _: CallbackContext):
         update.message.reply_html(self._help_template)
 
-    def get_flats(self, update: Update, context: CallbackContext):
+    def get_search(self, update: Update, context: CallbackContext):
         groups = context.match.groups()
         flats = self._searcher.search_flats(
             Query(

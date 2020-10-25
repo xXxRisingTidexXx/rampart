@@ -1,21 +1,24 @@
-from enum import Enum, unique
-from os import getenv
 from typing import List
 from sqlalchemy import create_engine
 from lightgbm import Booster
 from pandas import read_sql, DataFrame
 from sqlalchemy.engine.base import Engine
+from rampart.config import SearcherConfig
+from rampart.model import Flat
 
 
+# TODO: leverage optuna to set the hyperparameters.
 class Searcher:
     __slots__ = ['_engine', '_booster']
 
-    def __init__(self):
-        self._engine: Engine = create_engine(getenv('RAMPART_DATABASE_DSN'))
-        self._booster = Booster(model_file='model.txt')
+    def __init__(self, config: SearcherConfig):
+        self._engine: Engine = create_engine(config.dsn)
+        self._booster = Booster(model_file=config.model_path)
 
-    def search_flats(self, query: 'Query') -> List['Flat']:
+    def search_flats(self, query: 'Query') -> List[Flat]:
         frame = self._read_flats(query)
+        if len(frame) == 0:
+            return []
         frame['score'] = self._booster.predict(
             frame.drop(columns=['url', 'street', 'house_number']),
             num_iteration=self._booster.best_iteration
@@ -77,54 +80,3 @@ class Query:
         self.price = price
         self.floor = floor
         self.room_number = room_number
-
-
-class Flat:
-    __slots__ = [
-        'url',
-        'price',
-        'total_area',
-        'room_number',
-        'floor',
-        'total_floor',
-        'housing',
-        'city',
-        'street',
-        'house_number'
-    ]
-
-    def __init__(
-        self,
-        url: str,
-        price: float,
-        total_area: float,
-        room_number: int,
-        floor: int,
-        total_floor: int,
-        housing: int,
-        city: str,
-        street: str,
-        house_number: str
-    ):
-        self.url = url
-        self.price = price
-        self.total_area = total_area
-        self.room_number = room_number
-        self.floor = floor
-        self.total_floor = total_floor
-        self.housing = Housing(housing)
-        self.city = city
-        self.street = street
-        self.house_number = house_number
-
-    @property
-    def address(self) -> str:
-        return ', '.join(
-            s for s in [self.city, self.street, self.house_number] if s != ''
-        )
-
-
-@unique
-class Housing(Enum):
-    primary = 0
-    secondary = 1
