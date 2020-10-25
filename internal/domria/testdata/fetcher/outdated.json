@@ -1,0 +1,243 @@
+{
+  "items": [
+    {
+      "lf_links_uk": [
+        {
+          "label": "куплю квартиру",
+          "url": "/uk/prodazha-kvartir/"
+        },
+        {
+          "label": "продаж квартир Київ",
+          "url": "/uk/prodazha-kvartir/kiev/"
+        },
+        {
+          "label": "купити 1 кімнатну квартиру Київ",
+          "url": "/uk/prodazha-kvartir/kiev-1k/"
+        },
+        {
+          "label": "купити квартиру провулок Моторний",
+          "url": "/uk/prodazha-kvartir/kiev-pereulok-motornyi/"
+        },
+        {
+          "label": "купити квартиру Голосіївський",
+          "url": "/uk/prodazha-kvartir/kiev-rayon-goloseevskyi/"
+        },
+        {
+          "label": "вартість квартир в Києві",
+          "url": "/uk/продаж-квартири-київ-ціни/"
+        },
+        {
+          "label": "ЖК по пр-ту А. Глушкова в Голосіївському районі",
+          "url": "/uk/novostroyka-zhk-po-pr-tu-a-glushkova-4895/"
+        }
+      ],
+      "realty_type_parent_name_uk": "Житло",
+      "street_name": "Моторный переулок",
+      "rooms_count": 1,
+      "advert_title": 0,
+      "type": "realty",
+      "wall_type_uk": "моноліт",
+      "is_commercial": 1,
+      "state_name": "Киевская",
+      "street_id": 5441,
+      "state_id": 10,
+      "moderated": 1,
+      "beautiful_url": "realty-prodaja-kvartira-kiev-goloseevskiy-motornyy-pereulok-17420001.html",
+      "levels": 0,
+      "district_type_name": "Район",
+      "description": "21 этаж , в ванной , гостиной и кухни тёплый пол, установлены счётчики на отопление , застекленный балкон , сигнализация . Рядом детский сад , магазин Лоток и круглосуточно АТБ , аптека, кафе -бар , так же рядышком есть две парковки .До метро Демеевская 7 мн. До центра в выходной день 15 мн.",
+      "advert_publish_type": 1,
+      "photos_count": 10,
+      "currency_type": "$",
+      "district_type_id": 1,
+      "longitude": 30.5401389,
+      "sale_date": "2020-09-28 12:44:46",
+      "levels_expired": 0,
+      "web_id": "553b321d6f37f809",
+      "partner_id": 1,
+      "is_exchange": "нет",
+      "moderator_id": 5,
+      "district_id": "15184",
+      "complete_time": 132.607,
+      "wall_type": "монолит",
+      "district_name_uk": "Голосіївський",
+      "publishing_date": "2020-09-28 10:32:19",
+      "description_uk": "21 поверх, у ванній, вітальні і кухні тепла підлога, встановлені лічильники на опалення, засклений балкон, сигналізація. Поруч дитячий сад, магазин Лоток і цілодобово АТБ, аптека, кафе-бар, так само поряд є дві парковки .До метро Деміївська 7 мн. До центру у вихідний день 15 мн.",
+      "_rev": "127-56ce13af85079c62e72c99dac39df992",
+      "currency_type_uk": "$",
+      "youtube_link": "",
+      "price_type": "за объект",
+      "price": 68000,
+      "updated_at": "2020-09-28 12:44:46",
+      "floor": 21,
+      "quality": 80,
+      "rangeFactorAuction": "00055573869304001598",
+      "moderation_date": "2020-07-20 11:26:09",
+      "latitude": 50.3763898,
+      "price_total": 68000,
+      "main_photo": "dom/photo/11513/1151340/115134049/115134049.jpg",
+      "is_exchange_uk": "ні",
+      "price_item": 1308,
+      "realty_type_name": "Квартира",
+      "building_number_str": "9а",
+      "city_name": "Киев",
+      "realty_type_parent_id": 1,
+      "rangeFactor": "00001601278339",
+      "living_square_meters": 24,
+      "state_name_uk": "Київська",
+      "advert_type_name_uk": "продаж",
+      "realty_type_id": 2,
+      "rangeFactorNew": "000001601278339",
+      "price_type_uk": "за об'єкт",
+      "deleted_by": "user",
+      "realty_type_name_uk": "Квартира",
+      "user_ip": 0,
+      "city_id": 10,
+      "agency_id": 27855,
+      "characteristics_values": {
+        "118": 113,
+        "209": 1,
+        "214": 52,
+        "216": 24,
+        "218": 13,
+        "227": 21,
+        "228": 24,
+        "234": 68000,
+        "242": 239,
+        "247": 252,
+        "265": 257,
+        "443": 442,
+        "1437": 1434,
+        "1501": 1501,
+        "1607": 1200,
+        "1608": 600,
+        "1650": 1648
+      },
+      "_id": "realty-17420001",
+      "floors_count": 24,
+      "duplicate_original": 17392835,
+      "created_at": "2020-07-20 11:22:54",
+      "user_id": 9341718,
+      "kitchen_square_meters": 13,
+      "city_name_uk": "Київ",
+      "flat_number": "",
+      "user_package_id": 232,
+      "total_square_meters": 52,
+      "delete_reason": "8",
+      "realty_id": 17420001,
+      "street_name_uk": "Моторний провулок",
+      "lf_links": [
+        {
+          "label": "куплю квартиру",
+          "url": "/prodazha-kvartir/"
+        },
+        {
+          "label": "продажа квартир в Киеве",
+          "url": "/prodazha-kvartir/kiev/"
+        },
+        {
+          "label": "продажа 1 комнатных квартир в Киеве",
+          "url": "/prodazha-kvartir/kiev-1k/"
+        },
+        {
+          "label": "продажа квартир переулок Моторный",
+          "url": "/prodazha-kvartir/kiev-pereulok-motornyi/"
+        },
+        {
+          "label": "продажа квартир в районе Голосеевском",
+          "url": "/prodazha-kvartir/kiev-rayon-goloseevskyi/"
+        },
+        {
+          "label": "стоимость квартир в Киеве",
+          "url": "/ru/продажа-квартиры-киев-цены/"
+        },
+        {
+          "label": "ЖК по пр-ту А. Глушкова в Голосеевском районе",
+          "url": "/novostroyka-zhk-po-pr-tu-a-glushkova-4895/"
+        }
+      ],
+      "realty_sale_type": 1,
+      "photos": {
+        "115134045": {
+          "id": 115134045,
+          "file": "dom/photo/11513/1151340/115134045/115134045.jpg",
+          "ordering": 11
+        },
+        "115134047": {
+          "id": 115134047,
+          "file": "dom/photo/11513/1151340/115134047/115134047.jpg",
+          "ordering": 12
+        },
+        "115134049": {
+          "id": 115134049,
+          "file": "dom/photo/11513/1151340/115134049/115134049.jpg",
+          "ordering": 13,
+          "is_main": 1
+        },
+        "115134050": {
+          "id": 115134050,
+          "file": "dom/photo/11513/1151340/115134050/115134050.jpg",
+          "ordering": 14
+        },
+        "115134052": {
+          "id": 115134052,
+          "file": "dom/photo/11513/1151340/115134052/115134052.jpg",
+          "ordering": 15
+        },
+        "115134053": {
+          "id": 115134053,
+          "file": "dom/photo/11513/1151340/115134053/115134053.jpg",
+          "ordering": 16
+        },
+        "115134054": {
+          "id": 115134054,
+          "file": "dom/photo/11513/1151340/115134054/115134054.jpg",
+          "ordering": 17
+        },
+        "115134145": {
+          "id": 115134145,
+          "file": "dom/photo/11513/1151341/115134145/115134145.jpg",
+          "ordering": 18
+        },
+        "115134164": {
+          "id": 115134164,
+          "file": "dom/photo/11513/1151341/115134164/115134164.jpg",
+          "ordering": 19
+        },
+        "115134263": {
+          "id": 115134263,
+          "file": "dom/photo/11513/1151342/115134263/115134263.jpg",
+          "ordering": 20
+        }
+      },
+      "date_end": "2020-10-28 10:32:19",
+      "is_calltracking": 1,
+      "district_name": "Голосеевский",
+      "rangeFactorIns": "000001601278339",
+      "advert_type_id": 1,
+      "advert_type_name": "продажа",
+      "is_show_building_no": 1,
+      "realty_type_parent_name": "Жилье",
+      "user": {
+        "name": "Наталия Олеговна Твердун",
+        "image": "avatars/all/934/93417/9341718/9341718.jpg?v=1597242285",
+        "good_partner_top": ""
+      },
+      "agency": {
+        "agency_id": 27855,
+        "name": "АН Кварталы",
+        "logo": "dom/agence/2/278/27855/27855.jpg?v=1588434377742",
+        "agency_type": 1,
+        "good_partner": "",
+        "user_id": 3799325
+      },
+      "priceArr": {
+        "1": "68 000",
+        "2": "58 092",
+        "3": "1 942 857"
+      }
+    }
+  ],
+  "count": 1,
+  "time": {}
+}

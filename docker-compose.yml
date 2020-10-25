@@ -5,8 +5,8 @@ x-migrate: &x-migrate
     - ./migrations:/migrations
   env_file:
     - .env
-x-backend: &x-backend
-  image: rampart-backend
+x-mining: &x-mining
+  image: rampart-mining
   volumes:
     - .:/go/src/app
   env_file:
@@ -36,27 +36,21 @@ services:
   generate:
     <<: *x-migrate
     container_name: rampart-generate
-  backend:
+  mining:
+    <<: *x-mining
     build:
       context: .
-      dockerfile: docker/backend.dockerfile
-    image: rampart-backend
-  mining:
-    <<: *x-backend
+      dockerfile: docker/mining.dockerfile
     container_name: rampart-mining
     command: go run ${RAMPART_MODULE}/cmd/mining -debug -miner domria-primary
-  tgbot:
-    <<: *x-backend
-    container_name: rampart-tgbot
-    command: go run ${RAMPART_MODULE}/cmd/tgbot -debug
   mining-domria-primary:
-    <<: *x-backend
+    <<: *x-mining
     container_name: rampart-mining-domria-primary
     command: go run ${RAMPART_MODULE}/cmd/mining -miner domria-primary
     ports:
       - 9001:9001
   mining-domria-secondary:
-    <<: *x-backend
+    <<: *x-mining
     container_name: rampart-mining-domria-secondary
     command: go run ${RAMPART_MODULE}/cmd/mining -miner domria-secondary
     ports:
@@ -77,7 +71,7 @@ services:
   test:
     <<: *x-checks
     container_name: rampart-test
-    command: richgo test ${RAMPART_MODULE}/internal/mining/domria ${RAMPART_MODULE}/internal/mining/metrics
+    command: richgo test ${RAMPART_MODULE}/internal/domria ${RAMPART_MODULE}/internal/metrics
   notebook:
     build:
       context: .
@@ -85,11 +79,22 @@ services:
     image: rampart-notebook
     container_name: rampart-notebook
     volumes:
-      - ./notebooks:/home/jovyan
+      - .:/home/jovyan
     ports:
       - 8888:8888
     environment:
       JUPYTER_ENABLE_LAB: 'yes'
+    env_file:
+      - .env
+  telebot:
+    build:
+      context: .
+      dockerfile: docker/telebot.dockerfile
+    image: rampart-telebot
+    container_name: rampart-telebot
+    command: python -m rampart.telebot
+    volumes:
+      - .:/app
     env_file:
       - .env
 volumes:

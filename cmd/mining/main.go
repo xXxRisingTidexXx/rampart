@@ -7,9 +7,8 @@ import (
 	gocron "github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
-	"github.com/xXxRisingTidexXx/rampart/internal/mining/domria"
-	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"github.com/xXxRisingTidexXx/rampart/internal/domria"
+	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 )
 
 // TODO: create photo & panorama table(s).
@@ -27,11 +26,7 @@ func main() {
 	if err != nil {
 		entry.Fatal(err)
 	}
-	dsn, err := misc.GetEnv("RAMPART_DATABASE_DSN")
-	if err != nil {
-		entry.Fatal(err)
-	}
-	db, err := sql.Open("postgres", dsn)
+	db, err := sql.Open("postgres", cfg.DSN)
 	if err != nil {
 		entry.Fatalf("main: mining failed to open the db, %v", err)
 	}

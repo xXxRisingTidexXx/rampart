@@ -6,7 +6,7 @@ import (
 	"github.com/paulmach/orb/encoding/wkb"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
-	"github.com/xXxRisingTidexXx/rampart/internal/mining/metrics"
+	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 	"time"
 )
 

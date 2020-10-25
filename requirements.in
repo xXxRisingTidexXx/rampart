@@ -1,5 +1,6 @@
 psycopg2-binary
-shapely
-tabulate
-ppscore
-plotly
+sqlalchemy
+pandas
+lightgbm
+python-telegram-bot
+pyyaml

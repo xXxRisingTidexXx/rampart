@@ -4,18 +4,28 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
+apscheduler==3.6.3        # via python-telegram-bot
+certifi==2020.6.20        # via python-telegram-bot
+cffi==1.14.3              # via cryptography
+cryptography==3.1.1       # via python-telegram-bot
+decorator==4.4.2          # via python-telegram-bot
 joblib==0.17.0            # via scikit-learn
-numpy==1.19.2             # via pandas, scikit-learn, scipy
-pandas==1.1.3             # via ppscore
-plotly==4.11.0            # via -r requirements.in
-ppscore==1.1.1            # via -r requirements.in
+lightgbm==3.0.0           # via -r requirements.in
+numpy==1.19.2             # via lightgbm, pandas, scikit-learn, scipy
+pandas==1.1.3             # via -r requirements.in
 psycopg2-binary==2.8.6    # via -r requirements.in
+pycparser==2.20           # via cffi
 python-dateutil==2.8.1    # via pandas
-pytz==2020.1              # via pandas
-retrying==1.3.3           # via plotly
-scikit-learn==0.23.2      # via ppscore
-scipy==1.5.2              # via scikit-learn
-shapely==1.7.1            # via -r requirements.in
-six==1.15.0               # via plotly, python-dateutil, retrying
-tabulate==0.8.7           # via -r requirements.in
+python-telegram-bot==13.0  # via -r requirements.in
+pytz==2020.1              # via apscheduler, pandas, tzlocal
+pyyaml==5.3.1             # via -r requirements.in
+scikit-learn==0.23.2      # via lightgbm
+scipy==1.5.2              # via lightgbm, scikit-learn
+six==1.15.0               # via apscheduler, cryptography, python-dateutil
+sqlalchemy==1.3.20        # via -r requirements.in
 threadpoolctl==2.1.0      # via scikit-learn
+tornado==6.0.4            # via python-telegram-bot
+tzlocal==2.1              # via apscheduler
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
