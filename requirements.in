@@ -3,3 +3,4 @@ sqlalchemy
 pandas
 lightgbm
 python-telegram-bot
+pyyaml
