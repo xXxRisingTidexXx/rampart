@@ -3,7 +3,7 @@ from telegram import Update
 from telegram.ext import (
     Updater, CommandHandler, CallbackContext, MessageHandler, Filters
 )
-from rampart.telebot.search import Query, Searcher
+from rampart.telebot.search import Query, Searcher, Housing
 
 
 def serve():
@@ -33,6 +33,7 @@ class Server:
     _cities = {_any: 'Київ'}
     _floors = {_any: 0, 'низько': 1, 'високо': 2}
     _room_numbers = {_any: 0, 'одна': 1, 'дві': 2, 'три': 3, 'багато': 4}
+    _housings = {Housing.primary: 'первинка', Housing.secondary: 'вторинка'}
 
     def __init__(self):
         self._searcher = Searcher()
@@ -67,7 +68,16 @@ class Server:
             update.message.reply_html(self._nothing_template)
         for flat in flats:
             update.message.reply_html(
-                self._flat_template.format(flat.url, flat.address)
+                self._flat_template.format(
+                    flat.url,
+                    flat.address,
+                    self._housings[flat.housing],
+                    flat.price,
+                    flat.room_number,
+                    flat.total_area,
+                    flat.total_floor,
+                    flat.floor
+                )
             )
 
     def get_confusion(self, update: Update, _: CallbackContext):
