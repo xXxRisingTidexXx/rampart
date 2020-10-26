@@ -27,7 +27,7 @@ type item struct {
 	DistrictNameUK      string
 	StreetNameUK        string
 	StreetName          string
-	BuildingNumberStr   string
+	BuildingNumberStr   number
 }
 
 func (i *item) UnmarshalJSON(bytes []byte) error {
