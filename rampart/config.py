@@ -21,14 +21,12 @@ class Config:
 
 
 class TelebotConfig:
-    __slots__ = ['token', 'start_command', 'help_command', 'search_pattern', 'server']
+    __slots__ = ['token', 'pattern', 'handler']
 
     def __init__(self, config):
         self.token = _get_env('RAMPART_TELEBOT_TOKEN')
-        self.start_command: str = config['start_command']
-        self.help_command: str = config['help_command']
-        self.search_pattern = compile(config['search_pattern'])
-        self.server = ServerConfig(config['server'])
+        self.pattern = compile(config['pattern'])
+        self.handler = TelebotHandlerConfig(config['handler'])
 
 
 def _get_env(key: str) -> str:
@@ -38,7 +36,7 @@ def _get_env(key: str) -> str:
     return value
 
 
-class ServerConfig:
+class TelebotHandlerConfig:
     __slots__ = [
         'any',
         'cities',
@@ -57,7 +55,7 @@ class ServerConfig:
         self.any: str = config['any']
         self.cities: Dict[str, str] = config['cities']
         self.floors: Dict[str, int] = config['floors']
-        self.room_numbers: Dict[str, int] = config['room_numbers']
+        self.room_numbers: Dict[str, int] = config['room-numbers']
         self.housings: Dict[Housing, str] = {
             Housing(i): h for i, h in enumerate(config['housings'])
         }

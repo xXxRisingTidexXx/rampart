@@ -1,10 +1,10 @@
 from telegram import Update
 from telegram.ext import CallbackContext
-from rampart.config import ServerConfig
+from rampart.config import TelebotHandlerConfig
 from rampart.search import Query, Searcher
 
 
-class Server:
+class TelebotHandler:
     __slots__ = [
         '_any',
         '_cities',
@@ -19,7 +19,7 @@ class Server:
         '_searcher'
     ]
 
-    def __init__(self, config: ServerConfig):
+    def __init__(self, config: TelebotHandlerConfig):
         self._any = config.any
         self._cities = config.cities
         self._floors = config.floors
