@@ -106,7 +106,9 @@ services:
   browsing:
     <<: *x-python
     container_name: rampart-browsing
-    command: flask run
+    command: python -m rampart.browsing
+    ports:
+      - 9211:9211
 volumes:
   database:
     name: rampart-database

@@ -4,6 +4,8 @@ FROM python:3.8-slim
 
 WORKDIR /app
 
+ENV FLASK_ENV development
+
 COPY requirements.txt .
 COPY model.txt .
 COPY rampart rampart
