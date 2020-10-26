@@ -5,8 +5,8 @@ x-migrate: &x-migrate
     - ./migrations:/migrations
   env_file:
     - .env
-x-mining: &x-mining
-  image: rampart-mining
+x-golang: &x-golang
+  image: rampart-golang
   volumes:
     - .:/go/src/app
   env_file:
@@ -15,6 +15,12 @@ x-checks: &x-checks
   image: rampart-checks
   volumes:
     - .:/go/src/app
+x-python: &x-python
+  image: rampart-python
+  volumes:
+    - .:/app
+  env_file:
+    - .env
 services:
   database:
     image: postgis/postgis:12-master
@@ -36,21 +42,23 @@ services:
   generate:
     <<: *x-migrate
     container_name: rampart-generate
-  mining:
-    <<: *x-mining
+  golang:
     build:
       context: .
-      dockerfile: docker/mining.dockerfile
+      dockerfile: docker/golang.dockerfile
+    image: rampart-golang
+  mining:
+    <<: *x-golang
     container_name: rampart-mining
     command: go run ${RAMPART_MODULE}/cmd/mining -debug -miner domria-primary
   mining-domria-primary:
-    <<: *x-mining
+    <<: *x-golang
     container_name: rampart-mining-domria-primary
     command: go run ${RAMPART_MODULE}/cmd/mining -miner domria-primary
     ports:
       - 9001:9001
   mining-domria-secondary:
-    <<: *x-mining
+    <<: *x-golang
     container_name: rampart-mining-domria-secondary
     command: go run ${RAMPART_MODULE}/cmd/mining -miner domria-secondary
     ports:
@@ -86,17 +94,19 @@ services:
       JUPYTER_ENABLE_LAB: 'yes'
     env_file:
       - .env
-  telebot:
+  python:
     build:
       context: .
-      dockerfile: docker/telebot.dockerfile
-    image: rampart-telebot
+      dockerfile: docker/python.dockerfile
+    image: rampart-python
+  telebot:
+    <<: *x-python
     container_name: rampart-telebot
     command: python -m rampart.telebot
-    volumes:
-      - .:/app
-    env_file:
-      - .env
+  browsing:
+    <<: *x-python
+    container_name: rampart-browsing
+    command: flask run
 volumes:
   database:
     name: rampart-database
