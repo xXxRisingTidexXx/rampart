@@ -31,12 +31,13 @@ class Handler:
         offset = _int(request.args.get('offset'))
         if offset < 0:
             return 'Invalid offset provided', 400
+        query = Query(city, price, floor, room_number, limit, offset)
         return (
             render_template(
                 self._index_name,
-                flats=self._searcher.search_flats(
-                    Query(city, price, floor, room_number, limit, offset)
-                )
+                lower=query.lower,
+                upper=query.upper - 1,
+                flats=self._searcher.search_flats(query)
             ),
             200
         )

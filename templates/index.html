@@ -5,6 +5,13 @@
     <title>Browsing</title>
 </head>
 <body>
-<h1>{{flats|length}}</h1>
+<h1>Flats [{{ lower }} - {{ upper }}]</h1>
+<ul>
+    {% for flat in flats %}
+    <li>
+        <a href="{{ flat.url }}"><h3>{{ flat.address }}</h3></a>
+    </li>
+    {% endfor %}
+</ul>
 </body>
 </html>
