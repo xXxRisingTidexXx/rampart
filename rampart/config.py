@@ -6,6 +6,7 @@ from yaml import safe_load
 from rampart.models import Housing
 
 _root_path = Path(__file__).parent.parent
+_template_path = _root_path / 'templates'
 
 
 def get_config() -> 'Config':
@@ -60,16 +61,16 @@ class TelebotHandlerConfig:
         self.housings: Dict[Housing, str] = {
             Housing(i): h for i, h in enumerate(config['housings'])
         }
-        self.start_template = _read_template('start')
-        self.help_template = _read_template('help')
-        self.nothing_template = _read_template('nothing')
-        self.flat_template = _read_template('flat')
-        self.confusion_template = _read_template('confusion')
+        self.start_template = _read_template('start.html')
+        self.help_template = _read_template('help.html')
+        self.nothing_template = _read_template('nothing.html')
+        self.flat_template = _read_template('flat.html')
+        self.confusion_template = _read_template('confusion.html')
         self.searcher = SearcherConfig()
 
 
 def _read_template(name: str) -> str:
-    with open(_root_path / f'templates/{name}.html') as stream:
+    with open(_template_path / name) as stream:
         return stream.read()
 
 
@@ -82,15 +83,17 @@ class SearcherConfig:
 
 
 class BrowsingConfig:
-    __slots__ = ['port', 'handler']
+    __slots__ = ['port', 'template_path', 'handler']
 
     def __init__(self, config):
         self.port: int = config['port']
+        self.template_path = _template_path
         self.handler = BrowsingHandlerConfig()
 
 
 class BrowsingHandlerConfig:
-    __slots__ = ['searcher']
+    __slots__ = ['index_name', 'searcher']
 
     def __init__(self):
+        self.index_name = 'index.html'
         self.searcher = SearcherConfig()
