@@ -2,14 +2,58 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Browsing</title>
+    <style>
+        a {
+            text-decoration: none;
+        }
+    </style>
+    <title>Browsing [{{ lower }} - {{ upper }}]</title>
 </head>
 <body>
-<h1>Flats [{{ lower }} - {{ upper }}]</h1>
+<h1>
+    {% if offset > 0 %}
+    <a href="http://localhost:9211/?city={{ city }}&price={{ price }}&floor={{ floor }}&room_number={{ room_number }}&limit={{ limit }}&offset={{ previous }}">
+        &laquo;
+    </a>
+    {% else %}
+    &nbsp;&nbsp;
+    {% endif %}
+    <span>Flats</span>
+    {% if offset < 9 %}
+    <a href="http://localhost:9211/?city={{ city }}&price={{ price }}&floor={{ floor }}&room_number={{ room_number }}&limit={{ limit }}&offset={{ next }}">
+        &raquo;
+    </a>
+    {% else %}
+    &nbsp;&nbsp;
+    {% endif %}
+</h1>
 <ul>
     {% for flat in flats %}
     <li>
-        <a href="{{ flat.url }}"><h3>{{ flat.address }}</h3></a>
+        <h3>
+            [<a target="_blank" href="{{ flat.url }}">{{ flat.id }}</a>]&nbsp;&nbsp;&nbsp;
+            <a target="_blank" href="https://www.openstreetmap.org/#map=18/{{ flat.latitude }}/{{ flat.longitude }}">
+                {{ flat.address }}
+            </a>
+        </h3>
+        <b>Price:</b>
+        {{ flat.price }} $ ({{ flat.housing }})
+        <br />
+        <b>Total / Living / Kitchen area:</b>
+        {{ flat.total_area }} / {{ flat.living_area }} / {{ flat.kitchen_area }} ㎡
+        <br />
+        <b>Room number:</b>
+        {{ flat.room_number }}
+        <br />
+        <b>Floor / Total floor:</b>
+        {{ flat.floor }} / {{ flat.total_floor }}
+        <br />
+        <b>SSF / IZF / GZF:</b>
+        {{ flat.ssf }} / {{ flat.izf }} / {{ flat.gzf }}
+        <br />
+        <b>Score:</b>
+        {{ flat.score }}
+        <br />
     </li>
     {% endfor %}
 </ul>

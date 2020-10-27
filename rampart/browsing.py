@@ -35,8 +35,16 @@ class Handler:
         return (
             render_template(
                 self._index_name,
-                lower=query.lower,
-                upper=query.upper - 1,
+                lower=query.lower + 1,
+                upper=query.upper,
+                city=city,
+                price=price,
+                floor=floor,
+                room_number=room_number,
+                limit=limit,
+                offset=offset,
+                previous=offset - 1,
+                next=offset + 1,
                 flats=self._searcher.search_flats(query)
             ),
             200
