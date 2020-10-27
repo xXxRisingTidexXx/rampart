@@ -20,21 +20,47 @@ class Searcher:
         if len(frame) == 0:
             return []
         frame['score'] = self._booster.predict(
-            frame.drop(columns=['url', 'street', 'house_number']),
+            frame[
+                [
+                    'actual_price',
+                    'utmost_price',
+                    'total_area',
+                    'living_area',
+                    'kitchen_area',
+                    'actual_room_number',
+                    'desired_room_number',
+                    'actual_floor',
+                    'total_floor',
+                    'desired_floor',
+                    'housing',
+                    'ssf',
+                    'izf',
+                    'gzf'
+                ]
+            ],
             num_iteration=self._booster.best_iteration
         )
         return [
             Flat(
+                s['id'],
                 s['url'],
                 s['actual_price'],
                 s['total_area'],
+                s['living_area'],
+                s['kitchen_area'],
                 s['actual_room_number'],
                 s['actual_floor'],
                 s['total_floor'],
                 s['housing'],
+                s['longitude'],
+                s['latitude'],
                 query.city,
                 s['street'],
                 s['house_number'],
+                s['ssf'],
+                s['izf'],
+                s['gzf'],
+                s['score']
             )
             for _, s
             in (
@@ -49,26 +75,29 @@ class Searcher:
         with self._engine.connect() as connection:
             return read_sql(
                 '''
-                select url,
-                street,
-                house_number,
-                price       as actual_price,
-                %s          as utmost_price,
-                total_area,
-                living_area,
-                kitchen_area,
-                room_number as actual_room_number,
-                %s          as desired_room_number,
-                floor       as actual_floor,
-                total_floor,
-                %s          as desired_floor,
-                case
-                    when housing = 'primary' then 0
-                    else 1
-                    end     as housing,
-                ssf,
-                izf,
-                gzf
+                select id,
+                       url,
+                       price       as actual_price,
+                       %s          as utmost_price,
+                       total_area,
+                       living_area,
+                       kitchen_area,
+                       room_number as actual_room_number,
+                       %s          as desired_room_number,
+                       floor       as actual_floor,
+                       total_floor,
+                       %s          as desired_floor,
+                       case
+                           when housing = 'primary' then 0
+                           else 1
+                           end     as housing,
+                       st_x(point) as longitude,
+                       st_y(point) as latitude,
+                       street,
+                       house_number,
+                       ssf,
+                       izf,
+                       gzf
                 from flats
                 where city = %s
                 ''',
