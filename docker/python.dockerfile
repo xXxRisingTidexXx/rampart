@@ -5,6 +5,7 @@ FROM python:3.8-slim
 WORKDIR /app
 
 ENV FLASK_ENV development
+ENV PYTHONUNBUFFERED 1
 
 COPY requirements.txt .
 COPY model.txt .
