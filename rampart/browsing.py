@@ -25,20 +25,21 @@ class Handler:
         room_number = _int(request.args.get('room_number'))
         if room_number < 0 or room_number > 4:
             return 'Invalid floor provided', 400
-        limit = _int(request.args.get('limit'))
+        limit = _int(request.args.get('limit'), 10)
         if limit < 1:
             return 'Invalid limit provided', 400
         offset = _int(request.args.get('offset'))
         if offset < 0:
             return 'Invalid offset provided', 400
-        print(
-            len(
-                self._searcher.search_flats(
+        return (
+            render_template(
+                self._index_name,
+                flats=self._searcher.search_flats(
                     Query(city, price, floor, room_number, limit, offset)
                 )
-            )
+            ),
+            200
         )
-        return render_template(self._index_name), 200
 
 
 def _float(value: Optional[str]) -> float:
@@ -50,9 +51,9 @@ def _float(value: Optional[str]) -> float:
         return -1
 
 
-def _int(value: Optional[str]) -> int:
+def _int(value: Optional[str], default: int = 0) -> int:
     if not value:
-        return 0
+        return default
     try:
         return int(value)
     except ValueError:
