@@ -3,7 +3,7 @@ from re import compile
 from pathlib import Path
 from typing import Dict
 from yaml import safe_load
-from rampart.model import Housing
+from rampart.models import Housing
 
 _root_path = Path(__file__).parent.parent
 

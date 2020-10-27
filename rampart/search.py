@@ -4,7 +4,7 @@ from lightgbm import Booster
 from pandas import read_sql, DataFrame
 from sqlalchemy.engine.base import Engine
 from rampart.config import SearcherConfig
-from rampart.model import Flat
+from rampart.models import Flat
 
 
 # TODO: leverage optuna to set the hyperparameters.
