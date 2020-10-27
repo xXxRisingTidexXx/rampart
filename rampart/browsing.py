@@ -19,7 +19,7 @@ class Handler:
         price = _float(request.args.get('price'))
         if price < 0:
             return 'Invalid price provided', 400
-        put validationfloor = _int(request.args.get('floor'))
+        floor = _int(request.args.get('floor'))
         if floor < 0 or floor > 2:
             return 'Invalid floor provided', 400
         room_number = _int(request.args.get('room_number'))
