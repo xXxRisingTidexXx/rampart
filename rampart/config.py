@@ -14,10 +14,11 @@ def get_config() -> 'Config':
 
 
 class Config:
-    __slots__ = ['telebot']
+    __slots__ = ['telebot', 'browsing']
 
     def __init__(self, config):
         self.telebot = TelebotConfig(config['telebot'])
+        self.browsing = BrowsingConfig(config['browsing'])
 
 
 class TelebotConfig:
@@ -78,3 +79,18 @@ class SearcherConfig:
     def __init__(self):
         self.dsn = _get_env('RAMPART_DATABASE_DSN')
         self.model_path = str(_root_path / 'model.txt')
+
+
+class BrowsingConfig:
+    __slots__ = ['port', 'handler']
+
+    def __init__(self, config):
+        self.port: int = config['port']
+        self.handler = BrowsingHandlerConfig()
+
+
+class BrowsingHandlerConfig:
+    __slots__ = ['searcher']
+
+    def __init__(self):
+        self.searcher = SearcherConfig()

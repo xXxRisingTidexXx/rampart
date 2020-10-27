@@ -213,3 +213,5 @@ telebot:
     housings:
       - первинка
       - вторинка
+browsing:
+  port: 9211
