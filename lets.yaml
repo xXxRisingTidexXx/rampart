@@ -4,7 +4,7 @@ env:
 commands:
   build:
     description: Construct/renovate all local docker images
-    cmd: docker-compose build mining checks notebook telebot
+    cmd: docker-compose build golang checks notebook python
   database:
     description: Run the DB server
     cmd: docker-compose up -d database
@@ -47,7 +47,12 @@ commands:
       docker-compose up notebook
       docker rm rampart-notebook
   telebot:
-    description: Run search frontend module
+    description: Run telegram bot module
     cmd: |
       docker-compose up telebot
       docker rm rampart-telebot
+  browsing:
+    description: Run search engine debug frontend
+    cmd: |
+      docker-compose up browsing
+      docker rm rampart-browsing

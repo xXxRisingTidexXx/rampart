@@ -195,10 +195,8 @@ mining:
       <<: *server
       address: :9002
 telebot:
-  start_command: start
-  help_command: help
-  search_pattern: '^\s*(\S+) +([1-9]\d*|0|-) +(-|низько|високо) +(-|одна|дві|три|багато)\s*$'
-  server:
+  pattern: '^\s*(\S+) +([1-9]\d*|0|-) +(-|низько|високо) +(-|одна|дві|три|багато)\s*$'
+  handler:
     any: &any '-'
     cities:
       *any: Київ
@@ -206,7 +204,7 @@ telebot:
       *any: 0
       низько: 1
       високо: 2
-    room_numbers:
+    room-numbers:
       *any: 0
       одна: 1
       дві: 2
@@ -215,3 +213,5 @@ telebot:
     housings:
       - первинка
       - вторинка
+browsing:
+  port: 9211

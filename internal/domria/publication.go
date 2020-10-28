@@ -22,5 +22,5 @@ type publication struct {
 	DistrictNameUK      string           `json:"district_name_uk"`
 	StreetNameUK        string           `json:"street_name_uk"`
 	StreetName          string           `json:"street_name"`
-	BuildingNumberStr   string           `json:"building_number_str"`
+	BuildingNumberStr   number           `json:"building_number_str"`
 }

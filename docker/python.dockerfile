@@ -1,6 +1,11 @@
+# TODO: add distroless image (https://github.com/GoogleContainerTools/distroless).
+# TODO: add non-root user.
 FROM python:3.8-slim
 
 WORKDIR /app
+
+ENV FLASK_ENV development
+ENV PYTHONUNBUFFERED 1
 
 COPY requirements.txt .
 COPY model.txt .

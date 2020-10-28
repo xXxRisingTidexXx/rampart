@@ -1,3 +1,5 @@
+# TODO: add distroless image (https://github.com/GoogleContainerTools/distroless).
+# TODO: add non-root user.
 FROM golang:1.15.3-alpine
 
 WORKDIR /go/src/app

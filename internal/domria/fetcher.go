@@ -57,7 +57,7 @@ func (fetcher *Fetcher) FetchFlats(housing misc.Housing) []Flat {
 	fetcher.drain.DrainDuration(metrics.FetchingDuration, start)
 	if err != nil {
 		fetcher.drain.DrainNumber(metrics.FailedFetchingNumber)
-		fetcher.logger.Error(err)
+		fetcher.logger.WithField("page", fetcher.page).Error(err)
 		return make([]Flat, 0)
 	}
 	flats := fetcher.getFlats(search, housing)
@@ -135,7 +135,7 @@ func (fetcher *Fetcher) getFlats(s search, housing misc.Housing) []Flat {
 			City:        i.CityNameUK,
 			District:    i.DistrictNameUK,
 			Street:      street,
-			HouseNumber: i.BuildingNumberStr,
+			HouseNumber: string(i.BuildingNumberStr),
 		}
 	}
 	return flats

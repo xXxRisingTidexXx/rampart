@@ -1,10 +1,13 @@
+from logging import INFO, basicConfig
 from telegram import Update
-from telegram.ext import CallbackContext
-from rampart.config import ServerConfig
-from rampart.search import Query, Searcher
+from telegram.ext import (
+    Updater, CommandHandler, Filters, MessageHandler, CallbackContext
+)
+from rampart.config import get_config, TelebotHandlerConfig
+from rampart.search import Searcher, Query
 
 
-class Server:
+class Handler:
     __slots__ = [
         '_any',
         '_cities',
@@ -19,7 +22,7 @@ class Server:
         '_searcher'
     ]
 
-    def __init__(self, config: ServerConfig):
+    def __init__(self, config: TelebotHandlerConfig):
         self._any = config.any
         self._cities = config.cities
         self._floors = config.floors
@@ -67,3 +70,18 @@ class Server:
     def get_confusion(self, update: Update, _: CallbackContext):
         if update.message:
             update.message.reply_html(self._confusion_template)
+
+
+# TODO: add JSON logging.
+if __name__ == '__main__':
+    basicConfig(level=INFO)
+    setup = get_config().telebot
+    updater = Updater(setup.token)
+    handler = Handler(setup.handler)
+    updater.dispatcher.add_handler(CommandHandler('start', handler.get_start))
+    updater.dispatcher.add_handler(CommandHandler('help', handler.get_help))
+    filters = Filters.regex(setup.pattern)
+    updater.dispatcher.add_handler(MessageHandler(filters, handler.get_search))
+    updater.dispatcher.add_handler(MessageHandler(~filters, handler.get_confusion))
+    updater.start_polling()
+    updater.idle()

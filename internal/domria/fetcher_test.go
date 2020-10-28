@@ -22,6 +22,7 @@ package domria_test
 // TODO: 200; flat with terrible chars in city and/or district.
 // TODO: 200; flat without media.
 // TODO: 200; flat with just latitude, flat with equal total & living & kitchen areas, some flat.
+// TODO: 200; flat with int building number.
 // TODO: 200, 200, 200; page reset (some flats - no flats - the same flats).
 //import (
 //	"fmt"
