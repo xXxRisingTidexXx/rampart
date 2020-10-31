@@ -23,4 +23,5 @@ venv
 __pycache__
 training.csv
 testing.csv
-model.txt
+twinkle.txt
+auge.pth
