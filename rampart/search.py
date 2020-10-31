@@ -8,6 +8,7 @@ from rampart.models import Flat
 
 
 # TODO: leverage optuna to set the hyperparameters.
+# TODO: rename the module to ranking and the class to Ranker.
 class Searcher:
     __slots__ = ['_engine', '_booster']
 
