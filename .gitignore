@@ -21,7 +21,5 @@ venv
 .ipython
 .env
 __pycache__
-training.csv
-testing.csv
-twinkle.txt
-auge.pth
+data
+models
