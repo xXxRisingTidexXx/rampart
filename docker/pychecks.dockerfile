@@ -4,7 +4,9 @@ WORKDIR /app
 
 ENV FLASK_ENV development
 ENV PYTHONUNBUFFERED 1
+ENV MYPYPATH "${MYPYPATH}:/app"
 
+COPY tox.ini .
 COPY requirements requirements
 COPY rampart rampart
 
