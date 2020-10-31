@@ -8,29 +8,45 @@ x-migrate: &x-migrate
 x-aggregation: &x-aggregation
   image: rampart-aggregation
   volumes:
-    - ''
+    - ./go.mod:/go/src/app/go.mod
+    - ./go.sum:/go/src/app/go.sum
+    - ./cmd:/go/src/app/cmd
+    - ./internal:/go/src/app/internal
+    - ./config:/go/src/app/config
   env_file:
     - .env
 x-gochecks: &x-gochecks
   image: rampart-gochecks
   volumes:
-    - ''
+    - ./go.mod:/go/src/app/go.mod
+    - ./go.sum:/go/src/app/go.sum
+    - ./.golangci.yml:/go/src/app/.golangci.yml
+    - ./cmd:/go/src/app/cmd
+    - ./internal:/go/src/app/internal
+    - ./config:/go/src/app/config
 x-ranking: &x-ranking
   image: rampart-ranking
   volumes:
-    - ''
+    - ./requirements:/app/requirements
+    - ./rampart:/app/rampart
+    - ./templates:/app/templates
+    - ./models:/app/models
   env_file:
     - .env
 x-recognition: &x-recognition
   image: rampart-recognition
   volumes:
-    - ''
+    - ./requirements:/app/requirements
+    - ./rampart:/app/rampart
+    - ./models:/app/models
   env_file:
     - .env
 x-pychecks: &x-pychecks
   image: rampart-pychecks
   volumes:
-    - ''
+    - ./tox.ini:/app/tox.ini
+    - ./requirements:/app/requirements
+    - ./rampart:/app/rampart
   env_file:
     - .env
 services:
@@ -99,7 +115,15 @@ services:
     image: rampart-notebook
     container_name: rampart-notebook
     volumes:
-      - .:/home/jovyan
+      - ./notebooks:/home/jovyan/notebooks
+      - ./data:/home/jovyan/data
+      - ./models:/home/jovyan/models
+      - ./.cache:/home/jovyan/.cache
+      - ./.config:/home/jovyan/.config
+      - ./.ipython:/home/jovyan/.ipython
+      - ./.jupyter:/home/jovyan/.jupyter
+      - ./.local:/home/jovyan/.local
+      - ./.npm:/home/jovyan/.npm
     ports:
       - 8888:8888
     environment:
@@ -130,6 +154,7 @@ services:
     build:
       context: .
       dockerfile: docker/pychecks.dockerfile
+    image: rampart-pychecks
   flake8:
     <<: *x-pychecks
     container_name: rampart-flake8
