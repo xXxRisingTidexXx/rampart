@@ -5,20 +5,26 @@ x-migrate: &x-migrate
     - ./migrations:/migrations
   env_file:
     - .env
-x-golang: &x-golang
-  image: rampart-golang
+x-aggregation: &x-aggregation
+  image: rampart-aggregation
   volumes:
-    - .:/go/src/app
+    - ''
   env_file:
     - .env
 x-checks: &x-checks
   image: rampart-checks
   volumes:
     - .:/go/src/app
-x-python: &x-python
-  image: rampart-python
+x-ranking: &x-ranking
+  image: rampart-ranking
   volumes:
-    - .:/app
+    - ''
+  env_file:
+    - .env
+x-recognition: &x-recognition
+  image: rampart-recognition
+  volumes:
+    - ''
   env_file:
     - .env
 services:
@@ -42,25 +48,25 @@ services:
   generate:
     <<: *x-migrate
     container_name: rampart-generate
-  golang:
+  aggregation:
     build:
       context: .
       dockerfile: docker/aggregation.dockerfile
-    image: rampart-golang
+    image: rampart-aggregation
   mining:
-    <<: *x-golang
+    <<: *x-aggregation
     container_name: rampart-mining
-    command: go run ${RAMPART_MODULE}/cmd/mining -debug -miner domria-primary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -debug -miner domria-primary
   mining-domria-primary:
-    <<: *x-golang
+    <<: *x-aggregation
     container_name: rampart-mining-domria-primary
-    command: go run ${RAMPART_MODULE}/cmd/mining -miner domria-primary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-primary
     ports:
       - 9001:9001
   mining-domria-secondary:
-    <<: *x-golang
+    <<: *x-aggregation
     container_name: rampart-mining-domria-secondary
-    command: go run ${RAMPART_MODULE}/cmd/mining -miner domria-secondary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-secondary
     ports:
       - 9002:9002
   checks:
@@ -68,10 +74,6 @@ services:
       context: .
       dockerfile: docker/checks.dockerfile
     image: rampart-checks
-  gofmt:
-    <<: *x-checks
-    container_name: rampart-gofmt
-    command: gofmt -w -s .
   lint:
     <<: *x-checks
     container_name: rampart-lint
@@ -79,7 +81,11 @@ services:
   test:
     <<: *x-checks
     container_name: rampart-test
-    command: richgo test ${RAMPART_MODULE}/internal/domria ${RAMPART_MODULE}/internal/metrics
+    command:
+      - richgo
+      - test
+      - github.com/xXxRisingTidexXx/rampart/internal/domria
+      - github.com/xXxRisingTidexXx/rampart/internal/metrics
   notebook:
     build:
       context: .
@@ -94,21 +100,26 @@ services:
       JUPYTER_ENABLE_LAB: 'yes'
     env_file:
       - .env
-  python:
+  ranking:
     build:
       context: .
       dockerfile: docker/ranking.dockerfile
-    image: rampart-python
+    image: rampart-ranking
   telebot:
-    <<: *x-python
+    <<: *x-ranking
     container_name: rampart-telebot
     command: python -m rampart.telebot
   browsing:
-    <<: *x-python
+    <<: *x-ranking
     container_name: rampart-browsing
     command: python -m rampart.browsing
     ports:
       - 9211:9211
+  recognition:
+    build:
+      context: .
+      dockerfile: docker/recognition.dockerfile
+    image: rampart-recognition
 volumes:
   database:
     name: rampart-database

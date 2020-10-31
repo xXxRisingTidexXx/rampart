@@ -1,10 +1,8 @@
 shell: bash
-env:
-  RAMPART_MODULE: github.com/xXxRisingTidexXx/rampart
 commands:
   build:
     description: Construct/renovate all local docker images
-    cmd: docker-compose build golang checks notebook python
+    cmd: docker-compose build aggregation checks notebook ranking recognition
   database:
     description: Run the DB server
     cmd: docker-compose up -d database
@@ -32,9 +30,6 @@ commands:
   stop:
     description: Dispose all docker stuff
     cmd: docker-compose down
-  gofmt:
-    description: Format the source code
-    cmd: docker-compose run --rm gofmt
   lint:
     description: Lint the source code
     cmd: docker-compose run --rm lint
