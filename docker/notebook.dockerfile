@@ -10,7 +10,6 @@ USER $NB_UID
 
 COPY --chown=${NB_UID}:${NB_GID} requirements /requirements
 
-RUN pip install jupyterthemes && \
-    pip install -r /requirements/notebook.txt && \
+RUN pip install -r /requirements/notebook.txt && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
