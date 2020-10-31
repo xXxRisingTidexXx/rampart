@@ -6,8 +6,8 @@ WORKDIR /app
 
 ENV PYTHONUNBUFFERED 1
 
-COPY auge.pth .
 COPY requirements requirements
 COPY rampart rampart
+COPY models models
 
 RUN pip install -U pip && pip install -r requirements/recognition.txt
