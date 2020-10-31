@@ -11,10 +11,10 @@ x-aggregation: &x-aggregation
     - ''
   env_file:
     - .env
-x-checks: &x-checks
-  image: rampart-checks
+x-gochecks: &x-gochecks
+  image: rampart-gochecks
   volumes:
-    - .:/go/src/app
+    - ''
 x-ranking: &x-ranking
   image: rampart-ranking
   volumes:
@@ -23,6 +23,12 @@ x-ranking: &x-ranking
     - .env
 x-recognition: &x-recognition
   image: rampart-recognition
+  volumes:
+    - ''
+  env_file:
+    - .env
+x-pychecks: &x-pychecks
+  image: rampart-pychecks
   volumes:
     - ''
   env_file:
@@ -69,17 +75,17 @@ services:
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-secondary
     ports:
       - 9002:9002
-  checks:
+  gochecks:
     build:
       context: .
-      dockerfile: docker/checks.dockerfile
-    image: rampart-checks
+      dockerfile: docker/gochecks.dockerfile
+    image: rampart-gochecks
   lint:
-    <<: *x-checks
+    <<: *x-gochecks
     container_name: rampart-lint
     command: golangci-lint run
   test:
-    <<: *x-checks
+    <<: *x-gochecks
     container_name: rampart-test
     command:
       - richgo
@@ -120,6 +126,22 @@ services:
       context: .
       dockerfile: docker/recognition.dockerfile
     image: rampart-recognition
+  pychecks:
+    build:
+      context: .
+      dockerfile: docker/pychecks.dockerfile
+  flake8:
+    <<: *x-pychecks
+    container_name: rampart-flake8
+    command: flake8 --config=tox.ini .
+  mypy:
+    <<: *x-pychecks
+    container_name: rampart-mypy
+    command: mypy --ignore-missing-imports rampart
+  pytest:
+    <<: *x-pychecks
+    container_name: rampart-pytest
+    command: pytest -vv rampart --full-trace -p no:cacheprovider
 volumes:
   database:
     name: rampart-database

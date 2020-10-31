@@ -2,7 +2,7 @@ shell: bash
 commands:
   build:
     description: Construct/renovate all local docker images
-    cmd: docker-compose build aggregation checks notebook ranking recognition
+    cmd: docker-compose build aggregation gochecks notebook ranking recognition pychecks
   database:
     description: Run the DB server
     cmd: docker-compose up -d database
@@ -51,3 +51,12 @@ commands:
     cmd: |
       docker-compose up browsing
       docker rm rampart-browsing
+  flake8:
+    description: Run python code linter
+    cmd: docker-compose run --rm flake8
+  mypy:
+    description: Run python type checker
+    cmd: docker-compose run --rm mypy
+  pytest:
+    description: Run python test suites
+    cmd: docker-compose run --rm pytest
