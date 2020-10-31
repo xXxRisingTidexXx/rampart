@@ -116,6 +116,7 @@ services:
     container_name: rampart-notebook
     volumes:
       - ./notebooks:/home/jovyan/notebooks
+      - ./images:/home/jovyan/images
       - ./data:/home/jovyan/data
       - ./models:/home/jovyan/models
       - ./.cache:/home/jovyan/.cache
