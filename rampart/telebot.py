@@ -74,6 +74,7 @@ class Handler:
 
 
 # TODO: add JSON logging.
+# TODO: dark notebook via https://medium.com/@rbmsingh/making-jupyter-dark-mode-great-5adaedd814db .
 if __name__ == '__main__':
     basicConfig(level=INFO)
     setup = get_config().telebot

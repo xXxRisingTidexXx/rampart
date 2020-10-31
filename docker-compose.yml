@@ -45,7 +45,7 @@ services:
   golang:
     build:
       context: .
-      dockerfile: docker/golang.dockerfile
+      dockerfile: docker/aggregation.dockerfile
     image: rampart-golang
   mining:
     <<: *x-golang
@@ -97,7 +97,7 @@ services:
   python:
     build:
       context: .
-      dockerfile: docker/python.dockerfile
+      dockerfile: docker/ranking.dockerfile
     image: rampart-python
   telebot:
     <<: *x-python
