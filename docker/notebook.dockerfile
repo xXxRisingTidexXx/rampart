@@ -1,4 +1,4 @@
-FROM jupyter/scipy-notebook:ea01ec4d9f57
+FROM jupyter/scipy-notebook:95ccda3619d0
 
 USER root
 
@@ -10,6 +10,7 @@ USER $NB_UID
 
 COPY --chown=${NB_UID}:${NB_GID} requirements /requirements
 
-RUN pip install -r /requirements/notebook.txt && \
+RUN pip install jupyterthemes && \
+    pip install -r /requirements/notebook.txt && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER

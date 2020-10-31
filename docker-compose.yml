@@ -127,8 +127,6 @@ services:
       - ./.npm:/home/jovyan/.npm
     ports:
       - 8888:8888
-    environment:
-      JUPYTER_ENABLE_LAB: 'yes'
     env_file:
       - .env
   ranking:
