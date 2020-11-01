@@ -74,6 +74,7 @@ class Handler:
 
 
 # TODO: add JSON logging.
+# TODO: add scatter 3D & surfaces in flats notebook.
 if __name__ == '__main__':
     basicConfig(level=INFO)
     setup = get_config().telebot
