@@ -1,4 +1,4 @@
-FROM jupyter/scipy-notebook:ea01ec4d9f57
+FROM jupyter/scipy-notebook:95ccda3619d0
 
 USER root
 
@@ -8,4 +8,8 @@ RUN apt-get update && \
 
 USER $NB_UID
 
-RUN pip install psycopg2-binary tabulate shapely ppscore lightgbm
+COPY --chown=${NB_UID}:${NB_GID} requirements /requirements
+
+RUN pip install -r /requirements/notebook.txt && \
+    fix-permissions $CONDA_DIR && \
+    fix-permissions /home/$NB_USER

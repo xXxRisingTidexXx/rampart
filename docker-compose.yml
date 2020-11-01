@@ -5,20 +5,48 @@ x-migrate: &x-migrate
     - ./migrations:/migrations
   env_file:
     - .env
-x-golang: &x-golang
-  image: rampart-golang
+x-aggregation: &x-aggregation
+  image: rampart-aggregation
   volumes:
-    - .:/go/src/app
+    - ./go.mod:/go/src/app/go.mod
+    - ./go.sum:/go/src/app/go.sum
+    - ./cmd:/go/src/app/cmd
+    - ./internal:/go/src/app/internal
+    - ./config:/go/src/app/config
   env_file:
     - .env
-x-checks: &x-checks
-  image: rampart-checks
+x-gochecks: &x-gochecks
+  image: rampart-gochecks
   volumes:
-    - .:/go/src/app
-x-python: &x-python
-  image: rampart-python
+    - ./go.mod:/go/src/app/go.mod
+    - ./go.sum:/go/src/app/go.sum
+    - ./.golangci.yml:/go/src/app/.golangci.yml
+    - ./cmd:/go/src/app/cmd
+    - ./internal:/go/src/app/internal
+    - ./config:/go/src/app/config
+x-ranking: &x-ranking
+  image: rampart-ranking
   volumes:
-    - .:/app
+    - ./requirements:/app/requirements
+    - ./rampart:/app/rampart
+    - ./templates:/app/templates
+    - ./models:/app/models
+  env_file:
+    - .env
+x-recognition: &x-recognition
+  image: rampart-recognition
+  volumes:
+    - ./requirements:/app/requirements
+    - ./rampart:/app/rampart
+    - ./models:/app/models
+  env_file:
+    - .env
+x-pychecks: &x-pychecks
+  image: rampart-pychecks
+  volumes:
+    - ./tox.ini:/app/tox.ini
+    - ./requirements:/app/requirements
+    - ./rampart:/app/rampart
   env_file:
     - .env
 services:
@@ -42,44 +70,44 @@ services:
   generate:
     <<: *x-migrate
     container_name: rampart-generate
-  golang:
+  aggregation:
     build:
       context: .
-      dockerfile: docker/golang.dockerfile
-    image: rampart-golang
+      dockerfile: docker/aggregation.dockerfile
+    image: rampart-aggregation
   mining:
-    <<: *x-golang
+    <<: *x-aggregation
     container_name: rampart-mining
-    command: go run ${RAMPART_MODULE}/cmd/mining -debug -miner domria-primary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -debug -miner domria-primary
   mining-domria-primary:
-    <<: *x-golang
+    <<: *x-aggregation
     container_name: rampart-mining-domria-primary
-    command: go run ${RAMPART_MODULE}/cmd/mining -miner domria-primary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-primary
     ports:
       - 9001:9001
   mining-domria-secondary:
-    <<: *x-golang
+    <<: *x-aggregation
     container_name: rampart-mining-domria-secondary
-    command: go run ${RAMPART_MODULE}/cmd/mining -miner domria-secondary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-secondary
     ports:
       - 9002:9002
-  checks:
+  gochecks:
     build:
       context: .
-      dockerfile: docker/checks.dockerfile
-    image: rampart-checks
-  gofmt:
-    <<: *x-checks
-    container_name: rampart-gofmt
-    command: gofmt -w -s .
+      dockerfile: docker/gochecks.dockerfile
+    image: rampart-gochecks
   lint:
-    <<: *x-checks
+    <<: *x-gochecks
     container_name: rampart-lint
     command: golangci-lint run
   test:
-    <<: *x-checks
+    <<: *x-gochecks
     container_name: rampart-test
-    command: richgo test ${RAMPART_MODULE}/internal/domria ${RAMPART_MODULE}/internal/metrics
+    command:
+      - richgo
+      - test
+      - github.com/xXxRisingTidexXx/rampart/internal/domria
+      - github.com/xXxRisingTidexXx/rampart/internal/metrics
   notebook:
     build:
       context: .
@@ -87,28 +115,57 @@ services:
     image: rampart-notebook
     container_name: rampart-notebook
     volumes:
-      - .:/home/jovyan
+      - ./notebooks:/home/jovyan/notebooks
+      - ./images:/home/jovyan/images
+      - ./data:/home/jovyan/data
+      - ./models:/home/jovyan/models
+      - ./.cache:/home/jovyan/.cache
+      - ./.config:/home/jovyan/.config
+      - ./.ipython:/home/jovyan/.ipython
+      - ./.jupyter:/home/jovyan/.jupyter
+      - ./.local:/home/jovyan/.local
+      - ./.npm:/home/jovyan/.npm
     ports:
       - 8888:8888
-    environment:
-      JUPYTER_ENABLE_LAB: 'yes'
     env_file:
       - .env
-  python:
+  ranking:
     build:
       context: .
-      dockerfile: docker/python.dockerfile
-    image: rampart-python
+      dockerfile: docker/ranking.dockerfile
+    image: rampart-ranking
   telebot:
-    <<: *x-python
+    <<: *x-ranking
     container_name: rampart-telebot
     command: python -m rampart.telebot
   browsing:
-    <<: *x-python
+    <<: *x-ranking
     container_name: rampart-browsing
     command: python -m rampart.browsing
     ports:
       - 9211:9211
+  recognition:
+    build:
+      context: .
+      dockerfile: docker/recognition.dockerfile
+    image: rampart-recognition
+  pychecks:
+    build:
+      context: .
+      dockerfile: docker/pychecks.dockerfile
+    image: rampart-pychecks
+  flake8:
+    <<: *x-pychecks
+    container_name: rampart-flake8
+    command: flake8 --config=tox.ini .
+  mypy:
+    <<: *x-pychecks
+    container_name: rampart-mypy
+    command: mypy --ignore-missing-imports rampart
+  pytest:
+    <<: *x-pychecks
+    container_name: rampart-pytest
+    command: pytest -vv rampart --full-trace -p no:cacheprovider
 volumes:
   database:
     name: rampart-database

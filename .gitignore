@@ -21,6 +21,5 @@ venv
 .ipython
 .env
 __pycache__
-training.csv
-testing.csv
-model.txt
+data
+models

@@ -1,0 +1,8 @@
+psycopg2-binary
+tabulate
+shapely
+ppscore
+lightgbm
+torchvision
+opencv-python
+plotly

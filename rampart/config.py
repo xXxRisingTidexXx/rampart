@@ -33,7 +33,7 @@ class TelebotConfig:
 
 def _get_env(key: str) -> str:
     value = getenv(key)
-    if value == '':
+    if not value:
         raise RuntimeError(f'Environment variable \'{key}\' not set')
     return value
 

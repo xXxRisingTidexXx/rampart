@@ -1,7 +1,6 @@
 *.exe~
 *.dll
 *.dylib
-*.test
 *.out
 out
 gen
@@ -17,5 +16,6 @@ venv
 .ipynb_checkpoints
 .ipython
 .env
-.twinkle
 __pycache__
+LICENSE
+README.md

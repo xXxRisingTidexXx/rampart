@@ -1,7 +1,0 @@
-psycopg2-binary
-sqlalchemy
-pandas
-lightgbm
-python-telegram-bot
-pyyaml
-flask

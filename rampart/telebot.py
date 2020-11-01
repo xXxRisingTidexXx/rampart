@@ -41,6 +41,7 @@ class Handler:
     def get_help(self, update: Update, _: CallbackContext):
         update.message.reply_html(self._help_template)
 
+    # TODO: add message emptiness check.
     def get_search(self, update: Update, context: CallbackContext):
         groups = context.match.groups()
         flats = self._searcher.search_flats(
@@ -73,6 +74,7 @@ class Handler:
 
 
 # TODO: add JSON logging.
+# TODO: add scatter 3D & surfaces in flats notebook.
 if __name__ == '__main__':
     basicConfig(level=INFO)
     setup = get_config().telebot
