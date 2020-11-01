@@ -5,3 +5,4 @@ ppscore
 lightgbm
 torchvision
 opencv-python
+plotly
