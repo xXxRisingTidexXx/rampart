@@ -13,6 +13,7 @@ x-aggregation: &x-aggregation
     - ./cmd:/go/src/app/cmd
     - ./internal:/go/src/app/internal
     - ./config:/go/src/app/config
+    - ./data:/go/src/app/data
   env_file:
     - .env
 x-gochecks: &x-gochecks
@@ -79,18 +80,10 @@ services:
     <<: *x-aggregation
     container_name: rampart-mining
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -debug -miner domria-primary
-  mining-domria-primary:
+  imaging:
     <<: *x-aggregation
-    container_name: rampart-mining-domria-primary
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-primary
-    ports:
-      - 9001:9001
-  mining-domria-secondary:
-    <<: *x-aggregation
-    container_name: rampart-mining-domria-secondary
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-secondary
-    ports:
-      - 9002:9002
+    container_name: rampart-imaging
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/imaging
   gochecks:
     build:
       context: .
@@ -166,6 +159,18 @@ services:
     <<: *x-pychecks
     container_name: rampart-pytest
     command: pytest -vv rampart --full-trace -p no:cacheprovider
+  mining-domria-primary:
+    <<: *x-aggregation
+    container_name: rampart-mining-domria-primary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-primary
+    ports:
+      - 9001:9001
+  mining-domria-secondary:
+    <<: *x-aggregation
+    container_name: rampart-mining-domria-secondary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-secondary
+    ports:
+      - 9002:9002
 volumes:
   database:
     name: rampart-database

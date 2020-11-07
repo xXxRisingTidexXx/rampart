@@ -22,14 +22,9 @@ commands:
   mining:
     description: Run the data mining app single workflow
     cmd: docker-compose run --rm mining
-  run:
-    description: Activate the whole rampart ecosystem
-    cmd: |
-      docker-compose up mining-domria-primary mining-domria-secondary
-      docker rm rampart-mining-domria-primary rampart-mining-domria-secondary
-  stop:
-    description: Dispose all docker stuff
-    cmd: docker-compose down
+  imaging:
+    description: Run the image downloader
+    cmd: docker-compose run --rm imaging
   lint:
     description: Lint the source code
     cmd: docker-compose run --rm lint
@@ -60,3 +55,11 @@ commands:
   pytest:
     description: Run python test suites
     cmd: docker-compose run --rm pytest
+  run:
+    description: Activate the whole rampart ecosystem
+    cmd: |
+      docker-compose up mining-domria-primary mining-domria-secondary
+      docker rm rampart-mining-domria-primary rampart-mining-domria-secondary
+  stop:
+    description: Dispose all docker stuff
+    cmd: docker-compose down
