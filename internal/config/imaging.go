@@ -5,8 +5,8 @@ import (
 )
 
 type Imaging struct {
-	InputPath    string       `yaml:"input-string"`
 	ThreadNumber int          `yaml:"thread-number"`
 	Headers      misc.Headers `yaml:"headers"`
 	OutputFormat string       `yaml:"output-format"`
+	InputPath    string       `yaml:"input-string"`
 }
