@@ -25,3 +25,6 @@ linters:
     - goconst
     - gomnd
     - dupl
+    - exhaustivestruct
+    - wrapcheck
+    - errorlint

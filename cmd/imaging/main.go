@@ -29,8 +29,8 @@ func main() {
 	}
 }
 
-func run(file *os.File) error {
-	reader := csv.NewReader(file)
+func run(input io.Reader) error {
+	reader := csv.NewReader(input)
 	for i := 1; ; i++ {
 		fields, err := reader.Read()
 		if err == io.EOF {
