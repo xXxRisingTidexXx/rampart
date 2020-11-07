@@ -11,7 +11,6 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 )
 
-// TODO: create photo & panorama table(s).
 // TODO: relative city center distance feature (with city diameter).
 // TODO: distance to workplace feature.
 // TODO: shorten house number column (but research the actual width before).
