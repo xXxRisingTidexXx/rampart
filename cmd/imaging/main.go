@@ -31,7 +31,12 @@ func main() {
 
 func run(input io.Reader) error {
 	reader := csv.NewReader(input)
-	for i := 1; ; i++ {
+	if _, err := reader.Read(); err == io.EOF {
+		return nil
+	} else if err != nil {
+		return fmt.Errorf("main: imaging failed to read header of the input file, %v", err)
+	}
+	for i := 2; ; i++ {
 		fields, err := reader.Read()
 		if err == io.EOF {
 			return nil
