@@ -11,28 +11,35 @@ commands:
     cmd: docker exec -it rampart-database psql rampart postgres
   migrate:
     description: Upgrade the DB schema to the newest version
-    cmd: docker-compose run --rm migrate
+    cmd: |
+      docker-compose up migrate
+      docker rm rampart-migrate
   generate:
     description: Create the brand new migration files
     cmd: |
       printf 'Enter new migration name: ' && \
       read RAMPART_MIGRATION_NAME && \
-      docker-compose run --rm generate create -ext sql -dir /migrations $RAMPART_MIGRATION_NAME && \
+      docker-compose up generate create -ext sql -dir /migrations $RAMPART_MIGRATION_NAME && \
+      docker rm rampart-generate
       sudo chown -R $USER:$USER migrations
   mining:
     description: Run the data mining app single workflow
-    cmd: docker-compose run --rm mining
-  run:
-    description: Activate the whole rampart ecosystem
     cmd: |
-      docker-compose up mining-domria-primary mining-domria-secondary
-      docker rm rampart-mining-domria-primary rampart-mining-domria-secondary
-  stop:
-    description: Dispose all docker stuff
-    cmd: docker-compose down
+      docker-compose up mining
+      docker rm rampart-mining
+  imaging:
+    description: Run the image downloader
+    cmd: |
+      docker-compose up imaging
+      docker rm rampart-imaging
+      sudo chown -R $USER:$USER data
+      echo "Total images: $(ls data/auge/images | wc -l)"
+      echo "Total size: $(du -hs data/auge/images | cut -f1)"
   lint:
     description: Lint the source code
-    cmd: docker-compose run --rm lint
+    cmd: |
+      docker-compose up lint
+      docker rm rampart-lint
   test:
     description: Run test suites
     cmd: docker-compose run --rm test
@@ -53,10 +60,24 @@ commands:
       docker rm rampart-browsing
   flake8:
     description: Run python code linter
-    cmd: docker-compose run --rm flake8
+    cmd: |
+      docker-compose up flake8
+      docker rm rampart-flake8
   mypy:
     description: Run python type checker
-    cmd: docker-compose run --rm mypy
+    cmd: |
+      docker-compose up mypy
+      docker rm rampart-mypy
   pytest:
     description: Run python test suites
-    cmd: docker-compose run --rm pytest
+    cmd: |
+      docker-compose up pytest
+      docker rm rampart-pytest
+  run:
+    description: Activate the whole rampart ecosystem
+    cmd: |
+      docker-compose up mining-domria-primary mining-domria-secondary
+      docker rm rampart-mining-domria-primary rampart-mining-domria-secondary
+  stop:
+    description: Dispose all docker stuff
+    cmd: docker-compose down

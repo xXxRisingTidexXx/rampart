@@ -9,6 +9,7 @@ from rampart.models import Flat
 
 # TODO: leverage optuna to set the hyperparameters.
 # TODO: rename the module to ranking and the class to Ranker.
+# TODO: store to the DB not the image class but overall class probabilities (overall network output vector).
 class Searcher:
     __slots__ = ['_engine', '_booster']
 
