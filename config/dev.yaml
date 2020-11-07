@@ -1,7 +1,7 @@
+headers: &headers
+  User-Agent: rampart-aggregation-bot/1.0.0
 mining:
   domria-miner: &domria-miner
-    headers: &headers
-      User-Agent: rampart-mining-bot/1.0.0
     fetcher:
       timeout: 40s
       portion: 100
@@ -194,6 +194,11 @@ mining:
     server:
       <<: *server
       address: :9002
+imaging:
+  input-path: data/auge/images.csv
+  thread-number: 8
+  headers: *headers
+  output-format: data/auge/%s.%s.webp
 telebot:
   pattern: '^\s*(\S+) +([1-9]\d*|0|-) +(-|низько|високо) +(-|одна|дві|три|багато)\s*$'
   handler:
