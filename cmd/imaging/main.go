@@ -36,16 +36,12 @@ func run(input io.Reader) error {
 	} else if err != nil {
 		return fmt.Errorf("main: imaging failed to read header of the input file, %v", err)
 	}
-	for i := 2; ; i++ {
+	for {
 		fields, err := reader.Read()
 		if err == io.EOF {
 			return nil
 		} else if err != nil {
-			return fmt.Errorf(
-				"main: imaging failed to read %d row of the input file, %v",
-				i,
-				err,
-			)
+			return fmt.Errorf("main: imaging failed to read a row of the input file, %v", err)
 		}
 		fmt.Println(fields)
 	}
