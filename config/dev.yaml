@@ -198,7 +198,7 @@ imaging:
   timeout: 10s
   thread-number: 8
   headers: *headers
-  output-format: data/auge/%x.%s.webp
+  output-format: data/auge/images/%x.%s.webp
   input-path: data/auge/images.csv
 telebot:
   pattern: '^\s*(\S+) +([1-9]\d*|0|-) +(-|низько|високо) +(-|одна|дві|три|багато)\s*$'
