@@ -32,6 +32,9 @@ commands:
     cmd: |
       docker-compose up imaging
       docker rm rampart-imaging
+      sudo chown -R $USER:$USER data
+      echo "Total images: $(ls data/auge/images | wc -l)"
+      echo "Total size: $(du -hs data/auge/images | cut -f1)"
   lint:
     description: Lint the source code
     cmd: |
