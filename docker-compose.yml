@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 x-migrate: &x-migrate
   image: migrate/migrate:v4.12.2
   volumes:
