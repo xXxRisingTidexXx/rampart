@@ -52,7 +52,7 @@ x-pychecks: &x-pychecks
     - .env
 services:
   database:
-    image: postgis/postgis:12-master
+    image: postgis/postgis:13-3.0-alpine
     container_name: rampart-database
     restart: always
     ports:
