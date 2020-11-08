@@ -1,3 +1,4 @@
+# TODO: add initial folder setup & permissions.
 shell: bash
 commands:
   build:
