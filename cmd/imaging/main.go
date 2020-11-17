@@ -8,6 +8,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"sync"
@@ -51,8 +52,10 @@ func work(
 	logger log.FieldLogger,
 ) {
 	for record := range records {
-		if err := load(client, config, record); err != nil {
-			logger.WithField("url", record[0]).Error(err)
+		for retry, err := 1, io.EOF; retry <= config.RetryLimit && err != nil; retry++ {
+			if err = load(client, config, record); err != nil {
+				logger.WithFields(log.Fields{"url": record[0], "retry": retry}).Error(err)
+			}
 		}
 	}
 	group.Done()
@@ -72,27 +75,23 @@ func load(client *http.Client, config config.Imaging, record []string) error {
 		_ = response.Body.Close()
 		return fmt.Errorf("main: imaging got a non-ok status %s", response.Status)
 	}
-	file, err := os.Create(
-		misc.ResolvePath(
-			fmt.Sprintf(config.OutputFormat, sha1.Sum([]byte(record[0])), record[1]),
-		),
-	)
+	bytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		_ = response.Body.Close()
-		return fmt.Errorf("main: imaging failed to create the file, %v", err)
-	}
-	_, err = io.Copy(file, response.Body)
-	if err != nil {
-		_ = file.Close()
-		_ = response.Body.Close()
-		return fmt.Errorf("main: imaging failed to copy, %v", err)
-	}
-	if err := file.Close(); err != nil {
-		_ = response.Body.Close()
-		return fmt.Errorf("main: imaging failed to close the file, %v", err)
+		return fmt.Errorf("main: imaging failed to read the response body, %v", err)
 	}
 	if err := response.Body.Close(); err != nil {
 		return fmt.Errorf("main: imaging failed to close the response body, %v", err)
+	}
+	err = ioutil.WriteFile(
+		misc.ResolvePath(
+			fmt.Sprintf(config.OutputFormat, sha1.Sum([]byte(record[0])), record[1]),
+		),
+		bytes,
+		0644,
+	)
+	if err != nil {
+		return fmt.Errorf("main: imaging failed to write the file, %v", err)
 	}
 	return nil
 }

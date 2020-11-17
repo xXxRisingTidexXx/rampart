@@ -195,8 +195,9 @@ mining:
       <<: *server
       address: :9002
 imaging:
-  timeout: 10s
+  timeout: 40s
   thread-number: 4
+  retry-limit: 3
   headers: *headers
   output-format: data/auge/images/%x.%s.webp
   input-path: data/auge/images.csv
