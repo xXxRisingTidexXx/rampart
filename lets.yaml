@@ -26,6 +26,7 @@ commands:
   imaging:
     description: Run the image downloader
     cmd: |
+      rm data/auge/images/*
       START=`date +%s`
       docker-compose run --rm imaging
       END=`date +%s`
