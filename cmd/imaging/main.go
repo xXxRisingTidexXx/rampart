@@ -19,18 +19,18 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
 	entry := log.WithField("app", "imaging")
-	cfg, err := config.NewConfig()
+	c, err := config.NewConfig()
 	if err != nil {
 		entry.Fatal(err)
 	}
-	client := &http.Client{Timeout: cfg.Imaging.Timeout}
-	records := make(chan []string, cfg.Imaging.ThreadNumber)
+	client := &http.Client{Timeout: c.Imaging.Timeout}
+	records := make(chan []string, c.Imaging.ThreadNumber)
 	group := &sync.WaitGroup{}
-	group.Add(cfg.Imaging.ThreadNumber)
-	for i := 0; i < cfg.Imaging.ThreadNumber; i++ {
-		go work(client, records, group, cfg.Imaging, entry)
+	group.Add(c.Imaging.ThreadNumber)
+	for i := 0; i < c.Imaging.ThreadNumber; i++ {
+		go work(client, records, group, c.Imaging, entry)
 	}
-	file, err := os.Open(cfg.Imaging.InputPath)
+	file, err := os.Open(c.Imaging.InputPath)
 	if err != nil {
 		entry.Fatalf("main: imaging failed to open the input file, %v", err)
 	}
