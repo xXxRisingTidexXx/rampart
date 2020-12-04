@@ -25,7 +25,7 @@ func main() {
 	if err := file.Close(); err != nil {
 		entry.Fatalf("main: augmentation failed to close the source, %v", err)
 	}
-	g := gift.New(gift.Transpose())
+	g := gift.New(gift.Median(3, false))
 	target := image.NewRGBA(g.Bounds(source.Bounds()))
 	g.Draw(target, source)
 	file, err = os.Create("images/target.webp")
