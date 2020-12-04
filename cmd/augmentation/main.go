@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/chai2010/webp"
 	"github.com/disintegration/gift"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
@@ -30,6 +31,10 @@ func main() {
 	file, err = os.Create("images/target.webp")
 	if err != nil {
 		entry.Fatalf("main: augmentation failed to create the target, %v", err)
+	}
+	if err := webp.Encode(file, target, &webp.Options{Lossless: true}); err != nil {
+		_ = file.Close()
+		entry.Fatalf("main: augmentation failed to encode the target, %v", err)
 	}
 	if err := file.Close(); err != nil {
 		entry.Fatalf("main: augmentation failed to close the target, %v", err)
