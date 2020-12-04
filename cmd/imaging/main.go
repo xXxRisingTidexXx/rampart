@@ -14,6 +14,7 @@ import (
 	"sync"
 )
 
+// TODO: change thread number to worker number & use cpu core amount.
 func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
