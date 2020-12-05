@@ -6,6 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"image"
+	"image/color"
 	"os"
 )
 
@@ -25,18 +26,31 @@ func main() {
 	if err := file.Close(); err != nil {
 		entry.Fatalf("main: augmentation failed to close the source, %v", err)
 	}
-	g := gift.New(gift.Median(3, false))
-	target := image.NewRGBA(g.Bounds(source.Bounds()))
-	g.Draw(target, source)
-	file, err = os.Create("images/target.webp")
-	if err != nil {
-		entry.Fatalf("main: augmentation failed to create the target, %v", err)
+	gifts := map[string]*gift.GIFT{
+		"flip": gift.New(gift.FlipHorizontal()),
+		"rotate_ccw": gift.New(
+			gift.Rotate(1, color.White, gift.NearestNeighborInterpolation),
+			gift.CropToSize(620, 460, gift.CenterAnchor),
+		),
+		"rotate_cw": gift.New(
+			gift.Rotate(-1, color.White, gift.NearestNeighborInterpolation),
+			gift.CropToSize(620, 460, gift.CenterAnchor),
+		),
 	}
-	if err := webp.Encode(file, target, &webp.Options{Lossless: true}); err != nil {
-		_ = file.Close()
-		entry.Fatalf("main: augmentation failed to encode the target, %v", err)
-	}
-	if err := file.Close(); err != nil {
-		entry.Fatalf("main: augmentation failed to close the target, %v", err)
+	for name, g := range gifts {
+		entry = entry.WithField("gift", name)
+		target := image.NewRGBA(g.Bounds(source.Bounds()))
+		g.Draw(target, source)
+		file, err = os.Create("images/" + name + ".webp")
+		if err != nil {
+			entry.Fatalf("main: augmentation failed to create the target, %v", err)
+		}
+		if err := webp.Encode(file, target, &webp.Options{Lossless: true}); err != nil {
+			_ = file.Close()
+			entry.Fatalf("main: augmentation failed to encode the target, %v", err)
+		}
+		if err := file.Close(); err != nil {
+			entry.Fatalf("main: augmentation failed to close the target, %v", err)
+		}
 	}
 }
