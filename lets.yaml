@@ -37,6 +37,11 @@ commands:
       echo "Total images: $(ls data/auge/images | wc -l)"
       echo "Total size: $(du -hs data/auge/images | cut -f1)"
       echo "Total time: $((END - START))s"
+  augmentation:
+    description: Run the data augmentation CLI
+    cmd: |
+      docker-compose run --rm augmentation
+      sudo chown -R $USER:$USER images
   lint:
     description: Lint the source code
     cmd: docker-compose run --rm lint
