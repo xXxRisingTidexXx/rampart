@@ -29,11 +29,11 @@ func main() {
 	gifts := map[string]*gift.GIFT{
 		"flip": gift.New(gift.FlipHorizontal()),
 		"rotate_ccw": gift.New(
-			gift.Rotate(1, color.White, gift.NearestNeighborInterpolation),
+			gift.Rotate(1, color.White, gift.CubicInterpolation),
 			gift.CropToSize(620, 460, gift.CenterAnchor),
 		),
 		"rotate_cw": gift.New(
-			gift.Rotate(-1, color.White, gift.NearestNeighborInterpolation),
+			gift.Rotate(-1, color.White, gift.CubicInterpolation),
 			gift.CropToSize(620, 460, gift.CenterAnchor),
 		),
 	}
@@ -41,7 +41,7 @@ func main() {
 		entry = entry.WithField("gift", name)
 		target := image.NewRGBA(g.Bounds(source.Bounds()))
 		g.Draw(target, source)
-		file, err = os.Create("images/" + name + ".webp")
+		file, err = os.Create(misc.ResolvePath("images/target_" + name + ".webp"))
 		if err != nil {
 			entry.Fatalf("main: augmentation failed to create the target, %v", err)
 		}
