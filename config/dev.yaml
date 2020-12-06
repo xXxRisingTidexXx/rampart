@@ -199,7 +199,7 @@ imaging:
   thread-number: 4
   retry-limit: 3
   headers: *headers
-  output-format: data/auge/images/%x.%s.webp
+  output-format: data/auge/images/%x.%s.%s.webp
   input-path: data/auge/images.csv
 telebot:
   pattern: '^\s*(\S+) +([1-9]\d*|0|-) +(-|низько|високо) +(-|одна|дві|три|багато)\s*$'
