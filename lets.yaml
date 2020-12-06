@@ -40,8 +40,11 @@ commands:
   augmentation:
     description: Run the data augmentation CLI
     cmd: |
+      START=`date +%s`
       docker-compose run --rm augmentation
+      END=`date +%s`
       sudo chown -R $USER:$USER images
+      echo "Total time: $((END - START))s"
   lint:
     description: Lint the source code
     cmd: docker-compose run --rm lint
