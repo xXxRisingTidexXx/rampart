@@ -70,7 +70,7 @@ func main() {
 		if err != nil {
 			entry.Fatalf("main: augmentation failed to create the target, %v", err)
 		}
-		if err := webp.Encode(file, target, &webp.Options{Lossless: true}); err != nil {
+		if err := webp.Encode(file, target, nil); err != nil {
 			_ = file.Close()
 			entry.Fatalf("main: augmentation failed to encode the target, %v", err)
 		}
