@@ -1,10 +1,11 @@
-# TODO: add initial folder setup & permissions.
 shell: bash
 commands:
   build:
     description: Construct/renovate all local docker images
     cmd: |
-      mkdir -p data models data/auge data/twinkle data/auge/images
+      if [[ ! -e .env ]]; then touch .env ; fi && \
+      mkdir -p scientific scientific/images scientific/models && \
+      if [[ ! -e scientific/images.csv ]]; then touch scientific/images.csv ; fi && \
       docker-compose build aggregation gochecks notebook ranking recognition pychecks
   database:
     description: Run the DB server
@@ -20,30 +21,27 @@ commands:
     cmd: |
       printf 'Enter new migration name: ' && \
       read MIGRATION && \
-      docker-compose run --rm generate create -ext sql -dir /migrations $MIGRATION && \
-      sudo chown -R $USER:$USER migrations
+      docker-compose run --rm generate create -ext sql -dir /migrations $MIGRATION
   mining:
     description: Run the data mining app single workflow
     cmd: docker-compose run --rm mining
   imaging:
     description: Run the image downloader
     cmd: |
-      rm -r data/auge/images
-      mkdir data/auge/images
-      START=`date +%s`
-      docker-compose run --rm imaging
-      END=`date +%s`
-      sudo chown -R $USER:$USER data
-      echo "Total images: $(ls data/auge/images | wc -l)"
-      echo "Total size: $(du -hs data/auge/images | cut -f1)"
+      rm -r scientific/images && \
+      mkdir scientific/images && \
+      START=`date +%s` && \
+      docker-compose run --rm imaging && \
+      END=`date +%s` && \
+      echo "Total images: $(ls scientific/images | wc -l)" && \
+      echo "Total size: $(du -hs scientific/images | cut -f1)" && \
       echo "Total time: $((END - START))s"
   augmentation:
-    description: Run the data augmentation CLI
+    description: Run the data augmentation demo
     cmd: |
-      START=`date +%s`
-      docker-compose run --rm augmentation
-      END=`date +%s`
-      sudo chown -R $USER:$USER images
+      START=`date +%s` && \
+      docker-compose run --rm augmentation && \
+      END=`date +%s` && \
       echo "Total time: $((END - START))s"
   lint:
     description: Lint the source code
