@@ -6,7 +6,7 @@ commands:
       if [[ ! -e .env ]]; then touch .env ; fi && \
       mkdir -p scientific scientific/images scientific/models && \
       if [[ ! -e scientific/images.csv ]]; then touch scientific/images.csv ; fi && \
-      docker-compose build --build-arg RAMPART_UID="$(id -u)" --build-arg RAMPART_GID="$(id -g)" migrate aggregation gochecks notebook ranking recognition pychecks
+      docker-compose build aggregation gochecks notebook ranking recognition pychecks
   database:
     description: Run the DB server
     cmd: docker-compose up -d database
@@ -21,27 +21,30 @@ commands:
     cmd: |
       printf 'Enter new migration name: ' && \
       read MIGRATION && \
-      docker-compose run --rm generate create -ext sql -dir /migrations $MIGRATION
+      docker-compose run --rm generate create -ext sql -dir /migrations $MIGRATION && \
+      sudo chown -R $USER:$USER migrations
   mining:
     description: Run the data mining app single workflow
     cmd: docker-compose run --rm mining
   imaging:
     description: Run the image downloader
     cmd: |
-      rm -r scientific/images && \
-      mkdir scientific/images && \
+      rm -f scientific/images/*.webp && \
       START=`date +%s` && \
       docker-compose run --rm imaging && \
       END=`date +%s` && \
+      sudo chown -R $USER:$USER scientific/images && \
       echo "Total images: $(ls scientific/images | wc -l)" && \
       echo "Total size: $(du -hs scientific/images | cut -f1)" && \
       echo "Total time: $((END - START))s"
   augmentation:
     description: Run the data augmentation demo
     cmd: |
+      rm -f images/target_*.webp && \
       START=`date +%s` && \
       docker-compose run --rm augmentation && \
       END=`date +%s` && \
+      sudo chown -R $USER:$USER images && \
       echo "Total time: $((END - START))s"
   lint:
     description: Lint the source code
