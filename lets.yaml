@@ -6,7 +6,7 @@ commands:
       if [[ ! -e .env ]]; then touch .env ; fi && \
       mkdir -p scientific scientific/images scientific/models && \
       if [[ ! -e scientific/images.csv ]]; then touch scientific/images.csv ; fi && \
-      docker-compose build aggregation gochecks notebook ranking recognition pychecks
+      docker-compose build --build-arg RAMPART_UID="$(id -u)" --build-arg RAMPART_GID="$(id -g)" migrate aggregation gochecks notebook ranking recognition pychecks
   database:
     description: Run the DB server
     cmd: docker-compose up -d database
