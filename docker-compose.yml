@@ -1,6 +1,6 @@
 version: '3.8'
 x-migrate: &x-migrate
-  image: migrate/migrate:v4.12.2
+  image: rampart-migrate
   volumes:
     - ./migrations:/migrations
   env_file:
@@ -13,7 +13,7 @@ x-aggregation: &x-aggregation
     - ./cmd:/go/src/app/cmd
     - ./internal:/go/src/app/internal
     - ./config:/go/src/app/config
-    - ./data:/go/src/app/data
+    - ./scientific:/go/src/app/scientific
     - ./images:/go/src/app/images
   env_file:
     - .env
@@ -32,7 +32,7 @@ x-ranking: &x-ranking
     - ./requirements:/app/requirements
     - ./rampart:/app/rampart
     - ./templates:/app/templates
-    - ./models:/app/models
+    - ./scientific:/app/scientific
   env_file:
     - .env
 x-recognition: &x-recognition
@@ -40,7 +40,7 @@ x-recognition: &x-recognition
   volumes:
     - ./requirements:/app/requirements
     - ./rampart:/app/rampart
-    - ./models:/app/models
+    - ./scientific:/app/scientific
   env_file:
     - .env
 x-pychecks: &x-pychecks
@@ -67,6 +67,9 @@ services:
       PGDATA: /var/lib/postgresql/data
   migrate:
     <<: *x-migrate
+    build:
+      context: .
+      dockerfile: docker/migrate.dockerfile
     container_name: rampart-migrate
     command: -path migrations -database $RAMPART_DATABASE_DSN up
   generate:
@@ -88,7 +91,7 @@ services:
   augmentation:
     <<: *x-aggregation
     container_name: rampart-augmentation
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/augmentation
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/augmentation && chown -R rampart:rampart images
   gochecks:
     build:
       context: .
@@ -115,8 +118,7 @@ services:
     volumes:
       - ./notebooks:/home/jovyan/notebooks
       - ./images:/home/jovyan/images
-      - ./data:/home/jovyan/data
-      - ./models:/home/jovyan/models
+      - ./scientific:/home/jovyan/scientific
       - ./.cache:/home/jovyan/.cache
       - ./.config:/home/jovyan/.config
       - ./.ipython:/home/jovyan/.ipython
