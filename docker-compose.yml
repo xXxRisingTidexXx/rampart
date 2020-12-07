@@ -91,7 +91,7 @@ services:
   augmentation:
     <<: *x-aggregation
     container_name: rampart-augmentation
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/augmentation && chown -R rampart:rampart images
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/augmentation
   gochecks:
     build:
       context: .
