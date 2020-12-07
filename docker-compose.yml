@@ -1,6 +1,6 @@
 version: '3.8'
 x-migrate: &x-migrate
-  image: rampart-migrate
+  image: migrate/migrate:v4.12.2
   volumes:
     - ./migrations:/migrations
   env_file:
@@ -67,9 +67,6 @@ services:
       PGDATA: /var/lib/postgresql/data
   migrate:
     <<: *x-migrate
-    build:
-      context: .
-      dockerfile: docker/migrate.dockerfile
     container_name: rampart-migrate
     command: -path migrations -database $RAMPART_DATABASE_DSN up
   generate:
