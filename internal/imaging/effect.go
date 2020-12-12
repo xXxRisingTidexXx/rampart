@@ -9,7 +9,7 @@ import (
 	"image/color"
 )
 
-var Effects = []*Effect{
+var Effects = []Effect{
 	NewEffect("flip", gift.FlipHorizontal()),
 	NewEffect("rotate_ccw1", rotate(1)...),
 	NewEffect("rotate_cw1", rotate(-1)...),
@@ -47,8 +47,8 @@ var Effects = []*Effect{
 	),
 }
 
-func NewEffect(name string, filters ...gift.Filter) *Effect {
-	return &Effect{name, gift.New(filters...)}
+func NewEffect(name string, filters ...gift.Filter) Effect {
+	return Effect{name, gift.New(filters...)}
 }
 
 type Effect struct {
@@ -56,20 +56,16 @@ type Effect struct {
 	gift *gift.GIFT
 }
 
-func (effect *Effect) Name() string {
+func (effect Effect) Name() string {
 	return effect.name
 }
 
-func (effect *Effect) Apply(source image.Image) ([]byte, error) {
+func (effect Effect) Apply(source image.Image) ([]byte, error) {
 	target := image.NewRGBA(effect.gift.Bounds(source.Bounds()))
 	effect.gift.Draw(target, source)
 	var buffer bytes.Buffer
 	if err := webp.Encode(&buffer, target, nil); err != nil {
-		return nil, fmt.Errorf(
-			"imaging: effect %s failed to encode the target, %v",
-			effect.name,
-			err,
-		)
+		return nil, fmt.Errorf("imaging: effect failed to encode the target, %v", err)
 	}
 	return buffer.Bytes(), nil
 }
