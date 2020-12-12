@@ -1,6 +1,7 @@
 package main
 
 import (
+	gobytes "bytes"
 	"crypto/sha1"
 	"encoding/csv"
 	"encoding/hex"
@@ -9,6 +10,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/imaging"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"image"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -30,14 +32,19 @@ func main() {
 		entry.Fatalf("main: imaging failed to open the input file, %v", err)
 	}
 	records := make(chan []string, c.Imaging.ThreadNumber)
-	raws := make(chan imaging.Raw, c.Imaging.ThreadNumber*len(imaging.Effects)<<1)
-	dumpCount := (c.Imaging.ThreadNumber + runtime.NumCPU()) << 1
+	raws := make(chan imaging.Raw, (c.Imaging.ThreadNumber+1)*len(imaging.Effects))
+	dumpCount := c.Imaging.ThreadNumber + runtime.NumCPU()<<1
 	assets := make(chan imaging.Asset, dumpCount)
 	client := &http.Client{Timeout: c.Imaging.Timeout}
 	loadGroup := &sync.WaitGroup{}
 	loadGroup.Add(c.Imaging.ThreadNumber)
 	for i := 0; i < c.Imaging.ThreadNumber; i++ {
 		go load(records, raws, assets, client, c.Imaging, entry, loadGroup)
+	}
+	processGroup := &sync.WaitGroup{}
+	processGroup.Add(runtime.NumCPU())
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go process(raws, assets, entry, processGroup)
 	}
 	dumpGroup := &sync.WaitGroup{}
 	dumpGroup.Add(dumpCount)
@@ -47,6 +54,8 @@ func main() {
 	err = read(file, records)
 	close(records)
 	loadGroup.Wait()
+	close(raws)
+	processGroup.Wait()
 	close(assets)
 	dumpGroup.Wait()
 	if err != nil {
@@ -68,46 +77,80 @@ func load(
 	group *sync.WaitGroup,
 ) {
 	for record := range records {
-		bytes, err := make([]byte, 0), io.EOF
-		for retry := 1; retry <= config.RetryLimit && err != nil; retry++ {
-			if bytes, err = get(client, record[0], config.Headers); err != nil {
+		for retry, err := 1, io.EOF; retry <= config.RetryLimit && err != nil; retry++ {
+			if err = pipe(record, client, config.Headers, raws, assets); err != nil {
 				logger.WithFields(log.Fields{"url": record[0], "retry": retry}).Error(err)
-			}
-		}
-		if err == nil {
-			hash := sha1.Sum([]byte(record[0]))
-			assets <- imaging.Asset{Hash: hash, Label: record[1], Effect: "origin", Bytes: bytes}
-			for _, effect := range imaging.Effects {
-				raws <- imaging.Raw{Hash: hash, Label: record[1], Effect: effect, Bytes: bytes}
 			}
 		}
 	}
 	group.Done()
 }
 
-func get(client *http.Client, url string, headers misc.Headers) ([]byte, error) {
-	request, err := http.NewRequest(http.MethodGet, url, nil)
+func pipe(
+	record []string,
+	client *http.Client,
+	headers misc.Headers,
+	raws chan<- imaging.Raw,
+	assets chan<- imaging.Asset,
+) error {
+	request, err := http.NewRequest(http.MethodGet, record[0], nil)
 	if err != nil {
-		return nil, fmt.Errorf("main: imaging failed to make a request, %v", err)
+		return fmt.Errorf("main: imaging failed to make a request, %v", err)
 	}
 	headers.Inject(request)
 	response, err := client.Do(request)
 	if err != nil {
-		return nil, fmt.Errorf("main: imaging failed to send a request, %v", err)
+		return fmt.Errorf("main: imaging failed to send a request, %v", err)
 	}
 	if response.StatusCode != http.StatusOK {
 		_ = response.Body.Close()
-		return nil, fmt.Errorf("main: imaging got a non-ok status %s", response.Status)
+		return fmt.Errorf("main: imaging got a non-ok status %s", response.Status)
 	}
 	bytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		_ = response.Body.Close()
-		return nil, fmt.Errorf("main: imaging failed to read the response body, %v", err)
+		return fmt.Errorf("main: imaging failed to read the response body, %v", err)
 	}
 	if err := response.Body.Close(); err != nil {
-		return nil, fmt.Errorf("main: imaging failed to close the response body, %v", err)
+		return fmt.Errorf("main: imaging failed to close the response body, %v", err)
 	}
-	return bytes, nil
+	source, _, err := image.Decode(gobytes.NewBuffer(bytes))
+	if err != nil {
+		return fmt.Errorf("main: imaging failed to decode the source, %v", err)
+	}
+	hash := sha1.Sum([]byte(record[0]))
+	assets <- imaging.Asset{Hash: hash, Label: record[1], Effect: "origin", Bytes: bytes}
+	for _, effect := range imaging.Effects {
+		raws <- imaging.Raw{Hash: hash, Label: record[1], Effect: effect, Source: source}
+	}
+	return nil
+}
+
+func process(
+	raws <-chan imaging.Raw,
+	assets chan<- imaging.Asset,
+	logger log.FieldLogger,
+	group *sync.WaitGroup,
+) {
+	for raw := range raws {
+		bytes, err := raw.Effect.Apply(raw.Source)
+		if err != nil {
+			fields := log.Fields{
+				"hash":   hex.EncodeToString(raw.Hash[:]),
+				"effect": raw.Effect.Name(),
+				"label":  raw.Label,
+			}
+			logger.WithFields(fields).Error(err)
+		} else {
+			assets <- imaging.Asset{
+				Hash:   raw.Hash,
+				Effect: raw.Effect.Name(),
+				Label:  raw.Label,
+				Bytes:  bytes,
+			}
+		}
+	}
+	group.Done()
 }
 
 func dump(
