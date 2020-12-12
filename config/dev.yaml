@@ -1,5 +1,5 @@
 headers: &headers
-  User-Agent: rampart-aggregation-bot/1.0.0
+  User-Agent: RampartBot/1.0.0
 mining:
   domria-miner: &domria-miner
     fetcher:
