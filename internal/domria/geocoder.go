@@ -62,9 +62,8 @@ func (geocoder *Geocoder) geocodeFlat(flat Flat) (Flat, bool) {
 	positions, err := geocoder.getPositions(flat)
 	geocoder.drain.DrainDuration(metrics.GeocodingDuration, start)
 	if err != nil {
-		geocoder.logger.WithFields(
-			log.Fields{"source": flat.Source, "url": flat.URL},
-		).Error(err)
+		fields := log.Fields{"source": flat.Source, "url": flat.URL}
+		geocoder.logger.WithFields(fields).Error(err)
 		geocoder.drain.DrainNumber(metrics.FailedGeocodingNumber)
 		return Flat{}, false
 	}

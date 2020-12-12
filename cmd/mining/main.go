@@ -21,11 +21,11 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
 	entry := log.WithFields(log.Fields{"app": "mining", "miner": *alias})
-	cfg, err := config.NewConfig()
+	c, err := config.NewConfig()
 	if err != nil {
 		entry.Fatal(err)
 	}
-	db, err := sql.Open("postgres", cfg.DSN)
+	db, err := sql.Open("postgres", c.DSN)
 	if err != nil {
 		entry.Fatalf("main: mining failed to open the db, %v", err)
 	}
@@ -35,14 +35,14 @@ func main() {
 	}
 	drain := metrics.NewDrain(*alias, db, entry)
 	jobs := map[string]gocron.Job{
-		cfg.Mining.DomriaPrimaryMiner.Name(): domria.NewMiner(
-			cfg.Mining.DomriaPrimaryMiner,
+		c.Mining.DomriaPrimaryMiner.Name(): domria.NewMiner(
+			c.Mining.DomriaPrimaryMiner,
 			db,
 			drain,
 			entry,
 		),
-		cfg.Mining.DomriaSecondaryMiner.Name(): domria.NewMiner(
-			cfg.Mining.DomriaSecondaryMiner,
+		c.Mining.DomriaSecondaryMiner.Name(): domria.NewMiner(
+			c.Mining.DomriaSecondaryMiner,
 			db,
 			drain,
 			entry,
@@ -55,8 +55,8 @@ func main() {
 		return
 	}
 	miners := map[string]config.Miner{
-		cfg.Mining.DomriaPrimaryMiner.Name():   cfg.Mining.DomriaPrimaryMiner,
-		cfg.Mining.DomriaSecondaryMiner.Name(): cfg.Mining.DomriaSecondaryMiner,
+		c.Mining.DomriaPrimaryMiner.Name():   c.Mining.DomriaPrimaryMiner,
+		c.Mining.DomriaSecondaryMiner.Name(): c.Mining.DomriaSecondaryMiner,
 	}
 	miner := miners[*alias]
 	if *isDebug {

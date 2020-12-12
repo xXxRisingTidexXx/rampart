@@ -10,7 +10,6 @@ ENV PYTHONUNBUFFERED 1
 COPY requirements requirements
 COPY rampart rampart
 COPY templates templates
-COPY models models
 
 RUN apt-get update && \
     apt-get install -y libgomp1 && \

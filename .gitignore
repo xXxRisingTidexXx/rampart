@@ -21,5 +21,4 @@ venv
 .ipython
 .env
 __pycache__
-data
-models
+scientific

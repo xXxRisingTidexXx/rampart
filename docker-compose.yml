@@ -13,7 +13,8 @@ x-aggregation: &x-aggregation
     - ./cmd:/go/src/app/cmd
     - ./internal:/go/src/app/internal
     - ./config:/go/src/app/config
-    - ./data:/go/src/app/data
+    - ./scientific:/go/src/app/scientific
+    - ./images:/go/src/app/images
   env_file:
     - .env
 x-gochecks: &x-gochecks
@@ -31,7 +32,7 @@ x-ranking: &x-ranking
     - ./requirements:/app/requirements
     - ./rampart:/app/rampart
     - ./templates:/app/templates
-    - ./models:/app/models
+    - ./scientific:/app/scientific
   env_file:
     - .env
 x-recognition: &x-recognition
@@ -39,7 +40,7 @@ x-recognition: &x-recognition
   volumes:
     - ./requirements:/app/requirements
     - ./rampart:/app/rampart
-    - ./models:/app/models
+    - ./scientific:/app/scientific
   env_file:
     - .env
 x-pychecks: &x-pychecks
@@ -84,6 +85,10 @@ services:
     <<: *x-aggregation
     container_name: rampart-imaging
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/imaging
+  augmentation:
+    <<: *x-aggregation
+    container_name: rampart-augmentation
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/augmentation
   gochecks:
     build:
       context: .
@@ -110,8 +115,7 @@ services:
     volumes:
       - ./notebooks:/home/jovyan/notebooks
       - ./images:/home/jovyan/images
-      - ./data:/home/jovyan/data
-      - ./models:/home/jovyan/models
+      - ./scientific:/home/jovyan/scientific
       - ./.cache:/home/jovyan/.cache
       - ./.config:/home/jovyan/.config
       - ./.ipython:/home/jovyan/.ipython
