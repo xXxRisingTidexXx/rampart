@@ -8,8 +8,7 @@ dataclasses==0.6          # via torch
 future==0.18.2            # via torch
 joblib==0.17.0            # via scikit-learn
 lightgbm==3.0.0           # via -r requirements/notebook.in
-numpy==1.19.3             # via lightgbm, opencv-python, pandas, scikit-learn, scipy, torch, torchvision
-opencv-python==4.4.0.44   # via -r requirements/notebook.in
+numpy==1.19.3             # via lightgbm, pandas, scikit-learn, scipy, torch, torchvision
 pandas==1.1.4             # via ppscore
 pillow==8.0.1             # via torchvision
 plotly==4.12.0            # via -r requirements/notebook.in
