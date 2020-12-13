@@ -1,5 +1,4 @@
 psycopg2-binary
 sqlalchemy
 torchvision
-opencv-python
 pyyaml

@@ -8,8 +8,7 @@
 #
 dataclasses==0.6          # via torch
 future==0.18.2            # via torch
-numpy==1.19.3             # via opencv-python, torch, torchvision
-opencv-python==4.4.0.44   # via -r requirements/recognition.in
+numpy==1.19.3             # via torch, torchvision
 pillow==8.0.1             # via torchvision
 psycopg2-binary==2.8.6    # via -r requirements/recognition.in
 pyyaml==5.3.1             # via -r requirements/recognition.in
