@@ -18,6 +18,7 @@ import (
 	"time"
 )
 
+// TODO: add interpreter URL fallback.
 func NewGauger(config config.Gauger, drain *metrics.Drain, logger log.FieldLogger) *Gauger {
 	return &Gauger{
 		&http.Client{Timeout: config.Timeout},
