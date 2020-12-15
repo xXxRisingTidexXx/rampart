@@ -22,7 +22,6 @@ func NewGeocoder(
 ) *Geocoder {
 	return &Geocoder{
 		&http.Client{Timeout: config.Timeout},
-		config.Headers,
 		config.StatelessCities,
 		config.SearchFormat,
 		drain,
@@ -32,7 +31,6 @@ func NewGeocoder(
 
 type Geocoder struct {
 	client          *http.Client
-	headers         misc.Headers
 	statelessCities misc.Set
 	searchFormat    string
 	drain           *metrics.Drain
@@ -116,7 +114,7 @@ func (geocoder *Geocoder) getPositions(flat Flat) ([]position, error) {
 	if err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to construct a request, %v", err)
 	}
-	geocoder.headers.Inject(request)
+	request.Header.Set("User-Agent", misc.UserAgent)
 	response, err := geocoder.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to perform a request, %v", err)

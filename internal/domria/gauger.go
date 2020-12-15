@@ -21,7 +21,6 @@ import (
 func NewGauger(config config.Gauger, drain *metrics.Drain, logger log.FieldLogger) *Gauger {
 	return &Gauger{
 		&http.Client{Timeout: config.Timeout},
-		config.Headers,
 		config.InterpreterPrefix,
 		config.SubwayCities,
 		-1,
@@ -43,7 +42,6 @@ func NewGauger(config config.Gauger, drain *metrics.Drain, logger log.FieldLogge
 
 type Gauger struct {
 	client            *http.Client
-	headers           misc.Headers
 	interpreterPrefix string
 	subwayCities      misc.Set
 	unknownDistance   float64
@@ -141,7 +139,7 @@ func (gauger *Gauger) query(
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to construct a request, %v", err)
 	}
-	gauger.headers.Inject(request)
+	request.Header.Set("User-Agent", misc.UserAgent)
 	response, err := gauger.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to perform a request, %v", err)

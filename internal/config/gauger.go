@@ -7,7 +7,6 @@ import (
 
 type Gauger struct {
 	Timeout           time.Duration `yaml:"timeout"`
-	Headers           misc.Headers  `yaml:"headers"`
 	InterpreterPrefix string        `yaml:"interpreter-prefix"`
 	SubwayCities      misc.Set      `yaml:"subway-cities"`
 	SSFSearchRadius   float64       `yaml:"ssf-search-radius"`
