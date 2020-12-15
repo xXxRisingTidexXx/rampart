@@ -39,7 +39,7 @@ func main() {
 	loadGroup := &sync.WaitGroup{}
 	loadGroup.Add(c.Imaging.ThreadNumber)
 	for i := 0; i < c.Imaging.ThreadNumber; i++ {
-		go load(records, raws, assets, client, c.Imaging, entry, loadGroup)
+		go load(records, raws, assets, client, c.Imaging.RetryLimit, entry, loadGroup)
 	}
 	processGroup := &sync.WaitGroup{}
 	processGroup.Add(runtime.NumCPU())
@@ -72,13 +72,13 @@ func load(
 	raws chan<- imaging.Raw,
 	assets chan<- imaging.Asset,
 	client *http.Client,
-	config config.Imaging,
+	limit int,
 	logger log.FieldLogger,
 	group *sync.WaitGroup,
 ) {
 	for record := range records {
-		for retry, err := 1, io.EOF; retry <= config.RetryLimit && err != nil; retry++ {
-			if err = pipe(record, client, config.Headers, raws, assets); err != nil {
+		for retry, err := 1, io.EOF; retry <= limit && err != nil; retry++ {
+			if err = pipe(record, client, raws, assets); err != nil {
 				logger.WithFields(log.Fields{"url": record[0], "retry": retry}).Error(err)
 			}
 		}
@@ -89,7 +89,6 @@ func load(
 func pipe(
 	record []string,
 	client *http.Client,
-	headers misc.Headers,
 	raws chan<- imaging.Raw,
 	assets chan<- imaging.Asset,
 ) error {
@@ -97,7 +96,7 @@ func pipe(
 	if err != nil {
 		return fmt.Errorf("main: imaging failed to make a request, %v", err)
 	}
-	headers.Inject(request)
+	request.Header.Set("User-Agent", misc.UserAgent)
 	response, err := client.Do(request)
 	if err != nil {
 		return fmt.Errorf("main: imaging failed to send a request, %v", err)
