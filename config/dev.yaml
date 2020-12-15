@@ -1,5 +1,3 @@
-headers: &headers
-  User-Agent: RampartBot/1.0.0
 mining:
   domria-miner: &domria-miner
     fetcher:
@@ -8,7 +6,6 @@ mining:
       flags:
         primary: newbuildings=1
         secondary: secondary=1
-      headers: *headers
       search-format: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d
     sanitizer:
       url-prefix: https://dom.ria.com/uk/
@@ -131,13 +128,11 @@ mining:
       house-number-max-length: 20
     geocoder:
       timeout: 10s
-      headers: *headers
       stateless-cities:
         - Київ
       search-format: https://nominatim.openstreetmap.org/search?state=%s&city=%s&street=%s+%s&format=json&countrycodes=ua
     gauger:
       timeout: 40s
-      headers: *headers
       interpreter-prefix: https://overpass.kumi.systems/api/interpreter?data=
       subway-cities:
         - Київ
@@ -198,7 +193,6 @@ imaging:
   timeout: 40s
   thread-number: 4
   retry-limit: 3
-  headers: *headers
   output-format: scientific/images/%x.%s.%s.webp
   input-path: scientific/images.csv
 telebot:
