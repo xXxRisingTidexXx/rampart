@@ -108,8 +108,7 @@ func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 	gauger.drain.DrainDuration(metrics.SSFGaugingDuration, start)
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedSSFGaugingNumber)
-		fields := log.Fields{"source": flat.Source, "url": flat.URL, "feature": "ssf"}
-		gauger.logger.WithFields(fields).Error(err)
+		gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "ssf"}).Error(err)
 		return 0
 	}
 	ssf := 0.0
@@ -253,8 +252,7 @@ func (gauger *Gauger) gaugeIZF(flat Flat) float64 {
 	gauger.drain.DrainDuration(metrics.IZFGaugingDuration, start)
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedIZFGaugingNumber)
-		fields := log.Fields{"source": flat.Source, "url": flat.URL, "feature": "izf"}
-		gauger.logger.WithFields(fields).Error(err)
+		gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "izf"}).Error(err)
 		return 0
 	}
 	izf := 0.0
@@ -294,8 +292,7 @@ func (gauger *Gauger) gaugeGZF(flat Flat) float64 {
 	gauger.drain.DrainDuration(metrics.GZFGaugingDuration, start)
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedGZFGaugingNumber)
-		fields := log.Fields{"source": flat.Source, "url": flat.URL, "feature": "gzf"}
-		gauger.logger.WithFields(fields).Error(err)
+		gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "gzf"}).Error(err)
 		return 0
 	}
 	gzf := 0.0
