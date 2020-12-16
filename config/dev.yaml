@@ -2,7 +2,7 @@ mining:
   domria-miner: &domria-miner
     fetcher:
       timeout: 40s
-      portion: 100
+      portion: 10
       flags:
         primary: newbuildings=1
         secondary: secondary=1
@@ -132,7 +132,7 @@ mining:
         - Київ
       search-format: https://nominatim.openstreetmap.org/search?state=%s&city=%s&street=%s+%s&format=json&countrycodes=ua
     gauger:
-      timeout: 20s
+      timeout: 30s
       interpreter-prefix: https://overpass-api.de/api/interpreter?data=
       subway-cities:
         - Київ
@@ -177,7 +177,7 @@ mining:
     <<: *domria-miner
     alias: domria-primary
     housing: primary
-    spec: '0-59/15 * * * *'
+    spec: '0-59/6 * * * *'
     server:
       <<: *server
       address: :9001
@@ -185,7 +185,7 @@ mining:
     <<: *domria-miner
     alias: domria-secondary
     housing: secondary
-    spec: '7-59/15 * * * *'
+    spec: '3-59/6 * * * *'
     server:
       <<: *server
       address: :9002
