@@ -8,11 +8,12 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"time"
 )
 
-// TODO: add retry policy.
 func NewFetcher(
 	config config.Fetcher,
 	drain *metrics.Drain,
@@ -25,6 +26,7 @@ func NewFetcher(
 	return &Fetcher{
 		&http.Client{Timeout: config.Timeout},
 		0,
+		config.RetryLimit,
 		config.Portion,
 		flags,
 		config.SearchFormat,
@@ -36,6 +38,7 @@ func NewFetcher(
 type Fetcher struct {
 	client       *http.Client
 	page         int
+	retryLimit   int
 	portion      int
 	flags        map[misc.Housing]string
 	searchFormat string
@@ -51,12 +54,13 @@ func (fetcher *Fetcher) FetchFlats(housing misc.Housing) []Flat {
 		)
 		return make([]Flat, 0)
 	}
+	entry := fetcher.logger.WithField("page", fetcher.page)
 	start := time.Now()
-	search, err := fetcher.getSearch(flag)
+	search, err := fetcher.getSearch(flag, entry)
 	fetcher.drain.DrainDuration(metrics.FetchingDuration, start)
 	if err != nil {
 		fetcher.drain.DrainNumber(metrics.FailedFetchingNumber)
-		fetcher.logger.WithField("page", fetcher.page).Error(err)
+		entry.Error(err)
 		return make([]Flat, 0)
 	}
 	flats := fetcher.getFlats(search, housing)
@@ -68,33 +72,48 @@ func (fetcher *Fetcher) FetchFlats(housing misc.Housing) []Flat {
 	return flats
 }
 
-func (fetcher *Fetcher) getSearch(flag string) (search, error) {
+func (fetcher *Fetcher) getSearch(flag string, logger log.FieldLogger) (search, error) {
+	url := fmt.Sprintf(fetcher.searchFormat, flag, fetcher.page, fetcher.portion)
+	bytes, err := make([]byte, 0), io.EOF
+	for retry := 1; retry <= fetcher.retryLimit && err != nil; retry++ {
+		if bytes, err = fetcher.trySearch(url); err != nil {
+			logger.WithField("retry", retry).Error(err)
+		}
+	}
 	var s search
-	request, err := http.NewRequest(
-		http.MethodGet,
-		fmt.Sprintf(fetcher.searchFormat, flag, fetcher.page, fetcher.portion),
-		nil,
-	)
 	if err != nil {
-		return s, fmt.Errorf("domria: fetcher failed to construct a request, %v", err)
+		return s, fmt.Errorf("domria: fetcher exhausted retry limit")
+	}
+	if err := json.Unmarshal(bytes, &s); err != nil {
+		return s, fmt.Errorf("domria: fetcher failed to unmarshal the search, %v", err)
+	}
+
+	return s, nil
+}
+
+func (fetcher *Fetcher) trySearch(url string) ([]byte, error) {
+	request, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("domria: fetcher failed to construct a request, %v", err)
 	}
 	request.Header.Set("User-Agent", misc.UserAgent)
 	response, err := fetcher.client.Do(request)
 	if err != nil {
-		return s, fmt.Errorf("domria: fetcher failed to perform a request, %v", err)
+		return nil, fmt.Errorf("domria: fetcher failed to perform a request, %v", err)
 	}
 	if response.StatusCode != http.StatusOK {
 		_ = response.Body.Close()
-		return s, fmt.Errorf("domria: fetcher got response with status %s", response.Status)
+		return nil, fmt.Errorf("domria: fetcher got response with status %s", response.Status)
 	}
-	if err := json.NewDecoder(response.Body).Decode(&s); err != nil {
+	bytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
 		_ = response.Body.Close()
-		return s, fmt.Errorf("domria: fetcher failed to unmarshal the search, %v", err)
+		return nil, fmt.Errorf("domria: fetcher failed to read the response body, %v", err)
 	}
 	if err := response.Body.Close(); err != nil {
-		return s, fmt.Errorf("domria: fetcher failed to close the response body, %v", err)
+		return nil, fmt.Errorf("domria: fetcher failed to close the response body, %v", err)
 	}
-	return s, nil
+	return bytes, nil
 }
 
 func (fetcher *Fetcher) getFlats(s search, housing misc.Housing) []Flat {
