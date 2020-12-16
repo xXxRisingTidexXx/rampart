@@ -6,7 +6,6 @@ type publication struct {
 	Panoramas           []panorama       `json:"panoramas"`
 	UpdatedAt           moment           `json:"updated_at"`
 	SaleDate            string           `json:"sale_date"`
-	Inspected           int              `json:"inspected"`
 	PriceArr            prices           `json:"priceArr"`
 	TotalSquareMeters   float64          `json:"total_square_meters"`
 	LivingSquareMeters  float64          `json:"living_square_meters"`

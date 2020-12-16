@@ -133,7 +133,6 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 		Photos:      photos,
 		Panoramas:   panoramas,
 		UpdateTime:  flat.UpdateTime,
-		IsInspected: flat.IsInspected,
 		Price:       flat.Price,
 		TotalArea:   flat.TotalArea,
 		LivingArea:  flat.LivingArea,

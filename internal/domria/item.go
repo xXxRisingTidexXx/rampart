@@ -41,7 +41,6 @@ func (i *item) UnmarshalJSON(bytes []byte) error {
 	i.Panoramas = p.Panoramas
 	i.UpdatedAt = p.UpdatedAt
 	i.SaleDate = p.SaleDate
-	i.Inspected = p.Inspected
 	i.PriceArr = p.PriceArr
 	i.TotalSquareMeters = p.TotalSquareMeters
 	i.LivingSquareMeters = p.LivingSquareMeters
