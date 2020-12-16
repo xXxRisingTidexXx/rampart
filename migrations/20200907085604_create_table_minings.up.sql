@@ -3,6 +3,7 @@ create table if not exists minings
     id                              serial primary key not null,
     completion_time                 timestamp          not null,
     miner                           varchar(40)        not null check ( miner != '' ),
+    page                            integer            not null check ( 0 <= page ),
     failed_fetching_number          smallint           not null check ( 0 <= failed_fetching_number ),
     state_sanitation_number         smallint           not null check ( 0 <= state_sanitation_number ),
     city_sanitation_number          smallint           not null check ( 0 <= city_sanitation_number ),

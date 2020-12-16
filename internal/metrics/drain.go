@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-// TODO: add the fetcher page.
 func NewDrain(miner string, db *sql.DB, logger log.FieldLogger) *Drain {
 	numbers := make(map[Number]int, len(numberViews))
 	for number := range numberViews {
@@ -16,15 +15,20 @@ func NewDrain(miner string, db *sql.DB, logger log.FieldLogger) *Drain {
 	for duration := range durationViews {
 		durations[duration] = &bucket{}
 	}
-	return &Drain{miner, numbers, durations, db, logger}
+	return &Drain{miner, 0, numbers, durations, db, logger}
 }
 
 type Drain struct {
 	miner     string
+	page      int
 	numbers   map[Number]int
 	durations map[Duration]*bucket
 	db        *sql.DB
 	logger    log.FieldLogger
+}
+
+func (drain *Drain) DrainPage(page int) {
+	drain.page = page
 }
 
 func (drain *Drain) DrainNumber(number Number) {
@@ -51,7 +55,7 @@ func (drain *Drain) Flush() {
 	_, err := drain.db.Exec(
 		`insert into minings
 		(
-			completion_time, miner, failed_fetching_number, state_sanitation_number,
+			completion_time, miner, page, failed_fetching_number, state_sanitation_number,
 			city_sanitation_number, district_sanitation_number, swap_sanitation_number,
 			street_sanitation_number, house_number_sanitation_number, located_geocoding_number,
 		 	unlocated_geocoding_number,failed_geocoding_number, inconclusive_geocoding_number,
@@ -74,9 +78,10 @@ func (drain *Drain) Flush() {
 		(
 			now() at time zone 'utc', $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14,
 			$15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31,
-			$32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45
+			$32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46
 		)`,
 		drain.miner,
+		drain.page,
 		drain.numbers[FailedFetchingNumber],
 		drain.numbers[StateSanitationNumber],
 		drain.numbers[CitySanitationNumber],
@@ -125,6 +130,7 @@ func (drain *Drain) Flush() {
 	if err != nil {
 		drain.logger.Errorf("metrics: drain failed to flush, %v", err)
 	}
+	drain.page = 0
 	for number := range drain.numbers {
 		drain.numbers[number] = 0
 	}

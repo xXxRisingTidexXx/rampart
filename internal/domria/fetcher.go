@@ -47,6 +47,7 @@ type Fetcher struct {
 }
 
 func (fetcher *Fetcher) FetchFlats(housing misc.Housing) []Flat {
+	fetcher.drain.DrainPage(fetcher.page)
 	flag, ok := fetcher.flags[housing]
 	if !ok {
 		fetcher.logger.WithField("housing", housing).Error(
