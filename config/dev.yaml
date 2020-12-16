@@ -2,6 +2,7 @@ mining:
   domria-miner: &domria-miner
     fetcher:
       timeout: 40s
+      retry-limit: 3
       portion: 10
       flags:
         primary: newbuildings=1
