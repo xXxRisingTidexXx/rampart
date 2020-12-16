@@ -14,8 +14,6 @@ import (
 )
 
 // TODO: add new search endpoint at https://locationiq.com/ .
-// TODO: add retry policy.
-// TODO: accept flats without coordinates.
 func NewGeocoder(
 	config config.Geocoder,
 	drain *metrics.Drain,
@@ -49,7 +47,7 @@ func (geocoder *Geocoder) GeocodeFlats(flats []Flat) []Flat {
 }
 
 func (geocoder *Geocoder) geocodeFlat(flat Flat) (Flat, bool) {
-	if flat.IsInspected && flat.IsLocated() {
+	if flat.IsLocated() {
 		geocoder.drain.DrainNumber(metrics.LocatedGeocodingNumber)
 		return flat, true
 	}
@@ -76,7 +74,6 @@ func (geocoder *Geocoder) geocodeFlat(flat Flat) (Flat, bool) {
 		Photos:      flat.Photos,
 		Panoramas:   flat.Panoramas,
 		UpdateTime:  flat.UpdateTime,
-		IsInspected: flat.IsInspected,
 		Price:       flat.Price,
 		TotalArea:   flat.TotalArea,
 		LivingArea:  flat.LivingArea,
