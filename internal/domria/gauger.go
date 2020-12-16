@@ -102,17 +102,21 @@ func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 		gauger.drain.DrainNumber(metrics.SubwaylessSSFGaugingNumber)
 		return 0
 	}
+	entry := gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "ssf"})
 	start := time.Now()
 	collection, err := gauger.queryOverpass(
-		"node[station=subway](around:%f,%f,%f);out;",
-		gauger.ssfSearchRadius,
-		flat.Point.Lat(),
-		flat.Point.Lon(),
+		fmt.Sprintf(
+			"node[station=subway](around:%f,%f,%f);out;",
+			gauger.ssfSearchRadius,
+			flat.Point.Lat(),
+			flat.Point.Lon(),
+		),
+		entry,
 	)
 	gauger.drain.DrainDuration(metrics.SSFGaugingDuration, start)
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedSSFGaugingNumber)
-		gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "ssf"}).Error(err)
+		entry.Error(err)
 		return 0
 	}
 	ssf := 0.0
@@ -132,18 +136,20 @@ func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 
 func (gauger *Gauger) queryOverpass(
 	query string,
-	params ...interface{},
+	logger log.FieldLogger,
 ) (*geojson.FeatureCollection, error) {
-	// TODO: add entry.
-	data := gourl.QueryEscape(fmt.Sprintf(query, params...))
+	data := gourl.QueryEscape(query)
 	bytes, err := make([]byte, 0), io.EOF
-	for i, host := range gauger.overpassHosts {
-		if bytes, err = gauger.tryQuery(host, data); err != nil {
-
+	for i := 0; i < len(gauger.overpassHosts) && err != nil; i++ {
+		if bytes, err = gauger.tryQuery(gauger.overpassHosts[i], data); err != nil {
+			logger.WithField("host", gauger.overpassHosts[i]).Error(err)
 		}
 	}
+	if err != nil {
+		return nil, fmt.Errorf("domria: gauger exhausted hosts")
+	}
 	o := osm.OSM{}
-	if err := xml.NewDecoder(response.Body).Decode(&o); err != nil {
+	if err := xml.Unmarshal(bytes, &o); err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to unmarshal the xml, %v", err)
 	}
 	collection, err := osmgeojson.Convert(&o, osmgeojson.NoMeta(true))
@@ -253,26 +259,25 @@ func (gauger *Gauger) gaugeGeoDistanceToPoints(points []orb.Point, point orb.Poi
 }
 
 func (gauger *Gauger) gaugeIZF(flat Flat) float64 {
+	entry := gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "izf"})
 	start := time.Now()
 	collection, err := gauger.queryOverpass(
-		`(
-		  way[landuse=industrial](around:%f,%f,%f);
-		  >;
-		  relation[landuse=industrial](around:%f,%f,%f);
-		  >;
-		);
-		out;`,
-		gauger.izfSearchRadius,
-		flat.Point.Lat(),
-		flat.Point.Lon(),
-		gauger.izfSearchRadius,
-		flat.Point.Lat(),
-		flat.Point.Lon(),
+		fmt.Sprintf(
+			"(way[landuse=industrial](around:%f,%f,%f);>;relation[landuse=industrial](around:%f,%"+
+				"f,%f);>;);out;",
+			gauger.izfSearchRadius,
+			flat.Point.Lat(),
+			flat.Point.Lon(),
+			gauger.izfSearchRadius,
+			flat.Point.Lat(),
+			flat.Point.Lon(),
+		),
+		entry,
 	)
 	gauger.drain.DrainDuration(metrics.IZFGaugingDuration, start)
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedIZFGaugingNumber)
-		gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "izf"}).Error(err)
+		entry.Error(err)
 		return 0
 	}
 	izf := 0.0
@@ -293,26 +298,25 @@ func (gauger *Gauger) gaugeIZF(flat Flat) float64 {
 }
 
 func (gauger *Gauger) gaugeGZF(flat Flat) float64 {
+	entry := gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "gzf"})
 	start := time.Now()
 	collection, err := gauger.queryOverpass(
-		`(
-		  way[leisure=park](around:%f,%f,%f);
-		  >;
-		  relation[leisure=park](around:%f,%f,%f);
-		  >;
-		);
-		out;`,
-		gauger.gzfSearchRadius,
-		flat.Point.Lat(),
-		flat.Point.Lon(),
-		gauger.gzfSearchRadius,
-		flat.Point.Lat(),
-		flat.Point.Lon(),
+		fmt.Sprintf(
+			"(way[leisure=park](around:%f,%f,%f);>;relation[leisure=park](around:%f,%f,%f);>;);ou"+
+				"t;",
+			gauger.gzfSearchRadius,
+			flat.Point.Lat(),
+			flat.Point.Lon(),
+			gauger.gzfSearchRadius,
+			flat.Point.Lat(),
+			flat.Point.Lon(),
+		),
+		entry,
 	)
 	gauger.drain.DrainDuration(metrics.GZFGaugingDuration, start)
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedGZFGaugingNumber)
-		gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "gzf"}).Error(err)
+		entry.Error(err)
 		return 0
 	}
 	gzf := 0.0
