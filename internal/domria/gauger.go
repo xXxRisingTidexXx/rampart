@@ -18,10 +18,12 @@ import (
 	"time"
 )
 
+// TODO: add interpreter URL fallback.
+// TODO: add just interpreter host field to config.
+// TODO: add retry policy.
 func NewGauger(config config.Gauger, drain *metrics.Drain, logger log.FieldLogger) *Gauger {
 	return &Gauger{
 		&http.Client{Timeout: config.Timeout},
-		config.Headers,
 		config.InterpreterPrefix,
 		config.SubwayCities,
 		-1,
@@ -43,7 +45,6 @@ func NewGauger(config config.Gauger, drain *metrics.Drain, logger log.FieldLogge
 
 type Gauger struct {
 	client            *http.Client
-	headers           misc.Headers
 	interpreterPrefix string
 	subwayCities      misc.Set
 	unknownDistance   float64
@@ -110,8 +111,7 @@ func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 	gauger.drain.DrainDuration(metrics.SSFGaugingDuration, start)
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedSSFGaugingNumber)
-		fields := log.Fields{"source": flat.Source, "url": flat.URL, "feature": "ssf"}
-		gauger.logger.WithFields(fields).Error(err)
+		gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "ssf"}).Error(err)
 		return 0
 	}
 	ssf := 0.0
@@ -141,7 +141,7 @@ func (gauger *Gauger) query(
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to construct a request, %v", err)
 	}
-	gauger.headers.Inject(request)
+	request.Header.Set("User-Agent", misc.UserAgent)
 	response, err := gauger.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to perform a request, %v", err)
@@ -255,8 +255,7 @@ func (gauger *Gauger) gaugeIZF(flat Flat) float64 {
 	gauger.drain.DrainDuration(metrics.IZFGaugingDuration, start)
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedIZFGaugingNumber)
-		fields := log.Fields{"source": flat.Source, "url": flat.URL, "feature": "izf"}
-		gauger.logger.WithFields(fields).Error(err)
+		gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "izf"}).Error(err)
 		return 0
 	}
 	izf := 0.0
@@ -296,8 +295,7 @@ func (gauger *Gauger) gaugeGZF(flat Flat) float64 {
 	gauger.drain.DrainDuration(metrics.GZFGaugingDuration, start)
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedGZFGaugingNumber)
-		fields := log.Fields{"source": flat.Source, "url": flat.URL, "feature": "gzf"}
-		gauger.logger.WithFields(fields).Error(err)
+		gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "gzf"}).Error(err)
 		return 0
 	}
 	gzf := 0.0

@@ -10,7 +10,6 @@ import (
 	"time"
 )
 
-// TODO: apply many-to-many between flats & images.
 func NewStorer(
 	config config.Storer,
 	db *sql.DB,
@@ -29,9 +28,9 @@ type Storer struct {
 
 func (storer *Storer) StoreFlats(flats []Flat) {
 	for _, flat := range flats {
-		entry := storer.logger.WithField("source", flat.Source)
+		entry := storer.logger.WithField("url", flat.URL)
 		if id, err := storer.storeFlat(flat); err != nil {
-			entry.WithField("url", flat.URL).Error(err)
+			entry.Error(err)
 			storer.drain.DrainNumber(metrics.FailedFlatStoringNumber)
 		} else {
 			storer.storeImages(id, flat.Photos, PhotoKind, entry)

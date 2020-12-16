@@ -14,7 +14,8 @@ import (
 )
 
 // TODO: add new search endpoint at https://locationiq.com/ .
-// TODO: check unstructured query.
+// TODO: add retry policy.
+// TODO: accept flats without coordinates.
 func NewGeocoder(
 	config config.Geocoder,
 	drain *metrics.Drain,
@@ -22,7 +23,6 @@ func NewGeocoder(
 ) *Geocoder {
 	return &Geocoder{
 		&http.Client{Timeout: config.Timeout},
-		config.Headers,
 		config.StatelessCities,
 		config.SearchFormat,
 		drain,
@@ -32,7 +32,6 @@ func NewGeocoder(
 
 type Geocoder struct {
 	client          *http.Client
-	headers         misc.Headers
 	statelessCities misc.Set
 	searchFormat    string
 	drain           *metrics.Drain
@@ -62,8 +61,7 @@ func (geocoder *Geocoder) geocodeFlat(flat Flat) (Flat, bool) {
 	positions, err := geocoder.getPositions(flat)
 	geocoder.drain.DrainDuration(metrics.GeocodingDuration, start)
 	if err != nil {
-		fields := log.Fields{"source": flat.Source, "url": flat.URL}
-		geocoder.logger.WithFields(fields).Error(err)
+		geocoder.logger.WithField("url", flat.URL).Error(err)
 		geocoder.drain.DrainNumber(metrics.FailedGeocodingNumber)
 		return Flat{}, false
 	}
@@ -116,7 +114,7 @@ func (geocoder *Geocoder) getPositions(flat Flat) ([]position, error) {
 	if err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to construct a request, %v", err)
 	}
-	geocoder.headers.Inject(request)
+	request.Header.Set("User-Agent", misc.UserAgent)
 	response, err := geocoder.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to perform a request, %v", err)

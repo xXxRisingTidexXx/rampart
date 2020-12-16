@@ -12,6 +12,7 @@ import (
 	"time"
 )
 
+// TODO: add retry policy.
 func NewFetcher(
 	config config.Fetcher,
 	drain *metrics.Drain,
@@ -26,7 +27,6 @@ func NewFetcher(
 		0,
 		config.Portion,
 		flags,
-		config.Headers,
 		config.SearchFormat,
 		drain,
 		logger,
@@ -38,7 +38,6 @@ type Fetcher struct {
 	page         int
 	portion      int
 	flags        map[misc.Housing]string
-	headers      misc.Headers
 	searchFormat string
 	drain        *metrics.Drain
 	logger       log.FieldLogger
@@ -79,7 +78,7 @@ func (fetcher *Fetcher) getSearch(flag string) (search, error) {
 	if err != nil {
 		return s, fmt.Errorf("domria: fetcher failed to construct a request, %v", err)
 	}
-	fetcher.headers.Inject(request)
+	request.Header.Set("User-Agent", misc.UserAgent)
 	response, err := fetcher.client.Do(request)
 	if err != nil {
 		return s, fmt.Errorf("domria: fetcher failed to perform a request, %v", err)

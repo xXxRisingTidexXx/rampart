@@ -5,6 +5,8 @@ import (
 	"runtime"
 )
 
+const UserAgent = "RampartBot/0.0.1"
+
 func init() {
 	_, filePath, _, ok := runtime.Caller(0)
 	if !ok {
