@@ -12,19 +12,20 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"io"
+	"io/ioutil"
 	"math"
 	"net/http"
 	gourl "net/url"
 	"time"
 )
 
-// TODO: add interpreter URL fallback.
-// TODO: add just interpreter host field to config.
-// TODO: add retry policy.
+// TODO: relative city center distance feature (with city diameter).
+// TODO: distance to workplace feature.
 func NewGauger(config config.Gauger, drain *metrics.Drain, logger log.FieldLogger) *Gauger {
 	return &Gauger{
 		&http.Client{Timeout: config.Timeout},
-		config.InterpreterPrefix,
+		config.OverpassHosts,
 		config.SubwayCities,
 		-1,
 		config.SSFSearchRadius,
@@ -44,23 +45,23 @@ func NewGauger(config config.Gauger, drain *metrics.Drain, logger log.FieldLogge
 }
 
 type Gauger struct {
-	client            *http.Client
-	interpreterPrefix string
-	subwayCities      misc.Set
-	unknownDistance   float64
-	ssfSearchRadius   float64
-	ssfMinDistance    float64
-	ssfModifier       float64
-	izfSearchRadius   float64
-	izfMinArea        float64
-	izfMinDistance    float64
-	izfModifier       float64
-	gzfSearchRadius   float64
-	gzfMinArea        float64
-	gzfMinDistance    float64
-	gzfModifier       float64
-	drain             *metrics.Drain
-	logger            log.FieldLogger
+	client          *http.Client
+	overpassHosts   []string
+	subwayCities    misc.Set
+	unknownDistance float64
+	ssfSearchRadius float64
+	ssfMinDistance  float64
+	ssfModifier     float64
+	izfSearchRadius float64
+	izfMinArea      float64
+	izfMinDistance  float64
+	izfModifier     float64
+	gzfSearchRadius float64
+	gzfMinArea      float64
+	gzfMinDistance  float64
+	gzfModifier     float64
+	drain           *metrics.Drain
+	logger          log.FieldLogger
 }
 
 func (gauger *Gauger) GaugeFlats(flats []Flat) []Flat {
@@ -101,17 +102,21 @@ func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 		gauger.drain.DrainNumber(metrics.SubwaylessSSFGaugingNumber)
 		return 0
 	}
+	entry := gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "ssf"})
 	start := time.Now()
-	collection, err := gauger.query(
-		"node[station=subway](around:%f,%f,%f);out;",
-		gauger.ssfSearchRadius,
-		flat.Point.Lat(),
-		flat.Point.Lon(),
+	collection, err := gauger.queryOverpass(
+		fmt.Sprintf(
+			"node[station=subway](around:%f,%f,%f);out;",
+			gauger.ssfSearchRadius,
+			flat.Point.Lat(),
+			flat.Point.Lon(),
+		),
+		entry,
 	)
 	gauger.drain.DrainDuration(metrics.SSFGaugingDuration, start)
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedSSFGaugingNumber)
-		gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "ssf"}).Error(err)
+		entry.Error(err)
 		return 0
 	}
 	ssf := 0.0
@@ -129,13 +134,35 @@ func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
 	return ssf * gauger.ssfModifier
 }
 
-func (gauger *Gauger) query(
+func (gauger *Gauger) queryOverpass(
 	query string,
-	params ...interface{},
+	logger log.FieldLogger,
 ) (*geojson.FeatureCollection, error) {
+	data := gourl.QueryEscape(query)
+	bytes, err := make([]byte, 0), io.EOF
+	for i := 0; i < len(gauger.overpassHosts) && err != nil; i++ {
+		if bytes, err = gauger.tryQuery(gauger.overpassHosts[i], data); err != nil {
+			logger.WithField("host", gauger.overpassHosts[i]).Error(err)
+		}
+	}
+	if err != nil {
+		return nil, fmt.Errorf("domria: gauger exhausted hosts")
+	}
+	o := osm.OSM{}
+	if err := xml.Unmarshal(bytes, &o); err != nil {
+		return nil, fmt.Errorf("domria: gauger failed to unmarshal the xml, %v", err)
+	}
+	collection, err := osmgeojson.Convert(&o, osmgeojson.NoMeta(true))
+	if err != nil {
+		return nil, fmt.Errorf("domria: gauger failed to convert from osm to geojson, %v", err)
+	}
+	return collection, nil
+}
+
+func (gauger *Gauger) tryQuery(host, data string) ([]byte, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
-		gauger.interpreterPrefix+gourl.QueryEscape(fmt.Sprintf(query, params...)),
+		fmt.Sprintf("https://%s/api/interpreter?data=%s", host, data),
 		nil,
 	)
 	if err != nil {
@@ -150,19 +177,15 @@ func (gauger *Gauger) query(
 		_ = response.Body.Close()
 		return nil, fmt.Errorf("domria: gauger got response with status %s", response.Status)
 	}
-	o := osm.OSM{}
-	if err := xml.NewDecoder(response.Body).Decode(&o); err != nil {
+	bytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
 		_ = response.Body.Close()
-		return nil, fmt.Errorf("domria: gauger failed to unmarshal the xml, %v", err)
+		return nil, fmt.Errorf("domria: gauger failed to read the response body, %v", err)
 	}
 	if err := response.Body.Close(); err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to close the response body, %v", err)
 	}
-	collection, err := osmgeojson.Convert(&o, osmgeojson.NoMeta(true))
-	if err != nil {
-		return nil, fmt.Errorf("domria: gauger failed to convert from osm to geojson, %v", err)
-	}
-	return collection, nil
+	return bytes, nil
 }
 
 func (gauger *Gauger) gaugeGeoDistance(geometry orb.Geometry, point orb.Point) float64 {
@@ -236,26 +259,25 @@ func (gauger *Gauger) gaugeGeoDistanceToPoints(points []orb.Point, point orb.Poi
 }
 
 func (gauger *Gauger) gaugeIZF(flat Flat) float64 {
+	entry := gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "izf"})
 	start := time.Now()
-	collection, err := gauger.query(
-		`(
-		  way[landuse=industrial](around:%f,%f,%f);
-		  >;
-		  relation[landuse=industrial](around:%f,%f,%f);
-		  >;
-		);
-		out;`,
-		gauger.izfSearchRadius,
-		flat.Point.Lat(),
-		flat.Point.Lon(),
-		gauger.izfSearchRadius,
-		flat.Point.Lat(),
-		flat.Point.Lon(),
+	collection, err := gauger.queryOverpass(
+		fmt.Sprintf(
+			"(way[landuse=industrial](around:%f,%f,%f);>;relation[landuse=industrial](around:%f,%"+
+				"f,%f);>;);out;",
+			gauger.izfSearchRadius,
+			flat.Point.Lat(),
+			flat.Point.Lon(),
+			gauger.izfSearchRadius,
+			flat.Point.Lat(),
+			flat.Point.Lon(),
+		),
+		entry,
 	)
 	gauger.drain.DrainDuration(metrics.IZFGaugingDuration, start)
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedIZFGaugingNumber)
-		gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "izf"}).Error(err)
+		entry.Error(err)
 		return 0
 	}
 	izf := 0.0
@@ -276,26 +298,25 @@ func (gauger *Gauger) gaugeIZF(flat Flat) float64 {
 }
 
 func (gauger *Gauger) gaugeGZF(flat Flat) float64 {
+	entry := gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "gzf"})
 	start := time.Now()
-	collection, err := gauger.query(
-		`(
-		  way[leisure=park](around:%f,%f,%f);
-		  >;
-		  relation[leisure=park](around:%f,%f,%f);
-		  >;
-		);
-		out;`,
-		gauger.gzfSearchRadius,
-		flat.Point.Lat(),
-		flat.Point.Lon(),
-		gauger.gzfSearchRadius,
-		flat.Point.Lat(),
-		flat.Point.Lon(),
+	collection, err := gauger.queryOverpass(
+		fmt.Sprintf(
+			"(way[leisure=park](around:%f,%f,%f);>;relation[leisure=park](around:%f,%f,%f);>;);ou"+
+				"t;",
+			gauger.gzfSearchRadius,
+			flat.Point.Lat(),
+			flat.Point.Lon(),
+			gauger.gzfSearchRadius,
+			flat.Point.Lat(),
+			flat.Point.Lon(),
+		),
+		entry,
 	)
 	gauger.drain.DrainDuration(metrics.GZFGaugingDuration, start)
 	if err != nil {
 		gauger.drain.DrainNumber(metrics.FailedGZFGaugingNumber)
-		gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "gzf"}).Error(err)
+		entry.Error(err)
 		return 0
 	}
 	gzf := 0.0
