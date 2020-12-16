@@ -11,9 +11,6 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 )
 
-// TODO: relative city center distance feature (with city diameter).
-// TODO: distance to workplace feature.
-// TODO: shorten house number column (but research the actual width before).
 func main() {
 	isDebug := flag.Bool("debug", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")

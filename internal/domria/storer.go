@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// TODO: shorten house number column (but research the actual width before).
 func NewStorer(
 	config config.Storer,
 	db *sql.DB,

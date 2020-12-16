@@ -18,9 +18,8 @@ import (
 	"time"
 )
 
-// TODO: add interpreter URL fallback.
-// TODO: add just interpreter host field to config.
-// TODO: add retry policy.
+// TODO: relative city center distance feature (with city diameter).
+// TODO: distance to workplace feature.
 func NewGauger(config config.Gauger, drain *metrics.Drain, logger log.FieldLogger) *Gauger {
 	return &Gauger{
 		&http.Client{Timeout: config.Timeout},
