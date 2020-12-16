@@ -12,6 +12,7 @@ import (
 	"time"
 )
 
+// TODO: add retry policy.
 func NewFetcher(
 	config config.Fetcher,
 	drain *metrics.Drain,

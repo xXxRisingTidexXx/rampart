@@ -14,7 +14,8 @@ import (
 )
 
 // TODO: add new search endpoint at https://locationiq.com/ .
-// TODO: check unstructured query.
+// TODO: add retry policy.
+// TODO: accept flats without coordinates.
 func NewGeocoder(
 	config config.Geocoder,
 	drain *metrics.Drain,

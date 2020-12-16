@@ -19,6 +19,8 @@ import (
 )
 
 // TODO: add interpreter URL fallback.
+// TODO: add just interpreter host field to config.
+// TODO: add retry policy.
 func NewGauger(config config.Gauger, drain *metrics.Drain, logger log.FieldLogger) *Gauger {
 	return &Gauger{
 		&http.Client{Timeout: config.Timeout},
