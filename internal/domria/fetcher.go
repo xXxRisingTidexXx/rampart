@@ -139,7 +139,6 @@ func (fetcher *Fetcher) getFlats(s search, housing misc.Housing) []Flat {
 			Panoramas:   panoramas,
 			UpdateTime:  time.Time(i.UpdatedAt),
 			IsSold:      i.SaleDate != "",
-			IsInspected: i.Inspected == 1,
 			Price:       float64(i.PriceArr.USD),
 			TotalArea:   i.TotalSquareMeters,
 			LivingArea:  i.LivingSquareMeters,

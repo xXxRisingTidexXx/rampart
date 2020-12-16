@@ -73,7 +73,6 @@ func (gauger *Gauger) GaugeFlats(flats []Flat) []Flat {
 			Photos:      flat.Photos,
 			Panoramas:   flat.Panoramas,
 			UpdateTime:  flat.UpdateTime,
-			IsInspected: flat.IsInspected,
 			Price:       flat.Price,
 			TotalArea:   flat.TotalArea,
 			LivingArea:  flat.LivingArea,

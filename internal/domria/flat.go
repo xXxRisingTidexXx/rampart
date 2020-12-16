@@ -13,7 +13,6 @@ type Flat struct {
 	Panoramas   []string
 	UpdateTime  time.Time
 	IsSold      bool
-	IsInspected bool
 	Price       float64
 	TotalArea   float64
 	LivingArea  float64
