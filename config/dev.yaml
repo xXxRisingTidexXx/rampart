@@ -135,9 +135,9 @@ mining:
     gauger:
       timeout: 30s
       overpass-hosts:
-        - overpass.kumi.systems
         - overpass-api.de
         - overpass.openstreetmap.ru
+        - overpass.kumi.systems
         - overpass.nchc.org.tw
       subway-cities:
         - Київ
