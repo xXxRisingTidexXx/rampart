@@ -4,17 +4,18 @@
 #
 #    pip-compile --output-file=requirements/recognition.txt requirements/recognition.in
 #
-# Don't forget about -f https://download.pytorch.org/whl/torch_stable.html for CPU-only pytorch
-#
-dataclasses==0.6          # via torch
-future==0.18.2            # via torch
-numpy==1.19.3             # via torch, torchvision
-pillow==8.0.1             # via torchvision
-psycopg2-binary==2.8.6    # via -r requirements/recognition.in
-pyyaml==5.3.1             # via -r requirements/recognition.in
-sqlalchemy==1.3.20        # via -r requirements/recognition.in
+certifi==2020.12.5          # via requests
+chardet==4.0.0              # via requests
+idna==2.10                  # via requests
+numpy==1.19.4               # via torch, torchvision
+pillow==8.0.1               # via torchvision
+psycopg2-binary==2.8.6      # via -r requirements/recognition.in
+pyyaml==5.3.1               # via -r requirements/recognition.in
+requests==2.25.1            # via -r requirements/recognition.in
+sqlalchemy==1.3.21          # via -r requirements/recognition.in
 -f https://download.pytorch.org/whl/torch_stable.html
-torch==1.7.0+cpu          # via torchvision
+torch==1.7.1+cpu            # via torchvision
 -f https://download.pytorch.org/whl/torch_stable.html
-torchvision==0.8.1+cpu    # via -r requirements/recognition.in
+torchvision==0.8.2+cpu      # via -r requirements/recognition.in
 typing-extensions==3.7.4.3  # via torch
+urllib3==1.26.2             # via requests
