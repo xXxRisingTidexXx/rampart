@@ -5,6 +5,7 @@ import (
 	"runtime"
 )
 
+// TODO: Move UA to config.
 const UserAgent = "RampartBot/0.0.1"
 
 func init() {
