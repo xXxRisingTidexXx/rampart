@@ -1,18 +1,18 @@
 from typing import Optional
 from flask import Flask, request, render_template, abort
 from rampart.config import get_config
-from rampart.search import Query, Searcher
+from rampart.ranking import Query, Ranker
 
 
 def _main():
     config = get_config()
-    searcher = Searcher(config.browsing.searcher)
+    ranker = Ranker(config.browsing.ranker)
     app = Flask('rampart.browsing', template_folder=config.browsing.template_path)
-    app.add_url_rule('/', view_func=lambda: _get_index(searcher), methods=['GET'])
+    app.add_url_rule('/', view_func=lambda: _get_index(ranker), methods=['GET'])
     app.run('0.0.0.0', config.browsing.port, load_dotenv=False, use_reloader=False)
 
 
-def _get_index(searcher: Searcher) -> str:
+def _get_index(ranker: Ranker) -> str:
     city = request.args.get('city')
     if not city:
         city = 'Київ'
@@ -44,7 +44,7 @@ def _get_index(searcher: Searcher) -> str:
         offset=offset,
         previous=offset - 1,
         next=offset + 1,
-        flats=searcher.search_flats(query)
+        flats=ranker.rank_flats(query)
     )
 
 

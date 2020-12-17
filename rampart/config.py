@@ -18,15 +18,15 @@ class Config:
 
 
 class BrowsingConfig:
-    __slots__ = ['port', 'template_path', 'searcher']
+    __slots__ = ['port', 'template_path', 'ranker']
 
     def __init__(self, config):
         self.port: int = config['port']
         self.template_path = _root_path / 'templates'
-        self.searcher = SearcherConfig()
+        self.ranker = RankerConfig()
 
 
-class SearcherConfig:
+class RankerConfig:
     __slots__ = ['dsn', 'model_path']
 
     def __init__(self):
