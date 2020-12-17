@@ -202,3 +202,6 @@ imaging:
   input-path: scientific/images.csv
 browsing:
   port: 9211
+auge:
+  thread-number: 4
+  retry-limit: 3
