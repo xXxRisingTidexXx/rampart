@@ -200,24 +200,5 @@ imaging:
   retry-limit: 3
   output-format: scientific/images/%x.%s.%s.webp
   input-path: scientific/images.csv
-telebot:
-  pattern: '^\s*(\S+) +([1-9]\d*|0|-) +(-|низько|високо) +(-|одна|дві|три|багато)\s*$'
-  handler:
-    any: &any '-'
-    cities:
-      *any: Київ
-    floors:
-      *any: 0
-      низько: 1
-      високо: 2
-    room-numbers:
-      *any: 0
-      одна: 1
-      дві: 2
-      три: 3
-      багато: 4
-    housings:
-      - первинка
-      - вторинка
 browsing:
   port: 9211
