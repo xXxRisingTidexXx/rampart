@@ -77,3 +77,12 @@ class Flat:
 class Housing(Enum):
     primary = 0
     secondary = 1
+
+
+@unique
+class Label(Enum):
+    luxury = 0
+    comfort = 1
+    junk = 2
+    construction = 3
+    excess = 4
