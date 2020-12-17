@@ -146,6 +146,10 @@ services:
       context: .
       dockerfile: docker/recognition.dockerfile
     image: rampart-recognition
+  auge:
+    <<: *x-recognition
+    container_name: rampart-auge
+    command: python -m rampart.auge
   pychecks:
     build:
       context: .
