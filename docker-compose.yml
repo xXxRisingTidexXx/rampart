@@ -33,6 +33,7 @@ x-ranking: &x-ranking
     - ./rampart:/app/rampart
     - ./templates:/app/templates
     - ./scientific:/app/scientific
+    - ./config:/app/config
   env_file:
     - .env
 x-recognition: &x-recognition
@@ -41,6 +42,7 @@ x-recognition: &x-recognition
     - ./requirements:/app/requirements
     - ./rampart:/app/rampart
     - ./scientific:/app/scientific
+    - ./config:/app/config
   env_file:
     - .env
 x-pychecks: &x-pychecks
@@ -49,6 +51,8 @@ x-pychecks: &x-pychecks
     - ./tox.ini:/app/tox.ini
     - ./requirements:/app/requirements
     - ./rampart:/app/rampart
+    - ./templates:/app/templates
+    - ./config:/app/config
   env_file:
     - .env
 services:
