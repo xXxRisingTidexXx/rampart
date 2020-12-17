@@ -59,11 +59,6 @@ commands:
       docker-compose up notebook
       docker rm rampart-notebook
       chown -R $USER:$USER scientific
-  telebot:
-    description: Run telegram bot module
-    cmd: |
-      docker-compose up telebot
-      docker rm rampart-telebot
   browsing:
     description: Run search engine debug frontend
     cmd: |

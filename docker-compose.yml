@@ -131,10 +131,6 @@ services:
       context: .
       dockerfile: docker/ranking.dockerfile
     image: rampart-ranking
-  telebot:
-    <<: *x-ranking
-    container_name: rampart-telebot
-    command: python -m rampart.telebot
   browsing:
     <<: *x-ranking
     container_name: rampart-browsing
