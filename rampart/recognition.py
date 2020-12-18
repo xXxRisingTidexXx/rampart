@@ -1,14 +1,18 @@
 from io import BytesIO
+from logging import getLogger
 from typing import List, Tuple
-from PIL.Image import Image, open
+from PIL.Image import open
 from requests import Session
 from sqlalchemy.engine.base import Engine
 from torch.nn import (
     Module, Sequential, ReLU, Conv2d, MaxPool2d, Dropout, Linear
 )
-from torch import Tensor
+from torch import Tensor, empty
+from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import Dataset
 from torchvision.transforms import Compose, ToTensor, Resize, Normalize
+
+_logger = getLogger(__name__)
 
 
 class Recognizer(Module):
@@ -41,9 +45,10 @@ class View(Module):
 
 
 class Gallery(Dataset):
-    __slots__ = ['_urls', '_transforms']
+    __slots__ = ['_session', '_urls', '_transforms']
 
-    def __init__(self, engine: Engine, session: Session):
+    def __init__(self, session: Session, engine: Engine):
+        self._session = session
         with engine.connect() as connection:
             proxy = connection.execute(
                 '''
@@ -56,32 +61,28 @@ class Gallery(Dataset):
             self._urls: List[str] = [u[0] for u in proxy]
         self._transforms = Compose(
             [
-                Download(session),
                 ToTensor(),
                 Resize((460, 620)),
                 Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
             ]
         )
 
+    def __getitem__(self, index: int) -> Tuple[Tensor, str]:
+        response = self._session.get(
+            self._urls[index],
+            headers={'User-Agent': 'RampartBot/0.0.1'}
+        )
+        if response.status_code != 200:
+            _logger.error('Gallery got non-ok status')
+            return empty(0), self._urls[index]
+        return (
+            self._transforms(open(BytesIO(response.content))),
+            self._urls[index]
+        )
+
     def __len__(self) -> int:
         return len(self._urls)
 
-    def __getitem__(self, index: int) -> Tuple[Tensor, str]:
-        return self._transforms(self._urls[index]), self._urls[index]
 
-
-class Download:
-    __slots__ = ['_session']
-
-    def __init__(self, session: Session):
-        self._session = session
-
-    def __call__(self, url: str) -> Image:
-        return open(
-            BytesIO(
-                self._session.get(
-                    url,
-                    headers={'User-Agent': 'RampartBot/0.0.1'}
-                ).content
-            )
-        )
+def collate(batch: List[Tuple[Tensor, str]]):
+    return default_collate([p for p in batch if p[0].size()[0] != 0])
