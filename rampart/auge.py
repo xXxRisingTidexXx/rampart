@@ -3,14 +3,14 @@ from sqlalchemy import create_engine
 from torch import load, no_grad, max
 from torch.utils.data.dataloader import DataLoader
 from rampart.config import get_config
-from rampart.models import Label
-from rampart.recognition import Recognizer, Gallery, collate
+from rampart.models import Image
+from rampart.recognition import Recognizer, Gallery, collate, Storer
 from requests import Session
 
 
 # TODO: read more about docker --ipc flag used to satisfy multiprocessing.
 # TODO: shorten training code in notebook and use Recognizer, Gallery in jupyter.
-# TODO: install python-json-logger.
+# TODO: add label for abandoned images (404/unavailable).
 @no_grad()
 def _main():
     config = get_config()
@@ -29,13 +29,13 @@ def _main():
         num_workers=config.auge.thread_number,
         collate_fn=collate
     )
+    storer = Storer(engine)
     recognizer = Recognizer()
     recognizer.load_state_dict(load(config.auge.model_path))
     recognizer.eval()
     for batch in loader:
-        for result in zip(max(recognizer(batch[0]), 1)[1], batch[1]):
-            pass
-            # print(Label(result[0].item()).name, result[1])
+        for result in zip(batch[0], max(recognizer(batch[1]), 1)[1]):
+            storer.store_image(Image(result[0], result[1].item()))
     session.close()
     engine.dispose()
 

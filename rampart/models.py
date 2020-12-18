@@ -79,6 +79,14 @@ class Housing(Enum):
     secondary = 1
 
 
+class Image:
+    __slots__ = ['url', 'label']
+
+    def __init__(self, url: str, label: int):
+        self.url = url
+        self.label = Label(label)
+
+
 @unique
 class Label(Enum):
     luxury = 0

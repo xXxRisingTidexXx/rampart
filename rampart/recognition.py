@@ -1,5 +1,4 @@
 from io import BytesIO
-from logging import getLogger
 from typing import List, Tuple
 from PIL.Image import open
 from requests import Session
@@ -11,8 +10,10 @@ from torch import Tensor, empty
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import Dataset
 from torchvision.transforms import Compose, ToTensor, Resize, Normalize
+from rampart.logging import get_logger
+from rampart.models import Image
 
-_logger = getLogger(__name__)
+_logger = get_logger(__name__)
 
 
 class Recognizer(Module):
@@ -67,22 +68,42 @@ class Gallery(Dataset):
             ]
         )
 
-    def __getitem__(self, index: int) -> Tuple[Tensor, str]:
+    def __getitem__(self, index: int) -> Tuple[str, Tensor]:
         response = self._session.get(
             self._urls[index],
             headers={'User-Agent': 'RampartBot/0.0.1'}
         )
         if response.status_code != 200:
-            _logger.error('Gallery got non-ok status')
-            return empty(0), self._urls[index]
+            _logger.error(
+                'Gallery got non-ok status',
+                extra={'url': self._urls[index], 'code': response.status_code}
+            )
+            return self._urls[index], empty(0)
         return (
-            self._transforms(open(BytesIO(response.content))),
-            self._urls[index]
+            self._urls[index],
+            self._transforms(open(BytesIO(response.content)))
         )
 
     def __len__(self) -> int:
         return len(self._urls)
 
 
-def collate(batch: List[Tuple[Tensor, str]]):
-    return default_collate([p for p in batch if p[0].size()[0] != 0])
+def collate(batch: List[Tuple[str, Tensor]]):
+    return default_collate([p for p in batch if p[1].size()[0] != 0])
+
+
+# TODO: change parsing time into recognition_time. Consider simultaneous flat/
+#  image insert, so we need to memorise just classification.
+class Storer:
+    __slots__ = ['_engine']
+
+    def __init__(self, engine: Engine):
+        self._engine = engine
+
+    def store_image(self, image: Image):
+        with self._engine.connect() as connection:
+            connection.execute(
+                'update images set label = %s where url = %s',
+                image.label.name,
+                image.url
+            )
