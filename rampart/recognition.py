@@ -104,13 +104,20 @@ class Gallery(Dataset):
         return len(self._urls)
 
 
-def collate(batch: List[Tuple[str, Tensor]]):
-    bundle = [p for p in batch if p[1].size()[0] != 0]
-    return bundle if len(bundle) == 0 else default_collate(bundle)
+def collate(batch: List[Tuple[str, Tensor]]) -> Tuple[List[str], List[str], Tensor]:
+    urls, pairs = [], []
+    for pair in batch:
+        if pair[1].size()[0] == 0:
+            urls.append(pair[0])
+        else:
+            pairs.append(pair)
+    if len(pairs) == 0:
+        return urls, [], empty(0)
+    bundle = default_collate(pairs)
+    return urls, bundle[0], bundle[1]
 
 
-# TODO: change parsing time into recognition_time. Consider simultaneous flat/
-#  image insert, so we need to memorise just classification.
+# TODO: drop image parsing time. Left it to flat.
 class Storer:
     __slots__ = ['_engine']
 

@@ -3,14 +3,12 @@ from sqlalchemy import create_engine
 from torch import load, no_grad, max
 from torch.utils.data.dataloader import DataLoader
 from rampart.config import get_config
-from rampart.models import Image
+from rampart.models import Image, Label
 from rampart.recognition import Recognizer, Gallery, collate, Storer
 from requests import Session
 
 
-# TODO: read more about docker --ipc flag used to satisfy multiprocessing.
 # TODO: shorten training code in notebook and use Recognizer, Gallery in jupyter.
-# TODO: add label for abandoned images (404/unavailable).
 @no_grad()
 def _main():
     config = get_config()
@@ -34,9 +32,11 @@ def _main():
     recognizer.load_state_dict(load(config.auge.model_path))
     recognizer.eval()
     for batch in loader:
-        if len(batch) == 2:
-            for result in zip(batch[0], max(recognizer(batch[1]), 1)[1]):
-                storer.store_image(Image(result[0], result[1].item()))
+        for url in batch[0]:
+            storer.store_image(Image(url, Label.abandoned))
+        if len(batch[1]) > 0:
+            for result in zip(batch[1], max(recognizer(batch[2]), 1)[1]):
+                storer.store_image(Image(result[0], Label(result[1].item())))
     session.close()
     engine.dispose()
 
