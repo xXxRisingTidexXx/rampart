@@ -45,13 +45,15 @@ class Gallery(Dataset):
 
     def __init__(self, engine: Engine, session: Session):
         with engine.connect() as connection:
-            self._urls: List[str] = [
-                u[0]
-                for u in
-                connection.execute(
-                    "select url from images where kind = 'photo' limit 24"
-                )
-            ]
+            proxy = connection.execute(
+                '''
+                select url
+                from images
+                where kind = 'photo'
+                  and label = 'unknown'
+                '''
+            )
+            self._urls: List[str] = [u[0] for u in proxy]
         self._transforms = Compose(
             [
                 Download(session),
