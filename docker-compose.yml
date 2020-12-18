@@ -45,6 +45,7 @@ x-recognition: &x-recognition
     - ./config:/app/config
   env_file:
     - .env
+  ipc: host
 x-pychecks: &x-pychecks
   image: rampart-pychecks
   volumes:
