@@ -1,7 +1,7 @@
 from io import BytesIO
 from typing import List, Tuple
 from PIL.Image import open
-from requests import Session
+from requests import Session, codes
 from sqlalchemy.engine.base import Engine
 from torch.nn import (
     Module, Sequential, ReLU, Conv2d, MaxPool2d, Dropout, Linear
@@ -73,7 +73,7 @@ class Gallery(Dataset):
             self._urls[index],
             headers={'User-Agent': 'RampartBot/0.0.1'}
         )
-        if response.status_code != 200:
+        if response.status_code != codes.ok:
             _logger.error(
                 'Gallery got non-ok status',
                 extra={'url': self._urls[index], 'code': response.status_code}
@@ -89,7 +89,8 @@ class Gallery(Dataset):
 
 
 def collate(batch: List[Tuple[str, Tensor]]):
-    return default_collate([p for p in batch if p[1].size()[0] != 0])
+    bundle = [p for p in batch if p[1].size()[0] != 0]
+    return bundle if len(bundle) == 0 else default_collate(bundle)
 
 
 # TODO: change parsing time into recognition_time. Consider simultaneous flat/

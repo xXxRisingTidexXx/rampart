@@ -34,8 +34,9 @@ def _main():
     recognizer.load_state_dict(load(config.auge.model_path))
     recognizer.eval()
     for batch in loader:
-        for result in zip(batch[0], max(recognizer(batch[1]), 1)[1]):
-            storer.store_image(Image(result[0], result[1].item()))
+        if len(batch) == 2:
+            for result in zip(batch[0], max(recognizer(batch[1]), 1)[1]):
+                storer.store_image(Image(result[0], result[1].item()))
     session.close()
     engine.dispose()
 
