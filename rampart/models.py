@@ -82,13 +82,15 @@ class Housing(Enum):
 class Image:
     __slots__ = ['url', 'label']
 
-    def __init__(self, url: str, label: int):
+    def __init__(self, url: str, label: 'Label'):
         self.url = url
-        self.label = Label(label)
+        self.label = label
 
 
 @unique
 class Label(Enum):
+    abandoned = -2
+    unknown = -1
     luxury = 0
     comfort = 1
     junk = 2
