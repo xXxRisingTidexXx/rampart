@@ -15,4 +15,5 @@ COPY config config
 RUN apt-get update && \
     apt-get install -y libgomp1 && \
     pip install -U pip && \
+    pip install -r requirements/common.txt && \
     pip install -r requirements/ranking.txt
