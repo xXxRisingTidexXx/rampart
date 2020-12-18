@@ -2,6 +2,7 @@ from io import BytesIO
 from typing import List, Tuple
 from PIL.Image import open
 from requests import Session, codes
+from requests.exceptions import RequestException
 from sqlalchemy.engine.base import Engine
 from torch.nn import (
     Module, Sequential, ReLU, Conv2d, MaxPool2d, Dropout, Linear
@@ -10,6 +11,7 @@ from torch import Tensor, empty
 from torch.utils.data.dataloader import default_collate
 from torch.utils.data.dataset import Dataset
 from torchvision.transforms import Compose, ToTensor, Resize, Normalize
+from rampart.config import GalleryConfig
 from rampart.logging import get_logger
 from rampart.models import Image
 
@@ -46,9 +48,15 @@ class View(Module):
 
 
 class Gallery(Dataset):
-    __slots__ = ['_session', '_urls', '_transforms']
+    __slots__ = ['_timeout', '_session', '_urls', '_transforms']
 
-    def __init__(self, session: Session, engine: Engine):
+    def __init__(
+        self,
+        config: GalleryConfig,
+        session: Session,
+        engine: Engine
+    ):
+        self._timeout = config.timeout
         self._session = session
         with engine.connect() as connection:
             proxy = connection.execute(
@@ -69,10 +77,18 @@ class Gallery(Dataset):
         )
 
     def __getitem__(self, index: int) -> Tuple[str, Tensor]:
-        response = self._session.get(
-            self._urls[index],
-            headers={'User-Agent': 'RampartBot/0.0.1'}
-        )
+        try:
+            response = self._session.get(
+                self._urls[index],
+                timeout=self._timeout,
+                headers={'User-Agent': 'RampartBot/0.0.1'}
+            )
+        except RequestException:
+            _logger.exception(
+                'Gallery failed to read the image',
+                extra={'url': self._urls[index]}
+            )
+            return self._urls[index], empty(0)
         if response.status_code != codes.ok:
             _logger.error(
                 'Gallery got non-ok status',
