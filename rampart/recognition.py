@@ -25,6 +25,9 @@ class Recognizer(Module):
             Linear(213900, 5)
         )
 
+    def forward(self, x: Tensor) -> Tensor:
+        return self._sequential(x)
+
 
 class View(Module):
     __slots__ = ['_shape']
@@ -33,7 +36,7 @@ class View(Module):
         super().__init__()
         self._shape = shape
 
-    def forward(self, x: Tensor):
+    def forward(self, x: Tensor) -> Tensor:
         return x.view(*self._shape)
 
 
@@ -43,7 +46,11 @@ class Gallery(Dataset):
     def __init__(self, engine: Engine, session: Session):
         with engine.connect() as connection:
             self._urls: List[str] = [
-                u[0] for u in connection.execute('select url from images')
+                u[0]
+                for u in
+                connection.execute(
+                    "select url from images where kind = 'photo' limit 24"
+                )
             ]
         self._transforms = Compose(
             [
