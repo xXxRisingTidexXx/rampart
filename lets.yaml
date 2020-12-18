@@ -56,14 +56,11 @@ commands:
   notebook:
     description: Run Jupyter Notebook server
     cmd: |
-      docker-compose up notebook
-      docker rm rampart-notebook
+      docker-compose run --rm notebook
       chown -R $USER:$USER scientific
   browsing:
     description: Run search engine debug frontend
-    cmd: |
-      docker-compose up browsing
-      docker rm rampart-browsing
+    cmd: docker-compose run --rm browsing
   auge:
     description: Run image classification module
     cmd: docker-compose run --rm auge
