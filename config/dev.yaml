@@ -205,3 +205,5 @@ browsing:
 auge:
   thread-number: 4
   retry-limit: 3
+  gallery:
+    timeout: 10

@@ -41,14 +41,30 @@ class RankerConfig:
 
     def __init__(self, dsn: str):
         self.dsn = dsn
-        self.model_path = str(_root_path / 'scientific/models/twinkle.latest.txt')
+        self.model_path = str(
+            _root_path / 'scientific/models/twinkle.latest.txt'
+        )
 
 
 class AugeConfig:
-    __slots__ = ['thread_number', 'retry_limit', 'dsn', 'model_path']
+    __slots__ = [
+        'thread_number',
+        'retry_limit',
+        'dsn',
+        'gallery',
+        'model_path'
+    ]
 
     def __init__(self, config: Dict[str, Any], dsn: str):
         self.thread_number: int = config['thread-number']
         self.retry_limit: int = config['retry-limit']
         self.dsn = dsn
+        self.gallery = GalleryConfig(config['gallery'])
         self.model_path = str(_root_path / 'scientific/models/auge.latest.pth')
+
+
+class GalleryConfig:
+    __slots__ = ['timeout']
+
+    def __init__(self, config: Dict[str, Any]):
+        self.timeout: float = config['timeout']

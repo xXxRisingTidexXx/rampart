@@ -24,7 +24,7 @@ def _main():
     )
     engine = create_engine(config.auge.dsn)
     loader = DataLoader(
-        Gallery(session, engine),
+        Gallery(config.auge.gallery, session, engine),
         config.auge.thread_number,
         num_workers=config.auge.thread_number,
         collate_fn=collate
