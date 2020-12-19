@@ -17,18 +17,18 @@ func main() {
 	flag.Parse()
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
-	entry := log.WithFields(log.Fields{"app": "mining", "miner": *alias})
+	entry := log.WithFields(log.Fields{"app": "messis", "miner": *alias})
 	c, err := config.NewConfig()
 	if err != nil {
 		entry.Fatal(err)
 	}
 	db, err := sql.Open("postgres", c.DSN)
 	if err != nil {
-		entry.Fatalf("main: mining failed to open the db, %v", err)
+		entry.Fatalf("main: messis failed to open the db, %v", err)
 	}
 	if err := db.Ping(); err != nil {
 		_ = db.Close()
-		entry.Fatalf("main: mining failed to ping the db, %v", err)
+		entry.Fatalf("main: messis failed to ping the db, %v", err)
 	}
 	drain := metrics.NewDrain(*alias, db, entry)
 	jobs := map[string]gocron.Job{
@@ -48,7 +48,7 @@ func main() {
 	job, ok := jobs[*alias]
 	if !ok {
 		_ = db.Close()
-		entry.Fatal("main: mining failed to find the miner")
+		entry.Fatal("main: messis failed to find the miner")
 		return
 	}
 	miners := map[string]config.Miner{
@@ -62,12 +62,12 @@ func main() {
 		cron := gocron.New()
 		if _, err = cron.AddJob(miner.Schedule(), job); err != nil {
 			_ = db.Close()
-			entry.Fatalf("main: mining failed to run, %v", err)
+			entry.Fatalf("main: messis failed to run, %v", err)
 		}
 		metrics.RunServer(miner.Metrics(), entry)
 		cron.Run()
 	}
 	if err = db.Close(); err != nil {
-		entry.Fatalf("main: mining failed to close the db, %v", err)
+		entry.Fatalf("main: messis failed to close the db, %v", err)
 	}
 }
