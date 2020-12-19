@@ -32,7 +32,7 @@ def _main():
     )
     recognizer = Recognizer(config.auge.recognizer, engine, session)
     try:
-        if args.dev:
+        if args.debug:
             recognizer()
         else:
             every(config.auge.interval).minutes.do(recognizer)
