@@ -16,4 +16,4 @@ RUN apt-get update && \
     apt-get install -y libgomp1 && \
     pip install -U pip && \
     pip install -r requirements/common.txt && \
-    pip install -r requirements/ranking.txt
+    pip install -r requirements/twinkle.txt

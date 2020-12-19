@@ -16,6 +16,6 @@ RUN apt-get update && \
     apt-get install -y libgomp1 && \
     pip install -U pip && \
     pip install -r requirements/common.txt && \
-    pip install -r requirements/ranking.txt && \
-    pip install -r requirements/recognition.txt && \
+    pip install -r requirements/twinkle.txt && \
+    pip install -r requirements/auge.txt && \
     pip install -r requirements/pychecks.txt

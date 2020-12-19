@@ -12,4 +12,4 @@ COPY config config
 
 RUN pip install -U pip && \
     pip install -r requirements/common.txt && \
-    pip install -r requirements/recognition.txt
+    pip install -r requirements/auge.txt
