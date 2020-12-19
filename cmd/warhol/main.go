@@ -27,19 +27,19 @@ func main() {
 	if err != nil {
 		entry.Fatal(err)
 	}
-	file, err := os.Open(c.Imaging.InputPath)
+	file, err := os.Open(c.Warhol.InputPath)
 	if err != nil {
 		entry.Fatalf("main: warhol failed to open the input file, %v", err)
 	}
-	records := make(chan []string, c.Imaging.ThreadNumber)
-	raws := make(chan imaging.Raw, (c.Imaging.ThreadNumber+1)*len(imaging.Effects))
-	dumpCount := c.Imaging.ThreadNumber + runtime.NumCPU()<<1
+	records := make(chan []string, c.Warhol.ThreadNumber)
+	raws := make(chan imaging.Raw, (c.Warhol.ThreadNumber+1)*len(imaging.Effects))
+	dumpCount := c.Warhol.ThreadNumber + runtime.NumCPU()<<1
 	assets := make(chan imaging.Asset, dumpCount)
-	client := &http.Client{Timeout: c.Imaging.Timeout}
+	client := &http.Client{Timeout: c.Warhol.Timeout}
 	loadGroup := &sync.WaitGroup{}
-	loadGroup.Add(c.Imaging.ThreadNumber)
-	for i := 0; i < c.Imaging.ThreadNumber; i++ {
-		go load(records, raws, assets, client, c.Imaging.RetryLimit, entry, loadGroup)
+	loadGroup.Add(c.Warhol.ThreadNumber)
+	for i := 0; i < c.Warhol.ThreadNumber; i++ {
+		go load(records, raws, assets, client, c.Warhol.RetryLimit, entry, loadGroup)
 	}
 	processGroup := &sync.WaitGroup{}
 	processGroup.Add(runtime.NumCPU())
@@ -49,7 +49,7 @@ func main() {
 	dumpGroup := &sync.WaitGroup{}
 	dumpGroup.Add(dumpCount)
 	for i := 0; i < dumpCount; i++ {
-		go dump(assets, c.Imaging.OutputFormat, entry, dumpGroup)
+		go dump(assets, c.Warhol.OutputFormat, entry, dumpGroup)
 	}
 	err = read(file, records)
 	close(records)

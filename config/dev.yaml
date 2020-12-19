@@ -1,4 +1,4 @@
-mining:
+messis:
   domria-miner: &domria-miner
     fetcher:
       timeout: 40s
@@ -194,7 +194,7 @@ mining:
     server:
       <<: *server
       address: :9002
-imaging:
+warhol:
   timeout: 40s
   thread-number: 4
   retry-limit: 3

@@ -21,12 +21,12 @@ func NewConfig() (Config, error) {
 	if err := yaml.Unmarshal(bytes, &config); err != nil {
 		return config, fmt.Errorf("config: failed to unmarshal the config file, %v", err)
 	}
-	config.Imaging.InputPath = misc.ResolvePath(config.Imaging.InputPath)
+	config.Warhol.InputPath = misc.ResolvePath(config.Warhol.InputPath)
 	return config, nil
 }
 
 type Config struct {
-	DSN     string  `yaml:"-"`
-	Mining  Mining  `yaml:"mining"`
-	Imaging Imaging `yaml:"imaging"`
+	DSN    string `yaml:"-"`
+	Messis Messis `yaml:"messis"`
+	Warhol Warhol `yaml:"warhol"`
 }

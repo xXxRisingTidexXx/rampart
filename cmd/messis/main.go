@@ -32,14 +32,14 @@ func main() {
 	}
 	drain := metrics.NewDrain(*alias, db, entry)
 	jobs := map[string]gocron.Job{
-		c.Mining.DomriaPrimaryMiner.Name(): domria.NewMiner(
-			c.Mining.DomriaPrimaryMiner,
+		c.Messis.DomriaPrimaryMiner.Name(): domria.NewMiner(
+			c.Messis.DomriaPrimaryMiner,
 			db,
 			drain,
 			entry,
 		),
-		c.Mining.DomriaSecondaryMiner.Name(): domria.NewMiner(
-			c.Mining.DomriaSecondaryMiner,
+		c.Messis.DomriaSecondaryMiner.Name(): domria.NewMiner(
+			c.Messis.DomriaSecondaryMiner,
 			db,
 			drain,
 			entry,
@@ -52,8 +52,8 @@ func main() {
 		return
 	}
 	miners := map[string]config.Miner{
-		c.Mining.DomriaPrimaryMiner.Name():   c.Mining.DomriaPrimaryMiner,
-		c.Mining.DomriaSecondaryMiner.Name(): c.Mining.DomriaSecondaryMiner,
+		c.Messis.DomriaPrimaryMiner.Name():   c.Messis.DomriaPrimaryMiner,
+		c.Messis.DomriaSecondaryMiner.Name(): c.Messis.DomriaSecondaryMiner,
 	}
 	miner := miners[*alias]
 	if *isDebug {
