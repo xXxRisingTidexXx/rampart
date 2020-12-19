@@ -210,4 +210,5 @@ auge:
     timeout: 10
     batch-size: 4
     worker-number: 4
+  metrics-port: 9003
   interval: 6

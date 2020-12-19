@@ -53,6 +53,7 @@ class AugeConfig:
         'pool_size',
         'retry_limit',
         'recognizer',
+        'metrics_port',
         'interval'
     ]
 
@@ -61,6 +62,7 @@ class AugeConfig:
         self.pool_size: int = config['pool-size']
         self.retry_limit: int = config['retry-limit']
         self.recognizer = RecognizerConfig(config['recognizer'])
+        self.metrics_port: int = config['metrics-port']
         self.interval: int = config['interval']
 
 

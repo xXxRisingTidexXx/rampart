@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from prometheus_client.exposition import start_http_server
 from requests.adapters import HTTPAdapter
 from sqlalchemy import create_engine
 from rampart.config import get_config
@@ -35,6 +36,7 @@ def _main():
         if args.debug:
             recognizer()
         else:
+            start_http_server(config.auge.metrics_port)
             every(config.auge.interval).minutes.do(recognizer)
             while True:
                 run_pending()
