@@ -37,6 +37,7 @@ def _main():
             recognizer()
         else:
             start_http_server(config.auge.metrics_port)
+            # TODO: replace with apsheduler.
             every(config.auge.interval).minutes.do(recognizer)
             while True:
                 run_pending()
