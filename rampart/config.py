@@ -36,6 +36,7 @@ class BrowsingConfig:
         self.ranker = RankerConfig(dsn)
 
 
+# TODO: move model path to config.
 class RankerConfig:
     __slots__ = ['dsn', 'model_path']
 
@@ -48,23 +49,26 @@ class RankerConfig:
 
 class AugeConfig:
     __slots__ = [
-        'thread_number',
-        'retry_limit',
         'dsn',
-        'gallery',
-        'model_path'
+        'pool_size',
+        'retry_limit',
+        'recognizer',
+        'interval'
     ]
 
     def __init__(self, config: Dict[str, Any], dsn: str):
-        self.thread_number: int = config['thread-number']
-        self.retry_limit: int = config['retry-limit']
         self.dsn = dsn
-        self.gallery = GalleryConfig(config['gallery'])
-        self.model_path = str(_root_path / 'scientific/models/auge.latest.pth')
+        self.pool_size: int = config['pool-size']
+        self.retry_limit: int = config['retry-limit']
+        self.recognizer = RecognizerConfig(config['recognizer'])
+        self.interval: int = config['interval']
 
 
-class GalleryConfig:
-    __slots__ = ['timeout']
+class RecognizerConfig:
+    __slots__ = ['model_path', 'timeout', 'batch_size', 'worker_number']
 
     def __init__(self, config: Dict[str, Any]):
+        self.model_path = str(_root_path / config['model-path'])
         self.timeout: float = config['timeout']
+        self.batch_size: int = config['batch-size']
+        self.worker_number: int = config['worker-number']

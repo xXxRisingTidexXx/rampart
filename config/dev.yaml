@@ -203,7 +203,11 @@ imaging:
 browsing:
   port: 9211
 auge:
-  thread-number: 4
+  pool-size: 4
   retry-limit: 3
-  gallery:
+  recognizer:
+    model-path: scientific/models/auge.latest.pth
     timeout: 10
+    batch-size: 4
+    worker-number: 4
+  interval: 6
