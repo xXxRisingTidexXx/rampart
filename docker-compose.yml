@@ -26,6 +26,17 @@ x-gochecks: &x-gochecks
     - ./cmd:/go/src/app/cmd
     - ./internal:/go/src/app/internal
     - ./config:/go/src/app/config
+x-auge: &x-auge
+  image: rampart-auge
+  entrypoint: python -m rampart.auge
+  volumes:
+    - ./requirements:/app/requirements
+    - ./rampart:/app/rampart
+    - ./scientific:/app/scientific
+    - ./config:/app/config
+  env_file:
+    - .env
+  ipc: host
 x-pychecks: &x-pychecks
   image: rampart-pychecks
   volumes:
@@ -131,16 +142,10 @@ services:
       context: .
       dockerfile: docker/auge.dockerfile
     image: rampart-auge
-    container_name: rampart-auge
-    command: python -m rampart.auge -debug
-    volumes:
-      - ./requirements:/app/requirements
-      - ./rampart:/app/rampart
-      - ./scientific:/app/scientific
-      - ./config:/app/config
-    env_file:
-      - .env
-    ipc: host
+  auge-instant:
+    <<: *x-auge
+    container_name: rampart-auge-instant
+    command: -debug
   pychecks:
     build:
       context: .
@@ -170,6 +175,9 @@ services:
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -miner domria-secondary
     ports:
       - 9002:9002
+  auge-periodic:
+    <<: *x-auge
+    container_name: rampart-auge-periodic
 volumes:
   database:
     name: rampart-database
