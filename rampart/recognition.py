@@ -7,18 +7,82 @@ from sqlalchemy.engine.base import Engine
 from torch.nn import (
     Module, Sequential, ReLU, Conv2d, MaxPool2d, Dropout, Linear
 )
-from torch import Tensor, empty
-from torch.utils.data.dataloader import default_collate
+from torch import Tensor, empty, load, no_grad, max
+from torch.utils.data.dataloader import default_collate, DataLoader
 from torch.utils.data.dataset import Dataset
 from torchvision.transforms import Compose, ToTensor, Resize, Normalize
-from rampart.config import GalleryConfig
+from rampart.config import RecognizerConfig
 from rampart.logging import get_logger
-from rampart.models import Image
+from rampart.models import Image, Label
 
 _logger = get_logger('rampart.recognition')
 
 
-class Recognizer(Module):
+class Recognizer:
+    __slots__ = [
+        '_reader',
+        '_network',
+        '_updater',
+        '_session',
+        '_timeout',
+        '_batch_size',
+        '_worker_number'
+    ]
+
+    def __init__(
+        self,
+        config: RecognizerConfig,
+        engine: Engine,
+        session: Session
+    ):
+        self._reader = Reader(engine)
+        self._network = Network()
+        self._network.load_state_dict(load(config.model_path))
+        self._network.eval()
+        self._updater = Updater(engine)
+        self._session = session
+        self._timeout = config.timeout
+        self._batch_size = config.batch_size
+        self._worker_number = config.worker_number
+
+    @no_grad()
+    def __call__(self):
+        loader = DataLoader(
+            Gallery(self._reader.read_urls(), self._session, self._timeout),
+            self._batch_size,
+            num_workers=self._worker_number,
+            collate_fn=_collate
+        )
+        for batch in loader:
+            for url in batch[0]:
+                self._updater.update_image(Image(url, Label.abandoned))
+            if len(batch[1]) > 0:
+                for result in zip(batch[1], max(self._network(batch[2]), 1)[1]):
+                    self._updater.update_image(Image(result[0], Label(result[1].item())))
+
+
+class Reader:
+    __slots__ = ['_engine']
+
+    def __init__(self, engine: Engine):
+        self._engine = engine
+
+    def read_urls(self) -> List[str]:
+        with self._engine.connect() as connection:
+            return [
+                u[0] for u in connection.execute(
+                    '''
+                    select url
+                    from images
+                    where kind = 'photo'
+                      and label = 'unknown'
+                    '''
+                )
+            ]
+
+
+# TODO: shorten training code in notebook and use Network, Gallery in jupyter.
+class Network(Module):
     __slots__ = ['_sequential']
 
     def __init__(self):
@@ -47,27 +111,33 @@ class View(Module):
         return x.view(*self._shape)
 
 
+class Updater:
+    __slots__ = ['_engine']
+
+    def __init__(self, engine: Engine):
+        self._engine = engine
+
+    def update_image(self, image: Image):
+        with self._engine.connect() as connection:
+            connection.execute(
+                'update images set label = %s where url = %s',
+                image.label.name,
+                image.url
+            )
+
+
 class Gallery(Dataset):
-    __slots__ = ['_timeout', '_session', '_urls', '_transforms']
+    __slots__ = ['_urls', '_session', '_timeout', '_transforms']
 
     def __init__(
         self,
-        config: GalleryConfig,
+        urls: List[str],
         session: Session,
-        engine: Engine
+        timeout: float,
     ):
-        self._timeout = config.timeout
+        self._urls = urls
         self._session = session
-        with engine.connect() as connection:
-            proxy = connection.execute(
-                '''
-                select url
-                from images
-                where kind = 'photo'
-                  and label = 'unknown'
-                '''
-            )
-            self._urls: List[str] = [u[0] for u in proxy]
+        self._timeout = timeout
         self._transforms = Compose(
             [
                 ToTensor(),
@@ -104,7 +174,7 @@ class Gallery(Dataset):
         return len(self._urls)
 
 
-def collate(batch: List[Tuple[str, Tensor]]) -> Tuple[List[str], List[str], Tensor]:
+def _collate(batch: List[Tuple[str, Tensor]]) -> Tuple[List[str], List[str], Tensor]:
     urls, pairs = [], []
     for pair in batch:
         if pair[1].size()[0] == 0:
@@ -115,19 +185,3 @@ def collate(batch: List[Tuple[str, Tensor]]) -> Tuple[List[str], List[str], Tens
         return urls, [], empty(0)
     bundle = default_collate(pairs)
     return urls, bundle[0], bundle[1]
-
-
-# TODO: drop image parsing time. Left it to flat.
-class Storer:
-    __slots__ = ['_engine']
-
-    def __init__(self, engine: Engine):
-        self._engine = engine
-
-    def store_image(self, image: Image):
-        with self._engine.connect() as connection:
-            connection.execute(
-                'update images set label = %s where url = %s',
-                image.label.name,
-                image.url
-            )

@@ -1,44 +1,51 @@
+from argparse import ArgumentParser
 from requests.adapters import HTTPAdapter
 from sqlalchemy import create_engine
-from torch import load, no_grad, max
-from torch.utils.data.dataloader import DataLoader
 from rampart.config import get_config
-from rampart.models import Image, Label
-from rampart.recognition import Recognizer, Gallery, collate, Storer
+from rampart.logging import get_logger
+from rampart.recognition import Recognizer
 from requests import Session
+from schedule import every, run_pending
+from time import sleep
+
+_logger = get_logger('rampart.auge')
 
 
-# TODO: shorten training code in notebook and use Recognizer, Gallery in jupyter.
-@no_grad()
 def _main():
+    parser = ArgumentParser(description='Rampart image classification job.')
+    parser.add_argument(
+        '-dev',
+        default=False,
+        action='store_true',
+        help='Whether to run the job immediately or periodically'
+    )
+    args = parser.parse_args()
     config = get_config()
+    engine = create_engine(config.auge.dsn)
     session = Session()
     session.mount(
         'https://',
         HTTPAdapter(
-            pool_maxsize=config.auge.thread_number,
+            pool_maxsize=config.auge.pool_size,
             max_retries=config.auge.retry_limit
         )
     )
-    engine = create_engine(config.auge.dsn)
-    loader = DataLoader(
-        Gallery(config.auge.gallery, session, engine),
-        config.auge.thread_number,
-        num_workers=config.auge.thread_number,
-        collate_fn=collate
-    )
-    storer = Storer(engine)
-    recognizer = Recognizer()
-    recognizer.load_state_dict(load(config.auge.model_path))
-    recognizer.eval()
-    for batch in loader:
-        for url in batch[0]:
-            storer.store_image(Image(url, Label.abandoned))
-        if len(batch[1]) > 0:
-            for result in zip(batch[1], max(recognizer(batch[2]), 1)[1]):
-                storer.store_image(Image(result[0], Label(result[1].item())))
-    session.close()
-    engine.dispose()
+    recognizer = Recognizer(config.auge.recognizer, engine, session)
+    try:
+        if args.dev:
+            recognizer()
+        else:
+            every(config.auge.interval).minutes.do(recognizer)
+            while True:
+                run_pending()
+                sleep(1)
+    except KeyboardInterrupt:
+        pass
+    except Exception:  # noqa
+        _logger.exception('Auge got fatal error')
+    finally:
+        engine.dispose()
+        session.close()
 
 
 if __name__ == '__main__':
