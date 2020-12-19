@@ -150,7 +150,7 @@ services:
   auge:
     <<: *x-recognition
     container_name: rampart-auge
-    command: python -m rampart.auge
+    command: python -m rampart.auge -dev
   pychecks:
     build:
       context: .
