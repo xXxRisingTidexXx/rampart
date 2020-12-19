@@ -4,6 +4,7 @@
 #
 #    pip-compile --output-file=requirements/common.txt requirements/common.in
 #
+prometheus-client==0.9.0  # via -r requirements/common.in
 psycopg2-binary==2.8.6    # via -r requirements/common.in
 python-json-logger==2.0.1  # via -r requirements/common.in
 pyyaml==5.3.1             # via -r requirements/common.in

@@ -3,3 +3,4 @@ sqlalchemy
 pyyaml
 python-json-logger
 schedule
+prometheus-client
