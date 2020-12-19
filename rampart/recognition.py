@@ -1,6 +1,6 @@
 from io import BytesIO
 from typing import List, Tuple
-from PIL.Image import open
+from PIL.Image import open, new
 from requests import Session, codes
 from requests.exceptions import RequestException
 from sqlalchemy.engine.base import Engine
@@ -165,10 +165,12 @@ class Gallery(Dataset):
                 extra={'url': self._urls[index], 'code': response.status_code}
             )
             return self._urls[index], empty(0)
-        return (
-            self._urls[index],
-            self._transforms(open(BytesIO(response.content)))
-        )
+        image = open(BytesIO(response.content))
+        if image.mode == 'RGBA':
+            canvas = new('RGBA', image.size, 'white')
+            canvas.paste(image, (0, 0), image)
+            image = canvas.convert('RGB')
+        return self._urls[index], self._transforms(image)
 
     def __len__(self) -> int:
         return len(self._urls)
