@@ -11,6 +11,8 @@ import (
 )
 
 // TODO: shorten house number column (but research the actual width before).
+// TODO: think about parsing time & update time. Should we write our own update time?..
+// TODO: drop image time columns.
 func NewStorer(
 	config config.Storer,
 	db *sql.DB,

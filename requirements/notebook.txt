@@ -24,7 +24,7 @@ six==1.15.0               # via plotly, python-dateutil, retrying
 tabulate==0.8.7           # via -r requirements/notebook.in
 threadpoolctl==2.1.0      # via scikit-learn
 -f https://download.pytorch.org/whl/torch_stable.html
-torch==1.7.0+cpu          # via torchvision
+torch==1.7.1+cpu          # via torchvision
 -f https://download.pytorch.org/whl/torch_stable.html
-torchvision==0.8.1+cpu    # via -r requirements/notebook.in
+torchvision==0.8.2+cpu    # via -r requirements/notebook.in
 typing-extensions==3.7.4.3  # via torch

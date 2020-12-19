@@ -12,14 +12,14 @@ import (
 func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
-	entry := log.WithField("app", "augmentation")
+	entry := log.WithField("app", "travesty")
 	bytes, err := ioutil.ReadFile(misc.ResolvePath("images/source.webp"))
 	if err != nil {
-		entry.Fatalf("main: augmentation failed to read the source, %v", err)
+		entry.Fatalf("main: travesty failed to read the source, %v", err)
 	}
 	source, _, err := image.Decode(gobytes.NewBuffer(bytes))
 	if err != nil {
-		entry.Fatalf("main: augmentation failed to decode the source, %v", err)
+		entry.Fatalf("main: travesty failed to decode the source, %v", err)
 	}
 	for _, effect := range imaging.Effects {
 		entry = entry.WithField("effect", effect.Name())
@@ -33,7 +33,7 @@ func main() {
 			0644,
 		)
 		if err != nil {
-			entry.Fatalf("main: augmentation failed to write the target, %v", err)
+			entry.Fatalf("main: travesty failed to write the target, %v", err)
 		}
 	}
 }

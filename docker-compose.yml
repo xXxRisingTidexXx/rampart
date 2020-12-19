@@ -5,8 +5,8 @@ x-migrate: &x-migrate
     - ./migrations:/migrations
   env_file:
     - .env
-x-aggregation: &x-aggregation
-  image: rampart-aggregation
+x-messis: &x-messis
+  image: rampart-messis
   volumes:
     - ./go.mod:/go/src/app/go.mod
     - ./go.sum:/go/src/app/go.sum
@@ -26,29 +26,25 @@ x-gochecks: &x-gochecks
     - ./cmd:/go/src/app/cmd
     - ./internal:/go/src/app/internal
     - ./config:/go/src/app/config
-x-ranking: &x-ranking
-  image: rampart-ranking
-  volumes:
-    - ./requirements:/app/requirements
-    - ./rampart:/app/rampart
-    - ./templates:/app/templates
-    - ./scientific:/app/scientific
-  env_file:
-    - .env
-x-recognition: &x-recognition
-  image: rampart-recognition
+x-auge: &x-auge
+  image: rampart-auge
+  entrypoint: python -m rampart.auge
   volumes:
     - ./requirements:/app/requirements
     - ./rampart:/app/rampart
     - ./scientific:/app/scientific
+    - ./config:/app/config
   env_file:
     - .env
+  ipc: host
 x-pychecks: &x-pychecks
   image: rampart-pychecks
   volumes:
     - ./tox.ini:/app/tox.ini
     - ./requirements:/app/requirements
     - ./rampart:/app/rampart
+    - ./templates:/app/templates
+    - ./config:/app/config
   env_file:
     - .env
 services:
@@ -72,23 +68,21 @@ services:
   generate:
     <<: *x-migrate
     container_name: rampart-generate
-  aggregation:
+  messis:
+    <<: *x-messis
     build:
       context: .
-      dockerfile: docker/aggregation.dockerfile
-    image: rampart-aggregation
-  mining:
-    <<: *x-aggregation
-    container_name: rampart-mining
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -debug -miner domria-primary
-  imaging:
-    <<: *x-aggregation
-    container_name: rampart-imaging
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/imaging
-  augmentation:
-    <<: *x-aggregation
-    container_name: rampart-augmentation
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/augmentation
+      dockerfile: docker/messis.dockerfile
+    container_name: rampart-messis
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -debug -miner domria-primary
+  warhol:
+    <<: *x-messis
+    container_name: rampart-warhol
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/warhol
+  travesty:
+    <<: *x-messis
+    container_name: rampart-travesty
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/travesty
   gochecks:
     build:
       context: .
@@ -126,26 +120,32 @@ services:
       - 8888:8888
     env_file:
       - .env
-  ranking:
+  twinkle:
     build:
       context: .
-      dockerfile: docker/ranking.dockerfile
-    image: rampart-ranking
-  telebot:
-    <<: *x-ranking
-    container_name: rampart-telebot
-    command: python -m rampart.telebot
-  browsing:
-    <<: *x-ranking
-    container_name: rampart-browsing
-    command: python -m rampart.browsing
+      dockerfile: docker/twinkle.dockerfile
+    image: rampart-twinkle
+    container_name: rampart-twinkle
+    command: python -m rampart.twinkle
     ports:
       - 9211:9211
-  recognition:
+    volumes:
+      - ./requirements:/app/requirements
+      - ./rampart:/app/rampart
+      - ./templates:/app/templates
+      - ./scientific:/app/scientific
+      - ./config:/app/config
+    env_file:
+      - .env
+  auge:
     build:
       context: .
-      dockerfile: docker/recognition.dockerfile
-    image: rampart-recognition
+      dockerfile: docker/auge.dockerfile
+    image: rampart-auge
+  auge-instant:
+    <<: *x-auge
+    container_name: rampart-auge-instant
+    command: -debug
   pychecks:
     build:
       context: .
@@ -163,18 +163,21 @@ services:
     <<: *x-pychecks
     container_name: rampart-pytest
     command: pytest -vv rampart --full-trace -p no:cacheprovider
-  mining-domria-primary:
-    <<: *x-aggregation
-    container_name: rampart-mining-domria-primary
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-primary
+  messis-domria-primary:
+    <<: *x-messis
+    container_name: rampart-messis-domria-primary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -miner domria-primary
     ports:
       - 9001:9001
-  mining-domria-secondary:
-    <<: *x-aggregation
-    container_name: rampart-mining-domria-secondary
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/mining -miner domria-secondary
+  messis-domria-secondary:
+    <<: *x-messis
+    container_name: rampart-messis-domria-secondary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -miner domria-secondary
     ports:
       - 9002:9002
+  auge-periodic:
+    <<: *x-auge
+    container_name: rampart-auge-periodic
 volumes:
   database:
     name: rampart-database

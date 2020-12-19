@@ -3,21 +3,19 @@ from sqlalchemy import create_engine
 from lightgbm import Booster
 from pandas import read_sql, DataFrame
 from sqlalchemy.engine.base import Engine
-from rampart.config import SearcherConfig
+from rampart.config import RankerConfig
 from rampart.models import Flat
 
 
 # TODO: leverage optuna to set the hyperparameters.
-# TODO: rename the module to ranking and the class to Ranker.
-# TODO: store to the DB not the image class but overall class probabilities (overall network output vector).
-class Searcher:
+class Ranker:
     __slots__ = ['_engine', '_booster']
 
-    def __init__(self, config: SearcherConfig):
+    def __init__(self, config: RankerConfig):
         self._engine: Engine = create_engine(config.dsn)
         self._booster = Booster(model_file=config.model_path)
 
-    def search_flats(self, query: 'Query') -> List[Flat]:
+    def rank_flats(self, query: 'Query') -> List[Flat]:
         frame = self._read_flats(query)
         if len(frame) == 0:
             return []

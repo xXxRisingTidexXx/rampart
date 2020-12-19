@@ -77,3 +77,22 @@ class Flat:
 class Housing(Enum):
     primary = 0
     secondary = 1
+
+
+class Image:
+    __slots__ = ['url', 'label']
+
+    def __init__(self, url: str, label: 'Label'):
+        self.url = url
+        self.label = label
+
+
+@unique
+class Label(Enum):
+    abandoned = -2
+    unknown = -1
+    luxury = 0
+    comfort = 1
+    junk = 2
+    construction = 3
+    excess = 4

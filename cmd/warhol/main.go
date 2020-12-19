@@ -22,24 +22,24 @@ import (
 func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
-	entry := log.WithField("app", "imaging")
+	entry := log.WithField("app", "warhol")
 	c, err := config.NewConfig()
 	if err != nil {
 		entry.Fatal(err)
 	}
-	file, err := os.Open(c.Imaging.InputPath)
+	file, err := os.Open(c.Warhol.InputPath)
 	if err != nil {
-		entry.Fatalf("main: imaging failed to open the input file, %v", err)
+		entry.Fatalf("main: warhol failed to open the input file, %v", err)
 	}
-	records := make(chan []string, c.Imaging.ThreadNumber)
-	raws := make(chan imaging.Raw, (c.Imaging.ThreadNumber+1)*len(imaging.Effects))
-	dumpCount := c.Imaging.ThreadNumber + runtime.NumCPU()<<1
+	records := make(chan []string, c.Warhol.ThreadNumber)
+	raws := make(chan imaging.Raw, (c.Warhol.ThreadNumber+1)*len(imaging.Effects))
+	dumpCount := c.Warhol.ThreadNumber + runtime.NumCPU()<<1
 	assets := make(chan imaging.Asset, dumpCount)
-	client := &http.Client{Timeout: c.Imaging.Timeout}
+	client := &http.Client{Timeout: c.Warhol.Timeout}
 	loadGroup := &sync.WaitGroup{}
-	loadGroup.Add(c.Imaging.ThreadNumber)
-	for i := 0; i < c.Imaging.ThreadNumber; i++ {
-		go load(records, raws, assets, client, c.Imaging.RetryLimit, entry, loadGroup)
+	loadGroup.Add(c.Warhol.ThreadNumber)
+	for i := 0; i < c.Warhol.ThreadNumber; i++ {
+		go load(records, raws, assets, client, c.Warhol.RetryLimit, entry, loadGroup)
 	}
 	processGroup := &sync.WaitGroup{}
 	processGroup.Add(runtime.NumCPU())
@@ -49,7 +49,7 @@ func main() {
 	dumpGroup := &sync.WaitGroup{}
 	dumpGroup.Add(dumpCount)
 	for i := 0; i < dumpCount; i++ {
-		go dump(assets, c.Imaging.OutputFormat, entry, dumpGroup)
+		go dump(assets, c.Warhol.OutputFormat, entry, dumpGroup)
 	}
 	err = read(file, records)
 	close(records)
@@ -63,7 +63,7 @@ func main() {
 		entry.Fatal(err)
 	}
 	if err := file.Close(); err != nil {
-		entry.Fatalf("main: imaging failed to close the input file, %v", err)
+		entry.Fatalf("main: warhol failed to close the input file, %v", err)
 	}
 }
 
@@ -94,28 +94,28 @@ func pipe(
 ) error {
 	request, err := http.NewRequest(http.MethodGet, record[0], nil)
 	if err != nil {
-		return fmt.Errorf("main: imaging failed to make a request, %v", err)
+		return fmt.Errorf("main: warhol failed to make a request, %v", err)
 	}
 	request.Header.Set("User-Agent", misc.UserAgent)
 	response, err := client.Do(request)
 	if err != nil {
-		return fmt.Errorf("main: imaging failed to send a request, %v", err)
+		return fmt.Errorf("main: warhol failed to send a request, %v", err)
 	}
 	if response.StatusCode != http.StatusOK {
 		_ = response.Body.Close()
-		return fmt.Errorf("main: imaging got a non-ok status %s", response.Status)
+		return fmt.Errorf("main: warhol got a non-ok status %s", response.Status)
 	}
 	bytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		_ = response.Body.Close()
-		return fmt.Errorf("main: imaging failed to read the response body, %v", err)
+		return fmt.Errorf("main: warhol failed to read the response body, %v", err)
 	}
 	if err := response.Body.Close(); err != nil {
-		return fmt.Errorf("main: imaging failed to close the response body, %v", err)
+		return fmt.Errorf("main: warhol failed to close the response body, %v", err)
 	}
 	source, _, err := image.Decode(gobytes.NewBuffer(bytes))
 	if err != nil {
-		return fmt.Errorf("main: imaging failed to decode the source, %v", err)
+		return fmt.Errorf("main: warhol failed to decode the source, %v", err)
 	}
 	hash := sha1.Sum([]byte(record[0]))
 	assets <- imaging.Asset{Hash: hash, Label: record[1], Effect: "origin", Bytes: bytes}
@@ -170,7 +170,7 @@ func dump(
 				"effect": asset.Effect,
 				"label":  asset.Label,
 			}
-			logger.WithFields(fields).Errorf("main: imaging failed to write the file, %v", err)
+			logger.WithFields(fields).Errorf("main: warhol failed to write the file, %v", err)
 		}
 	}
 	group.Done()
@@ -181,11 +181,11 @@ func read(input io.Reader, records chan<- []string) error {
 	if _, err := reader.Read(); err == io.EOF {
 		return nil
 	} else if err != nil {
-		return fmt.Errorf("main: imaging failed to read header of the input file, %v", err)
+		return fmt.Errorf("main: warhol failed to read header of the input file, %v", err)
 	}
 	if reader.FieldsPerRecord != 2 {
 		return fmt.Errorf(
-			"main: imaging got invalid field number, %d != 2",
+			"main: warhol got invalid field number, %d != 2",
 			reader.FieldsPerRecord,
 		)
 	}
@@ -194,7 +194,7 @@ func read(input io.Reader, records chan<- []string) error {
 		if err == io.EOF {
 			return nil
 		} else if err != nil {
-			return fmt.Errorf("main: imaging failed to read a row of the input file, %v", err)
+			return fmt.Errorf("main: warhol failed to read a row of the input file, %v", err)
 		}
 		records <- record
 	}
