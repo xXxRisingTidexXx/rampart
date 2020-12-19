@@ -7,7 +7,7 @@ from rampart.ranking import Query, Ranker
 def _main():
     config = get_config()
     ranker = Ranker(config.browsing.ranker)
-    app = Flask('rampart.browsing', template_folder=config.browsing.template_path)
+    app = Flask('rampart.twinkle', template_folder=config.browsing.template_path)
     app.add_url_rule('/', view_func=lambda: _get_index(ranker), methods=['GET'])
     app.run('0.0.0.0', config.browsing.port, load_dotenv=False, use_reloader=False)
 
