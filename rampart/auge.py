@@ -14,7 +14,7 @@ _logger = get_logger('rampart.auge')
 def _main():
     parser = ArgumentParser(description='Rampart image classification job.')
     parser.add_argument(
-        '-dev',
+        '-debug',
         default=False,
         action='store_true',
         help='Whether to run the job immediately or periodically'
