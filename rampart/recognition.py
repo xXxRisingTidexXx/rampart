@@ -15,7 +15,7 @@ from rampart.config import GalleryConfig
 from rampart.logging import get_logger
 from rampart.models import Image
 
-_logger = get_logger(__name__)
+_logger = get_logger('rampart.recognition')
 
 
 class Recognizer(Module):
