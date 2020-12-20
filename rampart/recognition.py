@@ -184,22 +184,23 @@ class Gallery(Dataset):
                 'Gallery failed to read the image',
                 extra={'url': self._urls[index]}
             )
-            return self._urls[index], empty(0)
-        finally:
-            # TODO: check should we left it here or lower.
             self._drain.drain_duration(Duration.loading, start)
+            return self._urls[index], empty(0)
         if response.status_code != codes.ok:
             _logger.error(
                 'Gallery got non-ok status',
                 extra={'url': self._urls[index], 'code': response.status_code}
             )
+            self._drain.drain_duration(Duration.loading, start)
             return self._urls[index], empty(0)
         image = open(BytesIO(response.content))
         if image.mode == 'RGBA':
             canvas = new('RGBA', image.size, 'white')
             canvas.paste(image, (0, 0), image)
             image = canvas.convert('RGB')
-        return self._urls[index], self._transforms(image)
+        tensor = self._transforms(image)
+        self._drain.drain_duration(Duration.loading, start)
+        return self._urls[index], tensor
 
     def __len__(self) -> int:
         return len(self._urls)
