@@ -41,10 +41,10 @@ class Drain:
                 self._numbers[Number.junk],
                 self._numbers[Number.construction],
                 self._numbers[Number.excess],
-                self._durations[Duration.reading],
-                self._durations[Duration.loading],
-                self._durations[Duration.update],
-                self._durations[Duration.total]
+                self._durations[Duration.reading].avg(),
+                self._durations[Duration.loading].avg(),
+                self._durations[Duration.update].avg(),
+                self._durations[Duration.total].avg()
             )
         for number in self._numbers:
             self._numbers[number] = 0
