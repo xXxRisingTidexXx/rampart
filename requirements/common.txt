@@ -4,9 +4,15 @@
 #
 #    pip-compile --output-file=requirements/common.txt requirements/common.in
 #
+apscheduler==3.6.3        # via -r requirements/common.in
 prometheus-client==0.9.0  # via -r requirements/common.in
 psycopg2-binary==2.8.6    # via -r requirements/common.in
 python-json-logger==2.0.1  # via -r requirements/common.in
+pytz==2020.4              # via apscheduler
 pyyaml==5.3.1             # via -r requirements/common.in
-schedule==0.6.0           # via -r requirements/common.in
+six==1.15.0               # via apscheduler
 sqlalchemy==1.3.22        # via -r requirements/common.in
+tzlocal==2.1              # via apscheduler
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools

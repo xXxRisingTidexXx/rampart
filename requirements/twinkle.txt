@@ -4,32 +4,20 @@
 #
 #    pip-compile --output-file=requirements/twinkle.txt requirements/twinkle.in
 #
-apscheduler==3.6.3        # via python-telegram-bot
-certifi==2020.12.5        # via python-telegram-bot
-cffi==1.14.4              # via cryptography
 click==7.1.2              # via flask
-cryptography==3.3.1       # via python-telegram-bot
-decorator==4.4.2          # via python-telegram-bot
-flask==1.1.2              # via -r requirements/ranking.in
+flask==1.1.2              # via -r requirements/twinkle.in
 itsdangerous==1.1.0       # via flask
 jinja2==2.11.2            # via flask
 joblib==1.0.0             # via scikit-learn
-lightgbm==3.1.1           # via -r requirements/ranking.in
+lightgbm==3.1.1           # via -r requirements/twinkle.in
 markupsafe==1.1.1         # via jinja2
 numpy==1.19.4             # via lightgbm, pandas, scikit-learn, scipy
-pandas==1.1.5             # via -r requirements/ranking.in
-pycparser==2.20           # via cffi
+pandas==1.1.5             # via -r requirements/twinkle.in
 python-dateutil==2.8.1    # via pandas
-python-telegram-bot==13.1  # via -r requirements/ranking.in
-pytz==2020.4              # via apscheduler, pandas, python-telegram-bot, tzlocal
+pytz==2020.4              # via pandas
 scikit-learn==0.23.2      # via lightgbm
 scipy==1.5.4              # via lightgbm, scikit-learn
-six==1.15.0               # via apscheduler, cryptography, python-dateutil
+six==1.15.0               # via python-dateutil
 threadpoolctl==2.1.0      # via scikit-learn
-tornado==6.1              # via python-telegram-bot
-tzlocal==2.1              # via apscheduler
 werkzeug==1.0.1           # via flask
 wheel==0.36.2             # via lightgbm
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools
