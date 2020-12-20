@@ -73,6 +73,7 @@ class Recognizer:
                         Image(result[0], Label(result[1].item()))
                     )
         self._drain.drain_duration(Duration.total, start)
+        self._drain.flush()
 
 
 class Reader:
@@ -185,6 +186,7 @@ class Gallery(Dataset):
             )
             return self._urls[index], empty(0)
         finally:
+            # TODO: check should we left it here or lower.
             self._drain.drain_duration(Duration.loading, start)
         if response.status_code != codes.ok:
             _logger.error(
