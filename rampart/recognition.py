@@ -1,4 +1,5 @@
 from io import BytesIO
+from time import time
 from typing import List, Tuple
 from PIL.Image import open, new
 from requests import Session, codes
@@ -13,6 +14,7 @@ from torch.utils.data.dataset import Dataset
 from torchvision.transforms import Compose, ToTensor, Resize, Normalize
 from rampart.config import RecognizerConfig
 from rampart.logging import get_logger
+from rampart.metrics import Drain, Duration, Number
 from rampart.models import Image, Label
 
 _logger = get_logger('rampart.recognition')
@@ -26,29 +28,38 @@ class Recognizer:
         '_session',
         '_timeout',
         '_batch_size',
-        '_worker_number'
+        '_worker_number',
+        '_drain'
     ]
 
     def __init__(
         self,
         config: RecognizerConfig,
         engine: Engine,
-        session: Session
+        session: Session,
+        drain: Drain
     ):
-        self._reader = Reader(engine)
+        self._reader = Reader(engine, drain)
         self._network = Network()
         self._network.load_state_dict(load(config.model_path))
         self._network.eval()
-        self._updater = Updater(engine)
+        self._updater = Updater(engine, drain)
         self._session = session
         self._timeout = config.timeout
         self._batch_size = config.batch_size
         self._worker_number = config.worker_number
+        self._drain = drain
 
     @no_grad()
     def __call__(self):
+        start = time()
         loader = DataLoader(
-            Gallery(self._reader.read_urls(), self._session, self._timeout),
+            Gallery(
+                self._reader.read_urls(),
+                self._session,
+                self._timeout,
+                self._drain
+            ),
             self._batch_size,
             num_workers=self._worker_number,
             collate_fn=_collate
@@ -58,18 +69,23 @@ class Recognizer:
                 self._updater.update_image(Image(url, Label.abandoned))
             if len(batch[1]) > 0:
                 for result in zip(batch[1], max(self._network(batch[2]), 1)[1]):
-                    self._updater.update_image(Image(result[0], Label(result[1].item())))
+                    self._updater.update_image(
+                        Image(result[0], Label(result[1].item()))
+                    )
+        self._drain.drain_duration(Duration.total, start)
 
 
 class Reader:
-    __slots__ = ['_engine']
+    __slots__ = ['_engine', '_drain']
 
-    def __init__(self, engine: Engine):
+    def __init__(self, engine: Engine, drain: Drain):
         self._engine = engine
+        self._drain = drain
 
     def read_urls(self) -> List[str]:
+        start = time()
         with self._engine.connect() as connection:
-            return [
+            urls = [
                 u[0] for u in connection.execute(
                     '''
                     select url
@@ -79,6 +95,8 @@ class Reader:
                     '''
                 )
             ]
+        self._drain.drain_duration(Duration.reading, start)
+        return urls
 
 
 # TODO: shorten training code in notebook and use Network, Gallery in jupyter.
@@ -112,28 +130,33 @@ class View(Module):
 
 
 class Updater:
-    __slots__ = ['_engine']
+    __slots__ = ['_engine', '_drain']
 
-    def __init__(self, engine: Engine):
+    def __init__(self, engine: Engine, drain: Drain):
         self._engine = engine
+        self._drain = drain
 
     def update_image(self, image: Image):
+        start = time()
         with self._engine.connect() as connection:
             connection.execute(
                 'update images set label = %s where url = %s',
                 image.label.name,
                 image.url
             )
+        self._drain.drain_duration(Duration.update, start)
+        self._drain.drain_number(Number(image.label.value))
 
 
 class Gallery(Dataset):
-    __slots__ = ['_urls', '_session', '_timeout', '_transforms']
+    __slots__ = ['_urls', '_session', '_timeout', '_transforms', '_drain']
 
     def __init__(
         self,
         urls: List[str],
         session: Session,
         timeout: float,
+        drain: Drain
     ):
         self._urls = urls
         self._session = session
@@ -145,8 +168,10 @@ class Gallery(Dataset):
                 Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
             ]
         )
+        self._drain = drain
 
     def __getitem__(self, index: int) -> Tuple[str, Tensor]:
+        start = time()
         try:
             response = self._session.get(
                 self._urls[index],
@@ -159,6 +184,8 @@ class Gallery(Dataset):
                 extra={'url': self._urls[index]}
             )
             return self._urls[index], empty(0)
+        finally:
+            self._drain.drain_duration(Duration.loading, start)
         if response.status_code != codes.ok:
             _logger.error(
                 'Gallery got non-ok status',

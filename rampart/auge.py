@@ -4,6 +4,7 @@ from requests.adapters import HTTPAdapter
 from sqlalchemy import create_engine
 from rampart.config import get_config
 from rampart.logging import get_logger
+from rampart.metrics import Drain
 from rampart.recognition import Recognizer
 from requests import Session
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -31,7 +32,12 @@ def _main():
             max_retries=config.auge.retry_limit
         )
     )
-    recognizer = Recognizer(config.auge.recognizer, engine, session)
+    recognizer = Recognizer(
+        config.auge.recognizer,
+        engine,
+        session,
+        Drain(engine)
+    )
     scheduler = BlockingScheduler()
     try:
         if args.debug:

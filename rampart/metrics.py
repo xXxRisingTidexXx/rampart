@@ -54,12 +54,12 @@ class Drain:
 
 @unique
 class Number(Enum):
-    abandoned = 0
-    luxury = 1
-    comfort = 2
-    junk = 3
-    construction = 4
-    excess = 5
+    abandoned = -1
+    luxury = 0
+    comfort = 1
+    junk = 2
+    construction = 3
+    excess = 4
 
 
 @unique
