@@ -6,8 +6,8 @@ from rampart.config import get_config
 from rampart.logging import get_logger
 from rampart.recognition import Recognizer
 from requests import Session
-from schedule import every, run_pending
-from time import sleep
+from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 _logger = get_logger('rampart.auge')
 
@@ -32,16 +32,17 @@ def _main():
         )
     )
     recognizer = Recognizer(config.auge.recognizer, engine, session)
+    scheduler = BlockingScheduler()
     try:
         if args.debug:
             recognizer()
         else:
             start_http_server(config.auge.metrics_port)
-            # TODO: replace with apsheduler.
-            every(config.auge.interval).minutes.do(recognizer)
-            while True:
-                run_pending()
-                sleep(1)
+            scheduler.add_job(
+                recognizer,
+                CronTrigger.from_crontab(config.auge.spec)
+            )
+            scheduler.start()
     except KeyboardInterrupt:
         pass
     except Exception:  # noqa
@@ -49,6 +50,7 @@ def _main():
     finally:
         engine.dispose()
         session.close()
+        scheduler.shutdown()
 
 
 if __name__ == '__main__':
