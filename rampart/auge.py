@@ -38,12 +38,12 @@ def _main():
         session,
         Drain(engine)
     )
-    scheduler = BlockingScheduler()
     try:
         if args.debug:
             recognizer()
         else:
             start_http_server(config.auge.metrics_port)
+            scheduler = BlockingScheduler()
             scheduler.add_job(
                 recognizer,
                 CronTrigger.from_crontab(config.auge.spec)
@@ -56,7 +56,6 @@ def _main():
     finally:
         engine.dispose()
         session.close()
-        scheduler.shutdown()
 
 
 if __name__ == '__main__':
