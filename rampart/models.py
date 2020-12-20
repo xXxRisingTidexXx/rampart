@@ -89,8 +89,8 @@ class Image:
 
 @unique
 class Label(Enum):
-    abandoned = -2
-    unknown = -1
+    unknown = -2
+    abandoned = -1
     luxury = 0
     comfort = 1
     junk = 2
