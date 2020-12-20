@@ -178,6 +178,8 @@ services:
   auge-periodic:
     <<: *x-auge
     container_name: rampart-auge-periodic
+    ports:
+      - 9003:9003
 volumes:
   database:
     name: rampart-database

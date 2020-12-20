@@ -1,12 +1,14 @@
 from argparse import ArgumentParser
+from prometheus_client.exposition import start_http_server
 from requests.adapters import HTTPAdapter
 from sqlalchemy import create_engine
 from rampart.config import get_config
 from rampart.logging import get_logger
+from rampart.metrics import Drain
 from rampart.recognition import Recognizer
 from requests import Session
-from schedule import every, run_pending
-from time import sleep
+from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 _logger = get_logger('rampart.auge')
 
@@ -30,15 +32,23 @@ def _main():
             max_retries=config.auge.retry_limit
         )
     )
-    recognizer = Recognizer(config.auge.recognizer, engine, session)
+    recognizer = Recognizer(
+        config.auge.recognizer,
+        engine,
+        session,
+        Drain(engine)
+    )
     try:
         if args.debug:
             recognizer()
         else:
-            every(config.auge.interval).minutes.do(recognizer)
-            while True:
-                run_pending()
-                sleep(1)
+            start_http_server(config.auge.metrics_port)
+            scheduler = BlockingScheduler()
+            scheduler.add_job(
+                recognizer,
+                CronTrigger.from_crontab(config.auge.spec)
+            )
+            scheduler.start()
     except KeyboardInterrupt:
         pass
     except Exception:  # noqa

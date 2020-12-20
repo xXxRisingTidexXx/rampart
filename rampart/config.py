@@ -53,7 +53,8 @@ class AugeConfig:
         'pool_size',
         'retry_limit',
         'recognizer',
-        'interval'
+        'metrics_port',
+        'spec'
     ]
 
     def __init__(self, config: Dict[str, Any], dsn: str):
@@ -61,7 +62,8 @@ class AugeConfig:
         self.pool_size: int = config['pool-size']
         self.retry_limit: int = config['retry-limit']
         self.recognizer = RecognizerConfig(config['recognizer'])
-        self.interval: int = config['interval']
+        self.metrics_port: int = config['metrics-port']
+        self.spec: str = config['spec']
 
 
 class RecognizerConfig:

@@ -12,7 +12,6 @@ import (
 
 // TODO: shorten house number column (but research the actual width before).
 // TODO: think about parsing time & update time. Should we write our own update time?..
-// TODO: drop image time columns.
 func NewStorer(
 	config config.Storer,
 	db *sql.DB,
@@ -245,10 +244,7 @@ func (storer *Storer) readImage(tx *sql.Tx, i image) (bool, error) {
 
 func (storer *Storer) createImage(tx *sql.Tx, i image) error {
 	_, err := tx.Exec(
-		`insert into images
-		(flat_id, url, kind, parsing_time)
-		values
-		($1, $2, $3, now() at time zone 'utc')`,
+		`insert into images (flat_id, url, kind) values ($1, $2, $3)`,
 		i.flatID,
 		i.url,
 		i.kind.String(),
