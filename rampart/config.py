@@ -54,7 +54,7 @@ class AugeConfig:
         'retry_limit',
         'recognizer',
         'metrics_port',
-        'interval'
+        'spec'
     ]
 
     def __init__(self, config: Dict[str, Any], dsn: str):
@@ -63,7 +63,7 @@ class AugeConfig:
         self.retry_limit: int = config['retry-limit']
         self.recognizer = RecognizerConfig(config['recognizer'])
         self.metrics_port: int = config['metrics-port']
-        self.interval: int = config['interval']
+        self.spec: str = config['spec']
 
 
 class RecognizerConfig:
