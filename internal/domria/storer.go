@@ -11,8 +11,6 @@ import (
 )
 
 // TODO: shorten house number column (but research the actual width before).
-// TODO: whatever the truth, image urls shouldn't be unique. Some of them occur multiple times
-//  in different publications. Remove unique constraint and put distinct in auge reading.
 func NewStorer(
 	config config.Storer,
 	db *sql.DB,
@@ -196,7 +194,7 @@ func (storer *Storer) storeImages(
 	for _, url := range images {
 		if err := storer.storeImage(image{flatID, url, kind}); err != nil {
 			storer.drain.DrainNumber(metrics.FailedImageStoringNumber)
-			logger.WithField("url", url).Error(err)
+			logger.WithFields(log.Fields{"flat_id": flatID, "url": url}).Error(err)
 		}
 	}
 }
@@ -233,7 +231,11 @@ func (storer *Storer) storeImage(i image) error {
 
 func (storer *Storer) readImage(tx *sql.Tx, i image) (bool, error) {
 	var count int
-	row := tx.QueryRow(`select count(*) from images where url = $1`, i.url)
+	row := tx.QueryRow(
+		`select count(*) from images where flat_id = $1 and url = $2`,
+		i.flatID,
+		i.url,
+	)
 	if err := row.Scan(&count); err != nil {
 		return false, fmt.Errorf("domria: storer failed to read the image, %v", err)
 	}
