@@ -86,11 +86,10 @@ class Reader:
             urls = [
                 u[0] for u in connection.execute(
                     '''
-                    select url
+                    select distinct url
                     from images
                     where kind = 'photo'
                       and label = 'unknown'
-                    limit 4
                     '''
                 )
             ]
