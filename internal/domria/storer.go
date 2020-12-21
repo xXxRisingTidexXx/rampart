@@ -11,7 +11,8 @@ import (
 )
 
 // TODO: shorten house number column (but research the actual width before).
-// TODO: think about parsing time & update time. Should we write our own update time?..
+// TODO: whatever the truth, image urls shouldn't be unique. Some of them occur multiple times
+//  in different publications. Remove unique constraint and put distinct in auge reading.
 func NewStorer(
 	config config.Storer,
 	db *sql.DB,
