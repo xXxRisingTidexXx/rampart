@@ -1,4 +1,3 @@
-from time import time
 from typing import Dict
 from sqlalchemy.engine.base import Engine
 from enum import Enum, unique
@@ -17,8 +16,8 @@ class Drain:
     def drain_number(self, number: 'Number'):
         self._numbers[number] += 1
 
-    def drain_duration(self, duration: 'Duration', start: float):
-        self._durations[duration].span(start)
+    def drain_duration(self, duration: 'Duration', span: float):
+        self._durations[duration].observe(span)
 
     def flush(self):
         with self._engine.connect() as connection:
@@ -77,8 +76,8 @@ class _Bucket:
         self._sum = 0.0
         self._count = 0.0
 
-    def span(self, start: float):
-        self._sum += time() - start
+    def observe(self, span: float):
+        self._sum += span
         self._count += 1
 
     def avg(self) -> float:
