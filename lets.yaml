@@ -30,11 +30,12 @@ commands:
   warhol:
     description: Run the image downloader
     cmd: |
-      rm -f scientific/images/*.webp && \
+      rm -rf scientific/images && \
+      mkdir scientific/images && \
       START=`date +%s` && \
       docker-compose run --rm warhol && \
       END=`date +%s` && \
-      sudo chown -R $USER:$USER scientific/images && \
+      sudo chown -R $USER:$USER scientific && \
       echo "Total images: $(ls scientific/images | wc -l)" && \
       echo "Total size: $(du -hs scientific/images | cut -f1)" && \
       echo "Total time: $((END - START))s"
