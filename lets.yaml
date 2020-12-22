@@ -42,11 +42,8 @@ commands:
     description: Run the data augmentation demo
     cmd: |
       rm -f images/target_*.webp && \
-      START=`date +%s` && \
       docker-compose run --rm travesty && \
-      END=`date +%s` && \
-      sudo chown -R $USER:$USER images && \
-      echo "Total time: $((END - START))s"
+      sudo chown -R $USER:$USER images
   lint:
     description: Lint the source code
     cmd: docker-compose run --rm lint
