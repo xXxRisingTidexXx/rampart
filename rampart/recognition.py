@@ -54,12 +54,7 @@ class Recognizer:
     def __call__(self):
         start = time()
         loader = DataLoader(
-            Gallery(
-                self._reader.read_urls(),
-                self._session,
-                self._timeout,
-                self._drain
-            ),
+            Gallery(self._reader.read_urls(), self._session, self._timeout),
             self._batch_size,
             num_workers=self._worker_number,
             collate_fn=_collate
@@ -72,7 +67,9 @@ class Recognizer:
                     self._updater.update_image(
                         Image(result[0], Label(result[1].item()))
                     )
-        self._drain.drain_duration(Duration.total, start)
+            for span in batch[3]:
+                self._drain.drain_duration(Duration.loading, span)
+        self._drain.drain_duration(Duration.total, time() - start)
         self._drain.flush()
 
 
@@ -89,14 +86,14 @@ class Reader:
             urls = [
                 u[0] for u in connection.execute(
                     '''
-                    select url
+                    select distinct url
                     from images
                     where kind = 'photo'
                       and label = 'unknown'
                     '''
                 )
             ]
-        self._drain.drain_duration(Duration.reading, start)
+        self._drain.drain_duration(Duration.reading, time() - start)
         return urls
 
 
@@ -145,20 +142,14 @@ class Updater:
                 image.label.name,
                 image.url
             )
-        self._drain.drain_duration(Duration.update, start)
+        self._drain.drain_duration(Duration.update, time() - start)
         self._drain.drain_number(Number(image.label.value))
 
 
 class Gallery(Dataset):
-    __slots__ = ['_urls', '_session', '_timeout', '_transforms', '_drain']
+    __slots__ = ['_urls', '_session', '_timeout', '_transforms']
 
-    def __init__(
-        self,
-        urls: List[str],
-        session: Session,
-        timeout: float,
-        drain: Drain
-    ):
+    def __init__(self, urls: List[str], session: Session, timeout: float):
         self._urls = urls
         self._session = session
         self._timeout = timeout
@@ -169,9 +160,8 @@ class Gallery(Dataset):
                 Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
             ]
         )
-        self._drain = drain
 
-    def __getitem__(self, index: int) -> Tuple[str, Tensor]:
+    def __getitem__(self, index: int) -> Tuple[str, Tensor, float]:
         start = time()
         try:
             response = self._session.get(
@@ -184,36 +174,38 @@ class Gallery(Dataset):
                 'Gallery failed to read the image',
                 extra={'url': self._urls[index]}
             )
-            self._drain.drain_duration(Duration.loading, start)
-            return self._urls[index], empty(0)
+            return self._urls[index], empty(0), time() - start
+        span = time() - start
         if response.status_code != codes.ok:
             _logger.error(
                 'Gallery got non-ok status',
                 extra={'url': self._urls[index], 'code': response.status_code}
             )
-            self._drain.drain_duration(Duration.loading, start)
-            return self._urls[index], empty(0)
+            return self._urls[index], empty(0), span
         image = open(BytesIO(response.content))
         if image.mode == 'RGBA':
             canvas = new('RGBA', image.size, 'white')
             canvas.paste(image, (0, 0), image)
             image = canvas.convert('RGB')
-        tensor = self._transforms(image)
-        self._drain.drain_duration(Duration.loading, start)
-        return self._urls[index], tensor
+        return self._urls[index], self._transforms(image), span
 
     def __len__(self) -> int:
         return len(self._urls)
 
 
-def _collate(batch: List[Tuple[str, Tensor]]) -> Tuple[List[str], List[str], Tensor]:
-    urls, pairs = [], []
-    for pair in batch:
-        if pair[1].size()[0] == 0:
-            urls.append(pair[0])
+def _collate(
+    batch: List[Tuple[str, Tensor, float]]
+) -> Tuple[List[str], List[str], Tensor, List[float]]:
+    bad, good, bundle = [], [], []
+    for row in batch:
+        if row[1].size()[0] == 0:
+            bad.append(row[0])
         else:
-            pairs.append(pair)
-    if len(pairs) == 0:
-        return urls, [], empty(0)
-    bundle = default_collate(pairs)
-    return urls, bundle[0], bundle[1]
+            good.append(row[0])
+            bundle.append(row[1])
+    return (
+        bad,
+        good,
+        empty(0) if len(good) == 0 else default_collate(bundle),
+        [r[2] for r in batch]
+    )

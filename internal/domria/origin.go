@@ -6,6 +6,6 @@ import (
 
 type origin struct {
 	id         int
-	updateTime time.Time
+	upsertTime time.Time
 	isFound    bool
 }

@@ -11,7 +11,6 @@ import (
 )
 
 // TODO: shorten house number column (but research the actual width before).
-// TODO: think about parsing time & update time. Should we write our own update time?..
 func NewStorer(
 	config config.Storer,
 	db *sql.DB,
@@ -63,7 +62,7 @@ func (storer *Storer) storeFlat(flat Flat) (int, error) {
 			return 0, err
 		}
 		number = metrics.CreatedFlatStoringNumber
-	} else if flat.UpdateTime.After(o.updateTime) {
+	} else if flat.UpdateTime.After(o.upsertTime) {
 		start := time.Now()
 		err := storer.updateFlat(tx, flat)
 		storer.drain.DrainDuration(metrics.UpdateFlatStoringDuration, start)
@@ -82,8 +81,8 @@ func (storer *Storer) storeFlat(flat Flat) (int, error) {
 
 func (storer *Storer) readFlat(tx *sql.Tx, flat Flat) (origin, error) {
 	var o origin
-	row := tx.QueryRow(`select id, update_time from flats where url = $1`, flat.URL)
-	switch err := row.Scan(&o.id, &o.updateTime); err {
+	row := tx.QueryRow(`select id, upsert_time from flats where url = $1`, flat.URL)
+	switch err := row.Scan(&o.id, &o.upsertTime); err {
 	case sql.ErrNoRows:
 		return o, nil
 	case nil:
@@ -97,29 +96,27 @@ func (storer *Storer) readFlat(tx *sql.Tx, flat Flat) (origin, error) {
 func (storer *Storer) updateFlat(tx *sql.Tx, flat Flat) error {
 	_, err := tx.Exec(
 		`update flats 
-		set update_time = $2,
-		    parsing_time = now() at time zone 'utc',
-		    price = $3,
-		    total_area = $4,
-		    living_area = $5,
-		    kitchen_area = $6,
-		    room_number = $7,
-		    floor = $8,
-		    total_floor = $9,
-		    housing = $10,
-		    complex = $11,
-		    point = st_geomfromwkb($12, $13),
-		    state = $14,
-		    city = $15,
-		    district = $16,
-		    street = $17,
-		    house_number = $18,
-		    ssf = $19,
-		    izf = $20,
-		    gzf = $21
+		set upsert_time = now() at time zone 'utc',
+		    price = $2,
+		    total_area = $3,
+		    living_area = $4,
+		    kitchen_area = $5,
+		    room_number = $6,
+		    floor = $7,
+		    total_floor = $8,
+		    housing = $9,
+		    complex = $10,
+		    point = st_geomfromwkb($11, $12),
+		    state = $13,
+		    city = $14,
+		    district = $15,
+		    street = $16,
+		    house_number = $17,
+		    ssf = $18,
+		    izf = $19,
+		    gzf = $20
 		where url = $1`,
 		flat.URL,
-		flat.UpdateTime,
 		flat.Price,
 		flat.TotalArea,
 		flat.LivingArea,
@@ -151,18 +148,17 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat Flat) (int, error) {
 	err := tx.QueryRow(
 		`insert into flats
 		(
-		 	url, update_time, parsing_time, price, total_area, living_area, kitchen_area,
-		    room_number, floor, total_floor, housing, complex, point, state, city, district,
-		    street, house_number, ssf, izf, gzf
+		 	url, upsert_time, price, total_area, living_area, kitchen_area, room_number, floor,
+		    total_floor, housing, complex, point, state, city, district, street, house_number, ssf,
+		    izf, gzf
 		)
 		values 
 		(
-		    $1, $2, now() at time zone 'utc', $3, $4, $5, $6, $7, $8, $9, $10, $11, 
-			st_geomfromwkb($12, $13), $14, $15, $16, $17, $18, $19, $20, $21
+		    $1, now() at time zone 'utc', $2, $3, $4, $5, $6, $7, $8, $9, $10, 
+			st_geomfromwkb($11, $12), $13, $14, $15, $16, $17, $18, $19, $20
 		)
 		returning id`,
 		flat.URL,
-		flat.UpdateTime,
 		flat.Price,
 		flat.TotalArea,
 		flat.LivingArea,
@@ -198,7 +194,7 @@ func (storer *Storer) storeImages(
 	for _, url := range images {
 		if err := storer.storeImage(image{flatID, url, kind}); err != nil {
 			storer.drain.DrainNumber(metrics.FailedImageStoringNumber)
-			logger.WithField("url", url).Error(err)
+			logger.WithFields(log.Fields{"flat_id": flatID, "url": url}).Error(err)
 		}
 	}
 }
@@ -235,7 +231,11 @@ func (storer *Storer) storeImage(i image) error {
 
 func (storer *Storer) readImage(tx *sql.Tx, i image) (bool, error) {
 	var count int
-	row := tx.QueryRow(`select count(*) from images where url = $1`, i.url)
+	row := tx.QueryRow(
+		`select count(*) from images where flat_id = $1 and url = $2`,
+		i.flatID,
+		i.url,
+	)
 	if err := row.Scan(&count); err != nil {
 		return false, fmt.Errorf("domria: storer failed to read the image, %v", err)
 	}

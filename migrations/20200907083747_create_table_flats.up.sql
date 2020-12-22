@@ -2,8 +2,7 @@ create table if not exists flats
 (
     id           serial primary key    not null,
     url          varchar(256) unique   not null check ( url != '' ),
-    update_time  timestamp             not null,
-    parsing_time timestamp             not null,
+    upsert_time  timestamp             not null,
     price        real                  not null check ( 0 < price ),
     total_area   real                  not null check ( 0 < total_area ),
     living_area  real                  not null check ( 0 <= living_area and living_area < total_area ),
