@@ -117,10 +117,23 @@ func pipe(
 	if err != nil {
 		return fmt.Errorf("main: warhol failed to decode the source, %v", err)
 	}
-	hash := sha1.Sum([]byte(record[0]))
-	assets <- imaging.Asset{Hash: hash, Label: record[1], Effect: "origin", Bytes: bytes}
+	sum := sha1.Sum([]byte(record[0]))
+	hash := hex.EncodeToString(sum[:])
+	assets <- imaging.Asset{
+		Hash:   hash,
+		Group:  record[1],
+		Label:  record[2],
+		Effect: "origin",
+		Bytes:  bytes,
+	}
 	for _, effect := range imaging.Effects {
-		raws <- imaging.Raw{Hash: hash, Label: record[1], Effect: effect, Source: source}
+		raws <- imaging.Raw{
+			Hash:   hash,
+			Group:  record[1],
+			Label:  record[2],
+			Effect: effect,
+			Source: source,
+		}
 	}
 	return nil
 }
@@ -135,8 +148,9 @@ func process(
 		bytes, err := raw.Effect.Apply(raw.Source)
 		if err != nil {
 			fields := log.Fields{
-				"hash":   hex.EncodeToString(raw.Hash[:]),
+				"hash":   raw.Hash,
 				"effect": raw.Effect.Name(),
+				"group":  raw.Group,
 				"label":  raw.Label,
 			}
 			logger.WithFields(fields).Error(err)
@@ -144,6 +158,7 @@ func process(
 			assets <- imaging.Asset{
 				Hash:   raw.Hash,
 				Effect: raw.Effect.Name(),
+				Group:  raw.Group,
 				Label:  raw.Label,
 				Bytes:  bytes,
 			}
@@ -160,14 +175,17 @@ func dump(
 ) {
 	for asset := range assets {
 		err := ioutil.WriteFile(
-			misc.ResolvePath(fmt.Sprintf(format, asset.Hash, asset.Effect, asset.Label)),
+			misc.ResolvePath(
+				fmt.Sprintf(format, asset.Hash, asset.Effect, asset.Group, asset.Label),
+			),
 			asset.Bytes,
 			0644,
 		)
 		if err != nil {
 			fields := log.Fields{
-				"hash":   hex.EncodeToString(asset.Hash[:]),
+				"hash":   asset.Hash,
 				"effect": asset.Effect,
+				"group":  asset.Group,
 				"label":  asset.Label,
 			}
 			logger.WithFields(fields).Errorf("main: warhol failed to write the file, %v", err)
@@ -183,10 +201,11 @@ func read(input io.Reader, records chan<- []string) error {
 	} else if err != nil {
 		return fmt.Errorf("main: warhol failed to read header of the input file, %v", err)
 	}
-	if reader.FieldsPerRecord != 2 {
+	if expected := 3; reader.FieldsPerRecord != expected {
 		return fmt.Errorf(
-			"main: warhol got invalid field number, %d != 2",
+			"main: warhol got invalid field number, %d != %d",
 			reader.FieldsPerRecord,
+			expected,
 		)
 	}
 	for {
