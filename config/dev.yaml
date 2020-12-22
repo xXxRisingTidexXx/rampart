@@ -198,7 +198,7 @@ warhol:
   timeout: 40s
   thread-number: 4
   retry-limit: 3
-  output-format: scientific/images/%x.%s.%s.webp
+  output-format: scientific/images/%s.%s.%s.%s.webp
   input-path: scientific/images.csv
 browsing:
   port: 9211
