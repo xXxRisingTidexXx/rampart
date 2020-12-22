@@ -30,11 +30,12 @@ commands:
   warhol:
     description: Run the image downloader
     cmd: |
-      rm -f scientific/images/*.webp && \
+      rm -rf scientific/images && \
+      mkdir scientific/images && \
       START=`date +%s` && \
       docker-compose run --rm warhol && \
       END=`date +%s` && \
-      sudo chown -R $USER:$USER scientific/images && \
+      sudo chown -R $USER:$USER scientific && \
       echo "Total images: $(ls scientific/images | wc -l)" && \
       echo "Total size: $(du -hs scientific/images | cut -f1)" && \
       echo "Total time: $((END - START))s"
@@ -42,11 +43,8 @@ commands:
     description: Run the data augmentation demo
     cmd: |
       rm -f images/target_*.webp && \
-      START=`date +%s` && \
       docker-compose run --rm travesty && \
-      END=`date +%s` && \
-      sudo chown -R $USER:$USER images && \
-      echo "Total time: $((END - START))s"
+      sudo chown -R $USER:$USER images
   lint:
     description: Lint the source code
     cmd: docker-compose run --rm lint

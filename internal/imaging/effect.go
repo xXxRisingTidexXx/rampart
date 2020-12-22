@@ -11,39 +11,50 @@ import (
 
 var Effects = []Effect{
 	NewEffect("flip", gift.FlipHorizontal()),
-	NewEffect("rotate_ccw1", rotate(1)...),
-	NewEffect("rotate_cw1", rotate(-1)...),
-	NewEffect("rotate_ccw2", rotate(2)...),
-	NewEffect("rotate_cw2", rotate(-2)...),
-	NewEffect("rotate_ccw3", rotate(3)...),
-	NewEffect("rotate_cw3", rotate(-3)...),
-	NewEffect("brightness_up5", gift.Brightness(5)),
-	NewEffect("brightness_down5", gift.Brightness(-5)),
-	NewEffect("brightness_up10", gift.Brightness(10)),
-	NewEffect("brightness_down10", gift.Brightness(-10)),
-	NewEffect("balance_up", gift.ColorBalance(-5, 5, 10)),
-	NewEffect("balance_down", gift.ColorBalance(-10, 10, 0)),
-	NewEffect("contrast_up20", gift.Contrast(20)),
-	NewEffect("contrast_down20", gift.Contrast(-20)),
-	NewEffect("contrast_up30", gift.Contrast(30)),
-	NewEffect("contrast_down30", gift.Contrast(-30)),
-	NewEffect("gamma_light", gift.Gamma(1.3)),
-	NewEffect("gamma_dark", gift.Gamma(0.7)),
-	NewEffect("blur", gift.GaussianBlur(1.25)),
-	NewEffect("hue_ccw", gift.Hue(5)),
-	NewEffect("hue_cw", gift.Hue(-5)),
-	NewEffect("max", gift.Maximum(3, false)),
-	NewEffect("min", gift.Minimum(3, false)),
-	NewEffect("median", gift.Median(3, false)),
-	NewEffect("mean", gift.Mean(3, false)),
-	NewEffect("saturation_up", gift.Saturation(80)),
-	NewEffect("saturation_down", gift.Saturation(-20)),
-	NewEffect("sepia", gift.Sepia(20)),
-	NewEffect("sigmoid", gift.Sigmoid(0.6, 3)),
 	NewEffect(
-		"scale",
+		"brightness_up_rotate_ccw_crop",
+		gift.Brightness(10),
+		gift.Rotate(5, color.White, gift.CubicInterpolation),
+		gift.CropToSize(620, 460, gift.CenterAnchor),
+	),
+	NewEffect(
+		"brightness_down_rotate_cw_crop",
+		gift.Brightness(-20),
+		gift.Rotate(-3, color.White, gift.CubicInterpolation),
+		gift.CropToSize(620, 460, gift.CenterAnchor),
+	),
+	NewEffect("balance_up_saturation_up", gift.ColorBalance(-5, 5, 10), gift.Saturation(80)),
+	NewEffect(
+		"balance_down_hue_cw_rotate_ccw_crop",
+		gift.ColorBalance(-10, 10, 0),
+		gift.Hue(-5),
+		gift.Rotate(3, color.White, gift.CubicInterpolation),
+		gift.CropToSize(620, 460, gift.CenterAnchor),
+	),
+	NewEffect("contrast_up_hue_ccw", gift.Contrast(30), gift.Hue(5)),
+	NewEffect(
+		"gamma_light_crop_resize",
+		gift.Gamma(1.3),
+		gift.CropToSize(589, 437, gift.TopRightAnchor),
+		gift.Resize(620, 460, gift.CubicResampling),
+	),
+	NewEffect("gamma_dark_flip", gift.Gamma(0.7), gift.FlipHorizontal()),
+	NewEffect("blur", gift.GaussianBlur(1.25)),
+	NewEffect(
+		"max_rotate_cw_crop",
+		gift.Maximum(3, false),
+		gift.Rotate(2, color.White, gift.CubicInterpolation),
+		gift.CropToSize(620, 460, gift.CenterAnchor),
+	),
+	NewEffect("min_flip", gift.Minimum(3, true), gift.FlipHorizontal()),
+	NewEffect("median", gift.Median(3, false)),
+	NewEffect("mean", gift.Mean(5, true)),
+	NewEffect("sigmoid_sepia", gift.Sigmoid(0.6, 3), gift.Sepia(20)),
+	NewEffect(
+		"crop_resize_saturation_down",
 		gift.CropToSize(600, 450, gift.CenterAnchor),
 		gift.Resize(620, 460, gift.LanczosResampling),
+		gift.Saturation(-15),
 	),
 }
 
@@ -68,11 +79,4 @@ func (effect Effect) Apply(source image.Image) ([]byte, error) {
 		return nil, fmt.Errorf("imaging: effect failed to encode the target, %v", err)
 	}
 	return buffer.Bytes(), nil
-}
-
-func rotate(angle float32) []gift.Filter {
-	return []gift.Filter{
-		gift.Rotate(angle, color.White, gift.CubicInterpolation),
-		gift.CropToSize(620, 460, gift.CenterAnchor),
-	}
 }
