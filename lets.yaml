@@ -54,7 +54,8 @@ commands:
   notebook:
     description: Run Jupyter Notebook server
     cmd: |
-      docker-compose run --rm notebook
+      docker-compose up notebook
+      docker rm rampart-notebook
       chown -R $USER:$USER scientific
   twinkle:
     description: Run search engine job
