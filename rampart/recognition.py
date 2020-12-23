@@ -97,7 +97,6 @@ class Reader:
         return urls
 
 
-# TODO: shorten training code in notebook and use Network, Gallery in jupyter.
 class Network(Module):
     __slots__ = ['_sequential']
 
