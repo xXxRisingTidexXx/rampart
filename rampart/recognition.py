@@ -5,13 +5,12 @@ from PIL.Image import open, new
 from requests import Session, codes
 from requests.exceptions import RequestException
 from sqlalchemy.engine.base import Engine
-from torch.nn import (
-    Module, Sequential, ReLU, Conv2d, MaxPool2d, Dropout, Linear
-)
+from torch.nn import Module
 from torch import Tensor, empty, load, no_grad, max
 from torch.utils.data.dataloader import default_collate, DataLoader
 from torch.utils.data.dataset import Dataset
 from torchvision.transforms import Compose, ToTensor, Resize, Normalize
+from torchvision.models import AlexNet
 from rampart.config import RecognizerConfig
 from rampart.logging import get_logger
 from rampart.metrics import Drain, Duration, Number
@@ -40,7 +39,7 @@ class Recognizer:
         drain: Drain
     ):
         self._reader = Reader(engine, drain)
-        self._network = Network()
+        self._network = AlexNet()
         self._network.load_state_dict(load(config.model_path))
         self._network.eval()
         self._updater = Updater(engine, drain)
@@ -97,24 +96,6 @@ class Reader:
         return urls
 
 
-class Network(Module):
-    __slots__ = ['_sequential']
-
-    def __init__(self):
-        super().__init__()
-        self._sequential = Sequential(
-            Conv2d(3, 3, 5, padding=2),
-            ReLU(),
-            MaxPool2d(2),
-            Dropout(0.3),
-            View(-1, 213900),
-            Linear(213900, 5)
-        )
-
-    def forward(self, x: Tensor) -> Tensor:
-        return self._sequential(x)
-
-
 class View(Module):
     __slots__ = ['_shape']
 
@@ -155,7 +136,7 @@ class Gallery(Dataset):
         self._transforms = Compose(
             [
                 ToTensor(),
-                Resize((460, 620)),
+                Resize((227, 227)),
                 Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
             ]
         )
