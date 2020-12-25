@@ -39,7 +39,7 @@ class Recognizer:
         drain: Drain
     ):
         self._reader = Reader(engine, drain)
-        self._network = AlexNet()
+        self._network = AlexNet(5)
         self._network.load_state_dict(load(config.model_path))
         self._network.eval()
         self._updater = Updater(engine, drain)
