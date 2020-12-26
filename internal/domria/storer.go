@@ -52,7 +52,7 @@ func (storer *Storer) storeFlat(flat Flat) (int, error) {
 		_ = tx.Rollback()
 		return 0, err
 	}
-	id, number := o.id, metrics.UnalteredImageStoringNumber
+	id, number := o.id, metrics.UnalteredFlatStoringNumber
 	if !o.isFound {
 		start := time.Now()
 		id, err = storer.createFlat(tx, flat)
