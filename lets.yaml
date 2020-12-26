@@ -1,3 +1,4 @@
+# TODO: add twinkle data augmentation.
 shell: bash
 commands:
   build:
