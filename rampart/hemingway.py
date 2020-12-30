@@ -48,7 +48,7 @@ def _get_index(ranker: Ranker) -> str:
     room_number = _int(request.args.get('room_number'))
     if room_number < 0 or room_number > 4:
         abort(400)
-    limit = _int(request.args.get('limit'), 10)
+    limit = _int(request.args.get('limit'), 15)
     if limit < 1:
         abort(400)
     offset = _int(request.args.get('offset'))
