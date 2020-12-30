@@ -1,15 +1,38 @@
 from typing import Optional
 from flask import Flask, request, render_template, abort
+from sqlalchemy import create_engine
 from rampart.config import get_config
+from rampart.logging import get_handler
 from rampart.ranking import Query, Ranker
 
 
 def _main():
     config = get_config()
-    ranker = Ranker(config.browsing.ranker)
-    app = Flask('rampart.twinkle', template_folder=config.browsing.template_path)
-    app.add_url_rule('/', view_func=lambda: _get_index(ranker), methods=['GET'])
-    app.run('0.0.0.0', config.browsing.port, load_dotenv=False, use_reloader=False)
+    app = Flask(
+        'rampart.hemingway',
+        template_folder=config.hemingway.template_path
+    )
+    app.logger.addHandler(get_handler())
+    engine = create_engine(config.hemingway.dsn)
+    ranker = Ranker(config.hemingway.ranker, engine)
+    app.add_url_rule(
+        '/',
+        view_func=lambda: _get_index(ranker),
+        methods=['GET']
+    )
+    try:
+        app.run(
+            '0.0.0.0',
+            config.hemingway.port,
+            load_dotenv=False,
+            use_reloader=False
+        )
+    except KeyboardInterrupt:
+        pass
+    except Exception:  # noqa
+        app.logger.exception('Hemingway got fatal error')
+    finally:
+        engine.dispose()
 
 
 def _get_index(ranker: Ranker) -> str:
