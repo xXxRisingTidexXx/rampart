@@ -12,11 +12,12 @@ def get_config() -> 'Config':
 
 
 class Config:
-    __slots__ = ['browsing', 'auge']
+    __slots__ = ['browsing', 'coquus', 'auge']
 
     def __init__(self, config: Dict[str, Any]):
         dsn = _get_env('RAMPART_DATABASE_DSN')
         self.browsing = BrowsingConfig(config['browsing'], dsn)
+        self.coquus = CoquusConfig(config['coquus'])
         self.auge = AugeConfig(config['auge'], dsn)
 
 
@@ -45,6 +46,14 @@ class RankerConfig:
         self.model_path = str(
             _root_path / 'scientific/models/twinkle.latest.txt'
         )
+
+
+class CoquusConfig:
+    __slots__ = ['input_path', 'output_format']
+
+    def __init__(self, config: Dict[str, Any]):
+        self.input_path = str(_root_path / config['input-path'])
+        self.output_format = str(_root_path / config['output-format'])
 
 
 class AugeConfig:

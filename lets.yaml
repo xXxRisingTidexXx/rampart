@@ -3,10 +3,10 @@ commands:
   build:
     description: Construct/renovate all local docker images
     cmd: |
-      if [[ ! -e .env ]]; then touch .env ; fi && \
-      mkdir -p scientific scientific/images scientific/models && \
-      if [[ ! -e scientific/images.csv ]]; then touch scientific/images.csv ; fi && \
       mkdir -p .cache .config .ipython .jupyter .local .npm && \
+      if [[ ! -e .env ]]; then touch .env ; fi && \
+      mkdir -p scientific scientific/images scientific/models scientific/binaries && \
+      if [[ ! -e scientific/images.csv ]]; then touch scientific/images.csv ; fi && \
       docker-compose build messis gochecks notebook twinkle auge pychecks
   database:
     description: Run the DB server
@@ -40,7 +40,7 @@ commands:
       echo "Total size: $(du -hs scientific/images | cut -f1)" && \
       echo "Total time: $((END - START))s"
   travesty:
-    description: Run the data augmentation demo
+    description: Run image augmentation demo
     cmd: |
       rm -f images/target_*.webp && \
       docker-compose run --rm travesty && \
@@ -52,7 +52,7 @@ commands:
     description: Run test suites
     cmd: docker-compose run --rm test
   notebook:
-    description: Run Jupyter Notebook server
+    description: Setup Jupyter Notebook server
     cmd: |
       docker-compose up notebook
       docker rm rampart-notebook
@@ -60,9 +60,12 @@ commands:
   twinkle:
     description: Run search engine job
     cmd: docker-compose run --rm twinkle
+  coquus:
+    description: Execute ranking dataset augmentation
+    cmd: docker-compose run --rm coquus && sudo chown -R $USER:$USER scientific
   auge:
     description: Run image classification task
-    cmd: docker-compose run --rm auge-instant
+    cmd: docker-compose run --rm auge
   flake8:
     description: Run python code linter
     cmd: docker-compose run --rm flake8
@@ -75,8 +78,8 @@ commands:
   run:
     description: Activate the whole rampart ecosystem
     cmd: |
-      docker-compose up messis-domria-primary messis-domria-secondary auge-periodic
-      docker rm rampart-messis-domria-primary rampart-messis-domria-secondary rampart-auge-periodic
+      docker-compose up messis-domria-primary messis-domria-secondary auge-cron
+      docker rm rampart-messis-domria-primary rampart-messis-domria-secondary rampart-auge-cron
   stop:
     description: Dispose all docker stuff
     cmd: docker-compose down

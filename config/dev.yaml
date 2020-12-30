@@ -199,9 +199,12 @@ warhol:
   thread-number: 4
   retry-limit: 3
   output-format: scientific/images/%s.%s.%s.%s.webp
-  input-path: scientific/images.csv
+  input-path: scientific/auge.csv
 browsing:
   port: 9211
+coquus:
+  input-path: scientific/twinkle.csv
+  output-format: scientific/binaries/{}.{}.bin
 auge:
   pool-size: 4
   retry-limit: 3
