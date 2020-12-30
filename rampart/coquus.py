@@ -22,26 +22,33 @@ def _main():
             extra={'actual': group_number, 'expected': len(groups)}
         )
         exit(1)
+    datasets = {group: _serialize(flats, i) for i, group in enumerate(groups)}
+    datasets['validation'].set_reference(datasets['training'])
     tag = uuid4().hex
-    for i, group in enumerate(groups):
-        origin = flats[flats['group'] == i].drop(columns=['group'])
-        merge = concat(
-            [origin] + [_augment(origin, i) for i in range(1, 32)],
-            ignore_index=True
-        )
-        dataset = Dataset(
-            merge.drop(columns=['relevance', 'query']),
-            merge['relevance'],
-            group=merge.groupby(['query']).size(),
-            categorical_feature=[
-                'desired_room_number',
-                'desired_floor',
-                'housing'
-            ],
-            silent=True
-        )
+    for group, dataset in datasets.items():
         dataset.save_binary(config.coquus.output_format.format(tag, group))
-        dataset.save_binary(config.coquus.output_format.format('latest', group))
+        dataset.save_binary(
+            config.coquus.output_format.format('latest', group)
+        )
+
+
+def _serialize(flats: DataFrame, i: int) -> Dataset:
+    origin = flats[flats['group'] == i].drop(columns=['group'])
+    merge = concat(
+        [origin] + [_augment(origin, i) for i in range(1, 32)],
+        ignore_index=True
+    )
+    return Dataset(
+        merge.drop(columns=['relevance', 'query']),
+        merge['relevance'],
+        group=merge.groupby(['query']).size(),
+        categorical_feature=[
+            'desired_room_number',
+            'desired_floor',
+            'housing'
+        ],
+        silent=True
+    )
 
 
 def _augment(origin: DataFrame, i: int):
