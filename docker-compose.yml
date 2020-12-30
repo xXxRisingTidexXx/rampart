@@ -133,18 +133,20 @@ services:
     env_file:
       - .env
   twinkle:
-    <<: *x-twinkle
     build:
       context: .
       dockerfile: docker/twinkle.dockerfile
-    container_name: rampart-twinkle
-    command: python -m rampart.twinkle
-    ports:
-      - 9211:9211
+    image: rampart-twinkle
   coquus:
     <<: *x-twinkle
     container_name: rampart-coquus
     command: python -m rampart.coquus
+  hemingway:
+    <<: *x-twinkle
+    container_name: rampart-hemingway
+    command: python -m rampart.hemingway
+    ports:
+      - 9211:9211
   auge:
     <<: *x-auge
     build:

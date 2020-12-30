@@ -57,12 +57,14 @@ commands:
       docker-compose up notebook
       docker rm rampart-notebook
       chown -R $USER:$USER scientific
-  twinkle:
-    description: Run search engine job
-    cmd: docker-compose run --rm twinkle
   coquus:
     description: Execute ranking dataset augmentation
     cmd: docker-compose run --rm coquus && sudo chown -R $USER:$USER scientific
+  hemingway:
+    description: Browse & explore the trained ranking model
+    cmd: |
+      docker-compose up hemingway
+      docker rm rampart-hemingway
   auge:
     description: Run image classification task
     cmd: docker-compose run --rm auge
