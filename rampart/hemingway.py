@@ -37,6 +37,8 @@ def _main():
 
 def _get_index(ranker: Ranker) -> str:
     city = request.args.get('city')
+    if len(city) > 50:
+        abort(400)
     if not city:
         city = 'Київ'
     price = _float(request.args.get('price'))
