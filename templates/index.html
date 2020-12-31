@@ -12,7 +12,7 @@
 <body>
 <h1>
     {% if offset > 0 %}
-    <a href="http://localhost:9211/?city={{ city }}&price={{ price }}&floor={{ floor }}&room_number={{ room_number }}&limit={{ limit }}&offset={{ previous }}">
+    <a href="http://localhost:9211/?city={{ city }}&price={{ price }}&floor={{ floor.value }}&room_number={{ room_number.value }}&limit={{ limit }}&offset={{ previous }}">
         &laquo;
     </a>
     {% else %}
@@ -20,7 +20,7 @@
     {% endif %}
     <span>Flats</span>
     {% if offset < 9 %}
-    <a href="http://localhost:9211/?city={{ city }}&price={{ price }}&floor={{ floor }}&room_number={{ room_number }}&limit={{ limit }}&offset={{ next }}">
+    <a href="http://localhost:9211/?city={{ city }}&price={{ price }}&floor={{ floor.value }}&room_number={{ room_number.value }}&limit={{ limit }}&offset={{ next }}">
         &raquo;
     </a>
     {% else %}
