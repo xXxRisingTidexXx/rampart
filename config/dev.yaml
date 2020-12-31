@@ -207,6 +207,7 @@ hemingway:
   port: 9211
   ranker:
     model-path: scientific/models/twinkle.latest.txt
+    price-factor: 1.65
 auge:
   pool-size: 4
   retry-limit: 3

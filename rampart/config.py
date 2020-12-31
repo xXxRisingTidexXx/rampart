@@ -49,10 +49,11 @@ class HemingwayConfig:
 
 
 class RankerConfig:
-    __slots__ = ['model_path']
+    __slots__ = ['model_path', 'price_factor']
 
     def __init__(self, config: Dict[str, Any]):
         self.model_path = str(_root_path / config['model-path'])
+        self.price_factor: float = config['price-factor']
 
 
 class AugeConfig:
