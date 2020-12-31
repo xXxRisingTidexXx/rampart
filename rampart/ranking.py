@@ -8,6 +8,9 @@ from rampart.models import Flat, Housing
 
 
 # TODO: leverage optuna to set the hyperparameters.
+# https://medium.com/optuna/lightgbm-tuner-new-optuna-integration-for-hyperparameter-optimization-8b7095e99258
+# https://scikit-learn.org/stable/modules/generated/sklearn.metrics.ndcg_score.html
+# https://lightgbm.readthedocs.io/en/latest/Parameters-Tuning.html
 class Ranker:
     __slots__ = ['_reader', '_booster']
 
