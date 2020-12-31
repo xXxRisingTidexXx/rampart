@@ -3,7 +3,7 @@ from lightgbm import Booster
 from pandas import read_sql, DataFrame
 from sqlalchemy.engine.base import Engine
 from rampart.config import RankerConfig
-from rampart.models import Flat
+from rampart.models import Flat, Housing
 
 
 # TODO: leverage optuna to set the hyperparameters.
@@ -42,7 +42,7 @@ class Ranker:
                 s['actual_room_number'],
                 s['actual_floor'],
                 s['total_floor'],
-                s['housing'],
+                Housing(s['housing']),
                 s['longitude'],
                 s['latitude'],
                 query.city,
@@ -51,6 +51,14 @@ class Ranker:
                 s['ssf'],
                 s['izf'],
                 s['gzf'],
+                s['unknown_count'],
+                s['abandoned_count'],
+                s['luxury_count'],
+                s['comfort_count'],
+                s['junk_count'],
+                s['construction_count'],
+                s['excess_count'],
+                s['panorama_count'],
                 s['score']
             )
             for _, s
