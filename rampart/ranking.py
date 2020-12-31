@@ -12,7 +12,7 @@ class Ranker:
     __slots__ = ['_reader', '_booster']
 
     def __init__(self, config: RankerConfig, engine: Engine):
-        self._reader = Reader(engine)
+        self._reader = Reader(engine, config.price_factor)
         self._booster = Booster(model_file=config.model_path)
 
     def rank_flats(self, query: 'Query') -> List[Flat]:
@@ -73,15 +73,16 @@ class Ranker:
 
 
 class Reader:
-    __slots__ = ['_engine']
+    __slots__ = ['_engine', '_price_factor']
 
-    def __init__(self, engine: Engine):
+    def __init__(self, engine: Engine, price_factor: float):
         self._engine = engine
+        self._price_factor = price_factor
 
     def read_flats(self, query: 'Query') -> DataFrame:
         price_clause = ''
         if query.price > 0:
-            price_clause = f'and price <= {2 * query.price}'
+            price_clause = f'and price <= {self._price_factor * query.price}'
         room_number_clause = ''
         if query.room_number == RoomNumber.many:
             room_number_clause = f'and room_number >= {RoomNumber.many.value}'
