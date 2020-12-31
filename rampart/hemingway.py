@@ -3,7 +3,7 @@ from flask import Flask, request, render_template, abort
 from sqlalchemy import create_engine
 from rampart.config import get_config
 from rampart.logging import get_handler
-from rampart.ranking import Query, Ranker
+from rampart.ranking import Query, Ranker, Floor, RoomNumber
 
 
 def _main():
@@ -37,19 +37,15 @@ def _main():
 
 def _get_index(ranker: Ranker) -> str:
     city = request.args.get('city')
-    if len(city) > 50:
-        abort(400)
     if not city:
         city = 'Київ'
+    if len(city) > 50:
+        abort(400)
     price = _float(request.args.get('price'))
     if price < 0:
         abort(400)
-    floor = _int(request.args.get('floor'))
-    if floor < 0 or floor > 2:
-        abort(400)
-    room_number = _int(request.args.get('room_number'))
-    if room_number < 0 or room_number > 4:
-        abort(400)
+    floor = Floor(_int(request.args.get('floor')))
+    room_number = RoomNumber(_int(request.args.get('room_number')))
     limit = _int(request.args.get('limit'), 15)
     if limit < 1:
         abort(400)

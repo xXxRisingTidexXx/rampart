@@ -1,4 +1,5 @@
 from typing import List
+from enum import Enum, unique
 from lightgbm import Booster
 from pandas import read_sql, DataFrame
 from sqlalchemy.engine.base import Engine
@@ -78,9 +79,17 @@ class Reader:
         self._engine = engine
 
     def read_flats(self, query: 'Query') -> DataFrame:
+        price_clause = ''
+        if query.price > 0:
+            price_clause = f'and price <= {2 * query.price}'
+        room_number_clause = ''
+        if query.room_number == RoomNumber.many:
+            room_number_clause = f'and room_number >= {RoomNumber.many.value}'
+        elif query.room_number != RoomNumber.any:
+            room_number_clause = f'and room_number = {query.room_number.value}'
         with self._engine.connect() as connection:
             return read_sql(
-                '''
+                f'''
                 select flats.id,
                        flats.url,
                        price        as actual_price,
@@ -149,13 +158,15 @@ class Reader:
                 from flats
                      join images on flats.id = flat_id
                 where city = %s
+                {price_clause}
+                {room_number_clause}
                 group by flats.id
                 ''',
                 connection,
                 params=[
                     query.price,
-                    query.room_number,
-                    query.floor,
+                    query.room_number.value,
+                    query.floor.value,
                     query.city
                 ]
             )
@@ -168,8 +179,8 @@ class Query:
         self,
         city: str,
         price: float,
-        floor: int,
-        room_number: int,
+        floor: 'Floor',
+        room_number: 'RoomNumber',
         limit: int,
         offset: int
     ):
@@ -187,3 +198,19 @@ class Query:
     @property
     def upper(self) -> int:
         return self.limit * (self.offset + 1)
+
+
+@unique
+class Floor(Enum):
+    any = 0
+    low = 1
+    high = 2
+
+
+@unique
+class RoomNumber(Enum):
+    any = 0
+    one = 1
+    two = 2
+    three = 3
+    many = 4
