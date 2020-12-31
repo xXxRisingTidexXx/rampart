@@ -7,12 +7,12 @@
             text-decoration: none;
         }
     </style>
-    <title>Browsing [{{ lower }} - {{ upper }}]</title>
+    <title>Hemingway [{{ lower }} - {{ upper }}]</title>
 </head>
 <body>
 <h1>
     {% if offset > 0 %}
-    <a href="http://localhost:9211/?city={{ city }}&price={{ price }}&floor={{ floor }}&room_number={{ room_number }}&limit={{ limit }}&offset={{ previous }}">
+    <a href="http://localhost:9211/?city={{ city }}&price={{ price }}&floor={{ floor.value }}&room_number={{ room_number.value }}&limit={{ limit }}&offset={{ previous }}">
         &laquo;
     </a>
     {% else %}
@@ -20,7 +20,7 @@
     {% endif %}
     <span>Flats</span>
     {% if offset < 9 %}
-    <a href="http://localhost:9211/?city={{ city }}&price={{ price }}&floor={{ floor }}&room_number={{ room_number }}&limit={{ limit }}&offset={{ next }}">
+    <a href="http://localhost:9211/?city={{ city }}&price={{ price }}&floor={{ floor.value }}&room_number={{ room_number.value }}&limit={{ limit }}&offset={{ next }}">
         &raquo;
     </a>
     {% else %}
@@ -37,7 +37,10 @@
             </a>
         </h3>
         <b>Price:</b>
-        {{ flat.price }} $ ({{ flat.housing }})
+        {{ flat.price }} $
+        <br />
+        <b>Housing:</b>
+        {{ flat.housing.name }}
         <br />
         <b>Total / Living / Kitchen area:</b>
         {{ flat.total_area }} / {{ flat.living_area }} / {{ flat.kitchen_area }} ㎡
@@ -50,6 +53,15 @@
         <br />
         <b>SSF / IZF / GZF:</b>
         {{ flat.ssf }} / {{ flat.izf }} / {{ flat.gzf }}
+        <br />
+        <b>Unknown / Abandoned images:</b>
+        {{ flat.unknown_count }} / {{ flat.abandoned_count }}
+        <br />
+        <b>Luxury / Comfort / Junk / Construction / Excess images:</b>
+        {{ flat.luxury_count }} / {{ flat.comfort_count }} / {{ flat.junk_count }} / {{ flat.construction_count }} / {{ flat.excess_count }}
+        <br />
+        <b>Panoramas:</b>
+        {{ flat.panorama_count }}
         <br />
         <b>Score:</b>
         {{ flat.score }}

@@ -1,47 +1,47 @@
-from sys import exit
 from uuid import uuid4
 from pandas import read_csv, DataFrame, concat
 from numpy import ndarray
 from numpy.random import rand
 from lightgbm import Dataset
 from rampart.config import get_config
-from rampart.logging import get_logger
-
-_logger = get_logger('rampart.coquus')
 
 
-# TODO: setup basic logger with lineno & timestamp.
 def _main():
     config = get_config()
     flats = read_csv(config.coquus.input_path).drop(columns=['url'])
     group_number = flats['group'].nunique()
-    groups = ['training', 'validation', 'testing']
+    groups = ['training', 'validation']
     if group_number != len(groups):
-        _logger.critical(
-            'Coquus got invalid group number',
-            extra={'actual': group_number, 'expected': len(groups)}
+        raise RuntimeError(
+            f'Coquus got invalid group number, {group_number} != {len(groups)}'
         )
-        exit(1)
+    datasets = {group: _serialize(flats, i) for i, group in enumerate(groups)}
+    datasets['validation'].set_reference(datasets['training'])
     tag = uuid4().hex
-    for i, group in enumerate(groups):
-        origin = flats[flats['group'] == i].drop(columns=['group'])
-        merge = concat(
-            [origin] + [_augment(origin, i) for i in range(1, 32)],
-            ignore_index=True
-        )
-        dataset = Dataset(
-            merge.drop(columns=['relevance', 'query']),
-            merge['relevance'],
-            group=merge.groupby(['query']).size(),
-            categorical_feature=[
-                'desired_room_number',
-                'desired_floor',
-                'housing'
-            ],
-            silent=True
-        )
+    for group, dataset in datasets.items():
         dataset.save_binary(config.coquus.output_format.format(tag, group))
-        dataset.save_binary(config.coquus.output_format.format('latest', group))
+        dataset.save_binary(
+            config.coquus.output_format.format('latest', group)
+        )
+
+
+def _serialize(flats: DataFrame, i: int) -> Dataset:
+    origin = flats[flats['group'] == i].drop(columns=['group'])
+    merge = concat(
+        [origin] + [_augment(origin, i) for i in range(1, 32)],
+        ignore_index=True
+    )
+    return Dataset(
+        merge.drop(columns=['relevance', 'query']),
+        merge['relevance'],
+        group=merge.groupby(['query']).size(),
+        categorical_feature=[
+            'desired_room_number',
+            'desired_floor',
+            'housing'
+        ],
+        silent=True
+    )
 
 
 def _augment(origin: DataFrame, i: int):

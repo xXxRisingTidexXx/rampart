@@ -1,31 +1,52 @@
 from typing import Optional
 from flask import Flask, request, render_template, abort
+from sqlalchemy import create_engine
 from rampart.config import get_config
-from rampart.ranking import Query, Ranker
+from rampart.logging import get_handler
+from rampart.ranking import Query, Ranker, Floor, RoomNumber
 
 
 def _main():
     config = get_config()
-    ranker = Ranker(config.browsing.ranker)
-    app = Flask('rampart.twinkle', template_folder=config.browsing.template_path)
-    app.add_url_rule('/', view_func=lambda: _get_index(ranker), methods=['GET'])
-    app.run('0.0.0.0', config.browsing.port, load_dotenv=False, use_reloader=False)
+    app = Flask(
+        'rampart.hemingway',
+        template_folder=config.hemingway.template_path
+    )
+    app.logger.addHandler(get_handler())
+    engine = create_engine(config.hemingway.dsn)
+    ranker = Ranker(config.hemingway.ranker, engine)
+    app.add_url_rule(
+        '/',
+        view_func=lambda: _get_index(ranker),
+        methods=['GET']
+    )
+    try:
+        app.run(
+            '0.0.0.0',
+            config.hemingway.port,
+            load_dotenv=False,
+            use_reloader=False
+        )
+    except KeyboardInterrupt:
+        pass
+    except Exception:  # noqa
+        app.logger.exception('Hemingway got fatal error')
+    finally:
+        engine.dispose()
 
 
 def _get_index(ranker: Ranker) -> str:
     city = request.args.get('city')
     if not city:
         city = 'Київ'
+    if len(city) > 50:
+        abort(400)
     price = _float(request.args.get('price'))
     if price < 0:
         abort(400)
-    floor = _int(request.args.get('floor'))
-    if floor < 0 or floor > 2:
-        abort(400)
-    room_number = _int(request.args.get('room_number'))
-    if room_number < 0 or room_number > 4:
-        abort(400)
-    limit = _int(request.args.get('limit'), 10)
+    floor = Floor(_int(request.args.get('floor')))
+    room_number = RoomNumber(_int(request.args.get('room_number')))
+    limit = _int(request.args.get('limit'), 15)
     if limit < 1:
         abort(400)
     offset = _int(request.args.get('offset'))

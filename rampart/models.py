@@ -21,6 +21,14 @@ class Flat:
         'ssf',
         'izf',
         'gzf',
+        'unknown_count',
+        'abandoned_count',
+        'luxury_count',
+        'comfort_count',
+        'junk_count',
+        'construction_count',
+        'excess_count',
+        'panorama_count',
         'score'
     ]
 
@@ -35,7 +43,7 @@ class Flat:
         room_number: int,
         floor: int,
         total_floor: int,
-        housing: int,
+        housing: 'Housing',
         longitude: float,
         latitude: float,
         city: str,
@@ -44,6 +52,14 @@ class Flat:
         ssf: float,
         izf: float,
         gzf: float,
+        unknown_count: int,
+        abandoned_count: int,
+        luxury_count: int,
+        comfort_count: int,
+        junk_count: int,
+        construction_count: int,
+        excess_count: int,
+        panorama_count: int,
         score: float
     ):
         self.id = id_
@@ -55,7 +71,7 @@ class Flat:
         self.room_number = room_number
         self.floor = floor
         self.total_floor = total_floor
-        self.housing = Housing(housing)
+        self.housing = housing
         self.longitude = longitude
         self.latitude = latitude
         self.city = city
@@ -64,6 +80,14 @@ class Flat:
         self.ssf = ssf
         self.izf = izf
         self.gzf = gzf
+        self.unknown_count = unknown_count
+        self.abandoned_count = abandoned_count
+        self.luxury_count = luxury_count
+        self.comfort_count = comfort_count
+        self.junk_count = junk_count
+        self.construction_count = construction_count
+        self.excess_count = excess_count
+        self.panorama_count = panorama_count
         self.score = score
 
     @property
