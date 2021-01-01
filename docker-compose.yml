@@ -133,10 +133,12 @@ services:
     env_file:
       - .env
   twinkle:
+    <<: *x-twinkle
     build:
       context: .
       dockerfile: docker/twinkle.dockerfile
-    image: rampart-twinkle
+    container_name: rampart-twinkle
+    command: python -m rampart.twinkle -debug
   coquus:
     <<: *x-twinkle
     container_name: rampart-coquus
