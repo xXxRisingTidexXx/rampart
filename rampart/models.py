@@ -103,6 +103,7 @@ class Housing(Enum):
     secondary = 1
 
 
+# TODO: move to recognition.
 class Image:
     __slots__ = ['url', 'label']
 
