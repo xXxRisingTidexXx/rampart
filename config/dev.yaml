@@ -200,6 +200,9 @@ warhol:
   retry-limit: 3
   output-format: scientific/images/%s.%s.%s.%s.webp
   input-path: scientific/auge.csv
+twinkle:
+  metrics-port: 9004
+  spec: '0-59/10 * * * *'
 coquus:
   input-path: scientific/twinkle.csv
   output-format: scientific/binaries/{}.{}.bin

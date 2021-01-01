@@ -12,12 +12,14 @@ def get_config() -> 'Config':
 
 
 class Config:
-    __slots__ = ['coquus', 'hemingway', 'auge']
+    __slots__ = ['twinkle', 'coquus', 'hemingway', 'auge']
 
     def __init__(self, config: Dict[str, Any]):
         dsn = _get_env('RAMPART_DATABASE_DSN')
+        config['twinkle']['dsn'] = dsn
         config['hemingway']['dsn'] = dsn
         config['auge']['dsn'] = dsn
+        self.twinkle = TwinkleConfig(config['twinkle'])
         self.coquus = CoquusConfig(config['coquus'])
         self.hemingway = HemingwayConfig(config['hemingway'])
         self.auge = AugeConfig(config['auge'])
@@ -28,6 +30,15 @@ def _get_env(key: str) -> str:
     if not value:
         raise RuntimeError(f'Environment variable \'{key}\' not set')
     return value
+
+
+class TwinkleConfig:
+    __slots__ = ['dsn', 'metrics_port', 'spec']
+
+    def __init__(self, config: Dict[str, Any]):
+        self.dsn: str = config['dsn']
+        self.metrics_port: int = config['metrics-port']
+        self.spec: str = config['spec']
 
 
 class CoquusConfig:
