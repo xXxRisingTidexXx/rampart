@@ -5,6 +5,7 @@ from prometheus_client.exposition import start_http_server
 from sqlalchemy import create_engine
 from rampart.config import get_config
 from rampart.logging import get_logger
+from rampart.ranking import Ranker
 
 _logger = get_logger('rampart.twinkle')
 
@@ -20,14 +21,15 @@ def _main():
     args = parser.parse_args()
     config = get_config()
     engine = create_engine(config.twinkle.dsn)
+    ranker = Ranker(config.twinkle.ranker, engine)
     try:
         if args.debug:
-            _hello()
+            ranker()
         else:
             start_http_server(config.twinkle.metrics_port)
             scheduler = BlockingScheduler()
             scheduler.add_job(
-                _hello,
+                ranker,
                 CronTrigger.from_crontab(config.twinkle.spec)
             )
             scheduler.start()
@@ -37,10 +39,6 @@ def _main():
         _logger.exception('Twinkle got fatal error')
     finally:
         engine.dispose()
-
-
-def _hello():
-    print('Hello world!')
 
 
 if __name__ == '__main__':
