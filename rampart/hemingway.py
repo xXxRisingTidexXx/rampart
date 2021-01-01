@@ -6,6 +6,7 @@ from rampart.logging import get_handler
 from rampart.ranking import Query, Ranker, Floor, RoomNumber
 
 
+# TODO: think about rendering logic at notebook.
 def _main():
     config = get_config()
     app = Flask(
