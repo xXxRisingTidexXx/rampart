@@ -45,23 +45,23 @@ def _get_index(ranker: Ranker) -> str:
     price = _float(request.args.get('price'))
     if price < 0:
         abort(400)
-    floor = Floor(_int(request.args.get('floor')))
     room_number = RoomNumber(_int(request.args.get('room_number')))
+    floor = Floor(_int(request.args.get('floor')))
     limit = _int(request.args.get('limit'), 15)
     if limit < 1:
         abort(400)
     offset = _int(request.args.get('offset'))
     if offset < 0:
         abort(400)
-    query = Query(city, price, floor, room_number, limit, offset)
+    query = Query(city, price, room_number, floor, limit, offset)
     return render_template(
         'index.html',
         lower=query.lower + 1,
         upper=query.upper,
         city=city,
         price=price,
-        floor=floor,
         room_number=room_number,
+        floor=floor,
         limit=limit,
         offset=offset,
         previous=offset - 1,
