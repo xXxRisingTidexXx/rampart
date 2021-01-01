@@ -12,19 +12,32 @@ from rampart.models import Flat, Housing
 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.ndcg_score.html
 # https://lightgbm.readthedocs.io/en/latest/Parameters-Tuning.html
 # TODO: ignore flats with unknown images to avoid processing of unchecked publications.
+# TODO: remove unknown count feature.
+# TODO: move selection length to config.
 class Ranker:
-    __slots__ = ['_reader', '_booster']
+    __slots__ = ['_loader', '_reader', '_booster', '_writer']
 
     def __init__(self, config: RankerConfig, engine: Engine):
+        self._loader = Loader(engine)
         self._reader = Reader(engine, config.price_factor)
         self._booster = Booster(model_file=config.model_path)
+        self._writer = Writer(engine)
+
+    def __call__(self):
+        for subscription in self._loader.load_subscriptions():
+            self._writer.write_lookup(
+                Lookup(
+                    subscription.id,
+                    [f.id for f in self.rank_flats(subscription.query)]
+                )
+            )
 
     def rank_flats(self, query: 'Query') -> List[Flat]:
-        frame = self._reader.read_flats(query)
-        if len(frame) == 0:
+        flats = self._reader.read_flats(query)
+        if len(flats) == 0:
             return []
-        frame['score'] = self._booster.predict(
-            frame.drop(
+        flats['score'] = self._booster.predict(
+            flats.drop(
                 columns=[
                     'id',
                     'url',
@@ -68,12 +81,86 @@ class Ranker:
             )
             for _, s
             in (
-                frame
+                flats
                 .sort_values('score', ascending=False)
                 .iloc[query.lower:query.upper]
                 .iterrows()
             )
         ]
+
+
+class Loader:
+    __slots__ = ['_engine']
+
+    def __init__(self, engine: Engine):
+        self._engine = engine
+
+    def load_subscriptions(self) -> List['Subscription']:
+        with self._engine.connect() as connection:
+            return [
+                Subscription(
+                    s[0],
+                    Query(s[1], s[2], RoomNumber[s[3]], Floor[s[4]], 3, 0)
+                )
+                for s in connection.execute(
+                    '''
+                    select id, city, price, room_number, floor
+                    from subscriptions
+                    '''
+                )
+            ]
+
+
+class Subscription:
+    __slots__ = ['id', 'query']
+
+    def __init__(self, id_: int, query: 'Query'):
+        self.id = id_
+        self.query = query
+
+
+class Query:
+    __slots__ = ['city', 'price', 'room_number', 'floor', 'limit', 'offset']
+
+    def __init__(
+        self,
+        city: str,
+        price: float,
+        room_number: 'RoomNumber',
+        floor: 'Floor',
+        limit: int,
+        offset: int
+    ):
+        self.city = city
+        self.price = price
+        self.room_number = room_number
+        self.floor = floor
+        self.limit = limit
+        self.offset = offset
+
+    @property
+    def lower(self) -> int:
+        return self.limit * self.offset
+
+    @property
+    def upper(self) -> int:
+        return self.limit * (self.offset + 1)
+
+
+@unique
+class RoomNumber(Enum):
+    any = 0
+    one = 1
+    two = 2
+    three = 3
+    many = 4
+
+
+@unique
+class Floor(Enum):
+    any = 0
+    low = 1
+    high = 2
 
 
 class Reader:
@@ -177,45 +264,34 @@ class Reader:
             )
 
 
-class Query:
-    __slots__ = ['city', 'price', 'floor', 'room_number', 'limit', 'offset']
+class Writer:
+    __slots__ = ['_engine']
 
-    def __init__(
-        self,
-        city: str,
-        price: float,
-        floor: 'Floor',
-        room_number: 'RoomNumber',
-        limit: int,
-        offset: int
-    ):
-        self.city = city
-        self.price = price
-        self.floor = floor
-        self.room_number = room_number
-        self.limit = limit
-        self.offset = offset
+    def __init__(self, engine: Engine):
+        self._engine = engine
 
-    @property
-    def lower(self) -> int:
-        return self.limit * self.offset
-
-    @property
-    def upper(self) -> int:
-        return self.limit * (self.offset + 1)
+    def write_lookup(self, lookup: 'Lookup'):
+        with self._engine.begin() as connection:
+            id_ = connection.scalar(
+                '''
+                insert into lookups (subscription_id, status)
+                values (%s, 'unseen')
+                returning id
+                ''',
+                lookup.subscription_id
+            )
+            connection.execute(
+                '''
+                insert into entries (lookup_id, flat_id, position)
+                values (%s, %s, %s)
+                ''',
+                *[(id_, f, i) for i, f in enumerate(lookup.flat_ids)]
+            )
 
 
-@unique
-class Floor(Enum):
-    any = 0
-    low = 1
-    high = 2
+class Lookup:
+    __slots__ = ['subscription_id', 'flat_ids']
 
-
-@unique
-class RoomNumber(Enum):
-    any = 0
-    one = 1
-    two = 2
-    three = 3
-    many = 4
+    def __init__(self, subscription_id: int, flat_ids: List[int]):
+        self.subscription_id = subscription_id
+        self.flat_ids = flat_ids
