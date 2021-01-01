@@ -17,7 +17,9 @@ class Config:
     def __init__(self, config: Dict[str, Any]):
         dsn = _get_env('RAMPART_DATABASE_DSN')
         config['twinkle']['dsn'] = dsn
+        config['twinkle']['ranker'] = RankerConfig(config['ranker'])
         config['hemingway']['dsn'] = dsn
+        config['hemingway']['ranker'] = config['twinkle']['ranker']
         config['auge']['dsn'] = dsn
         self.twinkle = TwinkleConfig(config['twinkle'])
         self.coquus = CoquusConfig(config['coquus'])
@@ -32,11 +34,20 @@ def _get_env(key: str) -> str:
     return value
 
 
+class RankerConfig:
+    __slots__ = ['model_path', 'price_factor']
+
+    def __init__(self, config: Dict[str, Any]):
+        self.model_path = str(_root_path / config['model-path'])
+        self.price_factor: float = config['price-factor']
+
+
 class TwinkleConfig:
-    __slots__ = ['dsn', 'metrics_port', 'spec']
+    __slots__ = ['dsn', 'ranker', 'metrics_port', 'spec']
 
     def __init__(self, config: Dict[str, Any]):
         self.dsn: str = config['dsn']
+        self.ranker: RankerConfig = config['ranker']
         self.metrics_port: int = config['metrics-port']
         self.spec: str = config['spec']
 
@@ -55,16 +66,8 @@ class HemingwayConfig:
     def __init__(self, config: Dict[str, Any]):
         self.dsn: str = config['dsn']
         self.port: int = config['port']
-        self.template_path = str(_root_path / 'templates')
-        self.ranker = RankerConfig(config['ranker'])
-
-
-class RankerConfig:
-    __slots__ = ['model_path', 'price_factor']
-
-    def __init__(self, config: Dict[str, Any]):
-        self.model_path = str(_root_path / config['model-path'])
-        self.price_factor: float = config['price-factor']
+        self.template_path = str(_root_path / config['template-path'])
+        self.ranker: RankerConfig = config['ranker']
 
 
 class AugeConfig:

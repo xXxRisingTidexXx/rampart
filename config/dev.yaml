@@ -203,14 +203,15 @@ warhol:
 twinkle:
   metrics-port: 9004
   spec: '0-59/10 * * * *'
+ranker:
+  model-path: scientific/models/twinkle.latest.txt
+  price-factor: 1.65
 coquus:
   input-path: scientific/twinkle.csv
   output-format: scientific/binaries/{}.{}.bin
 hemingway:
   port: 9211
-  ranker:
-    model-path: scientific/models/twinkle.latest.txt
-    price-factor: 1.65
+  template-path: templates
 auge:
   pool-size: 4
   retry-limit: 3
