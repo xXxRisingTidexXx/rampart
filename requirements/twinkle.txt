@@ -4,13 +4,8 @@
 #
 #    pip-compile --output-file=requirements/twinkle.txt requirements/twinkle.in
 #
-click==7.1.2              # via flask
-flask==1.1.2              # via -r requirements/twinkle.in
-itsdangerous==1.1.0       # via flask
-jinja2==2.11.2            # via flask
 joblib==1.0.0             # via scikit-learn
 lightgbm==3.1.1           # via -r requirements/twinkle.in
-markupsafe==1.1.1         # via jinja2
 numpy==1.19.4             # via lightgbm, pandas, scikit-learn, scipy
 pandas==1.1.5             # via -r requirements/twinkle.in
 python-dateutil==2.8.1    # via pandas
@@ -19,5 +14,4 @@ scikit-learn==0.23.2      # via lightgbm
 scipy==1.5.4              # via lightgbm, scikit-learn
 six==1.15.0               # via python-dateutil
 threadpoolctl==2.1.0      # via scikit-learn
-werkzeug==1.0.1           # via flask
 wheel==0.36.2             # via lightgbm
