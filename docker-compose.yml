@@ -143,6 +143,10 @@ services:
     <<: *x-twinkle
     container_name: rampart-coquus
     command: python -m rampart.coquus
+  horace:
+    <<: *x-twinkle
+    container_name: rampart-horace
+    command: python -m rampart.horace
   auge:
     <<: *x-auge
     build:

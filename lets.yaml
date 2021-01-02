@@ -63,6 +63,9 @@ commands:
   coquus:
     description: Execute ranking dataset augmentation
     cmd: docker-compose run --rm coquus && sudo chown -R $USER:$USER scientific
+  horace:
+    description: Binary flat relevance classifier
+    cmd: docker-compose run --rm horace
   auge:
     description: Run image classification task
     cmd: docker-compose run --rm auge
