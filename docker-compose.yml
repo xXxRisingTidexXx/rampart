@@ -33,7 +33,6 @@ x-twinkle: &x-twinkle
   volumes:
     - ./requirements:/app/requirements
     - ./rampart:/app/rampart
-    - ./templates:/app/templates
     - ./scientific:/app/scientific
     - ./config:/app/config
   env_file:
@@ -144,12 +143,6 @@ services:
     <<: *x-twinkle
     container_name: rampart-coquus
     command: python -m rampart.coquus
-  hemingway:
-    <<: *x-twinkle
-    container_name: rampart-hemingway
-    command: python -m rampart.hemingway
-    ports:
-      - 9211:9211
   auge:
     <<: *x-auge
     build:
