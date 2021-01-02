@@ -179,6 +179,12 @@ services:
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -miner domria-secondary
     ports:
       - 9002:9002
+  twinkle-cron:
+    <<: *x-twinkle
+    container_name: rampart-twinkle-cron
+    command: python -m rampart.twinkle
+    ports:
+      - 9004:9004
   auge-cron:
     <<: *x-auge
     container_name: rampart-auge-cron
