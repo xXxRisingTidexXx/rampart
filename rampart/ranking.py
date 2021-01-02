@@ -10,8 +10,6 @@ from rampart.config import RankerConfig
 # https://medium.com/optuna/lightgbm-tuner-new-optuna-integration-for-hyperparameter-optimization-8b7095e99258
 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.ndcg_score.html
 # https://lightgbm.readthedocs.io/en/latest/Parameters-Tuning.html
-# TODO: ignore flats with unknown images to avoid processing of unchecked publications.
-# TODO: remove unknown count feature.
 # TODO: move selection length to config.
 class Ranker:
     __slots__ = ['_loader', '_reader', '_booster', '_writer']
@@ -25,59 +23,19 @@ class Ranker:
     def __call__(self):
         for subscription in self._loader.load_subscriptions():
             self._writer.write_lookup(
-                Lookup(
-                    subscription.id,
-                    [f.id for f in self.rank_flats(subscription.query)]
-                )
+                Lookup(subscription.id, self.rank_flats(subscription.query))
             )
 
-    def rank_flats(self, query: 'Query') -> List['Flat']:
+    def rank_flats(self, query: 'Query') -> List[int]:
         flats = self._reader.read_flats(query)
         if len(flats) == 0:
             return []
         flats['score'] = self._booster.predict(
-            flats.drop(
-                columns=[
-                    'id',
-                    'url',
-                    'longitude',
-                    'latitude',
-                    'street',
-                    'house_number'
-                ]
-            ),
+            flats.drop(columns=['id']),
             num_iteration=self._booster.best_iteration
         )
         return [
-            Flat(
-                s['id'],
-                s['url'],
-                s['actual_price'],
-                s['total_area'],
-                s['living_area'],
-                s['kitchen_area'],
-                s['actual_room_number'],
-                s['actual_floor'],
-                s['total_floor'],
-                Housing(s['housing']),
-                s['longitude'],
-                s['latitude'],
-                query.city,
-                s['street'],
-                s['house_number'],
-                s['ssf'],
-                s['izf'],
-                s['gzf'],
-                s['unknown_count'],
-                s['abandoned_count'],
-                s['luxury_count'],
-                s['comfort_count'],
-                s['junk_count'],
-                s['construction_count'],
-                s['excess_count'],
-                s['panorama_count'],
-                s['score']
-            )
+            s['id']
             for _, s
             in (
                 flats
@@ -182,7 +140,6 @@ class Reader:
             return read_sql(
                 f'''
                 select flats.id,
-                       flats.url,
                        price        as actual_price,
                        %s           as utmost_price,
                        total_area,
@@ -197,18 +154,9 @@ class Reader:
                            when housing = 'primary' then 0
                            else 1
                            end      as housing,
-                       st_x(point)  as longitude,
-                       st_y(point)  as latitude,
-                       street,
-                       house_number,
                        ssf,
                        izf,
                        gzf,
-                       sum(
-                           case
-                               when kind = 'photo' and label = 'unknown' then 1
-                               else 0
-                               end) as unknown_count,
                        sum(
                            case
                                when kind = 'photo'
@@ -252,6 +200,11 @@ class Reader:
                 {price_clause}
                 {room_number_clause}
                 group by flats.id
+                having sum(
+                    case
+                        when kind = 'photo' and label = 'unknown' then 1
+                        else 0
+                        end) = 0
                 ''',
                 connection,
                 params=[
@@ -294,105 +247,3 @@ class Lookup:
     def __init__(self, subscription_id: int, flat_ids: List[int]):
         self.subscription_id = subscription_id
         self.flat_ids = flat_ids
-
-
-class Flat:
-    __slots__ = [
-        'id',
-        'url',
-        'price',
-        'total_area',
-        'living_area',
-        'kitchen_area',
-        'room_number',
-        'floor',
-        'total_floor',
-        'housing',
-        'longitude',
-        'latitude',
-        'city',
-        'street',
-        'house_number',
-        'ssf',
-        'izf',
-        'gzf',
-        'unknown_count',
-        'abandoned_count',
-        'luxury_count',
-        'comfort_count',
-        'junk_count',
-        'construction_count',
-        'excess_count',
-        'panorama_count',
-        'score'
-    ]
-
-    def __init__(
-        self,
-        id_: int,
-        url: str,
-        price: float,
-        total_area: float,
-        living_area: float,
-        kitchen_area: float,
-        room_number: int,
-        floor: int,
-        total_floor: int,
-        housing: 'Housing',
-        longitude: float,
-        latitude: float,
-        city: str,
-        street: str,
-        house_number: str,
-        ssf: float,
-        izf: float,
-        gzf: float,
-        unknown_count: int,
-        abandoned_count: int,
-        luxury_count: int,
-        comfort_count: int,
-        junk_count: int,
-        construction_count: int,
-        excess_count: int,
-        panorama_count: int,
-        score: float
-    ):
-        self.id = id_
-        self.url = url
-        self.price = price
-        self.total_area = total_area
-        self.living_area = living_area
-        self.kitchen_area = kitchen_area
-        self.room_number = room_number
-        self.floor = floor
-        self.total_floor = total_floor
-        self.housing = housing
-        self.longitude = longitude
-        self.latitude = latitude
-        self.city = city
-        self.street = street
-        self.house_number = house_number
-        self.ssf = ssf
-        self.izf = izf
-        self.gzf = gzf
-        self.unknown_count = unknown_count
-        self.abandoned_count = abandoned_count
-        self.luxury_count = luxury_count
-        self.comfort_count = comfort_count
-        self.junk_count = junk_count
-        self.construction_count = construction_count
-        self.excess_count = excess_count
-        self.panorama_count = panorama_count
-        self.score = score
-
-    @property
-    def address(self) -> str:
-        return ', '.join(
-            s for s in [self.city, self.street, self.house_number] if s != ''
-        )
-
-
-@unique
-class Housing(Enum):
-    primary = 0
-    secondary = 1
