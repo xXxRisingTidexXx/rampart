@@ -10,40 +10,34 @@ from rampart.config import RankerConfig
 # https://medium.com/optuna/lightgbm-tuner-new-optuna-integration-for-hyperparameter-optimization-8b7095e99258
 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.ndcg_score.html
 # https://lightgbm.readthedocs.io/en/latest/Parameters-Tuning.html
-# TODO: move selection length to config.
+# TODO: add ranking metrics.
 class Ranker:
-    __slots__ = ['_loader', '_reader', '_booster', '_writer']
+    __slots__ = ['_loader', '_reader', '_booster', '_writer', '_limit']
 
     def __init__(self, config: RankerConfig, engine: Engine):
         self._loader = Loader(engine)
         self._reader = Reader(engine, config.price_factor)
         self._booster = Booster(model_file=config.model_path)
         self._writer = Writer(engine)
+        self._limit = config.limit
 
     def __call__(self):
         for subscription in self._loader.load_subscriptions():
-            self._writer.write_lookup(
-                Lookup(subscription.id, self.rank_flats(subscription.query))
-            )
-
-    def rank_flats(self, query: 'Query') -> List[int]:
-        flats = self._reader.read_flats(query)
-        if len(flats) == 0:
-            return []
-        flats['score'] = self._booster.predict(
-            flats.drop(columns=['id']),
-            num_iteration=self._booster.best_iteration
-        )
-        return [
-            s['id']
-            for _, s
-            in (
-                flats
-                .sort_values('score', ascending=False)
-                .iloc[query.lower:query.upper]
-                .iterrows()
-            )
-        ]
+            flats = self._reader.read_flats(subscription)
+            if len(flats) > 0:
+                flats['score'] = self._booster.predict(
+                    flats.drop(columns=['id']),
+                    num_iteration=self._booster.best_iteration
+                )
+                self._writer.write_lookup(
+                    Lookup(
+                        subscription.id,
+                        flats
+                        .sort_values('score', ascending=False)
+                        .head(self._limit)['id']
+                        .tolist()
+                    )
+                )
 
 
 class Loader:
@@ -55,10 +49,7 @@ class Loader:
     def load_subscriptions(self) -> List['Subscription']:
         with self._engine.connect() as connection:
             return [
-                Subscription(
-                    s[0],
-                    Query(s[1], s[2], RoomNumber[s[3]], Floor[s[4]], 3, 0)
-                )
+                Subscription(s[0], s[1], s[2], RoomNumber[s[3]], Floor[s[4]])
                 for s in connection.execute(
                     '''
                     select id, city, price, room_number, floor
@@ -69,39 +60,21 @@ class Loader:
 
 
 class Subscription:
-    __slots__ = ['id', 'query']
-
-    def __init__(self, id_: int, query: 'Query'):
-        self.id = id_
-        self.query = query
-
-
-class Query:
-    __slots__ = ['city', 'price', 'room_number', 'floor', 'limit', 'offset']
+    __slots__ = ['id', 'city', 'price', 'room_number', 'floor']
 
     def __init__(
         self,
+        id_: int,
         city: str,
         price: float,
         room_number: 'RoomNumber',
-        floor: 'Floor',
-        limit: int,
-        offset: int
+        floor: 'Floor'
     ):
+        self.id = id_
         self.city = city
         self.price = price
         self.room_number = room_number
         self.floor = floor
-        self.limit = limit
-        self.offset = offset
-
-    @property
-    def lower(self) -> int:
-        return self.limit * self.offset
-
-    @property
-    def upper(self) -> int:
-        return self.limit * (self.offset + 1)
 
 
 @unique
@@ -127,15 +100,19 @@ class Reader:
         self._engine = engine
         self._price_factor = price_factor
 
-    def read_flats(self, query: 'Query') -> DataFrame:
+    def read_flats(self, subscription: Subscription) -> DataFrame:
         price_clause = ''
-        if query.price > 0:
-            price_clause = f'and price <= {self._price_factor * query.price}'
+        if subscription.price > 0:
+            price_clause = (
+                f'and price <= {self._price_factor * subscription.price}'
+            )
         room_number_clause = ''
-        if query.room_number == RoomNumber.many:
+        if subscription.room_number == RoomNumber.many:
             room_number_clause = f'and room_number >= {RoomNumber.many.value}'
-        elif query.room_number != RoomNumber.any:
-            room_number_clause = f'and room_number = {query.room_number.value}'
+        elif subscription.room_number != RoomNumber.any:
+            room_number_clause = (
+                f'and room_number = {subscription.room_number.value}'
+            )
         with self._engine.connect() as connection:
             return read_sql(
                 f'''
@@ -208,10 +185,10 @@ class Reader:
                 ''',
                 connection,
                 params=[
-                    query.price,
-                    query.room_number.value,
-                    query.floor.value,
-                    query.city
+                    subscription.price,
+                    subscription.room_number.value,
+                    subscription.floor.value,
+                    subscription.city
                 ]
             )
 
