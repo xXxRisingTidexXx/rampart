@@ -122,6 +122,7 @@ services:
       - ./notebooks:/home/jovyan/notebooks
       - ./images:/home/jovyan/images
       - ./scientific:/home/jovyan/scientific
+      - ./templates:/home/jovyan/templates
       - ./.cache:/home/jovyan/.cache
       - ./.config:/home/jovyan/.config
       - ./.ipython:/home/jovyan/.ipython
