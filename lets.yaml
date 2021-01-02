@@ -57,14 +57,12 @@ commands:
       docker-compose up notebook
       docker rm rampart-notebook
       chown -R $USER:$USER scientific
+  twinkle:
+    description: Perform ranking by subscriptions
+    cmd: docker-compose run --rm twinkle
   coquus:
     description: Execute ranking dataset augmentation
     cmd: docker-compose run --rm coquus && sudo chown -R $USER:$USER scientific
-  hemingway:
-    description: Browse & explore the trained ranking model
-    cmd: |
-      docker-compose up hemingway
-      docker rm rampart-hemingway
   auge:
     description: Run image classification task
     cmd: docker-compose run --rm auge
@@ -80,8 +78,8 @@ commands:
   run:
     description: Activate the whole rampart ecosystem
     cmd: |
-      docker-compose up messis-domria-primary messis-domria-secondary auge-cron
-      docker rm rampart-messis-domria-primary rampart-messis-domria-secondary rampart-auge-cron
+      docker-compose up messis-domria-primary messis-domria-secondary twinkle-cron auge-cron
+      docker rm rampart-messis-domria-primary rampart-messis-domria-secondary rampart-twinkle-cron rampart-auge-cron
   stop:
     description: Dispose all docker stuff
     cmd: docker-compose down

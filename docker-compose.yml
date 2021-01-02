@@ -33,7 +33,6 @@ x-twinkle: &x-twinkle
   volumes:
     - ./requirements:/app/requirements
     - ./rampart:/app/rampart
-    - ./templates:/app/templates
     - ./scientific:/app/scientific
     - ./config:/app/config
   env_file:
@@ -122,6 +121,7 @@ services:
       - ./notebooks:/home/jovyan/notebooks
       - ./images:/home/jovyan/images
       - ./scientific:/home/jovyan/scientific
+      - ./templates:/home/jovyan/templates
       - ./.cache:/home/jovyan/.cache
       - ./.config:/home/jovyan/.config
       - ./.ipython:/home/jovyan/.ipython
@@ -133,20 +133,16 @@ services:
     env_file:
       - .env
   twinkle:
+    <<: *x-twinkle
     build:
       context: .
       dockerfile: docker/twinkle.dockerfile
-    image: rampart-twinkle
+    container_name: rampart-twinkle
+    command: python -m rampart.twinkle -debug
   coquus:
     <<: *x-twinkle
     container_name: rampart-coquus
     command: python -m rampart.coquus
-  hemingway:
-    <<: *x-twinkle
-    container_name: rampart-hemingway
-    command: python -m rampart.hemingway
-    ports:
-      - 9211:9211
   auge:
     <<: *x-auge
     build:
@@ -183,6 +179,12 @@ services:
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -miner domria-secondary
     ports:
       - 9002:9002
+  twinkle-cron:
+    <<: *x-twinkle
+    container_name: rampart-twinkle-cron
+    command: python -m rampart.twinkle
+    ports:
+      - 9004:9004
   auge-cron:
     <<: *x-auge
     container_name: rampart-auge-cron

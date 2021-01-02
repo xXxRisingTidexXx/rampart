@@ -1,3 +1,4 @@
+from enum import Enum, unique
 from io import BytesIO
 from time import time
 from typing import List, Tuple
@@ -5,7 +6,6 @@ from PIL.Image import open, new
 from requests import Session, codes
 from requests.exceptions import RequestException
 from sqlalchemy.engine.base import Engine
-from torch.nn import Module
 from torch import Tensor, empty, load, no_grad, max
 from torch.utils.data.dataloader import default_collate, DataLoader
 from torch.utils.data.dataset import Dataset
@@ -14,7 +14,6 @@ from torchvision.models import AlexNet
 from rampart.config import RecognizerConfig
 from rampart.logging import get_logger
 from rampart.metrics import Drain, Duration, Number
-from rampart.models import Image, Label
 
 _logger = get_logger('rampart.recognition')
 
@@ -96,17 +95,6 @@ class Reader:
         return urls
 
 
-class View(Module):
-    __slots__ = ['_shape']
-
-    def __init__(self, *shape: int):
-        super().__init__()
-        self._shape = shape
-
-    def forward(self, x: Tensor) -> Tensor:
-        return x.view(*self._shape)
-
-
 class Updater:
     __slots__ = ['_engine', '_drain']
 
@@ -114,7 +102,7 @@ class Updater:
         self._engine = engine
         self._drain = drain
 
-    def update_image(self, image: Image):
+    def update_image(self, image: 'Image'):
         start = time()
         with self._engine.connect() as connection:
             connection.execute(
@@ -124,6 +112,25 @@ class Updater:
             )
         self._drain.drain_duration(Duration.update, time() - start)
         self._drain.drain_number(Number(image.label.value))
+
+
+class Image:
+    __slots__ = ['url', 'label']
+
+    def __init__(self, url: str, label: 'Label'):
+        self.url = url
+        self.label = label
+
+
+@unique
+class Label(Enum):
+    unknown = -2
+    abandoned = -1
+    luxury = 0
+    comfort = 1
+    junk = 2
+    construction = 3
+    excess = 4
 
 
 class Gallery(Dataset):

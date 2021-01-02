@@ -12,14 +12,14 @@ def get_config() -> 'Config':
 
 
 class Config:
-    __slots__ = ['coquus', 'hemingway', 'auge']
+    __slots__ = ['twinkle', 'coquus', 'auge']
 
     def __init__(self, config: Dict[str, Any]):
         dsn = _get_env('RAMPART_DATABASE_DSN')
-        config['hemingway']['dsn'] = dsn
+        config['twinkle']['dsn'] = dsn
         config['auge']['dsn'] = dsn
+        self.twinkle = TwinkleConfig(config['twinkle'])
         self.coquus = CoquusConfig(config['coquus'])
-        self.hemingway = HemingwayConfig(config['hemingway'])
         self.auge = AugeConfig(config['auge'])
 
 
@@ -30,30 +30,31 @@ def _get_env(key: str) -> str:
     return value
 
 
+class TwinkleConfig:
+    __slots__ = ['dsn', 'ranker', 'metrics_port', 'spec']
+
+    def __init__(self, config: Dict[str, Any]):
+        self.dsn: str = config['dsn']
+        self.ranker = RankerConfig(config['ranker'])
+        self.metrics_port: int = config['metrics-port']
+        self.spec: str = config['spec']
+
+
+class RankerConfig:
+    __slots__ = ['model_path', 'price_factor', 'limit']
+
+    def __init__(self, config: Dict[str, Any]):
+        self.model_path = str(_root_path / config['model-path'])
+        self.price_factor: float = config['price-factor']
+        self.limit: int = config['limit']
+
+
 class CoquusConfig:
     __slots__ = ['input_path', 'output_format']
 
     def __init__(self, config: Dict[str, Any]):
         self.input_path = str(_root_path / config['input-path'])
         self.output_format = str(_root_path / config['output-format'])
-
-
-class HemingwayConfig:
-    __slots__ = ['dsn', 'port', 'template_path', 'ranker']
-
-    def __init__(self, config: Dict[str, Any]):
-        self.dsn: str = config['dsn']
-        self.port: int = config['port']
-        self.template_path = str(_root_path / 'templates')
-        self.ranker = RankerConfig(config['ranker'])
-
-
-class RankerConfig:
-    __slots__ = ['model_path', 'price_factor']
-
-    def __init__(self, config: Dict[str, Any]):
-        self.model_path = str(_root_path / config['model-path'])
-        self.price_factor: float = config['price-factor']
 
 
 class AugeConfig:

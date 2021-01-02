@@ -200,14 +200,16 @@ warhol:
   retry-limit: 3
   output-format: scientific/images/%s.%s.%s.%s.webp
   input-path: scientific/auge.csv
-coquus:
-  input-path: scientific/twinkle.csv
-  output-format: scientific/binaries/{}.{}.bin
-hemingway:
-  port: 9211
+twinkle:
   ranker:
     model-path: scientific/models/twinkle.latest.txt
     price-factor: 1.65
+    limit: 3
+  metrics-port: 9004
+  spec: '0-59/20 * * * *'
+coquus:
+  input-path: scientific/twinkle.csv
+  output-format: scientific/binaries/{}.{}.bin
 auge:
   pool-size: 4
   retry-limit: 3
