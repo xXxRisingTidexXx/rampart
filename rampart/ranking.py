@@ -209,8 +209,8 @@ class Writer:
         with self._engine.begin() as connection:
             id_ = connection.scalar(
                 '''
-                insert into lookups (subscription_id, status)
-                values (%s, 'unseen')
+                insert into lookups (subscription_id, creation_time, status)
+                values (%s, now() at time zone 'utc', 'unseen')
                 returning id
                 ''',
                 lookup.subscription_id
