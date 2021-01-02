@@ -117,63 +117,68 @@ class Reader:
             return read_sql(
                 f'''
                 select flats.id,
-                       price        as actual_price,
-                       %s           as utmost_price,
-                       total_area,
-                       living_area,
-                       kitchen_area,
-                       room_number  as actual_room_number,
-                       %s           as desired_room_number,
-                       floor        as actual_floor,
-                       total_floor,
-                       %s           as desired_floor,
-                       case
-                           when housing = 'primary' then 0
-                           else 1
-                           end      as housing,
-                       ssf,
-                       izf,
-                       gzf,
-                       sum(
-                           case
-                               when kind = 'photo'
-                                    and label = 'abandoned' then 1
-                               else 0
-                               end) as abandoned_count,
-                       sum(
-                           case
-                               when kind = 'photo' and label = 'luxury' then 1
-                               else 0
-                               end) as luxury_count,
-                       sum(
-                           case
-                               when kind = 'photo' and label = 'comfort' then 1
-                               else 0
-                               end) as comfort_count,
-                       sum(
-                           case
-                               when kind = 'photo' and label = 'junk' then 1
-                               else 0
-                               end) as junk_count,
-                       sum(
-                           case
-                               when kind = 'photo'
-                                    and label = 'construction' then 1
-                               else 0
-                               end) as construction_count,
-                       sum(
-                           case
-                               when kind = 'photo' and label = 'excess' then 1
-                               else 0
-                               end) as excess_count,
-                       sum(
-                           case
-                               when kind = 'panorama' then 1
-                               else 0
-                               end) as panorama_count
+                    price        as actual_price,
+                    %s           as utmost_price,
+                    total_area,
+                    living_area,
+                    kitchen_area,
+                    room_number  as actual_room_number,
+                    %s           as desired_room_number,
+                    floor        as actual_floor,
+                    total_floor,
+                    %s           as desired_floor,
+                    case
+                        when housing = 'primary' then 0
+                        else 1
+                        end      as housing,
+                    ssf,
+                    izf,
+                    gzf,
+                    sum(
+                        case
+                            when kind = 'photo'
+                                and label = 'abandoned' then 1
+                            else 0
+                            end) as abandoned_count,
+                    sum(
+                        case
+                            when kind = 'photo' and label = 'luxury' then 1
+                            else 0
+                            end) as luxury_count,
+                    sum(
+                        case
+                            when kind = 'photo' and label = 'comfort' then 1
+                            else 0
+                            end) as comfort_count,
+                    sum(
+                        case
+                            when kind = 'photo' and label = 'junk' then 1
+                            else 0
+                            end) as junk_count,
+                    sum(
+                        case
+                            when kind = 'photo'
+                                and label = 'construction' then 1
+                            else 0
+                            end) as construction_count,
+                    sum(
+                        case
+                            when kind = 'photo' and label = 'excess' then 1
+                            else 0
+                            end) as excess_count,
+                    sum(
+                        case
+                            when kind = 'panorama' then 1
+                            else 0
+                            end) as panorama_count
                 from flats
-                     join images on flats.id = flat_id
+                    join images on flats.id = flat_id
                 where city = %s
+                    and flats.id not in (
+                        select entries.flat_id
+                        from entries
+                            join lookups on entries.lookup_id = lookups.id
+                        where subscription_id = %s)
                 {price_clause}
                 {room_number_clause}
                 group by flats.id
@@ -188,7 +193,8 @@ class Reader:
                     subscription.price,
                     subscription.room_number.value,
                     subscription.floor.value,
-                    subscription.city
+                    subscription.city,
+                    subscription.id
                 ]
             )
 
