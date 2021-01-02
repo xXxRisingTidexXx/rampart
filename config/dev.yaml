@@ -206,7 +206,7 @@ twinkle:
     price-factor: 1.65
     limit: 3
   metrics-port: 9004
-  spec: '0-59/10 * * * *'
+  spec: '0-59/20 * * * *'
 coquus:
   input-path: scientific/twinkle.csv
   output-format: scientific/binaries/{}.{}.bin
