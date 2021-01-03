@@ -16,28 +16,23 @@ class Classifier:
 
     def __init__(self, config: ClassifierConfig, engine: Engine):
         self._loader = Loader(engine)
-        self._reader = Reader(engine, config.price_factor)
+        self._reader = Reader(engine)
         self._booster = Booster(model_file=config.model_path)
         self._writer = Writer(engine)
-        self._limit = config.limit
 
     def __call__(self):
         for subscription in self._loader.load_subscriptions():
             flats = self._reader.read_flats(subscription)
             if len(flats) > 0:
-                flats['score'] = self._booster.predict(
-                    flats.drop(columns=['id']),
-                    num_iteration=self._booster.best_iteration
+                flats['label'] = (
+                    self._booster
+                        .predict(flats.drop(columns=['id']))
+                        .round(0)
+                        .astype(int)
                 )
-                self._writer.write_lookup(
-                    Lookup(
-                        subscription.id,
-                        flats
-                        .sort_values('score', ascending=False)
-                        .head(self._limit)['id']
-                        .tolist()
-                    )
-                )
+                ids = flats[flats['label'] == 1]['id'].tolist()
+                if len(ids) > 0:
+                    self._writer.write_lookup(Lookup(subscription.id, ids))
 
 
 class Loader:
@@ -94,25 +89,12 @@ class Floor(Enum):
 
 
 class Reader:
-    __slots__ = ['_engine', '_price_factor']
+    __slots__ = ['_engine']
 
-    def __init__(self, engine: Engine, price_factor: float):
+    def __init__(self, engine: Engine):
         self._engine = engine
-        self._price_factor = price_factor
 
     def read_flats(self, subscription: Subscription) -> DataFrame:
-        price_clause = ''
-        if subscription.price > 0:
-            price_clause = (
-                f'and price <= {self._price_factor * subscription.price}'
-            )
-        room_number_clause = ''
-        if subscription.room_number == RoomNumber.many:
-            room_number_clause = f'and room_number >= {RoomNumber.many.value}'
-        elif subscription.room_number != RoomNumber.any:
-            room_number_clause = (
-                f'and room_number = {subscription.room_number.value}'
-            )
         with self._engine.connect() as connection:
             return read_sql(
                 f'''
@@ -175,12 +157,9 @@ class Reader:
                     join images on flats.id = flat_id
                 where city = %s
                     and flats.id not in (
-                        select entries.flat_id
-                        from entries
-                            join lookups on entries.lookup_id = lookups.id
+                        select lookups.flat_id
+                        from lookups
                         where subscription_id = %s)
-                {price_clause}
-                {room_number_clause}
                 group by flats.id
                 having sum(
                     case
@@ -207,20 +186,13 @@ class Writer:
 
     def write_lookup(self, lookup: 'Lookup'):
         with self._engine.begin() as connection:
-            id_ = connection.scalar(
-                '''
-                insert into lookups (subscription_id, creation_time, status)
-                values (%s, now() at time zone 'utc', 'unseen')
-                returning id
-                ''',
-                lookup.subscription_id
-            )
             connection.execute(
                 '''
-                insert into entries (lookup_id, flat_id, position)
-                values (%s, %s, %s)
+                insert into lookups (subscription_id, flat_id, status)
+                values (%s, %s, 'unseen')
+                returning id
                 ''',
-                *[(id_, f, i) for i, f in enumerate(lookup.flat_ids)]
+                *[(lookup.subscription_id, f) for f in lookup.flat_ids]
             )
 
 
