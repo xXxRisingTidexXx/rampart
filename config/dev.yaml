@@ -209,7 +209,7 @@ twinkle:
   spec: '0-59/20 * * * *'
 coquus:
   input-path: scientific/twinkle.csv
-  output-format: scientific/binaries/{}.{}.bin
+  output-format: scientific/tables/{}.csv
 auge:
   pool-size: 4
   retry-limit: 3
