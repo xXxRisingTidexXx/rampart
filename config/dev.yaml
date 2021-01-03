@@ -201,9 +201,8 @@ warhol:
   output-format: scientific/images/%s.%s.%s.%s.webp
   input-path: scientific/auge.csv
 twinkle:
-  ranker:
+  classifier:
     model-path: scientific/models/twinkle.latest.txt
-    price-factor: 1.65
     limit: 3
   metrics-port: 9004
   spec: '0-59/20 * * * *'

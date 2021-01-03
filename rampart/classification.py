@@ -3,7 +3,7 @@ from enum import Enum, unique
 from lightgbm import Booster
 from pandas import read_sql, DataFrame
 from sqlalchemy.engine.base import Engine
-from rampart.config import RankerConfig
+from rampart.config import ClassifierConfig
 
 
 # TODO: leverage optuna to set the hyperparameters.
@@ -14,7 +14,7 @@ from rampart.config import RankerConfig
 class Classifier:
     __slots__ = ['_loader', '_reader', '_booster', '_writer', '_limit']
 
-    def __init__(self, config: RankerConfig, engine: Engine):
+    def __init__(self, config: ClassifierConfig, engine: Engine):
         self._loader = Loader(engine)
         self._reader = Reader(engine, config.price_factor)
         self._booster = Booster(model_file=config.model_path)

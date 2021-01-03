@@ -21,7 +21,7 @@ def _main():
     args = parser.parse_args()
     config = get_config()
     engine = create_engine(config.twinkle.dsn)
-    classifier = Classifier(config.twinkle.ranker, engine)
+    classifier = Classifier(config.twinkle.classifier, engine)
     try:
         if args.debug:
             classifier()

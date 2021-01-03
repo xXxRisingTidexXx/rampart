@@ -31,21 +31,20 @@ def _get_env(key: str) -> str:
 
 
 class TwinkleConfig:
-    __slots__ = ['dsn', 'ranker', 'metrics_port', 'spec']
+    __slots__ = ['dsn', 'classifier', 'metrics_port', 'spec']
 
     def __init__(self, config: Dict[str, Any]):
         self.dsn: str = config['dsn']
-        self.ranker = RankerConfig(config['ranker'])
+        self.classifier = ClassifierConfig(config['classifier'])
         self.metrics_port: int = config['metrics-port']
         self.spec: str = config['spec']
 
 
-class RankerConfig:
-    __slots__ = ['model_path', 'price_factor', 'limit']
+class ClassifierConfig:
+    __slots__ = ['model_path', 'limit']
 
     def __init__(self, config: Dict[str, Any]):
         self.model_path = str(_root_path / config['model-path'])
-        self.price_factor: float = config['price-factor']
         self.limit: int = config['limit']
 
 
