@@ -45,7 +45,6 @@ class ClassifierConfig:
 
     def __init__(self, config: Dict[str, Any]):
         self.model_path = str(_root_path / config['model-path'])
-        self.limit: int = config['limit']
 
 
 class CoquusConfig:

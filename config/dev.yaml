@@ -203,7 +203,6 @@ warhol:
 twinkle:
   classifier:
     model-path: scientific/models/twinkle.latest.txt
-    limit: 3
   metrics-port: 9004
   spec: '0-59/20 * * * *'
 coquus:
