@@ -5,7 +5,7 @@ commands:
     cmd: |
       mkdir -p .cache .config .ipython .jupyter .local .npm && \
       if [[ ! -e .env ]]; then touch .env ; fi && \
-      mkdir -p scientific scientific/images scientific/models scientific/binaries && \
+      mkdir -p scientific scientific/images scientific/models scientific/tables && \
       if [[ ! -e scientific/images.csv ]]; then touch scientific/images.csv ; fi && \
       docker-compose build messis gochecks notebook twinkle auge pychecks
   database:
@@ -63,9 +63,6 @@ commands:
   coquus:
     description: Execute ranking dataset augmentation
     cmd: docker-compose run --rm coquus && sudo chown -R $USER:$USER scientific
-  horace:
-    description: Binary flat relevance classifier
-    cmd: docker-compose run --rm horace
   auge:
     description: Run image classification task
     cmd: docker-compose run --rm auge
