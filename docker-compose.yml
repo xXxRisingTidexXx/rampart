@@ -54,7 +54,6 @@ x-pychecks: &x-pychecks
     - ./tox.ini:/app/tox.ini
     - ./requirements:/app/requirements
     - ./rampart:/app/rampart
-    - ./templates:/app/templates
     - ./config:/app/config
   env_file:
     - .env
@@ -121,7 +120,6 @@ services:
       - ./notebooks:/home/jovyan/notebooks
       - ./images:/home/jovyan/images
       - ./scientific:/home/jovyan/scientific
-      - ./templates:/home/jovyan/templates
       - ./.cache:/home/jovyan/.cache
       - ./.config:/home/jovyan/.config
       - ./.ipython:/home/jovyan/.ipython
