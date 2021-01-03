@@ -11,7 +11,7 @@ from rampart.config import RankerConfig
 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.ndcg_score.html
 # https://lightgbm.readthedocs.io/en/latest/Parameters-Tuning.html
 # TODO: add ranking metrics.
-class Ranker:
+class Classifier:
     __slots__ = ['_loader', '_reader', '_booster', '_writer', '_limit']
 
     def __init__(self, config: RankerConfig, engine: Engine):
