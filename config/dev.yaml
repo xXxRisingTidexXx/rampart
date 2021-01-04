@@ -203,6 +203,7 @@ warhol:
 telegram:
   dispatcher:
     timeout: 5
+    worker-number: 2
   server:
     address: :9005
     read-timeout: 5s
