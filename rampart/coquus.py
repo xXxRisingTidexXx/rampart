@@ -5,7 +5,6 @@ from numpy.random import rand
 from rampart.config import get_config
 
 
-# TODO: set twinkle's description.
 def _main():
     config = get_config()
     flats = read_csv(config.coquus.input_path).drop(columns=['url'])
