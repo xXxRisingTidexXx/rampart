@@ -17,18 +17,27 @@ func NewDispatcher(
 	if err != nil {
 		return nil, fmt.Errorf("telegram: dispatcher failed to instantiate, %v", err)
 	}
-	return &Dispatcher{bot, config.Timeout}, nil
+	return &Dispatcher{bot, config.Timeout, []Handler{}, logger}, nil
 }
 
 type Dispatcher struct {
-	bot     *tgbotapi.BotAPI
-	timeout int
+	bot      *tgbotapi.BotAPI
+	timeout  int
+	handlers []Handler
+	logger   log.FieldLogger
 }
 
 func (dispatcher *Dispatcher) Pull() {
 	updates, _ := dispatcher.bot.GetUpdatesChan(tgbotapi.UpdateConfig{Timeout: dispatcher.timeout})
 	for update := range updates {
-
+		for i, isDone := 0, false; i < len(dispatcher.handlers) && !isDone; i++ {
+			if dispatcher.handlers[i].ShouldServe(update) {
+				if fields, err := dispatcher.handlers[i].ServeUpdate(update); err != nil {
+					dispatcher.logger.WithFields(fields).Error(err)
+				}
+				isDone = true
+			}
+		}
 	}
 }
 
