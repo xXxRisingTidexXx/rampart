@@ -14,8 +14,8 @@ func NewConfig() (Config, error) {
 	if config.Messis.DSN == "" {
 		return config, fmt.Errorf("config: failed to find the db dsn")
 	}
-	config.Telegram.Token = os.Getenv("RAMPART_TELEGRAM_TOKEN")
-	if config.Telegram.Token == "" {
+	config.Telegram.Dispatcher.Token = os.Getenv("RAMPART_TELEGRAM_TOKEN")
+	if config.Telegram.Dispatcher.Token == "" {
 		return config, fmt.Errorf("config: failed to find the telegram token")
 	}
 	bytes, err := ioutil.ReadFile(misc.ResolvePath("config/dev.yaml"))
