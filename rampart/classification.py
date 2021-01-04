@@ -11,6 +11,9 @@ from rampart.config import ClassifierConfig
 # https://scikit-learn.org/stable/modules/generated/sklearn.metrics.ndcg_score.html
 # https://lightgbm.readthedocs.io/en/latest/Parameters-Tuning.html
 # TODO: add ranking metrics.
+# TODO: think about sklearn gradient booster.
+# https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html
+# https://scikit-learn.org/stable/modules/model_persistence.html
 class Classifier:
     __slots__ = ['_loader', '_reader', '_booster', '_writer', '_limit']
 
