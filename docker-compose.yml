@@ -15,6 +15,7 @@ x-messis: &x-messis
     - ./config:/go/src/app/config
     - ./scientific:/go/src/app/scientific
     - ./images:/go/src/app/images
+    - ./templates:/go/src/app/templates
   env_file:
     - .env
 x-gochecks: &x-gochecks
