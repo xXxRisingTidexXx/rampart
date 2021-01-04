@@ -93,6 +93,12 @@ services:
     <<: *x-messis
     container_name: rampart-travesty
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/travesty
+  telegram:
+    <<: *x-messis
+    container_name: rampart-telegram
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/telegram
+    ports:
+      - 9005:9005
   gochecks:
     build:
       context: .
