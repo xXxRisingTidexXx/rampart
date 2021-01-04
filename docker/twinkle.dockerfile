@@ -9,7 +9,6 @@ ENV PYTHONUNBUFFERED 1
 
 COPY requirements requirements
 COPY rampart rampart
-COPY templates templates
 COPY config config
 
 RUN apt-get update && \
