@@ -3,15 +3,14 @@ from sqlalchemy.engine.base import Engine
 from enum import Enum, unique
 
 
+# TODO: move this to recognition.
 class Drain:
     __slots__ = ['_engine', '_numbers', '_durations']
 
     def __init__(self, engine: Engine):
         self._engine = engine
-        self._numbers: Dict[Number, int] = {n: 0 for n in Number}
-        self._durations: Dict[Duration, _Bucket] = {
-            d: _Bucket() for d in Duration
-        }
+        self._numbers = {n: 0 for n in Number}
+        self._durations = {d: _Bucket() for d in Duration}
 
     def drain_number(self, number: 'Number'):
         self._numbers[number] += 1
