@@ -9,6 +9,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 )
 
+// TODO: think about signal handling & graceful shutdown.
 func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
