@@ -201,6 +201,7 @@ warhol:
   output-format: scientific/images/%s.%s.%s.%s.webp
   input-path: scientific/auge.csv
 telegram:
+  timeout: 5
   server:
     address: :9005
     read-timeout: 5s
