@@ -22,7 +22,7 @@ func main() {
 	if err != nil {
 		entry.Fatal(err)
 	}
-	db, err := sql.Open("postgres", c.DSN)
+	db, err := sql.Open("postgres", c.Messis.DSN)
 	if err != nil {
 		entry.Fatalf("main: messis failed to open the db, %v", err)
 	}

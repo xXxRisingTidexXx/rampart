@@ -10,8 +10,8 @@ import (
 
 func NewConfig() (Config, error) {
 	var config Config
-	config.DSN = os.Getenv("RAMPART_DATABASE_DSN")
-	if config.DSN == "" {
+	config.Messis.DSN = os.Getenv("RAMPART_DATABASE_DSN")
+	if config.Messis.DSN == "" {
 		return config, fmt.Errorf("config: failed to find the db dsn")
 	}
 	bytes, err := ioutil.ReadFile(misc.ResolvePath("config/dev.yaml"))
@@ -26,7 +26,6 @@ func NewConfig() (Config, error) {
 }
 
 type Config struct {
-	DSN    string `yaml:"-"`
 	Messis Messis `yaml:"messis"`
 	Warhol Warhol `yaml:"warhol"`
 }
