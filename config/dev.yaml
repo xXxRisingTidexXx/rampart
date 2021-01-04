@@ -204,6 +204,7 @@ telegram:
   dispatcher:
     timeout: 5
     worker-number: 2
+    template-format: templates/%s.html
   server:
     address: :9005
     read-timeout: 5s
