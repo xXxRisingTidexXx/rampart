@@ -200,6 +200,12 @@ warhol:
   retry-limit: 3
   output-format: scientific/images/%s.%s.%s.%s.webp
   input-path: scientific/auge.csv
+telegram:
+  server:
+    address: :9005
+    read-timeout: 5s
+    write-timeout: 5s
+    max-header-bytes: 1048576
 twinkle:
   classifier:
     model-path: scientific/models/twinkle.latest.txt
