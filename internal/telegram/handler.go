@@ -7,5 +7,5 @@ import (
 
 type Handler interface {
 	ShouldServe(tgbotapi.Update) bool
-	ServeUpdate(tgbotapi.Update) (log.Fields, error)
+	ServeUpdate(*tgbotapi.BotAPI, tgbotapi.Update) (log.Fields, error)
 }
