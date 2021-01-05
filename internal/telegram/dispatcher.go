@@ -52,18 +52,21 @@ func (dispatcher *Dispatcher) Pull() {
 
 func (dispatcher *Dispatcher) work(updates tgbotapi.UpdatesChannel, group *sync.WaitGroup) {
 	for update := range updates {
-		handler, result := "none", metrics.SuccessfulResult
-		for i, isDone := 0, false; i < len(dispatcher.handlers) && !isDone; i++ {
-			if dispatcher.handlers[i].ShouldServe(update) {
-				fields, err := dispatcher.handlers[i].ServeUpdate(dispatcher.bot, update)
-				if err != nil {
-					dispatcher.logger.WithFields(fields).Error(err)
-					result = metrics.FailedResult
-				}
-				handler, isDone = dispatcher.handlers[i].Name(), true
+		var (
+			ok      = false
+			err     error
+			handler = "none"
+		)
+		for i := 0; i < len(dispatcher.handlers) && !ok; i++ {
+			ok, err = dispatcher.handlers[i].ServeUpdate(dispatcher.bot, update)
+			if ok {
+				handler = dispatcher.handlers[i].Name()
+			}
+			if err != nil {
+				dispatcher.logger.WithField("handler", dispatcher.handlers[i].Name()).Error(err)
 			}
 		}
-		metrics.TelegramUpdates.WithLabelValues(handler, result).Inc()
+		metrics.TelegramUpdates.WithLabelValues(handler).Inc()
 	}
 	group.Done()
 }

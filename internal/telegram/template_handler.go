@@ -3,7 +3,6 @@ package telegram
 import (
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"io/ioutil"
 )
@@ -22,25 +21,23 @@ func (handler *templateHandler) Name() string {
 	return handler.command
 }
 
-func (handler *templateHandler) ShouldServe(update tgbotapi.Update) bool {
-	return update.Message != nil &&
-		update.Message.Chat != nil &&
-		update.Message.Command() == handler.command
-}
-
 func (handler *templateHandler) ServeUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
-) (log.Fields, error) {
-	fields := log.Fields{"handler": handler.command}
+) (bool, error) {
+	if update.Message == nil ||
+		update.Message.Chat == nil ||
+		update.Message.Command() != handler.command {
+		return false, nil
+	}
 	bytes, err := ioutil.ReadFile(handler.path)
 	if err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to read the path, %v", err)
+		return true, fmt.Errorf("telegram: handler failed to read the path, %v", err)
 	}
 	message := tgbotapi.NewMessage(update.Message.Chat.ID, string(bytes))
 	message.ParseMode = tgbotapi.ModeHTML
 	if _, err := bot.Send(message); err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to send a message, %v", err)
+		return true, fmt.Errorf("telegram: handler failed to send a message, %v", err)
 	}
-	return nil, nil
+	return true, nil
 }

@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	log "github.com/sirupsen/logrus"
 )
 
 func NewAddHandler(db *sql.DB) Handler {
@@ -30,11 +29,15 @@ func (handler *addHandler) ShouldServe(update tgbotapi.Update) bool {
 func (handler *addHandler) ServeUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
-) (log.Fields, error) {
-	fields := log.Fields{"handler": handler.command}
+) (bool, error) {
+	if update.Message == nil ||
+		update.Message.Chat == nil ||
+		update.Message.Command() != handler.command {
+		return false, nil
+	}
 	tx, err := handler.db.Begin()
 	if err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
+		return true, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
 	_, err = tx.Exec(
 		`delete from subscriptions
@@ -43,7 +46,7 @@ func (handler *addHandler) ServeUpdate(
 	)
 	if err != nil {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to purge subscriptions, %v", err)
+		return true, fmt.Errorf("telegram: handler failed to purge subscriptions, %v", err)
 	}
 	_, err = tx.Exec(
 		`insert into subscriptions
@@ -54,16 +57,16 @@ func (handler *addHandler) ServeUpdate(
 	)
 	if err != nil {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to create a subscription, %v", err)
+		return true, fmt.Errorf("telegram: handler failed to create a subscription, %v", err)
 	}
 	if err := tx.Commit(); err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+		return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
 	_, err = bot.Send(
 		tgbotapi.NewMessage(update.Message.Chat.ID, "Окей, в якому місті шукаємо житло?"),
 	)
 	if err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to send a message, %v", err)
+		return true, fmt.Errorf("telegram: handler failed to send a message, %v", err)
 	}
-	return nil, nil
+	return true, nil
 }
