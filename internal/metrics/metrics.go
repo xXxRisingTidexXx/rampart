@@ -10,10 +10,5 @@ var TelegramUpdates = promauto.NewCounterVec(
 		Name: "rampart_telegram_updates_total",
 		Help: "Collects incoming Telegram API updates",
 	},
-	[]string{"handler", "result"},
-)
-
-const (
-	SuccessfulResult = "successful"
-	FailedResult = "failed"
+	[]string{"handler"},
 )
