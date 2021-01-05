@@ -52,6 +52,7 @@ class Loader:
                     '''
                     select id, city, price, room_number, floor
                     from subscriptions
+                    where status = 'actual'
                     '''
                 )
             ]
