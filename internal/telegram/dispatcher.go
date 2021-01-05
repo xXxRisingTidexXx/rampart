@@ -51,6 +51,7 @@ func (dispatcher *Dispatcher) Pull() {
 	group.Wait()
 }
 
+// TODO: add chat_id to logging.
 func (dispatcher *Dispatcher) work(updates tgbotapi.UpdatesChannel, group *sync.WaitGroup) {
 	for update := range updates {
 		var (
