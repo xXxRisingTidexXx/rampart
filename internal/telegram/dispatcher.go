@@ -6,6 +6,8 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
+	"sync"
 )
 
 func NewDispatcher(
@@ -17,28 +19,52 @@ func NewDispatcher(
 	if err != nil {
 		return nil, fmt.Errorf("telegram: dispatcher failed to instantiate, %v", err)
 	}
-	return &Dispatcher{bot, config.Timeout, []Handler{}, logger}, nil
+	return &Dispatcher{
+		bot,
+		config.Timeout,
+		config.WorkerNumber,
+		[]Handler{
+			NewTemplateHandler("start", config.TemplateFormat),
+			NewTemplateHandler("help", config.TemplateFormat),
+		},
+		logger,
+	}, nil
 }
 
 type Dispatcher struct {
-	bot      *tgbotapi.BotAPI
-	timeout  int
-	handlers []Handler
-	logger   log.FieldLogger
+	bot          *tgbotapi.BotAPI
+	timeout      int
+	workerNumber int
+	handlers     []Handler
+	logger       log.FieldLogger
 }
 
 func (dispatcher *Dispatcher) Pull() {
 	updates, _ := dispatcher.bot.GetUpdatesChan(tgbotapi.UpdateConfig{Timeout: dispatcher.timeout})
+	group := &sync.WaitGroup{}
+	group.Add(dispatcher.workerNumber)
+	for i := 0; i < dispatcher.workerNumber; i++ {
+		go dispatcher.work(updates, group)
+	}
+	group.Wait()
+}
+
+func (dispatcher *Dispatcher) work(updates tgbotapi.UpdatesChannel, group *sync.WaitGroup) {
 	for update := range updates {
+		handler, result := "none", metrics.SuccessfulResult
 		for i, isDone := 0, false; i < len(dispatcher.handlers) && !isDone; i++ {
 			if dispatcher.handlers[i].ShouldServe(update) {
-				if fields, err := dispatcher.handlers[i].ServeUpdate(update); err != nil {
+				fields, err := dispatcher.handlers[i].ServeUpdate(dispatcher.bot, update)
+				if err != nil {
 					dispatcher.logger.WithFields(fields).Error(err)
+					result = metrics.FailedResult
 				}
-				isDone = true
+				handler, isDone = dispatcher.handlers[i].Name(), true
 			}
 		}
+		metrics.TelegramUpdates.WithLabelValues(handler, result).Inc()
 	}
+	group.Done()
 }
 
 //var roomNumberMarkup = tgbotapi.NewInlineKeyboardMarkup(
