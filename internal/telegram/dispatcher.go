@@ -27,6 +27,7 @@ func NewDispatcher(
 			NewTemplateHandler("start", config.TemplateFormat),
 			NewTemplateHandler("help", config.TemplateFormat),
 			NewAddHandler(db),
+			NewCityHandler(db),
 		},
 		logger,
 	}, nil
