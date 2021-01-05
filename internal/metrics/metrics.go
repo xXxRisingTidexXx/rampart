@@ -5,10 +5,15 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
-var TelegramCommands = promauto.NewCounterVec(
+var TelegramUpdates = promauto.NewCounterVec(
 	prometheus.CounterOpts{
-		Name: "rampart_telegram_commands_total",
-		Help: "Collects incoming Telegram command orders",
+		Name: "rampart_telegram_updates_total",
+		Help: "Collects incoming Telegram API updates",
 	},
-	[]string{"command"},
+	[]string{"handler", "result"},
+)
+
+const (
+	SuccessfulResult = "successful"
+	FailedResult = "failed"
 )
