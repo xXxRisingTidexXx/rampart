@@ -23,12 +23,7 @@ func NewDispatcher(
 		bot,
 		config.Timeout,
 		config.WorkerNumber,
-		[]Handler{
-			NewTemplateHandler("start", config.TemplateFormat),
-			NewTemplateHandler("help", config.TemplateFormat),
-			NewAddHandler(db),
-			NewCityHandler(db),
-		},
+		[]Handler{NewStartHandler(), NewHelpHandler()},
 		logger,
 	}, nil
 }
@@ -51,7 +46,6 @@ func (dispatcher *Dispatcher) Pull() {
 	group.Wait()
 }
 
-// TODO: add chat_id to logging.
 func (dispatcher *Dispatcher) work(updates tgbotapi.UpdatesChannel, group *sync.WaitGroup) {
 	for update := range updates {
 		var (
