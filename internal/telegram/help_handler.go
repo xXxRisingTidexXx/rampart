@@ -23,6 +23,7 @@ func (handler *helpHandler) Name() string {
 	return "help"
 }
 
+// TODO: add randomized message texts.
 func (handler *helpHandler) HandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
