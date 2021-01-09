@@ -26,6 +26,7 @@ func (handler *addHandler) ShouldServe(update tgbotapi.Update) bool {
 }
 
 // TODO: move message to file.
+// TODO: move default city to config.
 func (handler *addHandler) HandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
