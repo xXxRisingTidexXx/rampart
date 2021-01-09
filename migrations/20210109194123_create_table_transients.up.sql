@@ -1,7 +1,6 @@
-create table if not exists subscriptions
+create table if not exists transients
 (
-    id          serial primary key not null,
-    chat_id     bigint             not null,
+    id          bigint primary key not null,
     status      varchar(10)        not null check ( status != '' ),
     city        varchar(50)        not null check ( city != '' ),
     price       real               not null check ( 0 <= price ),
