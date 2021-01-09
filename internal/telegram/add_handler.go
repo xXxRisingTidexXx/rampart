@@ -8,8 +8,8 @@ import (
 	"io/ioutil"
 )
 
-func NewSubscriptionHandler(db *sql.DB) Handler {
-	return &subscriptionHandler{
+func NewAddHandler(db *sql.DB) Handler {
+	return &addHandler{
 		db,
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Головне меню \U00002B05")),
@@ -17,18 +17,18 @@ func NewSubscriptionHandler(db *sql.DB) Handler {
 	}
 }
 
-type subscriptionHandler struct {
+type addHandler struct {
 	db     *sql.DB
 	markup tgbotapi.ReplyKeyboardMarkup
 }
 
-func (handler *subscriptionHandler) Name() string {
-	return "subscription"
+func (handler *addHandler) Name() string {
+	return "add"
 }
 
 // TODO: move default city to config.
 // TODO: add message randomization.
-func (handler *subscriptionHandler) HandleUpdate(
+func (handler *addHandler) HandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
 ) (bool, error) {
@@ -55,7 +55,7 @@ func (handler *subscriptionHandler) HandleUpdate(
 	if err := tx.Commit(); err != nil {
 		return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	bytes, err := ioutil.ReadFile(misc.ResolvePath("templates/subscription.html"))
+	bytes, err := ioutil.ReadFile(misc.ResolvePath("templates/add.html"))
 	if err != nil {
 		return true, fmt.Errorf("telegram: handler failed to read a file, %v", err)
 	}
