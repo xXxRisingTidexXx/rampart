@@ -26,7 +26,7 @@ func (handler *addHandler) ShouldServe(update tgbotapi.Update) bool {
 }
 
 // TODO: move message to file.
-func (handler *addHandler) ServeUpdate(
+func (handler *addHandler) HandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
 ) (bool, error) {

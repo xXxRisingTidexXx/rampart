@@ -21,7 +21,7 @@ func (handler *templateHandler) Name() string {
 	return handler.command
 }
 
-func (handler *templateHandler) ServeUpdate(
+func (handler *templateHandler) HandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
 ) (bool, error) {
