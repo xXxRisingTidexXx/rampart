@@ -26,7 +26,8 @@ func NewDispatcher(
 		[]Handler{
 			NewStartHandler(db),
 			NewHelpHandler(),
-			NewSubscriptionHandler(db),
+			NewAddHandler(db),
+			NewCityHandler(db),
 		},
 		logger,
 	}, nil
