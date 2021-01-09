@@ -44,14 +44,10 @@ func (handler *startHandler) HandleUpdate(
 	if err != nil {
 		return true, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
-	_, err = tx.Exec(
-		`delete from subscriptions
-		where chat_id = $1 and status in ('city', 'price', 'room-number', 'floor')`,
-		update.Message.Chat.ID,
-	)
+	_, err = tx.Exec(`delete from transients where id = $1`, update.Message.Chat.ID)
 	if err != nil {
 		_ = tx.Rollback()
-		return true, fmt.Errorf("telegram: handler failed to delete subscriptions, %v", err)
+		return true, fmt.Errorf("telegram: handler failed to delete a transient, %v", err)
 	}
 	if err := tx.Commit(); err != nil {
 		return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)

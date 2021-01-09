@@ -42,15 +42,15 @@ func (handler *subscriptionHandler) HandleUpdate(
 		return true, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
 	_, err = tx.Exec(
-		`insert into subscriptions
-		(chat_id, creation_time, status, city, price, room_number, floor)
+		`insert into transients
+		(id, status, city, price, room_number, floor)
 		values
-		($1, now() at time zone 'utc', 'city', 'Київ', 0, 'any', 'any')`,
+		($1, 'city', 'Київ', 0, 'any', 'any')`,
 		update.Message.Chat.ID,
 	)
 	if err != nil {
 		_ = tx.Rollback()
-		return true, fmt.Errorf("telegram: handler failed to create a subscription, %v", err)
+		return true, fmt.Errorf("telegram: handler failed to create a transient, %v", err)
 	}
 	if err := tx.Commit(); err != nil {
 		return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
