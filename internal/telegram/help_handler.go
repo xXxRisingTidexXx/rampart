@@ -10,7 +10,7 @@ import (
 func NewHelpHandler() Handler {
 	return &helpHandler{
 		tgbotapi.NewReplyKeyboard(
-			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Зрозуміло \U0001F44C")),
+			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Головне меню \U00002B05")),
 		),
 	}
 }

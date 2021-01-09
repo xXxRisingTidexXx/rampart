@@ -4,50 +4,42 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"io/ioutil"
 )
 
-func NewAddHandler(db *sql.DB) Handler {
-	return &addHandler{db, "add"}
+func NewSubscriptionHandler(db *sql.DB) Handler {
+	return &subscriptionHandler{
+		db,
+		tgbotapi.NewReplyKeyboard(
+			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Головне меню \U00002B05")),
+		),
+	}
 }
 
-type addHandler struct {
-	db      *sql.DB
-	command string
+type subscriptionHandler struct {
+	db     *sql.DB
+	markup tgbotapi.ReplyKeyboardMarkup
 }
 
-func (handler *addHandler) Name() string {
-	return handler.command
+func (handler *subscriptionHandler) Name() string {
+	return "subscription"
 }
 
-func (handler *addHandler) ShouldServe(update tgbotapi.Update) bool {
-	return update.Message != nil &&
-		update.Message.Chat != nil &&
-		update.Message.Command() == handler.command
-}
-
-// TODO: move message to file.
 // TODO: move default city to config.
-func (handler *addHandler) HandleUpdate(
+// TODO: add message randomization.
+func (handler *subscriptionHandler) HandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
 ) (bool, error) {
 	if update.Message == nil ||
 		update.Message.Chat == nil ||
-		update.Message.Command() != handler.command {
+		update.Message.Text != "Підписка \U0001F49C" {
 		return false, nil
 	}
 	tx, err := handler.db.Begin()
 	if err != nil {
 		return true, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
-	}
-	_, err = tx.Exec(
-		`delete from subscriptions
-		where chat_id = $1 and status in ('city', 'price', 'room-number', 'floor')`,
-		update.Message.Chat.ID,
-	)
-	if err != nil {
-		_ = tx.Rollback()
-		return true, fmt.Errorf("telegram: handler failed to purge subscriptions, %v", err)
 	}
 	_, err = tx.Exec(
 		`insert into subscriptions
@@ -63,10 +55,14 @@ func (handler *addHandler) HandleUpdate(
 	if err := tx.Commit(); err != nil {
 		return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	_, err = bot.Send(
-		tgbotapi.NewMessage(update.Message.Chat.ID, "Окей, в якому місті шукаємо житло?"),
-	)
+	bytes, err := ioutil.ReadFile(misc.ResolvePath("templates/subscription.html"))
 	if err != nil {
+		return true, fmt.Errorf("telegram: handler failed to read a file, %v", err)
+	}
+	message := tgbotapi.NewMessage(update.Message.Chat.ID, string(bytes))
+	message.ParseMode = tgbotapi.ModeHTML
+	message.ReplyMarkup = handler.markup
+	if _, err := bot.Send(message); err != nil {
 		return true, fmt.Errorf("telegram: handler failed to send a message, %v", err)
 	}
 	return true, nil
