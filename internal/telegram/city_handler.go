@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"io/ioutil"
 )
 
 func NewCityHandler(db *sql.DB) Handler {
@@ -12,12 +14,19 @@ func NewCityHandler(db *sql.DB) Handler {
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Головне меню \U00002B05")),
 		),
+		tgbotapi.NewReplyKeyboard(
+			tgbotapi.NewKeyboardButtonRow(
+				tgbotapi.NewKeyboardButton("Не знаю \U0001F615"),
+				tgbotapi.NewKeyboardButton("Головне меню \U00002B05"),
+			),
+		),
 	}
 }
 
 type cityHandler struct {
-	db     *sql.DB
-	markup tgbotapi.ReplyKeyboardMarkup
+	db            *sql.DB
+	absentMarkup  tgbotapi.ReplyKeyboardMarkup
+	presentMarkup tgbotapi.ReplyKeyboardMarkup
 }
 
 func (handler *cityHandler) Name() string {
@@ -63,9 +72,13 @@ func (handler *cityHandler) HandleUpdate(
 		if err := tx.Commit(); err != nil {
 			return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 		}
-		message := tgbotapi.NewMessage(update.Message.Chat.ID, "Я не знаю помешкань у цьому місті.")
+		bytes, err := ioutil.ReadFile(misc.ResolvePath("templates/absent_city.html"))
+		if err != nil {
+			return true, fmt.Errorf("telegram: handler failed to read a file, %v", err)
+		}
+		message := tgbotapi.NewMessage(update.Message.Chat.ID, string(bytes))
 		message.ParseMode = tgbotapi.ModeHTML
-		message.ReplyMarkup = handler.markup
+		message.ReplyMarkup = handler.absentMarkup
 		if _, err := bot.Send(message); err != nil {
 			return true, fmt.Errorf("telegram: handler failed to send a message, %v", err)
 		}
@@ -83,9 +96,13 @@ func (handler *cityHandler) HandleUpdate(
 	if err := tx.Commit(); err != nil {
 		return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	message := tgbotapi.NewMessage(update.Message.Chat.ID, "Всьо заєбісь!")
+	bytes, err := ioutil.ReadFile(misc.ResolvePath("templates/present_city.html"))
+	if err != nil {
+		return true, fmt.Errorf("telegram: handler failed to read a file, %v", err)
+	}
+	message := tgbotapi.NewMessage(update.Message.Chat.ID, string(bytes))
 	message.ParseMode = tgbotapi.ModeHTML
-	message.ReplyMarkup = handler.markup
+	message.ReplyMarkup = handler.presentMarkup
 	if _, err := bot.Send(message); err != nil {
 		return true, fmt.Errorf("telegram: handler failed to send a message, %v", err)
 	}
