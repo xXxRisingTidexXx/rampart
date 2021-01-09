@@ -18,8 +18,7 @@ func (handler *cityHandler) Name() string {
 	return "city"
 }
 
-// TODO: add fuzzy string matching.
-func (handler *cityHandler) ServeUpdate(
+func (handler *cityHandler) HandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
 ) (bool, error) {
@@ -30,25 +29,64 @@ func (handler *cityHandler) ServeUpdate(
 	if err != nil {
 		return false, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
-	var count int
+	var id int
 	row := tx.QueryRow(
-		`select count(*) from subscriptions where chat_id = $1 and status = 'city'`,
+		`select id from subscriptions where chat_id = $1 and status = 'city' limit 1`,
 		update.Message.Chat.ID,
 	)
-	if err := row.Scan(&count); err != nil {
-		_ = tx.Rollback()
-		return false, fmt.Errorf("telegram: handler failed to read subscriptions, %v", err)
-	}
-	if count == 0 {
+	switch err := row.Scan(&id); err {
+	case sql.ErrNoRows:
 		if err := tx.Commit(); err != nil {
 			return false, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 		}
 		return false, nil
+	case nil:
+		return true, handler.handleCity(tx, id, bot, update)
+	default:
+		_ = tx.Rollback()
+		return false, fmt.Errorf("telegram: handler failed to read a subscription, %v", err)
 	}
+}
 
+// TODO: add fuzzy string matching.
+// TODO: fix min city flat count.
+// TODO: add various response for "city not found".
+func (handler *cityHandler) handleCity(
+	tx *sql.Tx,
+	id int,
+	bot *tgbotapi.BotAPI,
+	update tgbotapi.Update,
+) error {
+	var count int
+	row := tx.QueryRow(`select count(*) from flats where city = $1`, update.Message.Text)
+	if err := row.Scan(&count); err != nil {
+		_ = tx.Rollback()
+		return fmt.Errorf("telegram: handler failed to read a city, %v", err)
+	}
+	if count < 5 {
+		if err := tx.Commit(); err != nil {
+			return fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+		}
+		_, err := bot.Send(
+			tgbotapi.NewMessage(update.Message.Chat.ID, "Я не знаю помешкань у цьому місті."),
+		)
+		if err != nil {
+			return fmt.Errorf("telegram: handler failed to notify about an absent city, %v", err)
+		}
+		return nil
+	}
+	_, err := tx.Exec(
+		`update subscriptions set status = 'price', city = $1 where id = $2`,
+		update.Message.Text,
+		id,
+	)
+	if err != nil {
+		_ = tx.Rollback()
+		return fmt.Errorf("telegram: handler failed to update a subscription, %v", err)
+	}
 	if err := tx.Commit(); err != nil {
-		return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+		return fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-
-	return true, nil
+	_, _ = bot.Send(tgbotapi.NewMessage(update.Message.Chat.ID, "Всьо заєбісь!"))
+	return nil
 }
