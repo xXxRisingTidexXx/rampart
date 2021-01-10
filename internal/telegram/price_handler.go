@@ -12,8 +12,21 @@ func NewPriceHandler(db *sql.DB) Handler {
 	return &priceHandler{
 		db,
 		strings.NewReplacer(",", ".", " ", "", "_", "", "\n", "", "\t", ""),
-		tgbotapi.NewReplyKeyboard(),
-		tgbotapi.NewReplyKeyboard(),
+		tgbotapi.NewReplyKeyboard(
+			tgbotapi.NewKeyboardButtonRow(
+				tgbotapi.NewKeyboardButton("1"),
+				tgbotapi.NewKeyboardButton("2"),
+				tgbotapi.NewKeyboardButton("3"),
+				tgbotapi.NewKeyboardButton("4+"),
+			),
+			tgbotapi.NewKeyboardButtonRow(
+				tgbotapi.NewKeyboardButton("Байдуже \U0001F612"),
+				tgbotapi.NewKeyboardButton("Головне меню \U00002B05"),
+			),
+		),
+		tgbotapi.NewReplyKeyboard(
+			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Головне меню \U00002B05")),
+		),
 	}
 }
 
