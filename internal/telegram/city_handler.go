@@ -31,11 +31,12 @@ func (handler *cityHandler) Name() string {
 	return "city"
 }
 
-// TODO: add message randomization.
-// TODO: add fuzzy string matching.
+// TODO: message randomization.
+// TODO: fuzzy city matching.
+// TODO: most popular city & capital autocomplete buttons.
 // TODO: move to config min city flat count.
-// TODO: add branch/option "залишити як є".
-// TODO: add metrics.
+// TODO: branch/option "залишити як є".
+// TODO: inject metrics.
 func (handler *cityHandler) HandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
