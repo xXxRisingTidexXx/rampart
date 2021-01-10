@@ -41,10 +41,11 @@ func (handler *priceHandler) Name() string {
 	return "price"
 }
 
-// TODO: add message randomization.
-// TODO: add invalid input metric.
+// TODO: message randomization.
+// TODO: invalid input metric.
 // TODO: handle too long strings.
 // TODO: handle negative price.
+// TODO: two template price buttons.
 func (handler *priceHandler) HandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
