@@ -30,6 +30,7 @@ func NewDispatcher(
 			NewAddHandler(db),
 			NewCityHandler(db),
 			NewPriceHandler(db),
+			NewRoomNumberHandler(db),
 		},
 		logger,
 	}, nil
