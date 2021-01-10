@@ -14,6 +14,8 @@ from rampart.config import ClassifierConfig
 # TODO: think about sklearn gradient booster.
 # https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html
 # https://scikit-learn.org/stable/modules/model_persistence.html
+# TODO: add to notebook.
+# https://plotly.com/python/roc-and-pr-curves/
 class Classifier:
     __slots__ = ['_loader', '_reader', '_booster', '_writer', '_limit']
 
