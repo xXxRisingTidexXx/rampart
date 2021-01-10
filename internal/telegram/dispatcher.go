@@ -10,6 +10,7 @@ import (
 	"sync"
 )
 
+// TODO: instead of separate state handlers use conversation handler supplying transaction.
 func NewDispatcher(
 	config config.Dispatcher,
 	db *sql.DB,
@@ -28,6 +29,7 @@ func NewDispatcher(
 			NewHelpHandler(),
 			NewAddHandler(db),
 			NewCityHandler(db),
+			NewPriceHandler(db),
 		},
 		logger,
 	}, nil
