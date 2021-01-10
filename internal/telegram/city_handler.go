@@ -23,8 +23,8 @@ func NewCityHandler(db *sql.DB) Handler {
 
 type cityHandler struct {
 	db            *sql.DB
-	absentMarkup  tgbotapi.ReplyKeyboardMarkup
-	presentMarkup tgbotapi.ReplyKeyboardMarkup
+	invalidMarkup tgbotapi.ReplyKeyboardMarkup
+	validMarkup   tgbotapi.ReplyKeyboardMarkup
 }
 
 func (handler *cityHandler) Name() string {
@@ -75,7 +75,7 @@ func (handler *cityHandler) HandleUpdate(
 		if err := tx.Commit(); err != nil {
 			return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 		}
-		return true, sendMessage(bot, update, "absent_city", handler.absentMarkup)
+		return true, sendMessage(bot, update, "invalid_city", handler.invalidMarkup)
 	}
 	_, err = tx.Exec(
 		`update transients set status = 'price', city = $1 where id = $2`,
@@ -89,5 +89,5 @@ func (handler *cityHandler) HandleUpdate(
 	if err := tx.Commit(); err != nil {
 		return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	return true, sendMessage(bot, update, "present_city", handler.presentMarkup)
+	return true, sendMessage(bot, update, "valid_city", handler.validMarkup)
 }
