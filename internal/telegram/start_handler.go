@@ -27,7 +27,8 @@ func (handler *startHandler) Name() string {
 	return "start"
 }
 
-// TODO: add message randomization.
+// TODO: message randomization.
+// TODO: remove database connection - don't drop here.
 func (handler *startHandler) HandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
