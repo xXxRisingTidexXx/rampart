@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
-	"io/ioutil"
 )
 
 func NewStartHandler(db * sql.DB) Handler {
@@ -52,15 +50,5 @@ func (handler *startHandler) HandleUpdate(
 	if err := tx.Commit(); err != nil {
 		return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	bytes, err := ioutil.ReadFile(misc.ResolvePath("templates/start.html"))
-	if err != nil {
-		return true, fmt.Errorf("telegram: handler failed to read a file, %v", err)
-	}
-	message := tgbotapi.NewMessage(update.Message.Chat.ID, string(bytes))
-	message.ParseMode = tgbotapi.ModeHTML
-	message.ReplyMarkup = handler.markup
-	if _, err := bot.Send(message); err != nil {
-		return true, fmt.Errorf("telegram: handler failed to send a message, %v", err)
-	}
-	return true, nil
+	return true, sendMessage(bot, update, "start", handler.markup)
 }
