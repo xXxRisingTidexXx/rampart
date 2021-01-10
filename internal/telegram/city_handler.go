@@ -37,6 +37,7 @@ func (handler *cityHandler) Name() string {
 // TODO: add fuzzy string matching.
 // TODO: move to config min city flat count.
 // TODO: add branch/option "залишити як є".
+// TODO: add metrics.
 func (handler *cityHandler) HandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
@@ -63,7 +64,10 @@ func (handler *cityHandler) HandleUpdate(
 		}
 		return false, nil
 	}
-	row = tx.QueryRow(`select count(*) from flats where city = $1`, update.Message.Text)
+	row = tx.QueryRow(
+		`select count(*) from flats where lower(city) = lower($1)`,
+		update.Message.Text,
+	)
 	if err := row.Scan(&count); err != nil {
 		_ = tx.Rollback()
 		return true, fmt.Errorf("telegram: handler failed to read a city, %v", err)
