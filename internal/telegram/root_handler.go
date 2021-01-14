@@ -15,7 +15,7 @@ type rootHandler struct {
 }
 
 func (h *rootHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
-	if update.Message != nil && update.Message.Chat != nil {
+	if update.Message != nil && update.Message.Chat != nil && update.Message.Text != "" {
 		fields, err := h.handler.HandleUpdate(update)
 		fields["chat_id"] = update.Message.Chat.ID
 		return fields, err
