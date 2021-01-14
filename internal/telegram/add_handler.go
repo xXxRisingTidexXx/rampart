@@ -1,38 +1,35 @@
 package telegram
 
-//func NewAddHandler(db *sql.DB) XHandler {
-//	return &addHandler{
-//		db,
-//		tgbotapi.NewReplyKeyboard(
-//			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Головне меню \U00002B05")),
-//		),
-//	}
-//}
-//
-//type addHandler struct {
-//	db     *sql.DB
-//	markup tgbotapi.ReplyKeyboardMarkup
-//}
-//
-//func (handler *addHandler) Name() string {
-//	return "add"
-//}
-//
-//// TODO: move default city to config.
-//// TODO: add message randomization.
-//func (handler *addHandler) XHandleUpdate(
-//	bot *tgbotapi.BotAPI,
-//	update tgbotapi.Update,
-//) (bool, error) {
-//	if update.Message == nil ||
-//		update.Message.Chat == nil ||
-//		update.Message.Text != "Підписка \U0001F49C" {
-//		return false, nil
-//	}
-//	tx, err := handler.db.Begin()
-//	if err != nil {
-//		return true, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
-//	}
+import (
+	"database/sql"
+	"fmt"
+	"github.com/go-telegram-bot-api/telegram-bot-api"
+	log "github.com/sirupsen/logrus"
+)
+
+func NewAddHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+	return &addHandler{
+		&helper{bot},
+		db,
+		tgbotapi.NewReplyKeyboard(
+			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Головне меню \U00002B05")),
+		),
+	}
+}
+
+type addHandler struct {
+	helper *helper
+	db     *sql.DB
+	markup tgbotapi.ReplyKeyboardMarkup
+}
+
+// TODO: move default city to config.
+func (h *addHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
+	fields := log.Fields{"handler": "add"}
+	tx, err := h.db.Begin()
+	if err != nil {
+		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
+	}
 //	_, err = tx.Exec(
 //		`insert into transients
 //		(id, status, city, price, room_number, floor)
@@ -44,8 +41,8 @@ package telegram
 //		_ = tx.Rollback()
 //		return true, fmt.Errorf("telegram: handler failed to create a transient, %v", err)
 //	}
-//	if err := tx.Commit(); err != nil {
-//		return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
-//	}
-//	return true, sendMessage(bot, update, "add", handler.markup)
-//}
+	if err := tx.Commit(); err != nil {
+		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+	}
+	return fields, h.helper.sendMessage(update, "absent_add", h.markup)
+}

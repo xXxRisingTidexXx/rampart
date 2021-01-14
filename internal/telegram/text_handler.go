@@ -13,6 +13,7 @@ func NewTextHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	handlers["/help"] = NewHelpHandler(bot)
 	handlers["Довідка \U0001F64B"] = handlers["/help"]
 	handlers["Головне меню \U00002B05"] = NewCancelHandler(bot, db)
+	handlers["Підписка \U0001F49C"] = NewAddHandler(bot, db)
 	return &textHandler{handlers}
 }
 
