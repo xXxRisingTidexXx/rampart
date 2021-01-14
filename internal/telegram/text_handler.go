@@ -19,7 +19,9 @@ type textHandler struct {
 
 func (h *textHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	if handler, ok := h.handlers[update.Message.Text]; ok {
-		return handler.HandleUpdate(update)
+		fields, err := handler.HandleUpdate(update)
+		fields["chat_id"] = update.Message.Chat.ID
+		return fields, err
 	}
-	return log.Fields{"handler": "text"}, nil
+	return log.Fields{"handler": "text", "chat_id": update.Message.Chat.ID}, nil
 }
