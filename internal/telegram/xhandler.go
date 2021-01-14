@@ -8,5 +8,5 @@ import (
 type XHandler interface {
 	Name() string
 	// TODO: replace multiple return with context struct with log fields.
-	HandleUpdate(*tgbotapi.BotAPI, tgbotapi.Update) (bool, error)
+	XHandleUpdate(*tgbotapi.BotAPI, tgbotapi.Update) (bool, error)
 }

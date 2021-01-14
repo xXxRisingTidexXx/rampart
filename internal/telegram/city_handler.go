@@ -37,7 +37,7 @@ func (handler *cityHandler) Name() string {
 // TODO: move to config min city flat count.
 // TODO: branch/option "залишити як є".
 // TODO: inject metrics.
-func (handler *cityHandler) HandleUpdate(
+func (handler *cityHandler) XHandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
 ) (bool, error) {

@@ -26,7 +26,7 @@ func (handler *addHandler) Name() string {
 
 // TODO: move default city to config.
 // TODO: add message randomization.
-func (handler *addHandler) HandleUpdate(
+func (handler *addHandler) XHandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
 ) (bool, error) {

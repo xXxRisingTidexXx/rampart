@@ -61,7 +61,7 @@ func (dispatcher *Dispatcher) work(updates tgbotapi.UpdatesChannel, group *sync.
 		}
 		//for i := 0; i < len(dispatcher.handlers) && !ok; i++ {
 		//
-		//	ok, err = dispatcher.handlers[i].HandleUpdate(dispatcher.bot, update)
+		//	ok, err = dispatcher.handlers[i].XHandleUpdate(dispatcher.bot, update)
 		//	if ok {
 		//		handler = dispatcher.handlers[i].Name()
 		//	}

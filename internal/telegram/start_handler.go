@@ -29,7 +29,7 @@ func (handler *startHandler) Name() string {
 
 // TODO: message randomization.
 // TODO: remove database connection - don't drop here.
-func (handler *startHandler) HandleUpdate(
+func (handler *startHandler) XHandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
 ) (bool, error) {

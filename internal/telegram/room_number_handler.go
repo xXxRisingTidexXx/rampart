@@ -47,7 +47,7 @@ func (handler *roomNumberHandler) Name() string {
 // TODO: message randomization.
 // TODO: number and other text handling.
 // TODO: long text handling.
-func (handler *roomNumberHandler) HandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) (bool, error) {
+func (handler *roomNumberHandler) XHandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) (bool, error) {
 	if update.Message == nil || update.Message.Chat == nil || len(update.Message.Text) < 1 {
 		return false, nil
 	}

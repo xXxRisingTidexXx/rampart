@@ -21,7 +21,7 @@ func (handler *helpHandler) Name() string {
 }
 
 // TODO: add randomized message texts.
-func (handler *helpHandler) HandleUpdate(
+func (handler *helpHandler) XHandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
 ) (bool, error) {

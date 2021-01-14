@@ -46,7 +46,7 @@ func (handler *priceHandler) Name() string {
 // TODO: handle too long strings.
 // TODO: handle negative price.
 // TODO: two template price buttons.
-func (handler *priceHandler) HandleUpdate(
+func (handler *priceHandler) XHandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
 ) (bool, error) {

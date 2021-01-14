@@ -27,7 +27,7 @@ func (handler *floorHandler) Name() string {
 }
 
 // TODO: unique subscription generation + final template rendering.
-func (handler *floorHandler) HandleUpdate(
+func (handler *floorHandler) XHandleUpdate(
 	bot *tgbotapi.BotAPI,
 	update tgbotapi.Update,
 ) (bool, error) {
