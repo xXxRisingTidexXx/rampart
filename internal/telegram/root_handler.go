@@ -14,9 +14,9 @@ type rootHandler struct {
 	handler Handler
 }
 
-func (handler *rootHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
+func (h *rootHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	if update.Message != nil && update.Message.Chat != nil {
-		return handler.handler.HandleUpdate(update)
+		return h.handler.HandleUpdate(update)
 	}
 	return log.Fields{"handler": "root"}, nil
 }
