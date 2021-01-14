@@ -1,5 +1,7 @@
 package telegram
 
+import "fmt"
+
 type Status int
 
 const (
@@ -21,4 +23,18 @@ func (status Status) String() string {
 		return view
 	}
 	return "undefined"
+}
+
+var viewStatuses = map[string]Status{
+	statusViews[CityStatus]:       CityStatus,
+	statusViews[PriceStatus]:      PriceStatus,
+	statusViews[RoomNumberStatus]: RoomNumberStatus,
+	statusViews[FloorStatus]:      FloorStatus,
+}
+
+func ToStatus(view string) (Status, error) {
+	if status, ok := viewStatuses[view]; ok {
+		return status, nil
+	}
+	return 0, fmt.Errorf("telegram: status not found, %s", view)
 }
