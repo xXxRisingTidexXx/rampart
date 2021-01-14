@@ -30,19 +30,24 @@ func (h *addHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	if err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
-//	_, err = tx.Exec(
-//		`insert into transients
-//		(id, status, city, price, room_number, floor)
-//		values
-//		($1, 'city', 'Київ', 0, 'any', 'any')`,
-//		update.Message.Chat.ID,
-//	)
-//	if err != nil {
-//		_ = tx.Rollback()
-//		return true, fmt.Errorf("telegram: handler failed to create a transient, %v", err)
-//	}
+	_, err = tx.Exec(`delete from transients where id = $1`, update.Message.Chat.ID)
+	if err != nil {
+		_ = tx.Rollback()
+		return fields, fmt.Errorf("telegram: handler failed to delete a transient, %v", err)
+	}
+	_, err = tx.Exec(
+		`insert into transients
+		(id, status, city, price, room_number, floor)
+		values
+		($1, 'city', 'Київ', 0, 'any', 'any')`,
+		update.Message.Chat.ID,
+	)
+	if err != nil {
+		_ = tx.Rollback()
+		return fields, fmt.Errorf("telegram: handler failed to create a transient, %v", err)
+	}
 	if err := tx.Commit(); err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	return fields, h.helper.sendMessage(update, "absent_add", h.markup)
+	return fields, h.helper.sendMessage(update, "add", h.markup)
 }
