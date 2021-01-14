@@ -39,7 +39,7 @@ func main() {
 		entry.Fatal(err)
 	}
 	metrics.RunServer(c.Telegram.Server, entry)
-	dispatcher.Pull()
+	dispatcher.Dispatch()
 	if err = db.Close(); err != nil {
 		entry.Fatalf("main: telegram failed to close the db, %v", err)
 	}

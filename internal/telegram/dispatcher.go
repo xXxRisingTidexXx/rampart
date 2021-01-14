@@ -45,7 +45,7 @@ type Dispatcher struct {
 	logger       log.FieldLogger
 }
 
-func (dispatcher *Dispatcher) Pull() {
+func (dispatcher *Dispatcher) Dispatch() {
 	updates, _ := dispatcher.bot.GetUpdatesChan(tgbotapi.UpdateConfig{Timeout: dispatcher.timeout})
 	group := &sync.WaitGroup{}
 	group.Add(dispatcher.workerNumber)
