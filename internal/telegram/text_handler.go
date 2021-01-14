@@ -14,16 +14,17 @@ func NewTextHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	handlers["Довідка \U0001F64B"] = handlers["/help"]
 	handlers["Головне меню \U00002B05"] = NewCancelHandler(bot, db)
 	handlers["Підписка \U0001F49C"] = NewAddHandler(bot, db)
-	return &textHandler{handlers}
+	return &textHandler{handlers, NewDialogHandler(bot, db)}
 }
 
 type textHandler struct {
-	handlers map[string]Handler
+	commandHandlers map[string]Handler
+	dialogHandler   Handler
 }
 
 func (h *textHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
-	if handler, ok := h.handlers[update.Message.Text]; ok {
+	if handler, ok := h.commandHandlers[update.Message.Text]; ok {
 		return handler.HandleUpdate(update)
 	}
-	return log.Fields{"handler": "text"}, nil
+	return h.dialogHandler.HandleUpdate(update)
 }
