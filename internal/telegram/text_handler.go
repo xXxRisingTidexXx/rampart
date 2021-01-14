@@ -10,6 +10,8 @@ func NewTextHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	handlers := make(map[string]Handler)
 	handlers["/start"] = NewStartHandler(bot)
 	handlers["Зрозуміло \U0001F44D"] = handlers["/start"]
+	handlers["/help"] = NewHelpHandler(bot)
+	handlers["Довідка \U0001F64B"] = handlers["/help"]
 	return &textHandler{handlers}
 }
 
@@ -19,9 +21,7 @@ type textHandler struct {
 
 func (h *textHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	if handler, ok := h.handlers[update.Message.Text]; ok {
-		fields, err := handler.HandleUpdate(update)
-		fields["chat_id"] = update.Message.Chat.ID
-		return fields, err
+		return handler.HandleUpdate(update)
 	}
-	return log.Fields{"handler": "text", "chat_id": update.Message.Chat.ID}, nil
+	return log.Fields{"handler": "text"}, nil
 }
