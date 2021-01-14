@@ -40,5 +40,5 @@ func (h *cancelHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error)
 	if err := tx.Commit(); err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	return fields, h.helper.sendMessage(update, "start", h.markup)
+	return fields, h.helper.sendMessage(update, "menu", h.markup)
 }
