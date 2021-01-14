@@ -11,16 +11,14 @@ func NewAddHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	return &addHandler{
 		&helper{bot},
 		db,
-		tgbotapi.NewReplyKeyboard(
-			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Головне меню \U00002B05")),
-		),
+		"Київ",
 	}
 }
 
 type addHandler struct {
-	helper *helper
-	db     *sql.DB
-	markup tgbotapi.ReplyKeyboardMarkup
+	helper      *helper
+	db          *sql.DB
+	defaultCity string
 }
 
 // TODO: move default city to config.
@@ -39,15 +37,36 @@ func (h *addHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		`insert into transients
 		(id, status, city, price, room_number, floor)
 		values
-		($1, 'city', 'Київ', 0, 'any', 'any')`,
+		($1, 'city', $2, 0, 'any', 'any')`,
 		update.Message.Chat.ID,
+		h.defaultCity,
 	)
 	if err != nil {
 		_ = tx.Rollback()
 		return fields, fmt.Errorf("telegram: handler failed to create a transient, %v", err)
 	}
+	buttons, city := tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(h.defaultCity)), ""
+	row := tx.QueryRow(
+		`select city from flats where city != $1 group by city order by count(*) desc limit 1`,
+		h.defaultCity,
+	)
+	switch err := row.Scan(&city); err {
+	case nil:
+		buttons = append(buttons, tgbotapi.NewKeyboardButton(city))
+	case sql.ErrNoRows:
+	default:
+		_ = tx.Rollback()
+		return fields, fmt.Errorf("telegram: handler failed to select a city, %v", err)
+	}
 	if err := tx.Commit(); err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	return fields, h.helper.sendMessage(update, "add", h.markup)
+	return fields, h.helper.sendMessage(
+		update,
+		"add",
+		tgbotapi.NewReplyKeyboard(
+			buttons,
+			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Головне меню \U00002B05")),
+		),
+	)
 }
