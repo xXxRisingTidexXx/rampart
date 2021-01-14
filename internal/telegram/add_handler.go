@@ -6,7 +6,7 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-func NewAddHandler(db *sql.DB) Handler {
+func NewAddHandler(db *sql.DB) XHandler {
 	return &addHandler{
 		db,
 		tgbotapi.NewReplyKeyboard(

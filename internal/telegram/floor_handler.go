@@ -6,7 +6,7 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-func NewFloorHandler(db *sql.DB) Handler {
+func NewFloorHandler(db *sql.DB) XHandler {
 	return &floorHandler{
 		db,
 		map[string]string{"Байдуже \U0001F612": "any", "Ні": "low", "Так": "high"},

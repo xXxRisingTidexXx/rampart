@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func NewPriceHandler(db *sql.DB) Handler {
+func NewPriceHandler(db *sql.DB) XHandler {
 	return &priceHandler{
 		db,
 		strings.NewReplacer(",", ".", " ", "", "_", "", "\n", "", "\t", ""),

@@ -6,7 +6,6 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
-	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 	"sync"
 )
 
@@ -24,7 +23,7 @@ func NewDispatcher(
 		bot,
 		config.Timeout,
 		config.WorkerNumber,
-		[]Handler{
+		[]XHandler{
 			NewStartHandler(db),
 			NewHelpHandler(),
 			NewAddHandler(db),
@@ -41,7 +40,7 @@ type Dispatcher struct {
 	bot          *tgbotapi.BotAPI
 	timeout      int
 	workerNumber int
-	handlers     []Handler
+	handlers     []XHandler
 	logger       log.FieldLogger
 }
 
@@ -57,21 +56,20 @@ func (dispatcher *Dispatcher) Dispatch() {
 
 func (dispatcher *Dispatcher) work(updates tgbotapi.UpdatesChannel, group *sync.WaitGroup) {
 	for update := range updates {
-		var (
-			ok      = false
-			err     error
-			handler = "none"
-		)
-		for i := 0; i < len(dispatcher.handlers) && !ok; i++ {
-			ok, err = dispatcher.handlers[i].HandleUpdate(dispatcher.bot, update)
-			if ok {
-				handler = dispatcher.handlers[i].Name()
-			}
-			if err != nil {
-				dispatcher.logger.WithField("handler", dispatcher.handlers[i].Name()).Error(err)
-			}
+		if update.Message != nil {
+			dispatcher.logger.Info(update.Message.Text)
 		}
-		metrics.TelegramUpdates.WithLabelValues(handler).Inc()
+		//for i := 0; i < len(dispatcher.handlers) && !ok; i++ {
+		//
+		//	ok, err = dispatcher.handlers[i].HandleUpdate(dispatcher.bot, update)
+		//	if ok {
+		//		handler = dispatcher.handlers[i].Name()
+		//	}
+		//	if err != nil {
+		//		dispatcher.logger.WithField("handler", dispatcher.handlers[i].Name()).Error(err)
+		//	}
+		//}
+		//metrics.TelegramUpdates.WithLabelValues(handler).Inc()
 	}
 	group.Done()
 }

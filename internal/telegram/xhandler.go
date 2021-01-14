@@ -5,7 +5,7 @@ import (
 )
 
 // TODO: should handler "know" about bot? I.e., accept it in constructor?
-type Handler interface {
+type XHandler interface {
 	Name() string
 	// TODO: replace multiple return with context struct with log fields.
 	HandleUpdate(*tgbotapi.BotAPI, tgbotapi.Update) (bool, error)

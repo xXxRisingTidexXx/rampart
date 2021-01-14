@@ -7,7 +7,7 @@ import (
 )
 
 // TODO: handle mappings with enums.
-func NewRoomNumberHandler(db *sql.DB) Handler {
+func NewRoomNumberHandler(db *sql.DB) XHandler {
 	return &roomNumberHandler{
 		db,
 		map[string]string{
