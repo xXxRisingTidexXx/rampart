@@ -8,7 +8,11 @@ import (
 )
 
 func NewDialogHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
-	return &dialogHandler{bot, db, map[Status]StatusHandler{}}
+	return &dialogHandler{
+		bot,
+		db,
+		map[Status]StatusHandler{CityStatus: NewCityStatusHandler(bot, db)},
+	}
 }
 
 type dialogHandler struct {
