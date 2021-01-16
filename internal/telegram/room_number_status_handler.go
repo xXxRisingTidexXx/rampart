@@ -2,13 +2,24 @@ package telegram
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"strconv"
 )
 
 func NewRoomNumberStatusHandler(bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
 	return &roomNumberStatusHandler{
 		&helper{bot},
 		db,
+		map[string]misc.RoomNumber{
+			"Байдуже \U0001F612": misc.AnyRoomNumber,
+			"1":                  misc.OneRoomNumber,
+			"2":                  misc.TwoRoomNumber,
+			"3":                  misc.ThreeRoomNumber,
+			"4+":                 misc.ManyRoomNumber,
+		},
+		20,
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(
 				tgbotapi.NewKeyboardButton("Ні"),
@@ -23,58 +34,36 @@ func NewRoomNumberStatusHandler(bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler 
 }
 
 type roomNumberStatusHandler struct {
-	helper *helper
-	db     *sql.DB
-	markup tgbotapi.ReplyKeyboardMarkup
+	helper        *helper
+	db            *sql.DB
+	mappings      map[string]misc.RoomNumber
+	maxRoomNumber int64
+	markup        tgbotapi.ReplyKeyboardMarkup
 }
 
-// TODO: number and other text handling.
+// TODO: move max room number to config.
 // TODO: long text handling.
 func (h *roomNumberStatusHandler) HandleStatusUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,
 ) (tgbotapi.MessageConfig, error) {
-//	if update.Message == nil || update.Message.Chat == nil || len(update.Message.Text) < 1 {
-//		return false, nil
-//	}
-//	tx, err := handler.db.Begin()
-//	if err != nil {
-//		return false, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
-//	}
-//	var count int
-//	row := tx.QueryRow(
-//		`select count(*) from transients where id = $1 and status = 'room-number'`,
-//		update.Message.Chat.ID,
-//	)
-//	if err := row.Scan(&count); err != nil {
-//		_ = tx.Rollback()
-//		return false, fmt.Errorf("telegram: handler failed to read a transient, %v", err)
-//	}
-//	if count == 0 {
-//		if err := tx.Commit(); err != nil {
-//			return false, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
-//		}
-//		return false, nil
-//	}
-//	roomNumber, ok := handler.mappings[update.Message.Text]
-//	if !ok {
-//		if err := tx.Commit(); err != nil {
-//			return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
-//		}
-//		return true, sendMessage(bot, update, "invalid_room_number", handler.invalidMarkup)
-//	}
-//	_, err = tx.Exec(
-//		`update transients set status = 'floor', room_number = $1 where id = $2`,
-//		roomNumber,
-//		update.Message.Chat.ID,
-//	)
-//	if err != nil {
-//		_ = tx.Rollback()
-//		return true, fmt.Errorf("telegram: handler failed to update a transient, %v", err)
-//	}
-//	if err := tx.Commit(); err != nil {
-//		return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
-//	}
-//	return true, sendMessage(bot, update, "valid_room_number", handler.validMarkup)
-	return tgbotapi.MessageConfig{}, nil
+	var message tgbotapi.MessageConfig
+	roomNumber, ok := h.mappings[update.Message.Text]
+	if !ok {
+		number, err := strconv.ParseInt(update.Message.Text, 10, 64)
+		if err != nil || number < int64(misc.ManyRoomNumber) || number > h.maxRoomNumber {
+			return h.helper.prepareMessage(update, "invalid_room_number", nil)
+		}
+		roomNumber = misc.ManyRoomNumber
+	}
+	_, err := tx.Exec(
+		`update transients set room_number = $1, status = $2 where id = $3`,
+		roomNumber,
+		misc.FloorStatus.String(),
+		update.Message.Chat.ID,
+	)
+	if err != nil {
+		return message, fmt.Errorf("telegram: handler failed to update a transient, %v", err)
+	}
+	return h.helper.prepareMessage(update, "valid_room_number", h.markup)
 }
