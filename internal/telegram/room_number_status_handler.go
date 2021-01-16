@@ -58,7 +58,7 @@ func (h *roomNumberStatusHandler) HandleStatusUpdate(
 	}
 	_, err := tx.Exec(
 		`update transients set room_number = $1, status = $2 where id = $3`,
-		roomNumber,
+		roomNumber.String(),
 		misc.FloorStatus.String(),
 		update.Message.Chat.ID,
 	)
