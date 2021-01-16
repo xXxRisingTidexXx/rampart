@@ -5,15 +5,16 @@ import (
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
 func NewDialogHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	return &dialogHandler{
 		bot,
 		db,
-		map[Status]StatusHandler{
-			CityStatus:  NewCityStatusHandler(bot, db),
-			PriceStatus: NewPriceStatusHandler(bot, db),
+		map[misc.Status]StatusHandler{
+			misc.CityStatus:  NewCityStatusHandler(bot, db),
+			misc.PriceStatus: NewPriceStatusHandler(bot, db),
 		},
 	}
 }
@@ -21,7 +22,7 @@ func NewDialogHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 type dialogHandler struct {
 	bot      *tgbotapi.BotAPI
 	db       *sql.DB
-	handlers map[Status]StatusHandler
+	handlers map[misc.Status]StatusHandler
 }
 
 func (h *dialogHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
@@ -42,7 +43,7 @@ func (h *dialogHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error)
 		return fields, fmt.Errorf("telegram: handler failed to read a transient, %v", err)
 	}
 	fields["status"] = view
-	status, ok := ToStatus(view)
+	status, ok := misc.ToStatus(view)
 	if !ok {
 		_ = tx.Rollback()
 		return fields, fmt.Errorf("telegram: handler failed to find a status")

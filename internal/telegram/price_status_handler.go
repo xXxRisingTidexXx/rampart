@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"strconv"
 	"strings"
 )
@@ -48,7 +49,7 @@ func (h *priceStatusHandler) HandleStatusUpdate(
 	if update.Message.Text == h.anyPrice {
 		_, err := tx.Exec(
 			`update transients set status = $1 where id = $2`,
-			RoomNumberStatus.String(),
+			misc.RoomNumberStatus.String(),
 			update.Message.Chat.ID,
 		)
 		if err != nil {
@@ -63,7 +64,7 @@ func (h *priceStatusHandler) HandleStatusUpdate(
 	_, err = tx.Exec(
 		`update transients set price = $1, status = $2 where id = $3`,
 		price,
-		RoomNumberStatus.String(),
+		misc.RoomNumberStatus.String(),
 		update.Message.Chat.ID,
 	)
 	if err != nil {

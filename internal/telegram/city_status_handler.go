@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
 func NewCityStatusHandler(bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
@@ -50,7 +51,7 @@ func (h *cityStatusHandler) HandleStatusUpdate(
 	}
 	_, err := tx.Exec(
 		`update transients set status = $1, city = $2 where id = $3`,
-		PriceStatus.String(),
+		misc.PriceStatus.String(),
 		update.Message.Text,
 		update.Message.Chat.ID,
 	)

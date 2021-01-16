@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
 func NewAddHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
@@ -40,7 +41,7 @@ func (h *addHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		values
 		($1, $2, $3, 0, 'any', 'any')`,
 		update.Message.Chat.ID,
-		CityStatus.String(),
+		misc.CityStatus.String(),
 		h.defaultCity,
 	)
 	if err != nil {
