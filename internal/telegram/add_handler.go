@@ -8,21 +8,15 @@ import (
 )
 
 func NewAddHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
-	return &addHandler{
-		&helper{bot},
-		db,
-		"Київ",
-	}
+	return &addHandler{&helper{bot}, db}
 }
 
 type addHandler struct {
 	helper      *helper
 	db          *sql.DB
-	defaultCity string
 }
 
-// TODO: move default city to config.
-// TODO: move default price to config.
+// TODO: add two most popular city autocomplete.
 func (h *addHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	fields := log.Fields{"handler": "add"}
 	tx, err := h.db.Begin()
@@ -34,19 +28,14 @@ func (h *addHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		_ = tx.Rollback()
 		return fields, fmt.Errorf("telegram: handler failed to delete a transient, %v", err)
 	}
-	_, err = tx.Exec(
-		`insert into transients (id, city) values ($1, $2)`,
-		update.Message.Chat.ID,
-		h.defaultCity,
-	)
+	_, err = tx.Exec(`insert into transients (id) values ($1)`, update.Message.Chat.ID)
 	if err != nil {
 		_ = tx.Rollback()
 		return fields, fmt.Errorf("telegram: handler failed to create a transient, %v", err)
 	}
-	buttons, city := tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(h.defaultCity)), ""
+	buttons, city := make([]tgbotapi.KeyboardButton, 0), ""
 	row := tx.QueryRow(
-		`select city from flats where city != $1 group by city order by count(*) desc limit 1`,
-		h.defaultCity,
+		`select city from flats group by city order by count(*) desc limit 1`,
 	)
 	switch err := row.Scan(&city); err {
 	case nil:
