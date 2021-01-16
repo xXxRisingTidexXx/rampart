@@ -23,7 +23,7 @@ func NewDispatcher(
 		bot,
 		config.Timeout,
 		config.WorkerNumber,
-		NewRootHandler(bot, db),
+		NewRootHandler(config.Handler, bot, db),
 		logger,
 	}, nil
 }

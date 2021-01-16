@@ -4,10 +4,11 @@ import (
 	"database/sql"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
-func NewRootHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
-	return &rootHandler{NewTextHandler(bot, db)}
+func NewRootHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+	return &rootHandler{NewTextHandler(config, bot, db)}
 }
 
 type rootHandler struct {

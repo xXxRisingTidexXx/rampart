@@ -27,6 +27,9 @@ func NewConfig() (Config, error) {
 	}
 	config.Warhol.InputPath = misc.ResolvePath(config.Warhol.InputPath)
 	config.Telegram.DSN = config.Messis.DSN
+	config.Telegram.Dispatcher.Handler.TemplatePath = misc.ResolvePath(
+		config.Telegram.Dispatcher.Handler.TemplatePath,
+	)
 	return config, nil
 }
 

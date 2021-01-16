@@ -4,9 +4,10 @@ import (
 	"database/sql"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
-func NewTextHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+func NewTextHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	handlers := make(map[string]Handler)
 	handlers["/start"] = NewStartHandler(bot)
 	handlers["Зрозуміло \U0001F44D"] = handlers["/start"]
