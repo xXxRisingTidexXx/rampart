@@ -29,7 +29,6 @@ type floorStatusHandler struct {
 	markup   tgbotapi.ReplyKeyboardMarkup
 }
 
-// TODO: subscription template rendering.
 func (h *floorStatusHandler) HandleStatusUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,
