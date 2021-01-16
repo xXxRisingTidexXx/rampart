@@ -39,10 +39,12 @@ func (h *addHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		`insert into transients
 		(id, status, city, price, room_number, floor)
 		values
-		($1, $2, $3, 0, 'any', 'any')`,
+		($1, $2, $3, 0, $4, $5)`,
 		update.Message.Chat.ID,
 		misc.CityStatus.String(),
 		h.defaultCity,
+		misc.AnyRoomNumber.String(),
+		misc.AnyFloor.String(),
 	)
 	if err != nil {
 		_ = tx.Rollback()
