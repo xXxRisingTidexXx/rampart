@@ -13,8 +13,9 @@ func NewDialogHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 		bot,
 		db,
 		map[misc.Status]StatusHandler{
-			misc.CityStatus:  NewCityStatusHandler(bot, db),
-			misc.PriceStatus: NewPriceStatusHandler(bot, db),
+			misc.CityStatus:       NewCityStatusHandler(bot, db),
+			misc.PriceStatus:      NewPriceStatusHandler(bot, db),
+			misc.RoomNumberStatus: NewRoomNumberStatusHandler(bot, db),
 		},
 	}
 }

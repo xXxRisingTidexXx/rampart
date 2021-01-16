@@ -1,47 +1,39 @@
 package telegram
 
-// TODO: handle mappings with enums.
-//func NewRoomNumberHandler(db *sql.DB) XHandler {
-//	return &roomNumberHandler{
-//		db,
-//		map[string]string{
-//			"Байдуже \uF612": "any",
-//			"1":              "one",
-//			"2":              "two",
-//			"3":              "three",
-//			"4+":             "many",
-//		},
-//		tgbotapi.NewReplyKeyboard(
-//			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Головне меню \U00002B05")),
-//		),
-//		tgbotapi.NewReplyKeyboard(
-//			tgbotapi.NewKeyboardButtonRow(
-//				tgbotapi.NewKeyboardButton("Ні"),
-//				tgbotapi.NewKeyboardButton("Так"),
-//			),
-//			tgbotapi.NewKeyboardButtonRow(
-//				tgbotapi.NewKeyboardButton("Байдуже \U0001F612"),
-//				tgbotapi.NewKeyboardButton("Головне меню \U00002B05"),
-//			),
-//		),
-//	}
-//}
-//
-//type roomNumberHandler struct {
-//	db            *sql.DB
-//	mappings      map[string]string
-//	invalidMarkup tgbotapi.ReplyKeyboardMarkup
-//	validMarkup   tgbotapi.ReplyKeyboardMarkup
-//}
-//
-//func (handler *roomNumberHandler) Name() string {
-//	return "room-number"
-//}
-//
-//// TODO: message randomization.
-//// TODO: number and other text handling.
-//// TODO: long text handling.
-//func (handler *roomNumberHandler) XHandleUpdate(bot *tgbotapi.BotAPI, update tgbotapi.Update) (bool, error) {
+import (
+	"database/sql"
+	"github.com/go-telegram-bot-api/telegram-bot-api"
+)
+
+func NewRoomNumberStatusHandler(bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
+	return &roomNumberStatusHandler{
+		&helper{bot},
+		db,
+		tgbotapi.NewReplyKeyboard(
+			tgbotapi.NewKeyboardButtonRow(
+				tgbotapi.NewKeyboardButton("Ні"),
+				tgbotapi.NewKeyboardButton("Так"),
+			),
+			tgbotapi.NewKeyboardButtonRow(
+				tgbotapi.NewKeyboardButton("Байдуже \U0001F612"),
+				tgbotapi.NewKeyboardButton("Головне меню \U00002B05"),
+			),
+		),
+	}
+}
+
+type roomNumberStatusHandler struct {
+	helper *helper
+	db     *sql.DB
+	markup tgbotapi.ReplyKeyboardMarkup
+}
+
+// TODO: number and other text handling.
+// TODO: long text handling.
+func (h *roomNumberStatusHandler) HandleStatusUpdate(
+	update tgbotapi.Update,
+	tx *sql.Tx,
+) (tgbotapi.MessageConfig, error) {
 //	if update.Message == nil || update.Message.Chat == nil || len(update.Message.Text) < 1 {
 //		return false, nil
 //	}
@@ -84,4 +76,5 @@ package telegram
 //		return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 //	}
 //	return true, sendMessage(bot, update, "valid_room_number", handler.validMarkup)
-//}
+	return tgbotapi.MessageConfig{}, nil
+}
