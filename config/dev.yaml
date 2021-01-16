@@ -207,6 +207,13 @@ telegram:
     worker-number: 2
     handler:
       template-path: templates
+      start-command: /start
+      start-button: 'Зрозуміло \U0001F44D'
+      help-command: /help
+      help-button: 'Довідка \U0001F64B'
+      menu-button: 'Головне меню \U00002B05'
+      add-button: 'Підписка \U0001F49C'
+
   server:
     address: :9005
     read-timeout: 5s

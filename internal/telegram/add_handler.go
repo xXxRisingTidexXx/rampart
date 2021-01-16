@@ -12,11 +12,12 @@ func NewAddHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 }
 
 type addHandler struct {
-	helper      *helper
-	db          *sql.DB
+	helper *helper
+	db     *sql.DB
 }
 
 // TODO: add two most popular city autocomplete.
+// TODO: add former subscription city autocomplete.
 func (h *addHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	fields := log.Fields{"handler": "add"}
 	tx, err := h.db.Begin()
