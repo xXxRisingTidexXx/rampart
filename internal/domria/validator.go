@@ -49,6 +49,7 @@ type Validator struct {
 	drain           *metrics.Drain
 }
 
+// TODO: lock flats with empty city. Probably, we need reverse geocoding to avoid this shit.
 func (validator *Validator) ValidateFlats(flats []Flat) []Flat {
 	newFlats := make([]Flat, 0, len(flats))
 	for _, flat := range flats {
