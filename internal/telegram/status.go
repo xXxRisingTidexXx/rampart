@@ -1,7 +1,5 @@
 package telegram
 
-import "fmt"
-
 type Status int
 
 const (
@@ -32,9 +30,7 @@ var viewStatuses = map[string]Status{
 	statusViews[FloorStatus]:      FloorStatus,
 }
 
-func ToStatus(view string) (Status, error) {
-	if status, ok := viewStatuses[view]; ok {
-		return status, nil
-	}
-	return 0, fmt.Errorf("telegram: status not found, %s", view)
+func ToStatus(view string) (Status, bool) {
+	status, ok := viewStatuses[view]
+	return status, ok
 }

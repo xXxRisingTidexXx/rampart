@@ -38,15 +38,15 @@ func (h *dialogHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error)
 		_ = tx.Rollback()
 		return fields, fmt.Errorf("telegram: handler failed to read a transient, %v", err)
 	}
-	status, err := ToStatus(view)
-	if err != nil {
+	fields["status"] = view
+	status, ok := ToStatus(view)
+	if !ok {
 		_ = tx.Rollback()
-		return fields, err
+		return fields, fmt.Errorf("telegram: handler failed to find a status")
 	}
 	handler, ok := h.handlers[status]
 	if !ok {
 		_ = tx.Rollback()
-		fields["status"] = view
 		return fields, fmt.Errorf("telegram: handler failed to handle a status")
 	}
 	fields = log.Fields{"handler": view}
