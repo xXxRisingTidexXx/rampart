@@ -22,6 +22,7 @@ type addHandler struct {
 }
 
 // TODO: move default city to config.
+// TODO: move default price to config.
 func (h *addHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	fields := log.Fields{"handler": "add"}
 	tx, err := h.db.Begin()
