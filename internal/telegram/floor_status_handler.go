@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
@@ -33,40 +34,31 @@ func (h *floorStatusHandler) HandleStatusUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,
 ) (tgbotapi.MessageConfig, error) {
-	//	floor, ok := handler.mappings[update.Message.Text]
-	//	if !ok {
-	//		if err := tx.Commit(); err != nil {
-	//			return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
-	//		}
-	//		return true, sendMessage(bot, update, "invalid_floor", handler.markup)
-	//	}
-	//	_, err = tx.Exec(
-	//		`insert into subscriptions
-	//		(chat_id, status, city, price, room_number, floor)
-	//		values
-	//		(
-	//			$1,
-	//		 	'actual',
-	//		 	(select city from transients where id = $1),
-	//		 	(select price from transients where id = $1),
-	//		 	(select room_number from transients where id = $1),
-	//		 	$2
-	//		)`,
-	//		update.Message.Chat.ID,
-	//		floor,
-	//	)
-	//	if err != nil {
-	//		_ = tx.Rollback()
-	//		return true, fmt.Errorf("telegram: handler failed to create a subscription, %v", err)
-	//	}
-	//	_, err = tx.Exec(`delete from transients where id = $1`, update.Message.Chat.ID)
-	//	if err != nil {
-	//		_ = tx.Rollback()
-	//		return true, fmt.Errorf("telegram: handler failed to delete a transient, %v", err)
-	//	}
-	//	if err := tx.Commit(); err != nil {
-	//		return true, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
-	//	}
-	//	return true, sendMessage(bot, update, "valid_floor", handler.markup)
-	return tgbotapi.MessageConfig{}, nil
+	floor, ok := h.mappings[update.Message.Text]
+	if !ok {
+		return h.helper.prepareMessage(update, "invalid_floor", nil)
+	}
+	var message tgbotapi.MessageConfig
+	_, err := tx.Exec(
+		`insert into subscriptions
+		(chat_id, city, price, room_number, floor)
+		values
+		(
+			$1,
+			(select city from transients where id = $1),
+			(select price from transients where id = $1),
+			(select room_number from transients where id = $1),
+			$2
+		)`,
+		update.Message.Chat.ID,
+		floor.String(),
+	)
+	if err != nil {
+		return message, fmt.Errorf("telegram: handler failed to create a subscription, %v", err)
+	}
+	_, err = tx.Exec(`delete from transients where id = $1`, update.Message.Chat.ID)
+	if err != nil {
+		return message, fmt.Errorf("telegram: handler failed to delete a transient, %v", err)
+	}
+	return h.helper.prepareMessage(update, "valid_floor", h.markup)
 }
