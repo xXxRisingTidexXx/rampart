@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
 func NewAddHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
@@ -36,15 +35,9 @@ func (h *addHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		return fields, fmt.Errorf("telegram: handler failed to delete a transient, %v", err)
 	}
 	_, err = tx.Exec(
-		`insert into transients
-		(id, status, city, price, room_number, floor)
-		values
-		($1, $2, $3, 0, $4, $5)`,
+		`insert into transients (id, city) values ($1, $2)`,
 		update.Message.Chat.ID,
-		misc.CityStatus.String(),
 		h.defaultCity,
-		misc.AnyRoomNumber.String(),
-		misc.AnyFloor.String(),
 	)
 	if err != nil {
 		_ = tx.Rollback()
