@@ -12,9 +12,6 @@ func NewCityStatusHandler(bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
 		db,
 		5,
 		tgbotapi.NewReplyKeyboard(
-			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Головне меню \U00002B05")),
-		),
-		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(
 				tgbotapi.NewKeyboardButton("Не знаю \U0001F615"),
 				tgbotapi.NewKeyboardButton("Головне меню \U00002B05"),
@@ -24,11 +21,10 @@ func NewCityStatusHandler(bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
 }
 
 type cityStatusHandler struct {
-	helper        *helper
-	db            *sql.DB
-	minFlatCount  int
-	absentMarkup  tgbotapi.ReplyKeyboardMarkup
-	presentMarkup tgbotapi.ReplyKeyboardMarkup
+	helper       *helper
+	db           *sql.DB
+	minFlatCount int
+	markup       tgbotapi.ReplyKeyboardMarkup
 }
 
 // TODO: fuzzy city matching.
@@ -50,7 +46,7 @@ func (h *cityStatusHandler) HandleStatusUpdate(
 		return message, fmt.Errorf("telegram: handler failed to read a city, %v", err)
 	}
 	if count < h.minFlatCount {
-		return h.helper.prepareMessage(update, "absent_city", h.absentMarkup)
+		return h.helper.prepareMessage(update, "absent_city", nil)
 	}
 	_, err := tx.Exec(
 		`update transients set status = $1, city = $2 where id = $3`,
@@ -61,5 +57,5 @@ func (h *cityStatusHandler) HandleStatusUpdate(
 	if err != nil {
 		return message, fmt.Errorf("telegram: handler failed to update a transient, %v", err)
 	}
-	return h.helper.prepareMessage(update, "present_city", h.presentMarkup)
+	return h.helper.prepareMessage(update, "present_city", h.markup)
 }
