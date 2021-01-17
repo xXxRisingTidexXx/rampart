@@ -31,6 +31,7 @@ type floorStatusHandler struct {
 }
 
 // TODO: handle similar subscriptions.
+// TODO: invalid input metric.
 func (h *floorStatusHandler) HandleStatusUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,

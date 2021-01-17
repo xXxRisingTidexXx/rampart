@@ -48,6 +48,7 @@ type roomNumberStatusHandler struct {
 	markup              tgbotapi.ReplyKeyboardMarkup
 }
 
+// TODO: invalid input metric.
 func (h *roomNumberStatusHandler) HandleStatusUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,

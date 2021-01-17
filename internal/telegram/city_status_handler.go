@@ -30,6 +30,7 @@ type cityStatusHandler struct {
 }
 
 // TODO: fuzzy city matching.
+// TODO: invalid city metric.
 func (h *cityStatusHandler) HandleStatusUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,

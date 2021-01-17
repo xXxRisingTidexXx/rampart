@@ -42,7 +42,6 @@ type priceStatusHandler struct {
 }
 
 // TODO: invalid input metric.
-// TODO: handle too long strings.
 func (h *priceStatusHandler) HandleStatusUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,
