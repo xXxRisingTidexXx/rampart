@@ -30,6 +30,7 @@ type floorStatusHandler struct {
 	markup   tgbotapi.ReplyKeyboardMarkup
 }
 
+// TODO: handle similar subscriptions.
 func (h *floorStatusHandler) HandleStatusUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,
