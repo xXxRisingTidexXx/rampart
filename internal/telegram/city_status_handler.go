@@ -4,18 +4,19 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
-func NewCityStatusHandler(bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
+func NewCityStatusHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
 	return &cityStatusHandler{
 		&helper{bot},
 		db,
-		5,
+		config.MinFlatCount,
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(
-				tgbotapi.NewKeyboardButton("Не знаю \U0001F615"),
-				tgbotapi.NewKeyboardButton("Головне меню \U00002B05"),
+				tgbotapi.NewKeyboardButton(config.AnyPriceButton),
+				tgbotapi.NewKeyboardButton(config.CancelButton),
 			),
 		),
 	}
@@ -30,7 +31,6 @@ type cityStatusHandler struct {
 
 // TODO: fuzzy city matching.
 // TODO: check back if city has no flats.
-// TODO: move min city flat count to config.
 func (h *cityStatusHandler) HandleStatusUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,

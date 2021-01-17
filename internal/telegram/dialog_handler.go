@@ -5,18 +5,19 @@ import (
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
-func NewDialogHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+func NewDialogHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	return &dialogHandler{
 		bot,
 		db,
 		map[misc.Status]StatusHandler{
-			misc.CityStatus:       NewCityStatusHandler(bot, db),
-			misc.PriceStatus:      NewPriceStatusHandler(bot, db),
-			misc.RoomNumberStatus: NewRoomNumberStatusHandler(bot, db),
-			misc.FloorStatus:      NewFloorStatusHandler(bot, db),
+			misc.CityStatus:       NewCityStatusHandler(config, bot, db),
+			misc.PriceStatus:      NewPriceStatusHandler(config, bot, db),
+			misc.RoomNumberStatus: NewRoomNumberStatusHandler(config, bot, db),
+			misc.FloorStatus:      NewFloorStatusHandler(config, bot, db),
 		},
 	}
 }

@@ -4,27 +4,28 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"strconv"
 	"strings"
 )
 
-func NewPriceStatusHandler(bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
+func NewPriceStatusHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
 	return &priceStatusHandler{
 		&helper{bot},
 		db,
-		"Не знаю \U0001F615",
+		config.AnyPriceButton,
 		strings.NewReplacer(",", ".", " ", "", "_", "", "\n", "", "\t", "", "$", ""),
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(
-				tgbotapi.NewKeyboardButton("1"),
-				tgbotapi.NewKeyboardButton("2"),
-				tgbotapi.NewKeyboardButton("3"),
-				tgbotapi.NewKeyboardButton("4+"),
+				tgbotapi.NewKeyboardButton(config.OneRoomNumberButton),
+				tgbotapi.NewKeyboardButton(config.TwoRoomNumberButton),
+				tgbotapi.NewKeyboardButton(config.ThreeRoomNumberButton),
+				tgbotapi.NewKeyboardButton(config.ManyRoomNumberButton),
 			),
 			tgbotapi.NewKeyboardButtonRow(
-				tgbotapi.NewKeyboardButton("Байдуже \U0001F612"),
-				tgbotapi.NewKeyboardButton("Головне меню \U00002B05"),
+				tgbotapi.NewKeyboardButton(config.AnyRoomNumberButton),
+				tgbotapi.NewKeyboardButton(config.CancelButton),
 			),
 		),
 	}

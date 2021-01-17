@@ -4,20 +4,21 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
-func NewFloorStatusHandler(bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
+func NewFloorStatusHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
 	return &floorStatusHandler{
 		&helper{bot},
 		db,
 		map[string]misc.Floor{
-			"Байдуже \U0001F612": misc.AnyFloor,
-			"Ні":                 misc.LowFloor,
-			"Так":                misc.HighFloor,
+			config.AnyFloorButton:  misc.AnyFloor,
+			config.LowFloorButton:  misc.LowFloor,
+			config.HighFloorButton: misc.HighFloor,
 		},
 		tgbotapi.NewReplyKeyboard(
-			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Зрозуміло \U0001F44D")),
+			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.StartButton)),
 		),
 	}
 }

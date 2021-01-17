@@ -4,30 +4,35 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"strconv"
 )
 
-func NewRoomNumberStatusHandler(bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
+func NewRoomNumberStatusHandler(
+	config config.Handler,
+	bot *tgbotapi.BotAPI,
+	db *sql.DB,
+) StatusHandler {
 	return &roomNumberStatusHandler{
 		&helper{bot},
 		db,
 		map[string]misc.RoomNumber{
-			"Байдуже \U0001F612": misc.AnyRoomNumber,
-			"1":                  misc.OneRoomNumber,
-			"2":                  misc.TwoRoomNumber,
-			"3":                  misc.ThreeRoomNumber,
-			"4+":                 misc.ManyRoomNumber,
+			config.AnyRoomNumberButton:   misc.AnyRoomNumber,
+			config.OneRoomNumberButton:   misc.OneRoomNumber,
+			config.TwoRoomNumberButton:   misc.TwoRoomNumber,
+			config.ThreeRoomNumberButton: misc.ThreeRoomNumber,
+			config.ManyRoomNumberButton:  misc.ManyRoomNumber,
 		},
-		20,
+		config.MaxRoomNumber,
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(
-				tgbotapi.NewKeyboardButton("Ні"),
-				tgbotapi.NewKeyboardButton("Так"),
+				tgbotapi.NewKeyboardButton(config.LowFloorButton),
+				tgbotapi.NewKeyboardButton(config.HighFloorButton),
 			),
 			tgbotapi.NewKeyboardButtonRow(
-				tgbotapi.NewKeyboardButton("Байдуже \U0001F612"),
-				tgbotapi.NewKeyboardButton("Головне меню \U00002B05"),
+				tgbotapi.NewKeyboardButton(config.AnyFloorButton),
+				tgbotapi.NewKeyboardButton(config.CancelButton),
 			),
 		),
 	}
@@ -41,7 +46,6 @@ type roomNumberStatusHandler struct {
 	markup        tgbotapi.ReplyKeyboardMarkup
 }
 
-// TODO: move max room number to config.
 // TODO: long text handling.
 func (h *roomNumberStatusHandler) HandleStatusUpdate(
 	update tgbotapi.Update,
