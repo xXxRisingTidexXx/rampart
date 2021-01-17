@@ -12,7 +12,6 @@ import (
 
 // TODO: think about signal handling & graceful shutdown.
 // TODO: think about viber integration, https://github.com/mileusna/viber .
-// TODO: configure bot commands at BotFather.
 // TODO: think about max connections, https://www.alexedwards.net/blog/configuring-sqldb .
 func main() {
 	log.SetFormatter(&log.JSONFormatter{})
