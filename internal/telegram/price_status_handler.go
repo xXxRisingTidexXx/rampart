@@ -14,7 +14,7 @@ func NewPriceStatusHandler(bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
 		&helper{bot},
 		db,
 		"Не знаю \U0001F615",
-		strings.NewReplacer(",", ".", " ", "", "_", "", "\n", "", "\t", ""),
+		strings.NewReplacer(",", ".", " ", "", "_", "", "\n", "", "\t", "", "$", ""),
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(
 				tgbotapi.NewKeyboardButton("1"),
