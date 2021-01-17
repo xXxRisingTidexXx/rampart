@@ -15,7 +15,8 @@ func NewPriceStatusHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.
 		&helper{bot},
 		db,
 		config.AnyPriceButton,
-		strings.NewReplacer(",", ".", " ", "", "_", "", "\n", "", "\t", "", "$", ""),
+		config.MaxPriceLength,
+		strings.NewReplacer(",", ".", " ", "", "\n", "", "\t", "", "$", ""),
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(
 				tgbotapi.NewKeyboardButton(config.OneRoomNumberButton),
@@ -32,16 +33,16 @@ func NewPriceStatusHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.
 }
 
 type priceStatusHandler struct {
-	helper   *helper
-	db       *sql.DB
-	anyPrice string
-	replacer *strings.Replacer
-	markup   tgbotapi.ReplyKeyboardMarkup
+	helper         *helper
+	db             *sql.DB
+	anyPrice       string
+	maxPriceLength int
+	replacer       *strings.Replacer
+	markup         tgbotapi.ReplyKeyboardMarkup
 }
 
 // TODO: invalid input metric.
 // TODO: handle too long strings.
-// TODO: handle negative price.
 func (h *priceStatusHandler) HandleStatusUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,
@@ -58,8 +59,11 @@ func (h *priceStatusHandler) HandleStatusUpdate(
 		}
 		return h.helper.prepareMessage(update, "valid_price", h.markup)
 	}
+	if len(update.Message.Text) > h.maxPriceLength {
+		return h.helper.prepareMessage(update, "invalid_price", nil)
+	}
 	price, err := strconv.ParseFloat(h.replacer.Replace(update.Message.Text), 64)
-	if err != nil || price <= 0 {
+	if err != nil || price < 0 {
 		return h.helper.prepareMessage(update, "invalid_price", nil)
 	}
 	_, err = tx.Exec(
