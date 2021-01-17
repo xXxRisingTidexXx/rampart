@@ -222,8 +222,8 @@ telegram:
       low-floor-button: Ні
       high-floor-button: Так
       template-path: templates
-      min-flat-count: 5
-      max-room-number: 12
+      min-flat-count: 10
+      max-room-number: 10
   server:
     address: :9005
     read-timeout: 5s
