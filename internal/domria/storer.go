@@ -11,6 +11,9 @@ import (
 )
 
 // TODO: shorten house number column (but research the actual width before).
+// TODO: should we use flats' event sourcing? This means we don't mutate rows,
+//  but add updated ones to avoid inconsistent lookups. We achieve this thing
+//  using flat statuses.
 func NewStorer(
 	config config.Storer,
 	db *sql.DB,
