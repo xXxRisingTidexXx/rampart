@@ -212,7 +212,7 @@ telegram:
       help-button: "Довідка \U0001F64B"
       cancel-button: "Головне меню \U00002B05"
       add-button: "Підписка \U0001F49C"
-      list-button: "Наявне \U0001F4DC"
+      list-button: "Наявне \U0001F5C4"
       any-price-button: "Не знаю \U0001F615"
       any-room-number-button: "Байдуже \U0001F612"
       one-room-number-button: '1'
