@@ -15,6 +15,7 @@ func NewTextHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Han
 	handlers[config.HelpButton] = handlers[config.HelpCommand]
 	handlers[config.CancelButton] = NewCancelHandler(config, bot, db)
 	handlers[config.AddButton] = NewAddHandler(config, bot, db)
+	handlers[config.ListButton] = NewListHandler(config, bot, db)
 	return &textHandler{handlers, NewDialogHandler(config, bot, db)}
 }
 

@@ -12,8 +12,9 @@ func NewStartHandler(config config.Handler, bot *tgbotapi.BotAPI) Handler {
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(
 				tgbotapi.NewKeyboardButton(config.AddButton),
-				tgbotapi.NewKeyboardButton(config.HelpButton),
+				tgbotapi.NewKeyboardButton(config.ListButton),
 			),
+			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.HelpButton)),
 		),
 	}
 }

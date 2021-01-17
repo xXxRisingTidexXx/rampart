@@ -15,8 +15,9 @@ func NewCancelHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) H
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(
 				tgbotapi.NewKeyboardButton(config.AddButton),
-				tgbotapi.NewKeyboardButton(config.HelpButton),
+				tgbotapi.NewKeyboardButton(config.ListButton),
 			),
+			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.HelpButton)),
 		),
 	}
 }
