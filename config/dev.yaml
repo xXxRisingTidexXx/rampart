@@ -207,20 +207,20 @@ telegram:
     worker-number: 2
     handler:
       start-command: /start
-      start-button: 'Зрозуміло \U0001F44D'
+      start-button: "Зрозуміло \U0001F44D"
       help-command: /help
-      help-button: 'Довідка \U0001F64B'
-      cancel-button: 'Головне меню \U00002B05'
-      add-button: 'Підписка \U0001F49C'
-      any-price-button: 'Не знаю \U0001F615'
-      any-room-number-button: 'Байдуже \U0001F612'
+      help-button: "Довідка \U0001F64B"
+      cancel-button: "Головне меню \U00002B05"
+      add-button: "Підписка \U0001F49C"
+      any-price-button: "Не знаю \U0001F615"
+      any-room-number-button: "Байдуже \U0001F612"
       one-room-number-button: '1'
       two-room-number-button: '2'
       three-room-number-button: '3'
       many-room-number-button: '4+'
-      any-floor-button: 'Байдуже \UU0001F612'
-      low-floor-button: 'Ні'
-      high-floor-button: 'Так'
+      any-floor-button: "Байдуже \U0001F612"
+      low-floor-button: Ні
+      high-floor-button: Так
       template-path: templates
       min-flat-count: 5
       max-room-number: 12
