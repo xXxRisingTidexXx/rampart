@@ -223,6 +223,8 @@ telegram:
       high-floor-button: Так
       template-path: templates
       min-flat-count: 10
+      max-price-length: 15
+      max-room-number-length: 2
       max-room-number: 10
   server:
     address: :9005

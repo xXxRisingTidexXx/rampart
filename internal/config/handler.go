@@ -18,5 +18,7 @@ type Handler struct {
 	HighFloorButton       string `yaml:"high-floor-button"`
 	TemplatePath          string `yaml:"template-path"`  // TODO: use it in helper's randomization.
 	MinFlatCount          int    `yaml:"min-flat-count"`
+	MaxPriceLength        int    `yaml:"max-price-length"`
+	MaxRoomNumberLength   int    `yaml:"max-room-number-length"`
 	MaxRoomNumber         int64  `yaml:"max-room-number"`
 }
