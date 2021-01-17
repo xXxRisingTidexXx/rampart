@@ -7,6 +7,7 @@ type Handler struct {
 	HelpButton            string `yaml:"help-button"`
 	CancelButton          string `yaml:"cancel-button"`
 	AddButton             string `yaml:"add-button"`
+	ListButton            string `yaml:"list-button"`
 	AnyPriceButton        string `yaml:"any-price-button"`
 	AnyRoomNumberButton   string `yaml:"any-room-number-button"`
 	OneRoomNumberButton   string `yaml:"one-room-number-button"`
