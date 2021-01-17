@@ -30,7 +30,6 @@ type cityStatusHandler struct {
 }
 
 // TODO: fuzzy city matching.
-// TODO: check back if city has no flats.
 func (h *cityStatusHandler) HandleStatusUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,

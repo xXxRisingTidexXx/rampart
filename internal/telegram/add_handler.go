@@ -18,8 +18,7 @@ type addHandler struct {
 	button tgbotapi.KeyboardButton
 }
 
-// TODO: add two most popular city autocomplete.
-// TODO: add former subscription city autocomplete.
+// TODO: should we add personalized autocomplete based on used cities?
 func (h *addHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	fields := log.Fields{"handler": "add"}
 	tx, err := h.db.Begin()
@@ -36,27 +35,37 @@ func (h *addHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		_ = tx.Rollback()
 		return fields, fmt.Errorf("telegram: handler failed to create a transient, %v", err)
 	}
-	buttons, city := make([]tgbotapi.KeyboardButton, 0), ""
-	row := tx.QueryRow(
-		`select city from flats group by city order by count(*) desc limit 1`,
-	)
-	switch err := row.Scan(&city); err {
-	case nil:
-		buttons = append(buttons, tgbotapi.NewKeyboardButton(city))
-	case sql.ErrNoRows:
-	default:
+	rows, err := tx.Query(`select city from flats group by city order by count(*) desc limit 2`)
+	if err != nil {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to select a city, %v", err)
+		return fields, fmt.Errorf("telegram: handler failed to read cities, %v", err)
+	}
+	buttons := tgbotapi.NewKeyboardButtonRow()
+	for rows.Next() {
+		var city string
+		if err := rows.Scan(&city); err != nil {
+			_ = rows.Close()
+			_ = tx.Rollback()
+			return fields, fmt.Errorf("telegram: handler failed to scan a row, %v", err)
+		}
+		buttons = append(buttons, tgbotapi.NewKeyboardButton(city))
+	}
+	if err := rows.Err(); err != nil {
+		_ = rows.Close()
+		_ = tx.Rollback()
+		return fields, fmt.Errorf("telegram: handler failed to finish iteration, %v", err)
+	}
+	if err := rows.Close(); err != nil {
+		_ = tx.Rollback()
+		return fields, fmt.Errorf("telegram: handler failed to close rows, %v", err)
 	}
 	if err := tx.Commit(); err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	return fields, h.helper.sendMessage(
-		update,
-		"add",
-		tgbotapi.NewReplyKeyboard(
-			buttons,
-			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Головне меню \U00002B05")),
-		),
-	)
+	keyboard := make([][]tgbotapi.KeyboardButton, 0)
+	if len(buttons) > 0 {
+		keyboard = append(keyboard, buttons)
+	}
+	keyboard = append(keyboard, tgbotapi.NewKeyboardButtonRow(h.button))
+	return fields, h.helper.sendMessage(update, "add", tgbotapi.NewReplyKeyboard(keyboard...))
 }
