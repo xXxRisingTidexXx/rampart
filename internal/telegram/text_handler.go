@@ -9,12 +9,12 @@ import (
 
 func NewTextHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	handlers := make(map[string]Handler)
-	handlers["/start"] = NewStartHandler(bot)
-	handlers["Зрозуміло \U0001F44D"] = handlers["/start"]
-	handlers["/help"] = NewHelpHandler(bot)
-	handlers["Довідка \U0001F64B"] = handlers["/help"]
-	handlers["Головне меню \U00002B05"] = NewCancelHandler(bot, db)
-	handlers["Підписка \U0001F49C"] = NewAddHandler(bot, db)
+	handlers[config.StartCommand] = NewStartHandler(config, bot)
+	handlers[config.StartButton] = handlers[config.StartCommand]
+	handlers[config.HelpCommand] = NewHelpHandler(config, bot)
+	handlers[config.HelpButton] = handlers[config.HelpCommand]
+	handlers[config.CancelButton] = NewCancelHandler(bot, db)
+	handlers[config.AddButton] = NewAddHandler(bot, db)
 	return &textHandler{handlers, NewDialogHandler(bot, db)}
 }
 

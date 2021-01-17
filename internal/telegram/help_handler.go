@@ -3,13 +3,14 @@ package telegram
 import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
-func NewHelpHandler(bot *tgbotapi.BotAPI) Handler {
+func NewHelpHandler(config config.Handler, bot *tgbotapi.BotAPI) Handler {
 	return &helpHandler{
 		&helper{bot},
 		tgbotapi.NewReplyKeyboard(
-			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton("Зрозуміло \U0001F44D")),
+			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.StartButton)),
 		),
 	}
 }
