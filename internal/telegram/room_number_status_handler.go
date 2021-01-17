@@ -24,6 +24,7 @@ func NewRoomNumberStatusHandler(
 			config.ThreeRoomNumberButton: misc.ThreeRoomNumber,
 			config.ManyRoomNumberButton:  misc.ManyRoomNumber,
 		},
+		config.MaxRoomNumberLength,
 		config.MaxRoomNumber,
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(
@@ -39,14 +40,14 @@ func NewRoomNumberStatusHandler(
 }
 
 type roomNumberStatusHandler struct {
-	helper        *helper
-	db            *sql.DB
-	mappings      map[string]misc.RoomNumber
-	maxRoomNumber int64
-	markup        tgbotapi.ReplyKeyboardMarkup
+	helper              *helper
+	db                  *sql.DB
+	mappings            map[string]misc.RoomNumber
+	maxRoomNumberLength int
+	maxRoomNumber       int64
+	markup              tgbotapi.ReplyKeyboardMarkup
 }
 
-// TODO: long text handling.
 func (h *roomNumberStatusHandler) HandleStatusUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,
@@ -54,6 +55,9 @@ func (h *roomNumberStatusHandler) HandleStatusUpdate(
 	var message tgbotapi.MessageConfig
 	roomNumber, ok := h.mappings[update.Message.Text]
 	if !ok {
+		if len(update.Message.Text) > h.maxRoomNumberLength {
+			return h.helper.prepareMessage(update, "invalid_room_number", nil)
+		}
 		number, err := strconv.ParseInt(update.Message.Text, 10, 64)
 		if err != nil || number < int64(misc.ManyRoomNumber) || number > h.maxRoomNumber {
 			return h.helper.prepareMessage(update, "invalid_room_number", nil)
