@@ -5,16 +5,17 @@ import (
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
-func NewCancelHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+func NewCancelHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	return &cancelHandler{
 		&helper{bot},
 		db,
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(
-				tgbotapi.NewKeyboardButton("Підписка \U0001F49C"),
-				tgbotapi.NewKeyboardButton("Довідка \U0001F64B"),
+				tgbotapi.NewKeyboardButton(config.AddButton),
+				tgbotapi.NewKeyboardButton(config.HelpButton),
 			),
 		),
 	}

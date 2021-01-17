@@ -5,15 +5,17 @@ import (
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
-func NewAddHandler(bot *tgbotapi.BotAPI, db *sql.DB) Handler {
-	return &addHandler{&helper{bot}, db}
+func NewAddHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+	return &addHandler{&helper{bot}, db, tgbotapi.NewKeyboardButton(config.CancelButton)}
 }
 
 type addHandler struct {
 	helper *helper
 	db     *sql.DB
+	button tgbotapi.KeyboardButton
 }
 
 // TODO: add two most popular city autocomplete.
