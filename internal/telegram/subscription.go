@@ -1,9 +1,10 @@
 package telegram
 
+// TODO: add UUID generation: https://github.com/gofrs/uuid .
 type subscription struct {
 	ID         int
 	City       string
-	Price      float32
+	Price      string
 	RoomNumber string
 	Floor      string
 }
