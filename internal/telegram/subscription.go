@@ -1,6 +1,7 @@
 package telegram
 
-type Subscription struct {
+type subscription struct {
+	ID         int
 	City       string
 	Price      float32
 	RoomNumber string

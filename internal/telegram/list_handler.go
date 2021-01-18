@@ -9,12 +9,19 @@ import (
 )
 
 func NewListHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
-	return &listHandler{&helper{bot}, db}
+	return &listHandler{
+		&helper{bot},
+		db,
+		tgbotapi.NewReplyKeyboard(
+			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.StartButton)),
+		),
+	}
 }
 
 type listHandler struct {
 	helper *helper
 	db     *sql.DB
+	markup tgbotapi.ReplyKeyboardMarkup
 }
 
 func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
@@ -24,7 +31,7 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
 	rows, err := tx.Query(
-		`select city, price, room_number, floor
+		`select id, city, price, room_number, floor
 		from subscriptions
 		where status = 'actual'
 			and chat_id = $1`,
@@ -34,20 +41,17 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		_ = tx.Rollback()
 		return fields, fmt.Errorf("telegram: handler failed to read subscriptions, %v", err)
 	}
+	subscriptions := make([]subscription, 0)
 	for rows.Next() {
-		var subscription Subscription
-		err := rows.Scan(
-			&subscription.City,
-			&subscription.Price,
-			&subscription.RoomNumber,
-			&subscription.Floor,
-		)
+		var s subscription
+		err := rows.Scan(&s.ID, &s.City, &s.Price, &s.RoomNumber, &s.Floor)
 		if err != nil {
 			_ = rows.Close()
 			_ = tx.Rollback()
+			fields["subscription_id"] = s.ID
 			return fields, fmt.Errorf("telegram: handler failed to scan a row, %v", err)
 		}
-		log.Info(subscription)
+		subscriptions = append(subscriptions, s)
 	}
 	if err := rows.Err(); err != nil {
 		_ = rows.Close()
@@ -60,6 +64,15 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	}
 	if err := tx.Commit(); err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+	}
+	if len(subscriptions) == 0 {
+		return fields, h.helper.sendMessage(update, "empty_list", h.markup)
+	}
+	for _, s := range subscriptions {
+		if err := h.helper.sendTemplate(update, "full_list", s, h.markup); err != nil {
+			fields["subscription_id"] = s.ID
+			return fields, err
+		}
 	}
 	return fields, nil
 }
