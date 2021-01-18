@@ -13,8 +13,8 @@ func NewStartHandler(config config.Handler, bot *tgbotapi.BotAPI) Handler {
 			tgbotapi.NewKeyboardButtonRow(
 				tgbotapi.NewKeyboardButton(config.AddButton),
 				tgbotapi.NewKeyboardButton(config.ListButton),
+				tgbotapi.NewKeyboardButton(config.HelpButton),
 			),
-			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.HelpButton)),
 		),
 	}
 }
