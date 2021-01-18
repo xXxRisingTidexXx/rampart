@@ -6,12 +6,27 @@ import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
+// TODO: move placeholders to config.
 func NewListHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	return &listHandler{
 		&helper{bot},
 		db,
+		"довільна",
+		map[string]string{
+			misc.AnyRoomNumber.String():   "довільна",
+			misc.OneRoomNumber.String():   "1",
+			misc.TwoRoomNumber.String():   "2",
+			misc.ThreeRoomNumber.String(): "3",
+			misc.ManyRoomNumber.String():  "4+",
+		},
+		map[string]string{
+			misc.AnyFloor.String():  "довільний",
+			misc.LowFloor.String():  "низький",
+			misc.HighFloor.String(): "високий",
+		},
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.StartButton)),
 		),
@@ -19,9 +34,12 @@ func NewListHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Han
 }
 
 type listHandler struct {
-	helper *helper
-	db     *sql.DB
-	markup tgbotapi.ReplyKeyboardMarkup
+	helper                 *helper
+	db                     *sql.DB
+	anyPricePlaceholder    string
+	roomNumberPlaceholders map[string]string
+	floorPlaceholders      map[string]string
+	markup                 tgbotapi.ReplyKeyboardMarkup
 }
 
 func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
@@ -43,15 +61,33 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	}
 	subscriptions := make([]subscription, 0)
 	for rows.Next() {
-		var s subscription
-		err := rows.Scan(&s.ID, &s.City, &s.Price, &s.RoomNumber, &s.Floor)
+		var (
+			id         int
+			city       string
+			price      float32
+			roomNumber string
+			floor      string
+		)
+		err := rows.Scan(&id, &city, &price, &roomNumber, &floor)
 		if err != nil {
 			_ = rows.Close()
 			_ = tx.Rollback()
-			fields["subscription_id"] = s.ID
+			fields["subscription_id"] = id
 			return fields, fmt.Errorf("telegram: handler failed to scan a row, %v", err)
 		}
-		subscriptions = append(subscriptions, s)
+		shape := h.anyPricePlaceholder
+		if price > 0 {
+			shape = fmt.Sprintf("%.2f $", price)
+		}
+		roomNumber, ok := h.roomNumberPlaceholders[roomNumber]
+		if !ok {
+			roomNumber = h.roomNumberPlaceholders[misc.AnyRoomNumber.String()]
+		}
+		floor, ok = h.floorPlaceholders[floor]
+		if !ok {
+			floor = h.floorPlaceholders[misc.AnyFloor.String()]
+		}
+		subscriptions = append(subscriptions, subscription{id, city, shape, roomNumber, floor})
 	}
 	if err := rows.Err(); err != nil {
 		_ = rows.Close()
