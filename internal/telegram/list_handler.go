@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"strconv"
 )
 
 func NewListHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
@@ -29,6 +30,9 @@ func NewListHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Han
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.StartButton)),
 		),
+		config.DeleteButton,
+		config.DeletePrefix,
+		config.DataSeparator,
 	}
 }
 
@@ -39,6 +43,9 @@ type listHandler struct {
 	roomNumberPlaceholders map[string]string
 	floorPlaceholders      map[string]string
 	markup                 tgbotapi.ReplyKeyboardMarkup
+	deleteButton           string
+	deletePrefix           string
+	dataSeparator          string
 }
 
 func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
@@ -108,7 +115,20 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		return fields, h.helper.sendMessage(update, "empty_list", h.markup)
 	}
 	for _, s := range subscriptions {
-		if err := h.helper.sendTemplate(update, "full_list", s, h.markup); err != nil {
+		err := h.helper.sendTemplate(
+			update,
+			"full_list",
+			s,
+			tgbotapi.NewInlineKeyboardMarkup(
+				tgbotapi.NewInlineKeyboardRow(
+					tgbotapi.NewInlineKeyboardButtonData(
+						h.deleteButton,
+						h.deletePrefix+h.dataSeparator+strconv.Itoa(s.ID),
+					),
+				),
+			),
+		)
+		if err != nil {
 			fields["subscription_id"] = s.ID
 			return fields, err
 		}
