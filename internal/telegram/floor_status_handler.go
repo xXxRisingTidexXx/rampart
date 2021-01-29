@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	"github.com/gofrs/uuid"
+	"github.com/lithammer/shortuuid"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
@@ -41,12 +41,8 @@ func (h *floorStatusHandler) HandleStatusUpdate(
 	if !ok {
 		return h.helper.prepareMessage(update, "invalid_floor", nil)
 	}
-	u, err := uuid.NewV4()
 	var message tgbotapi.MessageConfig
-	if err != nil {
-		return message, fmt.Errorf("telegram: handler failed to generate a uuid v4, %v", err)
-	}
-	_, err = tx.Exec(
+	_, err := tx.Exec(
 		`insert into subscriptions
 		(uuid, chat_id, city, price, room_number, floor)
 		values
@@ -58,7 +54,7 @@ func (h *floorStatusHandler) HandleStatusUpdate(
 			(select room_number from transients where id = $2),
 			$3
 		)`,
-		u.String(),
+		shortuuid.New(),
 		update.Message.Chat.ID,
 		floor.String(),
 	)

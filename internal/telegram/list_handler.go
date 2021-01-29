@@ -48,7 +48,7 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
 	rows, err := tx.Query(
-		`select id, city, price, room_number, floor
+		`select id, uuid, city, price, room_number, floor
 		from subscriptions
 		where status = 'actual'
 			and chat_id = $1`,
@@ -62,12 +62,13 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	for rows.Next() {
 		var (
 			id         int
+			uuid       string
 			city       string
 			price      float32
 			roomNumber string
 			floor      string
 		)
-		err := rows.Scan(&id, &city, &price, &roomNumber, &floor)
+		err := rows.Scan(&id, &uuid, &city, &price, &roomNumber, &floor)
 		if err != nil {
 			_ = rows.Close()
 			_ = tx.Rollback()
@@ -86,7 +87,10 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		if !ok {
 			floor = h.floorPlaceholders[misc.AnyFloor.String()]
 		}
-		subscriptions = append(subscriptions, subscription{id, city, shape, roomNumber, floor})
+		subscriptions = append(
+			subscriptions,
+			subscription{id, uuid, city, shape, roomNumber, floor},
+		)
 	}
 	if err := rows.Err(); err != nil {
 		_ = rows.Close()
