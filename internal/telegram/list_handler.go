@@ -9,23 +9,22 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
-// TODO: move placeholders to config.
 func NewListHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	return &listHandler{
 		&helper{bot},
 		db,
-		"довільна",
+		config.AnyPricePlaceholder,
 		map[string]string{
-			misc.AnyRoomNumber.String():   "довільна",
-			misc.OneRoomNumber.String():   "1",
-			misc.TwoRoomNumber.String():   "2",
-			misc.ThreeRoomNumber.String(): "3",
-			misc.ManyRoomNumber.String():  "4+",
+			misc.AnyRoomNumber.String():   config.AnyRoomNumberPlaceholder,
+			misc.OneRoomNumber.String():   config.OneRoomNumberPlaceholder,
+			misc.TwoRoomNumber.String():   config.TwoRoomNumberPlaceholder,
+			misc.ThreeRoomNumber.String(): config.ThreeRoomNumberPlaceholder,
+			misc.ManyRoomNumber.String():  config.ManyRoomNumberPlaceholder,
 		},
 		map[string]string{
-			misc.AnyFloor.String():  "довільний",
-			misc.LowFloor.String():  "низький",
-			misc.HighFloor.String(): "високий",
+			misc.AnyFloor.String():  config.AnyFloorPlaceholder,
+			misc.LowFloor.String():  config.LowFloorPlaceholder,
+			misc.HighFloor.String(): config.HighFloorPlaceholder,
 		},
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.StartButton)),
