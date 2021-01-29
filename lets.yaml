@@ -7,7 +7,7 @@ commands:
       if [[ ! -e .env ]]; then touch .env ; fi && \
       mkdir -p scientific scientific/images scientific/models scientific/tables && \
       if [[ ! -e scientific/images.csv ]]; then touch scientific/images.csv ; fi && \
-      docker-compose build messis gochecks notebook twinkle auge pychecks
+      docker-compose build golang notebook python
   database:
     description: Run the DB server
     cmd: docker-compose up -d database
@@ -50,12 +50,6 @@ commands:
     cmd: |
       docker-compose up telegram
       docker rm rampart-telegram
-  lint:
-    description: Lint the source code
-    cmd: docker-compose run --rm lint
-  test:
-    description: Run test suites
-    cmd: docker-compose run --rm test
   notebook:
     description: Setup Jupyter Notebook server
     cmd: |
@@ -71,20 +65,11 @@ commands:
   auge:
     description: Run image classification task
     cmd: docker-compose run --rm auge
-  flake8:
-    description: Run python code linter
-    cmd: docker-compose run --rm flake8
-  mypy:
-    description: Run python type checker
-    cmd: docker-compose run --rm mypy
-  pytest:
-    description: Run python test suites
-    cmd: docker-compose run --rm pytest
   run:
     description: Activate the whole rampart ecosystem
     cmd: |
-      docker-compose up messis-domria-primary messis-domria-secondary twinkle-cron auge-cron
-      docker rm rampart-messis-domria-primary rampart-messis-domria-secondary rampart-twinkle-cron rampart-auge-cron
+      docker-compose up messis-domria-primary messis-domria-secondary twinkle-cron auge-cron telegram
+      docker rm rampart-messis-domria-primary rampart-messis-domria-secondary rampart-twinkle-cron rampart-auge-cron rampart-telegram
   stop:
     description: Dispose all docker stuff
     cmd: docker-compose down

@@ -5,8 +5,8 @@ x-migrate: &x-migrate
     - ./migrations:/migrations
   env_file:
     - .env
-x-messis: &x-messis
-  image: rampart-messis
+x-golang: &x-golang
+  image: rampart-golang
   volumes:
     - ./go.mod:/go/src/app/go.mod
     - ./go.sum:/go/src/app/go.sum
@@ -18,29 +18,8 @@ x-messis: &x-messis
     - ./templates:/go/src/app/templates
   env_file:
     - .env
-x-gochecks: &x-gochecks
-  image: rampart-gochecks
-  volumes:
-    - ./go.mod:/go/src/app/go.mod
-    - ./go.sum:/go/src/app/go.sum
-    - ./.golangci.yml:/go/src/app/.golangci.yml
-    - ./cmd:/go/src/app/cmd
-    - ./internal:/go/src/app/internal
-    - ./config:/go/src/app/config
-  env_file:
-    - .env
-x-twinkle: &x-twinkle
-  image: rampart-twinkle
-  volumes:
-    - ./requirements:/app/requirements
-    - ./rampart:/app/rampart
-    - ./scientific:/app/scientific
-    - ./config:/app/config
-  env_file:
-    - .env
-x-auge: &x-auge
-  image: rampart-auge
-  entrypoint: python -m rampart.auge
+x-python: &x-python
+  image: rampart-python
   volumes:
     - ./requirements:/app/requirements
     - ./rampart:/app/rampart
@@ -49,15 +28,6 @@ x-auge: &x-auge
   env_file:
     - .env
   ipc: host
-x-pychecks: &x-pychecks
-  image: rampart-pychecks
-  volumes:
-    - ./tox.ini:/app/tox.ini
-    - ./requirements:/app/requirements
-    - ./rampart:/app/rampart
-    - ./config:/app/config
-  env_file:
-    - .env
 services:
   database:
     image: postgis/postgis:13-3.0-alpine
@@ -79,44 +49,29 @@ services:
   generate:
     <<: *x-migrate
     container_name: rampart-generate
-  messis:
-    <<: *x-messis
+  golang:
     build:
       context: .
-      dockerfile: docker/messis.dockerfile
+      dockerfile: docker/golang.dockerfile
+    image: rampart-golang
+  messis:
+    <<: *x-golang
     container_name: rampart-messis
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -debug -miner domria-primary
   warhol:
-    <<: *x-messis
+    <<: *x-golang
     container_name: rampart-warhol
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/warhol
   travesty:
-    <<: *x-messis
+    <<: *x-golang
     container_name: rampart-travesty
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/travesty
   telegram:
-    <<: *x-messis
+    <<: *x-golang
     container_name: rampart-telegram
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/telegram
     ports:
       - 9005:9005
-  gochecks:
-    build:
-      context: .
-      dockerfile: docker/gochecks.dockerfile
-    image: rampart-gochecks
-  lint:
-    <<: *x-gochecks
-    container_name: rampart-lint
-    command: golangci-lint run
-  test:
-    <<: *x-gochecks
-    container_name: rampart-test
-    command:
-      - richgo
-      - test
-      - github.com/xXxRisingTidexXx/rampart/internal/domria
-      - github.com/xXxRisingTidexXx/rampart/internal/metrics
   notebook:
     build:
       context: .
@@ -137,62 +92,45 @@ services:
       - 8888:8888
     env_file:
       - .env
-  twinkle:
-    <<: *x-twinkle
+  python:
     build:
       context: .
-      dockerfile: docker/twinkle.dockerfile
+      dockerfile: docker/python.dockerfile
+    image: rampart-python
+  twinkle:
+    <<: *x-python
     container_name: rampart-twinkle
     command: python -m rampart.twinkle -debug
   coquus:
-    <<: *x-twinkle
+    <<: *x-python
     container_name: rampart-coquus
     command: python -m rampart.coquus
   auge:
-    <<: *x-auge
-    build:
-      context: .
-      dockerfile: docker/auge.dockerfile
+    <<: *x-python
     container_name: rampart-auge
-    command: -debug
-  pychecks:
-    build:
-      context: .
-      dockerfile: docker/pychecks.dockerfile
-    image: rampart-pychecks
-  flake8:
-    <<: *x-pychecks
-    container_name: rampart-flake8
-    command: flake8 --config=tox.ini .
-  mypy:
-    <<: *x-pychecks
-    container_name: rampart-mypy
-    command: mypy --ignore-missing-imports rampart
-  pytest:
-    <<: *x-pychecks
-    container_name: rampart-pytest
-    command: pytest -vv rampart --full-trace -p no:cacheprovider
+    command: python -m rampart.auge -debug
   messis-domria-primary:
-    <<: *x-messis
+    <<: *x-golang
     container_name: rampart-messis-domria-primary
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -miner domria-primary
     ports:
       - 9001:9001
   messis-domria-secondary:
-    <<: *x-messis
+    <<: *x-golang
     container_name: rampart-messis-domria-secondary
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -miner domria-secondary
     ports:
       - 9002:9002
   twinkle-cron:
-    <<: *x-twinkle
+    <<: *x-python
     container_name: rampart-twinkle-cron
     command: python -m rampart.twinkle
     ports:
       - 9004:9004
   auge-cron:
-    <<: *x-auge
+    <<: *x-python
     container_name: rampart-auge-cron
+    command: python -m rampart.auge
     ports:
       - 9003:9003
 volumes:
