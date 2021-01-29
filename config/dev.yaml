@@ -227,6 +227,15 @@ telegram:
       max-price-length: 15
       max-room-number-length: 2
       max-room-number: 10
+      any-price-placeholder: довільна
+      any-room-number-placeholder: довільна
+      one-room-number-placeholder: '1'
+      two-room-number-placeholder: '2'
+      three-room-number-placeholder: '3'
+      many-room-number-placeholder: '4+'
+      any-floor-placeholder: довільний
+      low-floor-placeholder: низький
+      high-floor-placeholder: високий
   server:
     address: :9005
     read-timeout: 5s
