@@ -13,7 +13,6 @@ from apscheduler.triggers.cron import CronTrigger
 _logger = get_logger('rampart.auge')
 
 
-# TODO: setup basic logger with lineno & timestamp.
 def _main():
     parser = ArgumentParser(description='Rampart image classification job.')
     parser.add_argument(

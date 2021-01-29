@@ -11,6 +11,9 @@ import (
 )
 
 // TODO: shorten house number column (but research the actual width before).
+// TODO: should we use flats' event sourcing? This means we don't mutate rows,
+//  but add updated ones to avoid inconsistent lookups. We achieve this thing
+//  using flat statuses.
 func NewStorer(
 	config config.Storer,
 	db *sql.DB,
@@ -89,7 +92,7 @@ func (storer *Storer) readFlat(tx *sql.Tx, flat Flat) (origin, error) {
 		o.isFound = true
 		return o, nil
 	default:
-		return o, fmt.Errorf("domria: storer failed to read the flat, %v", err)
+		return o, fmt.Errorf("domria: storer failed to read a flat, %v", err)
 	}
 }
 
@@ -138,7 +141,7 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat Flat) error {
 		flat.GZF,
 	)
 	if err != nil {
-		return fmt.Errorf("domria: storer failed to update the flat, %v", err)
+		return fmt.Errorf("domria: storer failed to update a flat, %v", err)
 	}
 	return nil
 }
@@ -237,7 +240,7 @@ func (storer *Storer) readImage(tx *sql.Tx, i image) (bool, error) {
 		i.url,
 	)
 	if err := row.Scan(&count); err != nil {
-		return false, fmt.Errorf("domria: storer failed to read the image, %v", err)
+		return false, fmt.Errorf("domria: storer failed to read an image, %v", err)
 	}
 	return count > 0, nil
 }

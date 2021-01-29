@@ -45,6 +45,11 @@ commands:
       rm -f images/target_*.webp && \
       docker-compose run --rm travesty && \
       sudo chown -R $USER:$USER images
+  telegram:
+    description: Run Telegram API client in long pulling mode
+    cmd: |
+      docker-compose up telegram
+      docker rm rampart-telegram
   lint:
     description: Lint the source code
     cmd: docker-compose run --rm lint

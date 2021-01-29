@@ -42,6 +42,7 @@ messis:
         Дніпропетровськ: Дніпро
         Од��са: Одеса
         Івано-Франківсь��а: Івано-Франківська
+        Чо��номорськ: Чорноморськ
       district-map:
         Петрівське (нов. Святопетрівське): Святопетрівське
         Вознесенівський (Орджонікідзевський): Вознесенівський
@@ -200,6 +201,46 @@ warhol:
   retry-limit: 3
   output-format: scientific/images/%s.%s.%s.%s.webp
   input-path: scientific/auge.csv
+telegram:
+  dispatcher:
+    timeout: 5
+    worker-number: 2
+    handler:
+      start-command: /start
+      start-button: "Зрозуміло \U0001F44D"
+      help-command: /help
+      help-button: "Довідка \U0001F64B"
+      cancel-button: "Головне меню \U00002B05"
+      add-button: "Підписка \U0001F49C"
+      list-button: "Наявне \U0001F5C4"
+      any-price-button: "Не знаю \U0001F615"
+      any-room-number-button: "Байдуже \U0001F612"
+      one-room-number-button: '1'
+      two-room-number-button: '2'
+      three-room-number-button: '3'
+      many-room-number-button: '4+'
+      any-floor-button: "Байдуже \U0001F612"
+      low-floor-button: Ні
+      high-floor-button: Так
+      template-path: templates
+      min-flat-count: 10
+      max-price-length: 15
+      max-room-number-length: 2
+      max-room-number: 10
+      any-price-placeholder: довільна
+      any-room-number-placeholder: довільна
+      one-room-number-placeholder: '1'
+      two-room-number-placeholder: '2'
+      three-room-number-placeholder: '3'
+      many-room-number-placeholder: '4+'
+      any-floor-placeholder: довільний
+      low-floor-placeholder: низький
+      high-floor-placeholder: високий
+  server:
+    address: :9005
+    read-timeout: 5s
+    write-timeout: 5s
+    max-header-bytes: 1048576
 twinkle:
   classifier:
     model-path: scientific/models/twinkle.latest.txt

@@ -4,13 +4,14 @@ import (
 	"database/sql"
 	"flag"
 	_ "github.com/lib/pq"
-	gocron "github.com/robfig/cron/v3"
+	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/domria"
 	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 )
 
+// TODO: think about signal handling & graceful shutdown.
 func main() {
 	isDebug := flag.Bool("debug", false, "Execute a single workflow instead of the whole schedule")
 	alias := flag.String("miner", "", "Desired miner alias")
@@ -22,7 +23,7 @@ func main() {
 	if err != nil {
 		entry.Fatal(err)
 	}
-	db, err := sql.Open("postgres", c.DSN)
+	db, err := sql.Open("postgres", c.Messis.DSN)
 	if err != nil {
 		entry.Fatalf("main: messis failed to open the db, %v", err)
 	}
@@ -31,7 +32,7 @@ func main() {
 		entry.Fatalf("main: messis failed to ping the db, %v", err)
 	}
 	drain := metrics.NewDrain(*alias, db, entry)
-	jobs := map[string]gocron.Job{
+	jobs := map[string]cron.Job{
 		c.Messis.DomriaPrimaryMiner.Name(): domria.NewMiner(
 			c.Messis.DomriaPrimaryMiner,
 			db,
@@ -59,13 +60,13 @@ func main() {
 	if *isDebug {
 		job.Run()
 	} else {
-		cron := gocron.New()
-		if _, err = cron.AddJob(miner.Schedule(), job); err != nil {
+		scheduler := cron.New()
+		if _, err = scheduler.AddJob(miner.Schedule(), job); err != nil {
 			_ = db.Close()
 			entry.Fatalf("main: messis failed to run, %v", err)
 		}
 		metrics.RunServer(miner.Metrics(), entry)
-		cron.Run()
+		scheduler.Run()
 	}
 	if err = db.Close(); err != nil {
 		entry.Fatalf("main: messis failed to close the db, %v", err)

@@ -10,9 +10,13 @@ import (
 
 func NewConfig() (Config, error) {
 	var config Config
-	config.DSN = os.Getenv("RAMPART_DATABASE_DSN")
-	if config.DSN == "" {
+	config.Messis.DSN = os.Getenv("RAMPART_DATABASE_DSN")
+	if config.Messis.DSN == "" {
 		return config, fmt.Errorf("config: failed to find the db dsn")
+	}
+	config.Telegram.Dispatcher.Token = os.Getenv("RAMPART_TELEGRAM_TOKEN")
+	if config.Telegram.Dispatcher.Token == "" {
+		return config, fmt.Errorf("config: failed to find the telegram token")
 	}
 	bytes, err := ioutil.ReadFile(misc.ResolvePath("config/dev.yaml"))
 	if err != nil {
@@ -22,11 +26,15 @@ func NewConfig() (Config, error) {
 		return config, fmt.Errorf("config: failed to unmarshal the config file, %v", err)
 	}
 	config.Warhol.InputPath = misc.ResolvePath(config.Warhol.InputPath)
+	config.Telegram.DSN = config.Messis.DSN
+	config.Telegram.Dispatcher.Handler.TemplatePath = misc.ResolvePath(
+		config.Telegram.Dispatcher.Handler.TemplatePath,
+	)
 	return config, nil
 }
 
 type Config struct {
-	DSN    string `yaml:"-"`
-	Messis Messis `yaml:"messis"`
-	Warhol Warhol `yaml:"warhol"`
+	Messis   Messis   `yaml:"messis"`
+	Warhol   Warhol   `yaml:"warhol"`
+	Telegram Telegram `yaml:"telegram"`
 }
