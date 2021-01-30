@@ -8,17 +8,26 @@ import (
 )
 
 func NewRootHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
-	return &rootHandler{NewTextHandler(config, bot, db)}
+	return &rootHandler{NewTextHandler(config, bot, db), NewCallbackHandler(config, bot, db)}
 }
 
 type rootHandler struct {
-	handler Handler
+	textHandler     Handler
+	callbackHandler Handler
 }
 
 func (h *rootHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	if update.Message != nil && update.Message.Chat != nil && update.Message.Text != "" {
-		fields, err := h.handler.HandleUpdate(update)
+		fields, err := h.textHandler.HandleUpdate(update)
 		fields["chat_id"] = update.Message.Chat.ID
+		return fields, err
+	}
+	if update.CallbackQuery != nil &&
+		update.CallbackQuery.Message != nil &&
+		update.CallbackQuery.Message.Chat != nil &&
+		update.CallbackQuery.Data != "" {
+		fields, err := h.callbackHandler.HandleUpdate(update)
+		fields["chat_id"] = update.CallbackQuery.Message.Chat.ID
 		return fields, err
 	}
 	return log.Fields{"handler": "root"}, nil
