@@ -8,13 +8,13 @@ import (
 )
 
 func NewDeleteHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
-	return &deleteHandler{}
+	return &deleteHandler{&helper{bot}}
 }
 
 type deleteHandler struct {
-
+	helper *helper
 }
 
 func (h *deleteHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
-	return log.Fields{"handler": "delete"}, nil
+	return log.Fields{"handler": "delete"}, h.helper.answerCallback(update)
 }

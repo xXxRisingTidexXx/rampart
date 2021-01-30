@@ -25,7 +25,7 @@ func (h *callbackHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, erro
 	if index == -1 {
 		return log.Fields{"handler": "callback", "action": "absent"}, nil
 	}
-	if handler, ok := h.handlers[update.CallbackQuery.Data[index:]]; ok {
+	if handler, ok := h.handlers[update.CallbackQuery.Data[:index]]; ok {
 		return handler.HandleUpdate(update)
 	}
 	return log.Fields{"handler": "callback", "action": "unknown"}, nil

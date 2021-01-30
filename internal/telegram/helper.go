@@ -63,3 +63,12 @@ func (h *helper) sendTemplate(
 	}
 	return nil
 }
+
+func (h *helper) answerCallback(update tgbotapi.Update) error {
+	callback := tgbotapi.NewCallback(update.CallbackQuery.ID, "Відсмокчи мені!")
+	callback.ShowAlert = true
+	if _, err := h.bot.AnswerCallbackQuery(callback); err != nil {
+		return fmt.Errorf("telegram: helper failed to answer a callback query, %v", err)
+	}
+	return nil
+}
