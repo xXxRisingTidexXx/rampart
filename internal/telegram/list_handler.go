@@ -31,7 +31,7 @@ func NewListHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Han
 			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.StartButton)),
 		),
 		config.DeleteButton,
-		config.DeletePrefix,
+		config.DeleteAction,
 		config.DataSeparator,
 	}
 }
@@ -44,7 +44,7 @@ type listHandler struct {
 	floorPlaceholders      map[string]string
 	markup                 tgbotapi.ReplyKeyboardMarkup
 	deleteButton           string
-	deletePrefix           string
+	deleteAction           string
 	dataSeparator          string
 }
 
@@ -123,7 +123,7 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 				tgbotapi.NewInlineKeyboardRow(
 					tgbotapi.NewInlineKeyboardButtonData(
 						h.deleteButton,
-						h.deletePrefix+h.dataSeparator+strconv.Itoa(s.ID),
+						h.deleteAction+h.dataSeparator+strconv.Itoa(s.ID),
 					),
 				),
 			),
