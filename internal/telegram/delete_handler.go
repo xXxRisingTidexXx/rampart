@@ -34,13 +34,24 @@ func (h *deleteHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error)
 	if err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
-	_, err = tx.Exec(`update subscriptions set status = 'inactive' where id = $1`, id)
+	result, err := tx.Exec(
+		`update subscriptions set status = 'inactive' where id = $1 and status = 'active'`,
+		id,
+	)
 	if err != nil {
 		_ = tx.Rollback()
 		return fields, fmt.Errorf("telegram: handler failed to update a subscription, %v", err)
 	}
+	number, err := result.RowsAffected()
+	if err != nil {
+		_ = tx.Rollback()
+		return fields, fmt.Errorf("telegram: handler failed to get affected row number, %v", err)
+	}
 	if err := tx.Commit(); err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	return fields, h.helper.answerCallback(update)
+	if number == 0 {
+		return fields, h.helper.answerCallback(update, "absent_delete")
+	}
+	return fields, h.helper.answerCallback(update, "present_delete")
 }
