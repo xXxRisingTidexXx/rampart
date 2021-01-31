@@ -57,7 +57,7 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	rows, err := tx.Query(
 		`select id, uuid, city, price, room_number, floor
 		from subscriptions
-		where status = 'actual'
+		where status = 'active'
 			and chat_id = $1`,
 		update.Message.Chat.ID,
 	)
