@@ -21,12 +21,13 @@ type callbackHandler struct {
 }
 
 func (h *callbackHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
+	fields := log.Fields{"handler": "callback"}
 	index := strings.Index(update.CallbackQuery.Data, h.separator)
 	if index == -1 {
-		return log.Fields{"handler": "callback", "action": "absent"}, nil
+		return fields, nil
 	}
 	if handler, ok := h.handlers[update.CallbackQuery.Data[:index]]; ok {
 		return handler.HandleUpdate(update)
 	}
-	return log.Fields{"handler": "callback", "action": "unknown"}, nil
+	return fields, nil
 }
