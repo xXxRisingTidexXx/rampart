@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"strconv"
 )
 
 func NewListHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
@@ -29,6 +30,9 @@ func NewListHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Han
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.StartButton)),
 		),
+		config.DeleteButton,
+		config.DeleteAction,
+		config.Separator,
 	}
 }
 
@@ -39,6 +43,9 @@ type listHandler struct {
 	roomNumberPlaceholders map[string]string
 	floorPlaceholders      map[string]string
 	markup                 tgbotapi.ReplyKeyboardMarkup
+	deleteButton           string
+	deleteAction           string
+	separator              string
 }
 
 func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
@@ -48,9 +55,9 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
 	rows, err := tx.Query(
-		`select id, city, price, room_number, floor
+		`select id, uuid, city, price, room_number, floor
 		from subscriptions
-		where status = 'actual'
+		where status = 'active'
 			and chat_id = $1`,
 		update.Message.Chat.ID,
 	)
@@ -62,12 +69,13 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	for rows.Next() {
 		var (
 			id         int
+			uuid       string
 			city       string
 			price      float32
 			roomNumber string
 			floor      string
 		)
-		err := rows.Scan(&id, &city, &price, &roomNumber, &floor)
+		err := rows.Scan(&id, &uuid, &city, &price, &roomNumber, &floor)
 		if err != nil {
 			_ = rows.Close()
 			_ = tx.Rollback()
@@ -86,7 +94,10 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		if !ok {
 			floor = h.floorPlaceholders[misc.AnyFloor.String()]
 		}
-		subscriptions = append(subscriptions, subscription{id, city, shape, roomNumber, floor})
+		subscriptions = append(
+			subscriptions,
+			subscription{id, uuid, city, shape, roomNumber, floor},
+		)
 	}
 	if err := rows.Err(); err != nil {
 		_ = rows.Close()
@@ -104,7 +115,20 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		return fields, h.helper.sendMessage(update, "empty_list", h.markup)
 	}
 	for _, s := range subscriptions {
-		if err := h.helper.sendTemplate(update, "full_list", s, h.markup); err != nil {
+		err := h.helper.sendTemplate(
+			update,
+			"full_list",
+			s,
+			tgbotapi.NewInlineKeyboardMarkup(
+				tgbotapi.NewInlineKeyboardRow(
+					tgbotapi.NewInlineKeyboardButtonData(
+						h.deleteButton,
+						h.deleteAction+h.separator+strconv.Itoa(s.ID),
+					),
+				),
+			),
+		)
+		if err != nil {
 			fields["subscription_id"] = s.ID
 			return fields, err
 		}

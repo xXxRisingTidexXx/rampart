@@ -24,7 +24,7 @@ func (h *helper) sendMessage(update tgbotapi.Update, file string, markup interfa
 	return nil
 }
 
-// TODO: message randomization.
+// TODO: file randomization.
 func (h *helper) prepareMessage(
 	update tgbotapi.Update,
 	file string,
@@ -60,6 +60,21 @@ func (h *helper) sendTemplate(
 	message.ReplyMarkup = markup
 	if _, err := h.bot.Send(message); err != nil {
 		return fmt.Errorf("telegram: helper failed to send a template, %v", err)
+	}
+	return nil
+}
+
+// TODO: file randomization.
+func (h *helper) answerCallback(update tgbotapi.Update, file string) error {
+	bytes, err := ioutil.ReadFile(misc.ResolvePath("templates/" + file + ".html"))
+	if err != nil {
+		return fmt.Errorf("telegram: helper failed to read a file, %v", err)
+	}
+	_, err = h.bot.AnswerCallbackQuery(
+		tgbotapi.NewCallback(update.CallbackQuery.ID, string(bytes)),
+	)
+	if err != nil {
+		return fmt.Errorf("telegram: helper failed to answer a callback query, %v", err)
 	}
 	return nil
 }

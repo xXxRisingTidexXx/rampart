@@ -36,23 +36,23 @@ func (h *cityStatusHandler) HandleStatusUpdate(
 	tx *sql.Tx,
 ) (tgbotapi.MessageConfig, error) {
 	var (
-		count   int
+		city    string
 		message tgbotapi.MessageConfig
 	)
-	row := tx.QueryRow(
-		`select count(*) from flats where lower(city) = lower($1)`,
+	err := tx.QueryRow(
+		`select city from flats where lower(city) = lower($1)`,
 		update.Message.Text,
-	)
-	if err := row.Scan(&count); err != nil {
-		return message, fmt.Errorf("telegram: handler failed to read a city, %v", err)
-	}
-	if count < h.minFlatCount {
+	).Scan(&city)
+	if err == sql.ErrNoRows {
 		return h.helper.prepareMessage(update, "absent_city", nil)
 	}
-	_, err := tx.Exec(
+	if err != nil {
+		return message, fmt.Errorf("telegram: handler failed to read a city, %v", err)
+	}
+	_, err = tx.Exec(
 		`update transients set status = $1, city = $2 where id = $3`,
 		misc.PriceStatus.String(),
-		update.Message.Text,
+		city,
 		update.Message.Chat.ID,
 	)
 	if err != nil {

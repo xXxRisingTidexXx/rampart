@@ -4,3 +4,7 @@ pyyaml
 python-json-logger
 prometheus-client
 apscheduler
+pandas
+lightgbm
+torchvision
+requests

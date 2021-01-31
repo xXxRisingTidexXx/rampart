@@ -8,6 +8,7 @@ COPY requirements requirements
 COPY rampart rampart
 COPY config config
 
-RUN pip install -U pip && \
-    pip install -r requirements/common.txt && \
-    pip install -r requirements/auge.txt
+RUN apt-get update && \
+    apt-get install -y libgomp1 && \
+    pip install -U pip && \
+    pip install -r requirements/python.txt

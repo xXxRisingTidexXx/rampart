@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/lithammer/shortuuid"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
@@ -43,15 +44,17 @@ func (h *floorStatusHandler) HandleStatusUpdate(
 	var message tgbotapi.MessageConfig
 	_, err := tx.Exec(
 		`insert into subscriptions
-		(chat_id, city, price, room_number, floor)
+		(uuid, chat_id, city, price, room_number, floor)
 		values
 		(
 			$1,
-			(select city from transients where id = $1),
-			(select price from transients where id = $1),
-			(select room_number from transients where id = $1),
-			$2
+		 	$2,
+			(select city from transients where id = $2),
+			(select price from transients where id = $2),
+			(select room_number from transients where id = $2),
+			$3
 		)`,
+		shortuuid.New(),
 		update.Message.Chat.ID,
 		floor.String(),
 	)

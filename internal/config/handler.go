@@ -31,4 +31,7 @@ type Handler struct {
 	AnyFloorPlaceholder        string `yaml:"any-floor-placeholder"`
 	LowFloorPlaceholder        string `yaml:"low-floor-placeholder"`
 	HighFloorPlaceholder       string `yaml:"high-floor-placeholder"`
+	DeleteButton               string `yaml:"delete-button"`
+	DeleteAction               string `yaml:"delete-action"`
+	Separator                  string `yaml:"separator"`
 }

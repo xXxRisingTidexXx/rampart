@@ -236,6 +236,9 @@ telegram:
       any-floor-placeholder: довільний
       low-floor-placeholder: низький
       high-floor-placeholder: високий
+      delete-button: Видалити
+      delete-action: delete
+      separator: '|'
   server:
     address: :9005
     read-timeout: 5s
