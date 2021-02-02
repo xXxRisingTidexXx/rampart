@@ -50,6 +50,9 @@ commands:
     cmd: |
       docker-compose up telegram
       docker rm rampart-telegram
+  snitch:
+    description: Launch flat issuer code
+    cmd: docker-compose run --rm snitch
   notebook:
     description: Setup Jupyter Notebook server
     cmd: |
@@ -68,8 +71,8 @@ commands:
   run:
     description: Activate the whole rampart ecosystem
     cmd: |
-      docker-compose up messis-domria-primary messis-domria-secondary twinkle-cron auge-cron telegram
-      docker rm rampart-messis-domria-primary rampart-messis-domria-secondary rampart-twinkle-cron rampart-auge-cron rampart-telegram
+      docker-compose up messis-domria-primary messis-domria-secondary twinkle-cron auge-cron telegram snitch-cron
+      docker rm rampart-messis-domria-primary rampart-messis-domria-secondary rampart-twinkle-cron rampart-auge-cron rampart-telegram rampart-snitch-cron
   stop:
     description: Dispose all docker stuff
     cmd: docker-compose down
