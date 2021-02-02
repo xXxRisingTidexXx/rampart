@@ -30,6 +30,7 @@ func NewConfig() (Config, error) {
 	config.Telegram.Dispatcher.Handler.TemplatePath = misc.ResolvePath(
 		config.Telegram.Dispatcher.Handler.TemplatePath,
 	)
+	config.Snitch.DSN = config.Messis.DSN
 	return config, nil
 }
 
@@ -37,4 +38,5 @@ type Config struct {
 	Messis   Messis   `yaml:"messis"`
 	Warhol   Warhol   `yaml:"warhol"`
 	Telegram Telegram `yaml:"telegram"`
+	Snitch   Snitch   `yaml:"snitch"`
 }

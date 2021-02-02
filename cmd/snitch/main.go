@@ -19,7 +19,7 @@ func main() {
 	if err != nil {
 		entry.Fatal(err)
 	}
-	db, err := sql.Open("postgres", c.Telegram.DSN)
+	db, err := sql.Open("postgres", c.Snitch.DSN)
 	if err != nil {
 		entry.Fatalf("main: snitch failed to open the db, %v", err)
 	}
@@ -27,7 +27,7 @@ func main() {
 		_ = db.Close()
 		entry.Fatalf("main: snitch failed to ping the db, %v", err)
 	}
-	metrics.RunServer(c.Telegram.Server, entry)
+	metrics.RunServer(c.Snitch.Server, entry)
 	if err = db.Close(); err != nil {
 		entry.Fatalf("main: snitch failed to close the db, %v", err)
 	}
