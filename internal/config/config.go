@@ -31,6 +31,7 @@ func NewConfig() (Config, error) {
 		config.Telegram.Dispatcher.Handler.TemplatePath,
 	)
 	config.Snitch.DSN = config.Messis.DSN
+	config.Snitch.Publisher.Token = config.Telegram.Dispatcher.Token
 	return config, nil
 }
 
