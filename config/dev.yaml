@@ -250,6 +250,7 @@ snitch:
     read-timeout: 5s
     write-timeout: 5s
     max-header-bytes: 1048576
+  spec: '0-59/15 * * * *'
 twinkle:
   classifier:
     model-path: scientific/models/twinkle.latest.txt
