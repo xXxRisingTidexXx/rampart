@@ -14,8 +14,8 @@ func NewConfig() (Config, error) {
 	if config.Messis.DSN == "" {
 		return config, fmt.Errorf("config: failed to find the db dsn")
 	}
-	config.Telegram.Dispatcher.Token = os.Getenv("RAMPART_TELEGRAM_TOKEN")
-	if config.Telegram.Dispatcher.Token == "" {
+	config.Telegram.Token = os.Getenv("RAMPART_TELEGRAM_TOKEN")
+	if config.Telegram.Token == "" {
 		return config, fmt.Errorf("config: failed to find the telegram token")
 	}
 	bytes, err := ioutil.ReadFile(misc.ResolvePath("config/dev.yaml"))
@@ -27,11 +27,6 @@ func NewConfig() (Config, error) {
 	}
 	config.Warhol.InputPath = misc.ResolvePath(config.Warhol.InputPath)
 	config.Telegram.DSN = config.Messis.DSN
-	config.Telegram.Dispatcher.Handler.TemplatePath = misc.ResolvePath(
-		config.Telegram.Dispatcher.Handler.TemplatePath,
-	)
-	config.Snitch.DSN = config.Messis.DSN
-	config.Snitch.Publisher.Token = config.Telegram.Dispatcher.Token
 	return config, nil
 }
 
@@ -39,5 +34,4 @@ type Config struct {
 	Messis   Messis   `yaml:"messis"`
 	Warhol   Warhol   `yaml:"warhol"`
 	Telegram Telegram `yaml:"telegram"`
-	Snitch   Snitch   `yaml:"snitch"`
 }

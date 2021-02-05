@@ -1,5 +1,5 @@
 package config
 
 type Publisher struct {
-	Token string `yaml:"-"`
+	Sender Sender `yaml:"sender"`
 }
