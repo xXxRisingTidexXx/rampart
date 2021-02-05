@@ -17,16 +17,22 @@ func NewPublisher(
 	if err != nil {
 		return nil, fmt.Errorf("telegram: publisher failed to instantiate, %v", err)
 	}
-	return &Publisher{NewObserver(db, logger), NewSender(bot, logger)}, nil
+	return &Publisher{
+		NewObserver(db, logger),
+		NewSender(bot, logger),
+		NewReviewer(db, logger),
+	}, nil
 }
 
 type Publisher struct {
 	observer *Observer
 	sender   *Sender
+	reviewer *Reviewer
 }
 
 func (p *Publisher) Run() {
 	for _, lookup := range p.observer.ObserveLookups() {
 		p.sender.SendLookup(lookup)
+		p.reviewer.ReviewLookup(lookup)
 	}
 }
