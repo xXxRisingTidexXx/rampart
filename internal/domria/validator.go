@@ -50,54 +50,54 @@ type Validator struct {
 }
 
 // TODO: lock flats with empty city. Probably, we need reverse geocoding to avoid this shit.
-func (validator *Validator) ValidateFlats(flats []Flat) []Flat {
+func (v *Validator) ValidateFlats(flats []Flat) []Flat {
 	newFlats := make([]Flat, 0, len(flats))
 	for _, flat := range flats {
-		if validator.validateFlat(flat) {
+		if v.validateFlat(flat) {
 			newFlats = append(newFlats, flat)
 		}
 	}
 	return newFlats
 }
 
-func (validator *Validator) validateFlat(flat Flat) bool {
+func (v *Validator) validateFlat(flat Flat) bool {
 	if flat.RoomNumber == 0 {
-		validator.drain.DrainNumber(metrics.DeniedValidationNumber)
+		v.drain.DrainNumber(metrics.DeniedValidationNumber)
 		return false
 	}
 	specificArea := flat.TotalArea / float64(flat.RoomNumber)
 	if flat.URL == "" ||
-		validator.minPrice > flat.Price ||
-		validator.minTotalArea > flat.TotalArea ||
-		flat.TotalArea > validator.maxTotalArea ||
-		validator.minLivingArea > flat.LivingArea ||
+		v.minPrice > flat.Price ||
+		v.minTotalArea > flat.TotalArea ||
+		flat.TotalArea > v.maxTotalArea ||
+		v.minLivingArea > flat.LivingArea ||
 		flat.LivingArea >= flat.TotalArea ||
-		validator.minKitchenArea > flat.KitchenArea ||
+		v.minKitchenArea > flat.KitchenArea ||
 		flat.KitchenArea >= flat.TotalArea ||
-		validator.minRoomNumber > flat.RoomNumber ||
-		flat.RoomNumber > validator.maxRoomNumber ||
-		validator.minSpecificArea > specificArea ||
-		specificArea > validator.maxSpecificArea ||
-		validator.minFloor > flat.Floor ||
+		v.minRoomNumber > flat.RoomNumber ||
+		flat.RoomNumber > v.maxRoomNumber ||
+		v.minSpecificArea > specificArea ||
+		specificArea > v.maxSpecificArea ||
+		v.minFloor > flat.Floor ||
 		flat.Floor > flat.TotalFloor ||
-		validator.minTotalFloor > flat.TotalFloor ||
-		flat.TotalFloor > validator.maxTotalFloor ||
-		validator.minLongitude > flat.Point.Lon() ||
-		flat.Point.Lon() > validator.maxLongitude ||
-		validator.minLatitude > flat.Point.Lat() ||
-		flat.Point.Lat() > validator.maxLatitude ||
+		v.minTotalFloor > flat.TotalFloor ||
+		flat.TotalFloor > v.maxTotalFloor ||
+		v.minLongitude > flat.Point.Lon() ||
+		flat.Point.Lon() > v.maxLongitude ||
+		v.minLatitude > flat.Point.Lat() ||
+		flat.Point.Lat() > v.maxLatitude ||
 		!flat.IsLocated() {
-		validator.drain.DrainNumber(metrics.DeniedValidationNumber)
+		v.drain.DrainNumber(metrics.DeniedValidationNumber)
 		return false
 	}
-	if flat.ImageCount() < validator.minImageCount {
-		validator.drain.DrainNumber(metrics.UninformativeValidationNumber)
+	if flat.ImageCount() < v.minImageCount {
+		v.drain.DrainNumber(metrics.UninformativeValidationNumber)
 		return false
 	}
 	if flat.IsSold {
-		validator.drain.DrainNumber(metrics.SoldValidationNumber)
+		v.drain.DrainNumber(metrics.SoldValidationNumber)
 		return false
 	}
-	validator.drain.DrainNumber(metrics.ApprovedValidationNumber)
+	v.drain.DrainNumber(metrics.ApprovedValidationNumber)
 	return true
 }

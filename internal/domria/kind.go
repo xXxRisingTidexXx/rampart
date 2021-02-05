@@ -9,8 +9,8 @@ const (
 
 var kindViews = map[Kind]string{PhotoKind: "photo", PanoramaKind: "panorama"}
 
-func (kind Kind) String() string {
-	if view, ok := kindViews[kind]; ok {
+func (k Kind) String() string {
+	if view, ok := kindViews[k]; ok {
 		return view
 	}
 	return "undefined"

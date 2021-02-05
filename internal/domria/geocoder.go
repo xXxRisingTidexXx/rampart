@@ -36,38 +36,38 @@ type Geocoder struct {
 	logger          log.FieldLogger
 }
 
-func (geocoder *Geocoder) GeocodeFlats(flats []Flat) []Flat {
+func (g *Geocoder) GeocodeFlats(flats []Flat) []Flat {
 	newFlats := make([]Flat, 0, len(flats))
 	for _, flat := range flats {
-		if newFlat, ok := geocoder.geocodeFlat(flat); ok {
+		if newFlat, ok := g.geocodeFlat(flat); ok {
 			newFlats = append(newFlats, newFlat)
 		}
 	}
 	return newFlats
 }
 
-func (geocoder *Geocoder) geocodeFlat(flat Flat) (Flat, bool) {
+func (g *Geocoder) geocodeFlat(flat Flat) (Flat, bool) {
 	if flat.IsLocated() {
-		geocoder.drain.DrainNumber(metrics.LocatedGeocodingNumber)
+		g.drain.DrainNumber(metrics.LocatedGeocodingNumber)
 		return flat, true
 	}
 	if !flat.IsAddressable() {
-		geocoder.drain.DrainNumber(metrics.UnlocatedGeocodingNumber)
+		g.drain.DrainNumber(metrics.UnlocatedGeocodingNumber)
 		return Flat{}, false
 	}
 	start := time.Now()
-	positions, err := geocoder.getPositions(flat)
-	geocoder.drain.DrainDuration(metrics.GeocodingDuration, start)
+	positions, err := g.getPositions(flat)
+	g.drain.DrainDuration(metrics.GeocodingDuration, start)
 	if err != nil {
-		geocoder.logger.WithField("url", flat.URL).Error(err)
-		geocoder.drain.DrainNumber(metrics.FailedGeocodingNumber)
+		g.logger.WithField("url", flat.URL).Error(err)
+		g.drain.DrainNumber(metrics.FailedGeocodingNumber)
 		return Flat{}, false
 	}
 	if len(positions) == 0 {
-		geocoder.drain.DrainNumber(metrics.InconclusiveGeocodingNumber)
+		g.drain.DrainNumber(metrics.InconclusiveGeocodingNumber)
 		return Flat{}, false
 	}
-	geocoder.drain.DrainNumber(metrics.SuccessfulGeocodingNumber)
+	g.drain.DrainNumber(metrics.SuccessfulGeocodingNumber)
 	return Flat{
 		Source:      flat.Source,
 		URL:         flat.URL,
@@ -92,15 +92,15 @@ func (geocoder *Geocoder) geocodeFlat(flat Flat) (Flat, bool) {
 	}, true
 }
 
-func (geocoder *Geocoder) getPositions(flat Flat) ([]position, error) {
+func (g *Geocoder) getPositions(flat Flat) ([]position, error) {
 	state := ""
-	if !geocoder.statelessCities.Contains(flat.City) {
+	if !g.statelessCities.Contains(flat.City) {
 		state = strings.ReplaceAll(flat.State, " ", "+")
 	}
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf(
-			geocoder.searchFormat,
+			g.searchFormat,
 			state,
 			strings.ReplaceAll(flat.City, " ", "+"),
 			strings.ReplaceAll(flat.Street, " ", "+"),
@@ -112,7 +112,7 @@ func (geocoder *Geocoder) getPositions(flat Flat) ([]position, error) {
 		return nil, fmt.Errorf("domria: geocoder failed to construct a request, %v", err)
 	}
 	request.Header.Set("User-Agent", misc.UserAgent)
-	response, err := geocoder.client.Do(request)
+	response, err := g.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("domria: geocoder failed to perform a request, %v", err)
 	}

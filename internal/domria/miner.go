@@ -38,14 +38,14 @@ type Miner struct {
 	drain     *metrics.Drain
 }
 
-func (miner *Miner) Run() {
+func (m *Miner) Run() {
 	start := time.Now()
-	flats := miner.fetcher.FetchFlats(miner.housing)
-	flats = miner.sanitizer.SanitizeFlats(flats)
-	flats = miner.geocoder.GeocodeFlats(flats)
-	flats = miner.gauger.GaugeFlats(flats)
-	flats = miner.validator.ValidateFlats(flats)
-	miner.storer.StoreFlats(flats)
-	miner.drain.DrainDuration(metrics.TotalDuration, start)
-	miner.drain.Flush()
+	flats := m.fetcher.FetchFlats(m.housing)
+	flats = m.sanitizer.SanitizeFlats(flats)
+	flats = m.geocoder.GeocodeFlats(flats)
+	flats = m.gauger.GaugeFlats(flats)
+	flats = m.validator.ValidateFlats(flats)
+	m.storer.StoreFlats(flats)
+	m.drain.DrainDuration(metrics.TotalDuration, start)
+	m.drain.Flush()
 }

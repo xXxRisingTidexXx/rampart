@@ -30,27 +30,27 @@ type Storer struct {
 	logger log.FieldLogger
 }
 
-func (storer *Storer) StoreFlats(flats []Flat) {
+func (s *Storer) StoreFlats(flats []Flat) {
 	for _, flat := range flats {
-		entry := storer.logger.WithField("url", flat.URL)
-		if id, err := storer.storeFlat(flat); err != nil {
+		entry := s.logger.WithField("url", flat.URL)
+		if id, err := s.storeFlat(flat); err != nil {
 			entry.Error(err)
-			storer.drain.DrainNumber(metrics.FailedFlatStoringNumber)
+			s.drain.DrainNumber(metrics.FailedFlatStoringNumber)
 		} else {
-			storer.storeImages(id, flat.Photos, PhotoKind, entry)
-			storer.storeImages(id, flat.Panoramas, PanoramaKind, entry)
+			s.storeImages(id, flat.Photos, PhotoKind, entry)
+			s.storeImages(id, flat.Panoramas, PanoramaKind, entry)
 		}
 	}
 }
 
-func (storer *Storer) storeFlat(flat Flat) (int, error) {
-	tx, err := storer.db.Begin()
+func (s *Storer) storeFlat(flat Flat) (int, error) {
+	tx, err := s.db.Begin()
 	if err != nil {
 		return 0, fmt.Errorf("domria: storer failed to begin a transaction, %v", err)
 	}
 	start := time.Now()
-	o, err := storer.readFlat(tx, flat)
-	storer.drain.DrainDuration(metrics.ReadingFlatStoringDuration, start)
+	o, err := s.readFlat(tx, flat)
+	s.drain.DrainDuration(metrics.ReadingFlatStoringDuration, start)
 	if err != nil {
 		_ = tx.Rollback()
 		return 0, err
@@ -58,8 +58,8 @@ func (storer *Storer) storeFlat(flat Flat) (int, error) {
 	id, number := o.id, metrics.UnalteredFlatStoringNumber
 	if !o.isFound {
 		start := time.Now()
-		id, err = storer.createFlat(tx, flat)
-		storer.drain.DrainDuration(metrics.CreationFlatStoringDuration, start)
+		id, err = s.createFlat(tx, flat)
+		s.drain.DrainDuration(metrics.CreationFlatStoringDuration, start)
 		if err != nil {
 			_ = tx.Rollback()
 			return 0, err
@@ -67,8 +67,8 @@ func (storer *Storer) storeFlat(flat Flat) (int, error) {
 		number = metrics.CreatedFlatStoringNumber
 	} else if flat.UpdateTime.After(o.upsertTime) {
 		start := time.Now()
-		err := storer.updateFlat(tx, flat)
-		storer.drain.DrainDuration(metrics.UpdateFlatStoringDuration, start)
+		err := s.updateFlat(tx, flat)
+		s.drain.DrainDuration(metrics.UpdateFlatStoringDuration, start)
 		if err != nil {
 			_ = tx.Rollback()
 			return 0, err
@@ -78,11 +78,11 @@ func (storer *Storer) storeFlat(flat Flat) (int, error) {
 	if err := tx.Commit(); err != nil {
 		return 0, fmt.Errorf("domria: storer failed to commit a transaction, %v", err)
 	}
-	storer.drain.DrainNumber(number)
+	s.drain.DrainNumber(number)
 	return id, nil
 }
 
-func (storer *Storer) readFlat(tx *sql.Tx, flat Flat) (origin, error) {
+func (s *Storer) readFlat(tx *sql.Tx, flat Flat) (origin, error) {
 	var o origin
 	row := tx.QueryRow(`select id, upsert_time from flats where url = $1`, flat.URL)
 	switch err := row.Scan(&o.id, &o.upsertTime); err {
@@ -96,7 +96,7 @@ func (storer *Storer) readFlat(tx *sql.Tx, flat Flat) (origin, error) {
 	}
 }
 
-func (storer *Storer) updateFlat(tx *sql.Tx, flat Flat) error {
+func (s *Storer) updateFlat(tx *sql.Tx, flat Flat) error {
 	_, err := tx.Exec(
 		`update flats 
 		set upsert_time = now() at time zone 'utc',
@@ -130,7 +130,7 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat Flat) error {
 		flat.Housing.String(),
 		flat.Complex,
 		wkb.Value(flat.Point),
-		storer.srid,
+		s.srid,
 		flat.State,
 		flat.City,
 		flat.District,
@@ -146,7 +146,7 @@ func (storer *Storer) updateFlat(tx *sql.Tx, flat Flat) error {
 	return nil
 }
 
-func (storer *Storer) createFlat(tx *sql.Tx, flat Flat) (int, error) {
+func (s *Storer) createFlat(tx *sql.Tx, flat Flat) (int, error) {
 	var id int
 	err := tx.QueryRow(
 		`insert into flats
@@ -172,7 +172,7 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat Flat) (int, error) {
 		flat.Housing.String(),
 		flat.Complex,
 		wkb.Value(flat.Point),
-		storer.srid,
+		s.srid,
 		flat.State,
 		flat.City,
 		flat.District,
@@ -188,28 +188,28 @@ func (storer *Storer) createFlat(tx *sql.Tx, flat Flat) (int, error) {
 	return id, nil
 }
 
-func (storer *Storer) storeImages(
+func (s *Storer) storeImages(
 	flatID int,
 	images []string,
 	kind Kind,
 	logger log.FieldLogger,
 ) {
 	for _, url := range images {
-		if err := storer.storeImage(image{flatID, url, kind}); err != nil {
-			storer.drain.DrainNumber(metrics.FailedImageStoringNumber)
+		if err := s.storeImage(image{flatID, url, kind}); err != nil {
+			s.drain.DrainNumber(metrics.FailedImageStoringNumber)
 			logger.WithFields(log.Fields{"flat_id": flatID, "url": url}).Error(err)
 		}
 	}
 }
 
-func (storer *Storer) storeImage(i image) error {
-	tx, err := storer.db.Begin()
+func (s *Storer) storeImage(i image) error {
+	tx, err := s.db.Begin()
 	if err != nil {
 		return fmt.Errorf("domria: storer failed to begin a transaction, %v", err)
 	}
 	start := time.Now()
-	isFound, err := storer.readImage(tx, i)
-	storer.drain.DrainDuration(metrics.ReadingImageStoringDuration, start)
+	isFound, err := s.readImage(tx, i)
+	s.drain.DrainDuration(metrics.ReadingImageStoringDuration, start)
 	if err != nil {
 		_ = tx.Rollback()
 		return err
@@ -217,8 +217,8 @@ func (storer *Storer) storeImage(i image) error {
 	number := metrics.UnalteredImageStoringNumber
 	if !isFound {
 		start := time.Now()
-		err := storer.createImage(tx, i)
-		storer.drain.DrainDuration(metrics.CreationImageStoringDuration, start)
+		err := s.createImage(tx, i)
+		s.drain.DrainDuration(metrics.CreationImageStoringDuration, start)
 		if err != nil {
 			_ = tx.Rollback()
 			return err
@@ -228,11 +228,11 @@ func (storer *Storer) storeImage(i image) error {
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("domria: storer failed to commit a transaction, %v", err)
 	}
-	storer.drain.DrainNumber(number)
+	s.drain.DrainNumber(number)
 	return nil
 }
 
-func (storer *Storer) readImage(tx *sql.Tx, i image) (bool, error) {
+func (s *Storer) readImage(tx *sql.Tx, i image) (bool, error) {
 	var count int
 	row := tx.QueryRow(
 		`select count(*) from images where flat_id = $1 and url = $2`,
@@ -245,7 +245,7 @@ func (storer *Storer) readImage(tx *sql.Tx, i image) (bool, error) {
 	return count > 0, nil
 }
 
-func (storer *Storer) createImage(tx *sql.Tx, i image) error {
+func (s *Storer) createImage(tx *sql.Tx, i image) error {
 	_, err := tx.Exec(
 		`insert into images (flat_id, url, kind) values ($1, $2, $3)`,
 		i.flatID,
