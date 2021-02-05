@@ -41,12 +41,7 @@ func (h *helper) prepareMessage(
 	return message, nil
 }
 
-func (h *helper) sendTemplate(
-	chatID int64,
-	file string,
-	data interface{},
-	markup interface{},
-) error {
+func (h *helper) sendTemplate(chatID int64, file string, data, markup interface{}) error {
 	t, err := template.ParseFiles(misc.ResolvePath("templates/" + file + ".html"))
 	if err != nil {
 		return fmt.Errorf("telegram: helper failed to parse a template, %v", err)
