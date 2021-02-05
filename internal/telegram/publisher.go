@@ -24,6 +24,6 @@ type Publisher struct {
 	observer *Observer
 }
 
-func (publisher *Publisher) Run() {
-	log.Info(publisher.observer.ObserveLookups())
+func (p *Publisher) Run() {
+	log.Info(p.observer.ObserveLookups())
 }

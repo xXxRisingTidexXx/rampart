@@ -15,26 +15,26 @@ type Observer struct {
 	logger log.FieldLogger
 }
 
-func (observer *Observer) ObserveLookups() []Lookup {
-	tx, err := observer.db.Begin()
+func (o *Observer) ObserveLookups() []Lookup {
+	tx, err := o.db.Begin()
 	if err != nil {
-		observer.logger.Errorf("telegram: observer failed to begin a transaction, %v", err)
+		o.logger.Errorf("telegram: observer failed to begin a transaction, %v", err)
 		return make([]Lookup, 0)
 	}
-	lookups, err := observer.observeLookups(tx)
+	lookups, err := o.observeLookups(tx)
 	if err != nil {
 		_ = tx.Rollback()
-		observer.logger.Error(err)
+		o.logger.Error(err)
 		return make([]Lookup, 0)
 	}
 	if err := tx.Commit(); err != nil {
-		observer.logger.Errorf("telegram: observer failed to commit a transaction, %v", err)
+		o.logger.Errorf("telegram: observer failed to commit a transaction, %v", err)
 		return make([]Lookup, 0)
 	}
 	return lookups
 }
 
-func (observer *Observer) observeLookups(tx *sql.Tx) ([]Lookup, error) {
+func (o *Observer) observeLookups(tx *sql.Tx) ([]Lookup, error) {
 	rows, err := tx.Query(
 		`select cte.id, cte.chat_id, cte.url, cte.uuid
 		from (
