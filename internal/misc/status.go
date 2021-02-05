@@ -16,8 +16,8 @@ var statusViews = map[Status]string{
 	FloorStatus:      "floor",
 }
 
-func (status Status) String() string {
-	if view, ok := statusViews[status]; ok {
+func (s Status) String() string {
+	if view, ok := statusViews[s]; ok {
 		return view
 	}
 	return "undefined"

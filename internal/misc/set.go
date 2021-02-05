@@ -8,12 +8,12 @@ import (
 
 type Set map[string]struct{}
 
-func (set Set) Contains(key string) bool {
-	_, ok := set[key]
+func (s Set) Contains(key string) bool {
+	_, ok := s[key]
 	return ok
 }
 
-func (set *Set) UnmarshalYAML(node *yaml.Node) error {
+func (s *Set) UnmarshalYAML(node *yaml.Node) error {
 	keys := make([]string, 0)
 	if err := node.Decode(&keys); err != nil {
 		return err
@@ -22,13 +22,13 @@ func (set *Set) UnmarshalYAML(node *yaml.Node) error {
 	for _, element := range keys {
 		items[element] = struct{}{}
 	}
-	*set = items
+	*s = items
 	return nil
 }
 
-func (set Set) String() string {
-	keys := make([]string, 0, len(set))
-	for key := range set {
+func (s Set) String() string {
+	keys := make([]string, 0, len(s))
+	for key := range s {
 		keys = append(keys, key)
 	}
 	return fmt.Sprintf("[%s]", strings.Join(keys, " "))
