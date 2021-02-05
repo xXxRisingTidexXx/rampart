@@ -10,9 +10,9 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/telegram"
 )
 
-// TODO: think about signal handling & graceful shutdown.
-// TODO: think about viber integration, https://github.com/mileusna/viber .
-// TODO: think about max connections, https://www.alexedwards.net/blog/configuring-sqldb .
+// TODO: signal handling & graceful shutdown.
+// TODO: viber integration, https://github.com/mileusna/viber .
+// TODO: max connections, https://www.alexedwards.net/blog/configuring-sqldb .
 func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
@@ -32,13 +32,13 @@ func main() {
 		_ = db.Close()
 		entry.Fatalf("main: telegram failed to ping the db, %v", err)
 	}
-	dispatcher, err := telegram.NewDispatcher(c.Telegram.Dispatcher, db, entry)
+	bot, err := tgbotapi.NewBotAPI(c.Telegram.Token)
 	if err != nil {
 		_ = db.Close()
-		entry.Fatal(err)
+		entry.Fatalf("main: telegram failed to create a bot, %v", err)
 	}
 	metrics.RunServer(c.Telegram.Server, entry)
-	dispatcher.Dispatch()
+	telegram.StartDispatcher(c.Telegram.Dispatcher, bot, db, entry)
 	if err = db.Close(); err != nil {
 		entry.Fatalf("main: telegram failed to close the db, %v", err)
 	}

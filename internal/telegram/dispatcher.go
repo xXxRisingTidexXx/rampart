@@ -2,7 +2,6 @@ package telegram
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
@@ -10,47 +9,32 @@ import (
 	"sync"
 )
 
-func NewDispatcher(
+func StartDispatcher(
 	config config.Dispatcher,
+	bot *tgbotapi.BotAPI,
 	db *sql.DB,
 	logger log.FieldLogger,
-) (*Dispatcher, error) {
-	bot, err := tgbotapi.NewBotAPI(config.Token)
-	if err != nil {
-		return nil, fmt.Errorf("telegram: dispatcher failed to instantiate, %v", err)
-	}
-	return &Dispatcher{
-		bot,
-		config.Timeout,
-		config.WorkerNumber,
-		NewRootHandler(config.Handler, bot, db),
-		logger,
-	}, nil
-}
-
-type Dispatcher struct {
-	bot          *tgbotapi.BotAPI
-	timeout      int
-	workerNumber int
-	handler      Handler
-	logger       log.FieldLogger
-}
-
-func (d *Dispatcher) Dispatch() {
-	updates, _ := d.bot.GetUpdatesChan(tgbotapi.UpdateConfig{Timeout: d.timeout})
+) {
+	updates, _ := bot.GetUpdatesChan(tgbotapi.UpdateConfig{Timeout: config.Timeout})
+	handler := NewRootHandler(config.Handler, bot, db)
 	group := &sync.WaitGroup{}
-	group.Add(d.workerNumber)
-	for i := 0; i < d.workerNumber; i++ {
-		go d.work(updates, group)
+	group.Add(config.WorkerNumber)
+	for i := 0; i < config.WorkerNumber; i++ {
+		go work(updates, handler, logger, group)
 	}
 	group.Wait()
 }
 
-func (d *Dispatcher) work(updates tgbotapi.UpdatesChannel, group *sync.WaitGroup) {
+func work(
+	updates tgbotapi.UpdatesChannel,
+	handler Handler,
+	logger log.FieldLogger,
+	group *sync.WaitGroup,
+) {
 	for update := range updates {
-		fields, err := d.handler.HandleUpdate(update)
+		fields, err := handler.HandleUpdate(update)
 		if err != nil {
-			d.logger.WithFields(fields).Error(err)
+			logger.WithFields(fields).Error(err)
 		}
 		metrics.TelegramUpdates.WithLabelValues(fields["handler"].(string)).Inc()
 	}
