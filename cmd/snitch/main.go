@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"flag"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	_ "github.com/lib/pq"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
