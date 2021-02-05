@@ -55,7 +55,13 @@ func (observer *Observer) observeLookups(tx *sql.Tx) ([]Lookup, error) {
 	}
 	lookups := make([]Lookup, 0)
 	for rows.Next() {
-
+		var lookup Lookup
+		err := rows.Scan(&lookup.ID, &lookup.ChatID, &lookup.URL, &lookup.UUID)
+		if err != nil {
+			_ = rows.Close()
+			return nil, fmt.Errorf("telegram: observer failed to scan a row, %v", err)
+		}
+		lookups = append(lookups, lookup)
 	}
 	if err := rows.Err(); err != nil {
 		_ = rows.Close()
