@@ -43,8 +43,8 @@ type listHandler struct {
 	roomNumberPlaceholders map[string]string
 	floorPlaceholders      map[string]string
 	markup                 tgbotapi.ReplyKeyboardMarkup
-	deleteButton           string
-	deleteAction           string
+	button                 string
+	action                 string
 	separator              string
 }
 
@@ -122,8 +122,8 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 			tgbotapi.NewInlineKeyboardMarkup(
 				tgbotapi.NewInlineKeyboardRow(
 					tgbotapi.NewInlineKeyboardButtonData(
-						h.deleteButton,
-						h.deleteAction+h.separator+strconv.Itoa(s.ID),
+						h.button,
+						h.action+h.separator+strconv.Itoa(s.ID),
 					),
 				),
 			),
