@@ -56,14 +56,14 @@ func (h *priceStatusHandler) HandleStatusUpdate(
 		if err != nil {
 			return message, fmt.Errorf("telegram: handler failed to update a transient, %v", err)
 		}
-		return h.helper.prepareMessage(update, "valid_price", h.markup)
+		return h.helper.prepareMessage(update.Message.Chat.ID, "valid_price", h.markup)
 	}
 	if len(update.Message.Text) > h.maxPriceLength {
-		return h.helper.prepareMessage(update, "invalid_price", nil)
+		return h.helper.prepareMessage(update.Message.Chat.ID, "invalid_price", nil)
 	}
 	price, err := strconv.ParseFloat(h.replacer.Replace(update.Message.Text), 64)
 	if err != nil || price < 0 {
-		return h.helper.prepareMessage(update, "invalid_price", nil)
+		return h.helper.prepareMessage(update.Message.Chat.ID, "invalid_price", nil)
 	}
 	_, err = tx.Exec(
 		`update transients set price = $1, status = $2 where id = $3`,
@@ -74,5 +74,5 @@ func (h *priceStatusHandler) HandleStatusUpdate(
 	if err != nil {
 		return message, fmt.Errorf("telegram: handler failed to update a transient, %v", err)
 	}
-	return h.helper.prepareMessage(update, "valid_price", h.markup)
+	return h.helper.prepareMessage(update.Message.Chat.ID, "valid_price", h.markup)
 }

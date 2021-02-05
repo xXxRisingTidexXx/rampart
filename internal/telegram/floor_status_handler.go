@@ -39,7 +39,7 @@ func (h *floorStatusHandler) HandleStatusUpdate(
 ) (tgbotapi.MessageConfig, error) {
 	floor, ok := h.mappings[update.Message.Text]
 	if !ok {
-		return h.helper.prepareMessage(update, "invalid_floor", nil)
+		return h.helper.prepareMessage(update.Message.Chat.ID, "invalid_floor", nil)
 	}
 	var message tgbotapi.MessageConfig
 	_, err := tx.Exec(
@@ -65,5 +65,5 @@ func (h *floorStatusHandler) HandleStatusUpdate(
 	if err != nil {
 		return message, fmt.Errorf("telegram: handler failed to delete a transient, %v", err)
 	}
-	return h.helper.prepareMessage(update, "valid_floor", h.markup)
+	return h.helper.prepareMessage(update.Message.Chat.ID, "valid_floor", h.markup)
 }

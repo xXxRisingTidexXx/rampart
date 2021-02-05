@@ -21,5 +21,9 @@ type helpHandler struct {
 }
 
 func (h *helpHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
-	return log.Fields{"handler": "help"}, h.helper.sendMessage(update, "help", h.markup)
+	return log.Fields{"handler": "help"}, h.helper.sendMessage(
+		update.Message.Chat.ID,
+		"help",
+		h.markup,
+	)
 }

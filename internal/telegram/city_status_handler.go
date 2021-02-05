@@ -44,7 +44,7 @@ func (h *cityStatusHandler) HandleStatusUpdate(
 		update.Message.Text,
 	).Scan(&city)
 	if err == sql.ErrNoRows {
-		return h.helper.prepareMessage(update, "absent_city", nil)
+		return h.helper.prepareMessage(update.Message.Chat.ID, "absent_city", nil)
 	}
 	if err != nil {
 		return message, fmt.Errorf("telegram: handler failed to read a city, %v", err)
@@ -58,5 +58,5 @@ func (h *cityStatusHandler) HandleStatusUpdate(
 	if err != nil {
 		return message, fmt.Errorf("telegram: handler failed to update a transient, %v", err)
 	}
-	return h.helper.prepareMessage(update, "present_city", h.markup)
+	return h.helper.prepareMessage(update.Message.Chat.ID, "present_city", h.markup)
 }

@@ -67,5 +67,9 @@ func (h *addHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		keyboard = append(keyboard, buttons)
 	}
 	keyboard = append(keyboard, tgbotapi.NewKeyboardButtonRow(h.button))
-	return fields, h.helper.sendMessage(update, "add", tgbotapi.NewReplyKeyboard(keyboard...))
+	return fields, h.helper.sendMessage(
+		update.Message.Chat.ID,
+		"add",
+		tgbotapi.NewReplyKeyboard(keyboard...),
+	)
 }

@@ -112,11 +112,11 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
 	if len(subscriptions) == 0 {
-		return fields, h.helper.sendMessage(update, "empty_list", h.markup)
+		return fields, h.helper.sendMessage(update.Message.Chat.ID, "empty_list", h.markup)
 	}
 	for _, s := range subscriptions {
 		err := h.helper.sendTemplate(
-			update,
+			update.Message.Chat.ID,
 			"full_list",
 			s,
 			tgbotapi.NewInlineKeyboardMarkup(
