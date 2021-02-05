@@ -208,7 +208,7 @@ telegram:
   publisher:
     sender:
       <<: *keymap
-      like-button: "Клас \U0001F44D"
+      like-button: "Супер \U0001F44D"
   spec: '0-59/6 * * * *'
   server:
     address: :9005
