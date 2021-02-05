@@ -205,6 +205,16 @@ telegram:
   keymap: &keymap
     separator: '|'
     like-action: like
+  publisher:
+    sender:
+      <<: *keymap
+      like-button: "Клас \U0001F44D"
+  spec: '0-59/6 * * * *'
+  server:
+    address: :9005
+    read-timeout: 5s
+    write-timeout: 5s
+    max-header-bytes: 1048576
   dispatcher:
     timeout: 5
     worker-number: 2
@@ -241,16 +251,6 @@ telegram:
       high-floor-placeholder: високий
       delete-button: "Видалити \U0001F5D1"
       delete-action: delete
-  publisher:
-    sender:
-      <<: *keymap
-      like-button: "Клас \U0001F44D"
-  spec: '0-59/6 * * * *'
-  server:
-    address: :9005
-    read-timeout: 5s
-    write-timeout: 5s
-    max-header-bytes: 1048576
 twinkle:
   classifier:
     model-path: scientific/models/twinkle.latest.txt
