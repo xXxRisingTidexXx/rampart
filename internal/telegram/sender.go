@@ -3,16 +3,20 @@ package telegram
 import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"strconv"
 )
 
-func NewSender(bot *tgbotapi.BotAPI, logger log.FieldLogger) *Sender {
-	return &Sender{&helper{bot}, logger}
+func NewSender(config config.Sender, bot *tgbotapi.BotAPI, logger log.FieldLogger) *Sender {
+	return &Sender{&helper{bot}, config.LikeButton, config.LikeAction, config.Separator, logger}
 }
 
 type Sender struct {
-	helper *helper
-	logger log.FieldLogger
+	helper    *helper
+	button    string
+	action    string
+	separator string
+	logger    log.FieldLogger
 }
 
 func (s *Sender) SendLookup(lookup Lookup) {
@@ -22,7 +26,10 @@ func (s *Sender) SendLookup(lookup Lookup) {
 		lookup,
 		tgbotapi.NewInlineKeyboardMarkup(
 			tgbotapi.NewInlineKeyboardRow(
-				tgbotapi.NewInlineKeyboardButtonData("Охуєнно", "like|"+strconv.Itoa(lookup.ID)),
+				tgbotapi.NewInlineKeyboardButtonData(
+					s.button,
+					s.action+s.separator+strconv.Itoa(lookup.ID),
+				),
 			),
 		),
 	)

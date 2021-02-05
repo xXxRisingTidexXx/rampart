@@ -2,7 +2,6 @@ package telegram
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
@@ -10,18 +9,15 @@ import (
 
 func NewPublisher(
 	config config.Publisher,
+	bot *tgbotapi.BotAPI,
 	db *sql.DB,
 	logger log.FieldLogger,
-) (*Publisher, error) {
-	bot, err := tgbotapi.NewBotAPI(config.Token)
-	if err != nil {
-		return nil, fmt.Errorf("telegram: publisher failed to instantiate, %v", err)
-	}
+) *Publisher {
 	return &Publisher{
 		NewObserver(db, logger),
-		NewSender(bot, logger),
+		NewSender(config.Sender, bot, logger),
 		NewReviewer(db, logger),
-	}, nil
+	}
 }
 
 type Publisher struct {
