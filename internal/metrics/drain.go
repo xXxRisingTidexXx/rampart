@@ -27,32 +27,32 @@ type Drain struct {
 	logger    log.FieldLogger
 }
 
-func (drain *Drain) DrainPage(page int) {
-	drain.page = page
+func (d *Drain) DrainPage(page int) {
+	d.page = page
 }
 
-func (drain *Drain) DrainNumber(number Number) {
-	if _, ok := drain.numbers[number]; ok {
-		drain.numbers[number]++
+func (d *Drain) DrainNumber(number Number) {
+	if _, ok := d.numbers[number]; ok {
+		d.numbers[number]++
 	} else {
-		drain.logger.WithField("number", number).Errorf(
+		d.logger.WithField("number", number).Errorf(
 			"metrics: drain doesn't accept the number",
 		)
 	}
 }
 
-func (drain *Drain) DrainDuration(duration Duration, start time.Time) {
-	if b, ok := drain.durations[duration]; ok {
+func (d *Drain) DrainDuration(duration Duration, start time.Time) {
+	if b, ok := d.durations[duration]; ok {
 		b.span(start)
 	} else {
-		drain.logger.WithField("duration", duration).Errorf(
+		d.logger.WithField("duration", duration).Errorf(
 			"metrics: drain doesn't accept the duration",
 		)
 	}
 }
 
-func (drain *Drain) Flush() {
-	_, err := drain.db.Exec(
+func (d *Drain) Flush() {
+	_, err := d.db.Exec(
 		`insert into minings
 		(
 			completion_time, miner, page, failed_fetching_number, state_sanitation_number,
@@ -80,61 +80,61 @@ func (drain *Drain) Flush() {
 			$15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31,
 			$32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46
 		)`,
-		drain.miner,
-		drain.page,
-		drain.numbers[FailedFetchingNumber],
-		drain.numbers[StateSanitationNumber],
-		drain.numbers[CitySanitationNumber],
-		drain.numbers[DistrictSanitationNumber],
-		drain.numbers[SwapSanitationNumber],
-		drain.numbers[StreetSanitationNumber],
-		drain.numbers[HouseNumberSanitationNumber],
-		drain.numbers[LocatedGeocodingNumber],
-		drain.numbers[UnlocatedGeocodingNumber],
-		drain.numbers[FailedGeocodingNumber],
-		drain.numbers[InconclusiveGeocodingNumber],
-		drain.numbers[SuccessfulGeocodingNumber],
-		drain.numbers[SubwaylessSSFGaugingNumber],
-		drain.numbers[FailedSSFGaugingNumber],
-		drain.numbers[InconclusiveSSFGaugingNumber],
-		drain.numbers[SuccessfulSSFGaugingNumber],
-		drain.numbers[FailedIZFGaugingNumber],
-		drain.numbers[InconclusiveIZFGaugingNumber],
-		drain.numbers[SuccessfulIZFGaugingNumber],
-		drain.numbers[FailedGZFGaugingNumber],
-		drain.numbers[InconclusiveGZFGaugingNumber],
-		drain.numbers[SuccessfulGZFGaugingNumber],
-		drain.numbers[ApprovedValidationNumber],
-		drain.numbers[UninformativeValidationNumber],
-		drain.numbers[SoldValidationNumber],
-		drain.numbers[DeniedValidationNumber],
-		drain.numbers[CreatedFlatStoringNumber],
-		drain.numbers[UpdatedFlatStoringNumber],
-		drain.numbers[UnalteredFlatStoringNumber],
-		drain.numbers[FailedFlatStoringNumber],
-		drain.numbers[CreatedImageStoringNumber],
-		drain.numbers[UnalteredImageStoringNumber],
-		drain.numbers[FailedImageStoringNumber],
-		drain.durations[FetchingDuration].avg(),
-		drain.durations[GeocodingDuration].avg(),
-		drain.durations[SSFGaugingDuration].avg(),
-		drain.durations[IZFGaugingDuration].avg(),
-		drain.durations[GZFGaugingDuration].avg(),
-		drain.durations[ReadingFlatStoringDuration].avg(),
-		drain.durations[CreationFlatStoringDuration].avg(),
-		drain.durations[UpdateFlatStoringDuration].avg(),
-		drain.durations[ReadingImageStoringDuration].avg(),
-		drain.durations[CreationImageStoringDuration].avg(),
-		drain.durations[TotalDuration].avg(),
+		d.miner,
+		d.page,
+		d.numbers[FailedFetchingNumber],
+		d.numbers[StateSanitationNumber],
+		d.numbers[CitySanitationNumber],
+		d.numbers[DistrictSanitationNumber],
+		d.numbers[SwapSanitationNumber],
+		d.numbers[StreetSanitationNumber],
+		d.numbers[HouseNumberSanitationNumber],
+		d.numbers[LocatedGeocodingNumber],
+		d.numbers[UnlocatedGeocodingNumber],
+		d.numbers[FailedGeocodingNumber],
+		d.numbers[InconclusiveGeocodingNumber],
+		d.numbers[SuccessfulGeocodingNumber],
+		d.numbers[SubwaylessSSFGaugingNumber],
+		d.numbers[FailedSSFGaugingNumber],
+		d.numbers[InconclusiveSSFGaugingNumber],
+		d.numbers[SuccessfulSSFGaugingNumber],
+		d.numbers[FailedIZFGaugingNumber],
+		d.numbers[InconclusiveIZFGaugingNumber],
+		d.numbers[SuccessfulIZFGaugingNumber],
+		d.numbers[FailedGZFGaugingNumber],
+		d.numbers[InconclusiveGZFGaugingNumber],
+		d.numbers[SuccessfulGZFGaugingNumber],
+		d.numbers[ApprovedValidationNumber],
+		d.numbers[UninformativeValidationNumber],
+		d.numbers[SoldValidationNumber],
+		d.numbers[DeniedValidationNumber],
+		d.numbers[CreatedFlatStoringNumber],
+		d.numbers[UpdatedFlatStoringNumber],
+		d.numbers[UnalteredFlatStoringNumber],
+		d.numbers[FailedFlatStoringNumber],
+		d.numbers[CreatedImageStoringNumber],
+		d.numbers[UnalteredImageStoringNumber],
+		d.numbers[FailedImageStoringNumber],
+		d.durations[FetchingDuration].avg(),
+		d.durations[GeocodingDuration].avg(),
+		d.durations[SSFGaugingDuration].avg(),
+		d.durations[IZFGaugingDuration].avg(),
+		d.durations[GZFGaugingDuration].avg(),
+		d.durations[ReadingFlatStoringDuration].avg(),
+		d.durations[CreationFlatStoringDuration].avg(),
+		d.durations[UpdateFlatStoringDuration].avg(),
+		d.durations[ReadingImageStoringDuration].avg(),
+		d.durations[CreationImageStoringDuration].avg(),
+		d.durations[TotalDuration].avg(),
 	)
 	if err != nil {
-		drain.logger.Errorf("metrics: drain failed to flush, %v", err)
+		d.logger.Errorf("metrics: drain failed to flush, %v", err)
 	}
-	drain.page = 0
-	for number := range drain.numbers {
-		drain.numbers[number] = 0
+	d.page = 0
+	for number := range d.numbers {
+		d.numbers[number] = 0
 	}
-	for _, b := range drain.durations {
+	for _, b := range d.durations {
 		b.reset()
 	}
 }
