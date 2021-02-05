@@ -117,7 +117,7 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	for _, s := range subscriptions {
 		err := h.helper.sendTemplate(
 			update.Message.Chat.ID,
-			"full_list",
+			"subscription",
 			s,
 			tgbotapi.NewInlineKeyboardMarkup(
 				tgbotapi.NewInlineKeyboardRow(
