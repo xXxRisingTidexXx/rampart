@@ -67,13 +67,13 @@ type Effect struct {
 	gift *gift.GIFT
 }
 
-func (effect Effect) Name() string {
-	return effect.name
+func (e Effect) Name() string {
+	return e.name
 }
 
-func (effect Effect) Apply(source image.Image) ([]byte, error) {
-	target := image.NewRGBA(effect.gift.Bounds(source.Bounds()))
-	effect.gift.Draw(target, source)
+func (e Effect) Apply(source image.Image) ([]byte, error) {
+	target := image.NewRGBA(e.gift.Bounds(source.Bounds()))
+	e.gift.Draw(target, source)
 	var buffer bytes.Buffer
 	if err := webp.Encode(&buffer, target, nil); err != nil {
 		return nil, fmt.Errorf("imaging: effect failed to encode the target, %v", err)
