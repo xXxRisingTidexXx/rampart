@@ -13,17 +13,20 @@ func NewPublisher(
 	db *sql.DB,
 	logger log.FieldLogger,
 ) (*Publisher, error) {
-	_, err := tgbotapi.NewBotAPI(config.Token)
+	bot, err := tgbotapi.NewBotAPI(config.Token)
 	if err != nil {
 		return nil, fmt.Errorf("telegram: publisher failed to instantiate, %v", err)
 	}
-	return &Publisher{NewObserver(db, logger)}, nil
+	return &Publisher{NewObserver(db, logger), NewSender(bot, logger)}, nil
 }
 
 type Publisher struct {
 	observer *Observer
+	sender   *Sender
 }
 
 func (p *Publisher) Run() {
-	log.Info(p.observer.ObserveLookups())
+	for _, lookup := range p.observer.ObserveLookups() {
+		p.sender.SendLookup(lookup)
+	}
 }
