@@ -9,12 +9,12 @@ import (
 	"strconv"
 )
 
-func NewRoomNumberStatusHandler(
+func NewRoomNumberHandler(
 	config config.Handler,
 	bot *tgbotapi.BotAPI,
 	db *sql.DB,
-) StatusHandler {
-	return &roomNumberStatusHandler{
+) TransientHandler {
+	return &roomNumberHandler{
 		&helper{bot},
 		db,
 		map[string]misc.RoomNumber{
@@ -39,7 +39,7 @@ func NewRoomNumberStatusHandler(
 	}
 }
 
-type roomNumberStatusHandler struct {
+type roomNumberHandler struct {
 	helper              *helper
 	db                  *sql.DB
 	mappings            map[string]misc.RoomNumber
@@ -49,7 +49,7 @@ type roomNumberStatusHandler struct {
 }
 
 // TODO: invalid input metric.
-func (h *roomNumberStatusHandler) HandleStatusUpdate(
+func (h *roomNumberHandler) HandleTransientUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,
 ) (tgbotapi.MessageConfig, error) {

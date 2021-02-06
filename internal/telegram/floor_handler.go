@@ -9,8 +9,8 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
-func NewFloorStatusHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
-	return &floorStatusHandler{
+func NewFloorHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) TransientHandler {
+	return &floorHandler{
 		&helper{bot},
 		db,
 		map[string]misc.Floor{
@@ -24,7 +24,7 @@ func NewFloorStatusHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.
 	}
 }
 
-type floorStatusHandler struct {
+type floorHandler struct {
 	helper   *helper
 	db       *sql.DB
 	mappings map[string]misc.Floor
@@ -33,7 +33,7 @@ type floorStatusHandler struct {
 
 // TODO: handle similar subscriptions.
 // TODO: invalid input metric.
-func (h *floorStatusHandler) HandleStatusUpdate(
+func (h *floorHandler) HandleTransientUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,
 ) (tgbotapi.MessageConfig, error) {

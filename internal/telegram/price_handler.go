@@ -10,8 +10,8 @@ import (
 	"strings"
 )
 
-func NewPriceStatusHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
-	return &priceStatusHandler{
+func NewPriceHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) TransientHandler {
+	return &priceHandler{
 		&helper{bot},
 		db,
 		config.AnyPriceButton,
@@ -32,7 +32,7 @@ func NewPriceStatusHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.
 	}
 }
 
-type priceStatusHandler struct {
+type priceHandler struct {
 	helper         *helper
 	db             *sql.DB
 	anyPrice       string
@@ -42,7 +42,7 @@ type priceStatusHandler struct {
 }
 
 // TODO: invalid input metric.
-func (h *priceStatusHandler) HandleStatusUpdate(
+func (h *priceHandler) HandleTransientUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,
 ) (tgbotapi.MessageConfig, error) {

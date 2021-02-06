@@ -8,8 +8,8 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
-func NewCityStatusHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) StatusHandler {
-	return &cityStatusHandler{
+func NewCityHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) TransientHandler {
+	return &cityHandler{
 		&helper{bot},
 		db,
 		config.MinFlatCount,
@@ -22,7 +22,7 @@ func NewCityStatusHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.D
 	}
 }
 
-type cityStatusHandler struct {
+type cityHandler struct {
 	helper       *helper
 	db           *sql.DB
 	minFlatCount int
@@ -31,7 +31,7 @@ type cityStatusHandler struct {
 
 // TODO: fuzzy city matching.
 // TODO: invalid city metric.
-func (h *cityStatusHandler) HandleStatusUpdate(
+func (h *cityHandler) HandleTransientUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,
 ) (tgbotapi.MessageConfig, error) {
