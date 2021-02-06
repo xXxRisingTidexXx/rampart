@@ -202,10 +202,24 @@ warhol:
   output-format: scientific/images/%s.%s.%s.%s.webp
   input-path: scientific/auge.csv
 telegram:
+  keymap: &keymap
+    separator: '|'
+    like-action: like
+  publisher:
+    sender:
+      <<: *keymap
+      like-button: "Супер \U0001F44D"
+  spec: '0-59/6 * * * *'
+  server:
+    address: :9005
+    read-timeout: 5s
+    write-timeout: 5s
+    max-header-bytes: 1048576
   dispatcher:
     timeout: 5
     worker-number: 2
     handler:
+      <<: *keymap
       start-command: /start
       start-button: "Зрозуміло \U0001F44D"
       help-command: /help
@@ -222,7 +236,6 @@ telegram:
       any-floor-button: "Байдуже \U0001F612"
       low-floor-button: Ні
       high-floor-button: Так
-      template-path: templates
       min-flat-count: 10
       max-price-length: 15
       max-room-number-length: 2
@@ -236,19 +249,13 @@ telegram:
       any-floor-placeholder: довільний
       low-floor-placeholder: низький
       high-floor-placeholder: високий
-      delete-button: Видалити
+      delete-button: "Видалити \U0001F5D1"
       delete-action: delete
-      separator: '|'
-  server:
-    address: :9005
-    read-timeout: 5s
-    write-timeout: 5s
-    max-header-bytes: 1048576
 twinkle:
   classifier:
     model-path: scientific/models/twinkle.latest.txt
   metrics-port: 9004
-  spec: '0-59/20 * * * *'
+  spec: '0-59/6 * * * *'
 coquus:
   input-path: scientific/twinkle.csv
   output-format: scientific/tables/{}.csv

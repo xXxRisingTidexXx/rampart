@@ -10,8 +10,8 @@ const (
 
 var floorViews = map[Floor]string{AnyFloor:  "any", LowFloor:  "low", HighFloor: "high"}
 
-func (floor Floor) String() string {
-	if view, ok := floorViews[floor]; ok {
+func (f Floor) String() string {
+	if view, ok := floorViews[f]; ok {
 		return view
 	}
 	return "undefined"

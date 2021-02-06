@@ -51,7 +51,7 @@ func (h *deleteHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error)
 		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
 	if number == 0 {
-		return fields, h.helper.answerCallback(update, "absent_delete")
+		return fields, h.helper.answerCallback(update.CallbackQuery.ID, "absent_delete")
 	}
-	return fields, h.helper.answerCallback(update, "present_delete")
+	return fields, h.helper.answerCallback(update.CallbackQuery.ID, "present_delete")
 }

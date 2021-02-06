@@ -43,8 +43,8 @@ type listHandler struct {
 	roomNumberPlaceholders map[string]string
 	floorPlaceholders      map[string]string
 	markup                 tgbotapi.ReplyKeyboardMarkup
-	deleteButton           string
-	deleteAction           string
+	button                 string
+	action                 string
 	separator              string
 }
 
@@ -112,18 +112,18 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
 	if len(subscriptions) == 0 {
-		return fields, h.helper.sendMessage(update, "empty_list", h.markup)
+		return fields, h.helper.sendMessage(update.Message.Chat.ID, "empty_list", h.markup)
 	}
 	for _, s := range subscriptions {
 		err := h.helper.sendTemplate(
-			update,
-			"full_list",
+			update.Message.Chat.ID,
+			"subscription",
 			s,
 			tgbotapi.NewInlineKeyboardMarkup(
 				tgbotapi.NewInlineKeyboardRow(
 					tgbotapi.NewInlineKeyboardButtonData(
-						h.deleteButton,
-						h.deleteAction+h.separator+strconv.Itoa(s.ID),
+						h.button,
+						h.action+h.separator+strconv.Itoa(s.ID),
 					),
 				),
 			),

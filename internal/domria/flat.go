@@ -33,14 +33,14 @@ type Flat struct {
 	GZF         float64
 }
 
-func (flat Flat) IsLocated() bool {
-	return flat.Point.Lon() != 0 || flat.Point.Lat() != 0
+func (f Flat) IsLocated() bool {
+	return f.Point.Lon() != 0 || f.Point.Lat() != 0
 }
 
-func (flat Flat) IsAddressable() bool {
-	return flat.State != "" && flat.City != "" && flat.Street != "" && flat.HouseNumber != ""
+func (f Flat) IsAddressable() bool {
+	return f.State != "" && f.City != "" && f.Street != "" && f.HouseNumber != ""
 }
 
-func (flat Flat) ImageCount() int {
-	return len(flat.Photos) + len(flat.Panoramas)
+func (f Flat) ImageCount() int {
+	return len(f.Photos) + len(f.Panoramas)
 }

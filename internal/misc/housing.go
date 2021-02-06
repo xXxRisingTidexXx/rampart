@@ -17,8 +17,8 @@ var housingViews = map[Housing]string{
 	SecondaryHousing: "secondary",
 }
 
-func (housing Housing) String() string {
-	if view, ok := housingViews[housing]; ok {
+func (h Housing) String() string {
+	if view, ok := housingViews[h]; ok {
 		return view
 	}
 	return "undefined"
@@ -29,15 +29,15 @@ var viewHousings = map[string]Housing{
 	housingViews[SecondaryHousing]: SecondaryHousing,
 }
 
-func (housing *Housing) UnmarshalYAML(node *yaml.Node) error {
+func (h *Housing) UnmarshalYAML(node *yaml.Node) error {
 	view := ""
 	if err := node.Decode(&view); err != nil {
 		return err
 	}
-	newHousing, ok := viewHousings[view]
+	housing, ok := viewHousings[view]
 	if !ok {
 		return fmt.Errorf("config: housing %s is undefined", view)
 	}
-	*housing = newHousing
+	*h = housing
 	return nil
 }

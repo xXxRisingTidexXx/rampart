@@ -53,20 +53,20 @@ type Sanitizer struct {
 	logger               log.FieldLogger
 }
 
-func (sanitizer *Sanitizer) SanitizeFlats(flats []Flat) []Flat {
+func (s *Sanitizer) SanitizeFlats(flats []Flat) []Flat {
 	newFlats := make([]Flat, len(flats))
 	for i, flat := range flats {
-		newFlats[i] = sanitizer.sanitizeFlat(flat)
+		newFlats[i] = s.sanitizeFlat(flat)
 	}
 	return newFlats
 }
 
-func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
+func (s *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	url := flat.URL
 	if url != "" {
-		url = sanitizer.urlPrefix + url
+		url = s.urlPrefix + url
 	} else {
-		sanitizer.logger.WithField("source", flat.Source).Warning(
+		s.logger.WithField("source", flat.Source).Warning(
 			"domria: sanitizer found a flat without an url",
 		)
 	}
@@ -74,58 +74,58 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 	if index := strings.LastIndex(flat.URL, "-"); index != -1 {
 		slug := flat.URL[:index]
 		for _, p := range flat.Photos {
-			photos = append(photos, fmt.Sprintf(sanitizer.photoFormat, slug, p))
+			photos = append(photos, fmt.Sprintf(s.photoFormat, slug, p))
 		}
 	} else if flat.URL != "" {
-		sanitizer.logger.WithField("source", flat.Source).Warning(
+		s.logger.WithField("source", flat.Source).Warning(
 			"domria: sanitizer found a flat without a dash in the url",
 		)
 	}
 	panoramas := make([]string, len(flat.Panoramas))
 	for i, p := range flat.Panoramas {
-		panoramas[i] = sanitizer.panoramaPrefix +
-			strings.ReplaceAll(p, ".jpg", sanitizer.panoramaSuffix)
+		panoramas[i] = s.panoramaPrefix +
+			strings.ReplaceAll(p, ".jpg", s.panoramaSuffix)
 	}
 	state := strings.TrimSpace(flat.State)
-	if value, ok := sanitizer.stateMap[state]; ok {
+	if value, ok := s.stateMap[state]; ok {
 		state = value
-		sanitizer.drain.DrainNumber(metrics.StateSanitationNumber)
+		s.drain.DrainNumber(metrics.StateSanitationNumber)
 	}
 	if state != "" {
-		state += sanitizer.stateSuffix
+		state += s.stateSuffix
 	}
 	city := strings.TrimSpace(flat.City)
-	if value, ok := sanitizer.cityMap[city]; ok {
+	if value, ok := s.cityMap[city]; ok {
 		city = value
-		sanitizer.drain.DrainNumber(metrics.CitySanitationNumber)
+		s.drain.DrainNumber(metrics.CitySanitationNumber)
 	}
 	district := strings.TrimSpace(flat.District)
-	if value, ok := sanitizer.districtMap[district]; ok {
+	if value, ok := s.districtMap[district]; ok {
 		district = value
-		sanitizer.drain.DrainNumber(metrics.DistrictSanitationNumber)
+		s.drain.DrainNumber(metrics.DistrictSanitationNumber)
 	}
-	if sanitizer.districtCitySwaps.Contains(city) {
+	if s.districtCitySwaps.Contains(city) {
 		city, district = district, ""
-		sanitizer.drain.DrainNumber(metrics.SwapSanitationNumber)
+		s.drain.DrainNumber(metrics.SwapSanitationNumber)
 	}
-	if strings.HasSuffix(district, sanitizer.districtEnding) {
-		district += sanitizer.districtSuffix
+	if strings.HasSuffix(district, s.districtEnding) {
+		district += s.districtSuffix
 	}
-	street, houseNumber := flat.Street, sanitizer.sanitizeHouseNumber(flat.HouseNumber)
+	street, houseNumber := flat.Street, s.sanitizeHouseNumber(flat.HouseNumber)
 	if index := strings.Index(flat.Street, ","); index != -1 {
 		street = flat.Street[:index]
-		sanitizer.drain.DrainNumber(metrics.StreetSanitationNumber)
-		extraNumber := sanitizer.sanitizeHouseNumber(flat.Street[index+1:])
+		s.drain.DrainNumber(metrics.StreetSanitationNumber)
+		extraNumber := s.sanitizeHouseNumber(flat.Street[index+1:])
 		if houseNumber == "" &&
 			extraNumber != "" &&
 			extraNumber[0] >= '0' &&
 			extraNumber[0] <= '9' {
 			houseNumber = extraNumber
-			sanitizer.drain.DrainNumber(metrics.HouseNumberSanitationNumber)
+			s.drain.DrainNumber(metrics.HouseNumberSanitationNumber)
 		}
 	}
-	if runes := []rune(houseNumber); len(runes) > sanitizer.houseNumberMaxLength {
-		houseNumber = string(runes[:sanitizer.houseNumberMaxLength])
+	if runes := []rune(houseNumber); len(runes) > s.houseNumberMaxLength {
+		houseNumber = string(runes[:s.houseNumberMaxLength])
 	}
 	return Flat{
 		Source:      flat.Source,
@@ -146,16 +146,16 @@ func (sanitizer *Sanitizer) sanitizeFlat(flat Flat) Flat {
 		State:       state,
 		City:        city,
 		District:    district,
-		Street:      strings.TrimSpace(sanitizer.streetReplacer.Replace(street)),
+		Street:      strings.TrimSpace(s.streetReplacer.Replace(street)),
 		HouseNumber: houseNumber,
 	}
 }
 
-func (sanitizer *Sanitizer) sanitizeHouseNumber(houseNumber string) string {
+func (s *Sanitizer) sanitizeHouseNumber(houseNumber string) string {
 	if houseNumber == "" {
 		return houseNumber
 	}
-	newHouseNumber := sanitizer.houseNumberReplacer.Replace(houseNumber)
+	newHouseNumber := s.houseNumberReplacer.Replace(houseNumber)
 	if index := strings.Index(newHouseNumber, ","); index != -1 {
 		return newHouseNumber[:index]
 	}

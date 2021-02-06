@@ -1,5 +1,6 @@
 package config
 
+// TODO: template path field + helper's randomization.
 type Handler struct {
 	StartCommand               string `yaml:"start-command"`
 	StartButton                string `yaml:"start-button"`
@@ -17,7 +18,6 @@ type Handler struct {
 	AnyFloorButton             string `yaml:"any-floor-button"`
 	LowFloorButton             string `yaml:"low-floor-button"`
 	HighFloorButton            string `yaml:"high-floor-button"`
-	TemplatePath               string `yaml:"template-path"` // TODO: use it in helper's randomization.
 	MinFlatCount               int    `yaml:"min-flat-count"`
 	MaxPriceLength             int    `yaml:"max-price-length"`
 	MaxRoomNumberLength        int    `yaml:"max-room-number-length"`
@@ -34,4 +34,5 @@ type Handler struct {
 	DeleteButton               string `yaml:"delete-button"`
 	DeleteAction               string `yaml:"delete-action"`
 	Separator                  string `yaml:"separator"`
+	LikeAction                 string `yaml:"like-action"`
 }

@@ -64,7 +64,7 @@ type Gauger struct {
 	logger          log.FieldLogger
 }
 
-func (gauger *Gauger) GaugeFlats(flats []Flat) []Flat {
+func (g *Gauger) GaugeFlats(flats []Flat) []Flat {
 	newFlats := make([]Flat, len(flats))
 	for i, flat := range flats {
 		newFlats[i] = Flat{
@@ -88,60 +88,60 @@ func (gauger *Gauger) GaugeFlats(flats []Flat) []Flat {
 			District:    flat.District,
 			Street:      flat.Street,
 			HouseNumber: flat.HouseNumber,
-			SSF:         gauger.gaugeSSF(flat),
-			IZF:         gauger.gaugeIZF(flat),
-			GZF:         gauger.gaugeGZF(flat),
+			SSF:         g.gaugeSSF(flat),
+			IZF:         g.gaugeIZF(flat),
+			GZF:         g.gaugeGZF(flat),
 		}
 	}
 	return newFlats
 }
 
-func (gauger *Gauger) gaugeSSF(flat Flat) float64 {
-	if !gauger.subwayCities.Contains(flat.City) {
-		gauger.drain.DrainNumber(metrics.SubwaylessSSFGaugingNumber)
+func (g *Gauger) gaugeSSF(flat Flat) float64 {
+	if !g.subwayCities.Contains(flat.City) {
+		g.drain.DrainNumber(metrics.SubwaylessSSFGaugingNumber)
 		return 0
 	}
-	entry := gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "ssf"})
+	entry := g.logger.WithFields(log.Fields{"url": flat.URL, "feature": "ssf"})
 	start := time.Now()
-	collection, err := gauger.queryOverpass(
+	collection, err := g.queryOverpass(
 		fmt.Sprintf(
 			"node[station=subway](around:%f,%f,%f);out;",
-			gauger.ssfSearchRadius,
+			g.ssfSearchRadius,
 			flat.Point.Lat(),
 			flat.Point.Lon(),
 		),
 		entry,
 	)
-	gauger.drain.DrainDuration(metrics.SSFGaugingDuration, start)
+	g.drain.DrainDuration(metrics.SSFGaugingDuration, start)
 	if err != nil {
-		gauger.drain.DrainNumber(metrics.FailedSSFGaugingNumber)
+		g.drain.DrainNumber(metrics.FailedSSFGaugingNumber)
 		entry.Error(err)
 		return 0
 	}
 	ssf := 0.0
 	for _, feature := range collection.Features {
-		distance := gauger.gaugeGeoDistance(feature.Geometry, flat.Point)
-		if distance != gauger.unknownDistance {
-			ssf += 1 / math.Max(distance, gauger.ssfMinDistance)
+		distance := g.gaugeGeoDistance(feature.Geometry, flat.Point)
+		if distance != g.unknownDistance {
+			ssf += 1 / math.Max(distance, g.ssfMinDistance)
 		}
 	}
 	if ssf == 0 {
-		gauger.drain.DrainNumber(metrics.InconclusiveSSFGaugingNumber)
+		g.drain.DrainNumber(metrics.InconclusiveSSFGaugingNumber)
 		return 0
 	}
-	gauger.drain.DrainNumber(metrics.SuccessfulSSFGaugingNumber)
-	return ssf * gauger.ssfModifier
+	g.drain.DrainNumber(metrics.SuccessfulSSFGaugingNumber)
+	return ssf * g.ssfModifier
 }
 
-func (gauger *Gauger) queryOverpass(
+func (g *Gauger) queryOverpass(
 	query string,
 	logger log.FieldLogger,
 ) (*geojson.FeatureCollection, error) {
 	data := gourl.QueryEscape(query)
 	bytes, err := make([]byte, 0), io.EOF
-	for i := 0; i < len(gauger.overpassHosts) && err != nil; i++ {
-		if bytes, err = gauger.tryQuery(gauger.overpassHosts[i], data); err != nil {
-			logger.WithField("host", gauger.overpassHosts[i]).Error(err)
+	for i := 0; i < len(g.overpassHosts) && err != nil; i++ {
+		if bytes, err = g.tryQuery(g.overpassHosts[i], data); err != nil {
+			logger.WithField("host", g.overpassHosts[i]).Error(err)
 		}
 	}
 	if err != nil {
@@ -158,7 +158,7 @@ func (gauger *Gauger) queryOverpass(
 	return collection, nil
 }
 
-func (gauger *Gauger) tryQuery(host, data string) ([]byte, error) {
+func (g *Gauger) tryQuery(host, data string) ([]byte, error) {
 	request, err := http.NewRequest(
 		http.MethodGet,
 		fmt.Sprintf("https://%s/api/interpreter?data=%s", host, data),
@@ -168,7 +168,7 @@ func (gauger *Gauger) tryQuery(host, data string) ([]byte, error) {
 		return nil, fmt.Errorf("domria: gauger failed to construct a request, %v", err)
 	}
 	request.Header.Set("User-Agent", misc.UserAgent)
-	response, err := gauger.client.Do(request)
+	response, err := g.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("domria: gauger failed to perform a request, %v", err)
 	}
@@ -187,32 +187,32 @@ func (gauger *Gauger) tryQuery(host, data string) ([]byte, error) {
 	return bytes, nil
 }
 
-func (gauger *Gauger) gaugeGeoDistance(geometry orb.Geometry, point orb.Point) float64 {
-	distance := gauger.unknownDistance
+func (g *Gauger) gaugeGeoDistance(geometry orb.Geometry, point orb.Point) float64 {
+	distance := g.unknownDistance
 	switch geometry := geometry.(type) {
 	case nil:
 		return distance
 	case orb.Point:
 		return geo.DistanceHaversine(geometry, point)
 	case orb.MultiPoint:
-		return gauger.gaugeGeoDistanceToPoints(geometry, point)
+		return g.gaugeGeoDistanceToPoints(geometry, point)
 	case orb.LineString:
-		return gauger.gaugeGeoDistanceToPoints(geometry, point)
+		return g.gaugeGeoDistanceToPoints(geometry, point)
 	case orb.MultiLineString:
-		distance := gauger.unknownDistance
+		distance := g.unknownDistance
 		for _, lineString := range geometry {
-			newDistance := gauger.gaugeGeoDistanceToPoints(lineString, point)
-			if gauger.isLower(newDistance, distance) {
+			newDistance := g.gaugeGeoDistanceToPoints(lineString, point)
+			if g.isLower(newDistance, distance) {
 				distance = newDistance
 			}
 		}
 		return distance
 	case orb.Ring:
-		return gauger.gaugeGeoDistanceToPoints(geometry, point)
+		return g.gaugeGeoDistanceToPoints(geometry, point)
 	case orb.Polygon:
 		for _, ring := range geometry {
-			newDistance := gauger.gaugeGeoDistanceToPoints(ring, point)
-			if gauger.isLower(newDistance, distance) {
+			newDistance := g.gaugeGeoDistanceToPoints(ring, point)
+			if g.isLower(newDistance, distance) {
 				distance = newDistance
 			}
 		}
@@ -220,8 +220,8 @@ func (gauger *Gauger) gaugeGeoDistance(geometry orb.Geometry, point orb.Point) f
 	case orb.MultiPolygon:
 		for _, polygon := range geometry {
 			for _, ring := range polygon {
-				newDistance := gauger.gaugeGeoDistanceToPoints(ring, point)
-				if gauger.isLower(newDistance, distance) {
+				newDistance := g.gaugeGeoDistanceToPoints(ring, point)
+				if g.isLower(newDistance, distance) {
 					distance = newDistance
 				}
 			}
@@ -229,108 +229,108 @@ func (gauger *Gauger) gaugeGeoDistance(geometry orb.Geometry, point orb.Point) f
 		return distance
 	case orb.Collection:
 		for _, newGeometry := range geometry {
-			newDistance := gauger.gaugeGeoDistance(newGeometry, point)
-			if gauger.isLower(newDistance, distance) {
+			newDistance := g.gaugeGeoDistance(newGeometry, point)
+			if g.isLower(newDistance, distance) {
 				distance = newDistance
 			}
 		}
 		return distance
 	case orb.Bound:
-		return gauger.gaugeGeoDistanceToPoints(geometry.ToRing(), point)
+		return g.gaugeGeoDistanceToPoints(geometry.ToRing(), point)
 	default:
 		return distance
 	}
 }
 
-func (gauger *Gauger) isLower(d1, d2 float64) bool {
-	return d1 < d2 || d2 == gauger.unknownDistance && d2 < d1
+func (g *Gauger) isLower(d1, d2 float64) bool {
+	return d1 < d2 || d2 == g.unknownDistance && d2 < d1
 }
 
-func (gauger *Gauger) gaugeGeoDistanceToPoints(points []orb.Point, point orb.Point) float64 {
-	distance := gauger.unknownDistance
+func (g *Gauger) gaugeGeoDistanceToPoints(points []orb.Point, point orb.Point) float64 {
+	distance := g.unknownDistance
 	for _, newPoint := range points {
 		newDistance := geo.DistanceHaversine(newPoint, point)
-		if gauger.isLower(newDistance, distance) {
+		if g.isLower(newDistance, distance) {
 			distance = newDistance
 		}
 	}
 	return distance
 }
 
-func (gauger *Gauger) gaugeIZF(flat Flat) float64 {
-	entry := gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "izf"})
+func (g *Gauger) gaugeIZF(flat Flat) float64 {
+	entry := g.logger.WithFields(log.Fields{"url": flat.URL, "feature": "izf"})
 	start := time.Now()
-	collection, err := gauger.queryOverpass(
+	collection, err := g.queryOverpass(
 		fmt.Sprintf(
 			"(way[landuse=industrial](around:%f,%f,%f);>;relation[landuse=industrial](around:%f,%"+
 				"f,%f);>;);out;",
-			gauger.izfSearchRadius,
+			g.izfSearchRadius,
 			flat.Point.Lat(),
 			flat.Point.Lon(),
-			gauger.izfSearchRadius,
+			g.izfSearchRadius,
 			flat.Point.Lat(),
 			flat.Point.Lon(),
 		),
 		entry,
 	)
-	gauger.drain.DrainDuration(metrics.IZFGaugingDuration, start)
+	g.drain.DrainDuration(metrics.IZFGaugingDuration, start)
 	if err != nil {
-		gauger.drain.DrainNumber(metrics.FailedIZFGaugingNumber)
+		g.drain.DrainNumber(metrics.FailedIZFGaugingNumber)
 		entry.Error(err)
 		return 0
 	}
 	izf := 0.0
 	for _, feature := range collection.Features {
-		if area := geo.Area(feature.Geometry); area >= gauger.izfMinArea {
-			distance := gauger.gaugeGeoDistance(feature.Geometry, flat.Point)
-			if distance != gauger.unknownDistance {
-				izf += area / math.Max(distance, gauger.izfMinDistance)
+		if area := geo.Area(feature.Geometry); area >= g.izfMinArea {
+			distance := g.gaugeGeoDistance(feature.Geometry, flat.Point)
+			if distance != g.unknownDistance {
+				izf += area / math.Max(distance, g.izfMinDistance)
 			}
 		}
 	}
 	if izf == 0 {
-		gauger.drain.DrainNumber(metrics.InconclusiveIZFGaugingNumber)
+		g.drain.DrainNumber(metrics.InconclusiveIZFGaugingNumber)
 		return 0
 	}
-	gauger.drain.DrainNumber(metrics.SuccessfulIZFGaugingNumber)
-	return izf * gauger.izfModifier
+	g.drain.DrainNumber(metrics.SuccessfulIZFGaugingNumber)
+	return izf * g.izfModifier
 }
 
-func (gauger *Gauger) gaugeGZF(flat Flat) float64 {
-	entry := gauger.logger.WithFields(log.Fields{"url": flat.URL, "feature": "gzf"})
+func (g *Gauger) gaugeGZF(flat Flat) float64 {
+	entry := g.logger.WithFields(log.Fields{"url": flat.URL, "feature": "gzf"})
 	start := time.Now()
-	collection, err := gauger.queryOverpass(
+	collection, err := g.queryOverpass(
 		fmt.Sprintf(
 			"(way[leisure=park](around:%f,%f,%f);>;relation[leisure=park](around:%f,%f,%f);>;);ou"+
 				"t;",
-			gauger.gzfSearchRadius,
+			g.gzfSearchRadius,
 			flat.Point.Lat(),
 			flat.Point.Lon(),
-			gauger.gzfSearchRadius,
+			g.gzfSearchRadius,
 			flat.Point.Lat(),
 			flat.Point.Lon(),
 		),
 		entry,
 	)
-	gauger.drain.DrainDuration(metrics.GZFGaugingDuration, start)
+	g.drain.DrainDuration(metrics.GZFGaugingDuration, start)
 	if err != nil {
-		gauger.drain.DrainNumber(metrics.FailedGZFGaugingNumber)
+		g.drain.DrainNumber(metrics.FailedGZFGaugingNumber)
 		entry.Error(err)
 		return 0
 	}
 	gzf := 0.0
 	for _, feature := range collection.Features {
-		if area := geo.Area(feature.Geometry); area >= gauger.gzfMinArea {
-			distance := gauger.gaugeGeoDistance(feature.Geometry, flat.Point)
-			if distance != gauger.unknownDistance {
-				gzf += area / math.Max(distance, gauger.gzfMinDistance)
+		if area := geo.Area(feature.Geometry); area >= g.gzfMinArea {
+			distance := g.gaugeGeoDistance(feature.Geometry, flat.Point)
+			if distance != g.unknownDistance {
+				gzf += area / math.Max(distance, g.gzfMinDistance)
 			}
 		}
 	}
 	if gzf == 0 {
-		gauger.drain.DrainNumber(metrics.InconclusiveGZFGaugingNumber)
+		g.drain.DrainNumber(metrics.InconclusiveGZFGaugingNumber)
 		return 0
 	}
-	gauger.drain.DrainNumber(metrics.SuccessfulGZFGaugingNumber)
-	return gzf * gauger.gzfModifier
+	g.drain.DrainNumber(metrics.SuccessfulGZFGaugingNumber)
+	return gzf * g.gzfModifier
 }

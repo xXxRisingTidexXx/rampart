@@ -72,6 +72,10 @@ services:
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/telegram
     ports:
       - 9005:9005
+  publisher:
+    <<: *x-golang
+    container_name: rampart-publisher
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/telegram -publisher
   notebook:
     build:
       context: .
@@ -97,17 +101,17 @@ services:
       context: .
       dockerfile: docker/python.dockerfile
     image: rampart-python
-  twinkle:
+  twinkle-debug:
     <<: *x-python
-    container_name: rampart-twinkle
+    container_name: rampart-twinkle-debug
     command: python -m rampart.twinkle -debug
   coquus:
     <<: *x-python
     container_name: rampart-coquus
     command: python -m rampart.coquus
-  auge:
+  auge-debug:
     <<: *x-python
-    container_name: rampart-auge
+    container_name: rampart-auge-debug
     command: python -m rampart.auge -debug
   messis-domria-primary:
     <<: *x-golang
@@ -121,15 +125,15 @@ services:
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -miner domria-secondary
     ports:
       - 9002:9002
-  twinkle-cron:
+  twinkle:
     <<: *x-python
-    container_name: rampart-twinkle-cron
+    container_name: rampart-twinkle
     command: python -m rampart.twinkle
     ports:
       - 9004:9004
-  auge-cron:
+  auge:
     <<: *x-python
-    container_name: rampart-auge-cron
+    container_name: rampart-auge
     command: python -m rampart.auge
     ports:
       - 9003:9003

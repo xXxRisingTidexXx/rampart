@@ -46,38 +46,36 @@ type Fetcher struct {
 	logger       log.FieldLogger
 }
 
-func (fetcher *Fetcher) FetchFlats(housing misc.Housing) []Flat {
-	fetcher.drain.DrainPage(fetcher.page)
-	flag, ok := fetcher.flags[housing]
+func (f *Fetcher) FetchFlats(housing misc.Housing) []Flat {
+	f.drain.DrainPage(f.page)
+	flag, ok := f.flags[housing]
 	if !ok {
-		fetcher.logger.WithField("housing", housing).Error(
-			"domria: fetcher doesn't accept the housing",
-		)
+		f.logger.WithField("housing", housing).Error("domria: fetcher doesn't accept the housing")
 		return make([]Flat, 0)
 	}
-	entry := fetcher.logger.WithField("page", fetcher.page)
+	entry := f.logger.WithField("page", f.page)
 	start := time.Now()
-	search, err := fetcher.getSearch(flag, entry)
-	fetcher.drain.DrainDuration(metrics.FetchingDuration, start)
+	search, err := f.getSearch(flag, entry)
+	f.drain.DrainDuration(metrics.FetchingDuration, start)
 	if err != nil {
-		fetcher.drain.DrainNumber(metrics.FailedFetchingNumber)
+		f.drain.DrainNumber(metrics.FailedFetchingNumber)
 		entry.Error(err)
 		return make([]Flat, 0)
 	}
-	flats := fetcher.getFlats(search, housing)
+	flats := f.getFlats(search, housing)
 	if len(flats) > 0 {
-		fetcher.page++
+		f.page++
 	} else {
-		fetcher.page = 0
+		f.page = 0
 	}
 	return flats
 }
 
-func (fetcher *Fetcher) getSearch(flag string, logger log.FieldLogger) (search, error) {
-	url := fmt.Sprintf(fetcher.searchFormat, flag, fetcher.page, fetcher.portion)
+func (f *Fetcher) getSearch(flag string, logger log.FieldLogger) (search, error) {
+	url := fmt.Sprintf(f.searchFormat, flag, f.page, f.portion)
 	bytes, err := make([]byte, 0), io.EOF
-	for retry := 1; retry <= fetcher.retryLimit && err != nil; retry++ {
-		if bytes, err = fetcher.trySearch(url); err != nil {
+	for retry := 1; retry <= f.retryLimit && err != nil; retry++ {
+		if bytes, err = f.trySearch(url); err != nil {
 			logger.WithField("retry", retry).Error(err)
 		}
 	}
@@ -88,17 +86,16 @@ func (fetcher *Fetcher) getSearch(flag string, logger log.FieldLogger) (search, 
 	if err := json.Unmarshal(bytes, &s); err != nil {
 		return s, fmt.Errorf("domria: fetcher failed to unmarshal the search, %v", err)
 	}
-
 	return s, nil
 }
 
-func (fetcher *Fetcher) trySearch(url string) ([]byte, error) {
+func (f *Fetcher) trySearch(url string) ([]byte, error) {
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to construct a request, %v", err)
 	}
 	request.Header.Set("User-Agent", misc.UserAgent)
-	response, err := fetcher.client.Do(request)
+	response, err := f.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("domria: fetcher failed to perform a request, %v", err)
 	}
@@ -117,7 +114,7 @@ func (fetcher *Fetcher) trySearch(url string) ([]byte, error) {
 	return bytes, nil
 }
 
-func (fetcher *Fetcher) getFlats(s search, housing misc.Housing) []Flat {
+func (f *Fetcher) getFlats(s search, housing misc.Housing) []Flat {
 	flats := make([]Flat, len(s.Items))
 	for j, i := range s.Items {
 		photos := make([]string, 0, len(i.Photos))

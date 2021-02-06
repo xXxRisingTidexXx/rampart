@@ -28,7 +28,7 @@ commands:
     description: Run the data mining app single workflow
     cmd: docker-compose run --rm messis
   warhol:
-    description: Run the image downloader
+    description: Start the image downloader
     cmd: |
       rm -rf scientific/images && \
       mkdir scientific/images && \
@@ -46,10 +46,13 @@ commands:
       docker-compose run --rm travesty && \
       sudo chown -R $USER:$USER images
   telegram:
-    description: Run Telegram API client in long pulling mode
+    description: Run Telegram API client in long pulling mode + flat snitch
     cmd: |
       docker-compose up telegram
       docker rm rampart-telegram
+  publisher:
+    description: Launch apartment issuer code
+    cmd: docker-compose run --rm publisher
   notebook:
     description: Setup Jupyter Notebook server
     cmd: |
@@ -58,18 +61,18 @@ commands:
       chown -R $USER:$USER scientific
   twinkle:
     description: Perform ranking by subscriptions
-    cmd: docker-compose run --rm twinkle
+    cmd: docker-compose run --rm twinkle-debug
   coquus:
     description: Execute ranking dataset augmentation
     cmd: docker-compose run --rm coquus && sudo chown -R $USER:$USER scientific
   auge:
     description: Run image classification task
-    cmd: docker-compose run --rm auge
+    cmd: docker-compose run --rm auge-debug
   run:
     description: Activate the whole rampart ecosystem
     cmd: |
-      docker-compose up messis-domria-primary messis-domria-secondary twinkle-cron auge-cron telegram
-      docker rm rampart-messis-domria-primary rampart-messis-domria-secondary rampart-twinkle-cron rampart-auge-cron rampart-telegram
+      docker-compose up messis-domria-primary messis-domria-secondary telegram twinkle auge
+      docker rm rampart-messis-domria-primary rampart-messis-domria-secondary rampart-telegram rampart-twinkle rampart-auge
   stop:
     description: Dispose all docker stuff
     cmd: docker-compose down

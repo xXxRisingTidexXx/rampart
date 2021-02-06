@@ -9,12 +9,12 @@ import (
 	"strconv"
 )
 
-func NewRoomNumberStatusHandler(
+func NewRoomNumberHandler(
 	config config.Handler,
 	bot *tgbotapi.BotAPI,
 	db *sql.DB,
-) StatusHandler {
-	return &roomNumberStatusHandler{
+) TransientHandler {
+	return &roomNumberHandler{
 		&helper{bot},
 		db,
 		map[string]misc.RoomNumber{
@@ -39,7 +39,7 @@ func NewRoomNumberStatusHandler(
 	}
 }
 
-type roomNumberStatusHandler struct {
+type roomNumberHandler struct {
 	helper              *helper
 	db                  *sql.DB
 	mappings            map[string]misc.RoomNumber
@@ -49,7 +49,7 @@ type roomNumberStatusHandler struct {
 }
 
 // TODO: invalid input metric.
-func (h *roomNumberStatusHandler) HandleStatusUpdate(
+func (h *roomNumberHandler) HandleTransientUpdate(
 	update tgbotapi.Update,
 	tx *sql.Tx,
 ) (tgbotapi.MessageConfig, error) {
@@ -57,11 +57,11 @@ func (h *roomNumberStatusHandler) HandleStatusUpdate(
 	roomNumber, ok := h.mappings[update.Message.Text]
 	if !ok {
 		if len(update.Message.Text) > h.maxRoomNumberLength {
-			return h.helper.prepareMessage(update, "invalid_room_number", nil)
+			return h.helper.prepareMessage(update.Message.Chat.ID, "invalid_room_number", nil)
 		}
 		number, err := strconv.ParseInt(update.Message.Text, 10, 64)
 		if err != nil || number < int64(misc.ManyRoomNumber) || number > h.maxRoomNumber {
-			return h.helper.prepareMessage(update, "invalid_room_number", nil)
+			return h.helper.prepareMessage(update.Message.Chat.ID, "invalid_room_number", nil)
 		}
 		roomNumber = misc.ManyRoomNumber
 	}
@@ -74,5 +74,5 @@ func (h *roomNumberStatusHandler) HandleStatusUpdate(
 	if err != nil {
 		return message, fmt.Errorf("telegram: handler failed to update a transient, %v", err)
 	}
-	return h.helper.prepareMessage(update, "valid_room_number", h.markup)
+	return h.helper.prepareMessage(update.Message.Chat.ID, "valid_room_number", h.markup)
 }

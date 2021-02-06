@@ -74,8 +74,8 @@ var numberViews = map[Number]string{
 	FailedImageStoringNumber:      "failed-image-storing",
 }
 
-func (number Number) String() string {
-	if view, ok := numberViews[number]; ok {
+func (n Number) String() string {
+	if view, ok := numberViews[n]; ok {
 		return view
 	}
 	return "undefined"

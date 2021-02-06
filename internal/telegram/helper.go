@@ -13,8 +13,8 @@ type helper struct {
 	bot *tgbotapi.BotAPI
 }
 
-func (h *helper) sendMessage(update tgbotapi.Update, file string, markup interface{}) error {
-	message, err := h.prepareMessage(update, file, markup)
+func (h *helper) sendMessage(chatID int64, file string, markup interface{}) error {
+	message, err := h.prepareMessage(chatID, file, markup)
 	if err != nil {
 		return err
 	}
@@ -26,7 +26,7 @@ func (h *helper) sendMessage(update tgbotapi.Update, file string, markup interfa
 
 // TODO: file randomization.
 func (h *helper) prepareMessage(
-	update tgbotapi.Update,
+	chatID int64,
 	file string,
 	markup interface{},
 ) (tgbotapi.MessageConfig, error) {
@@ -35,18 +35,13 @@ func (h *helper) prepareMessage(
 	if err != nil {
 		return message, fmt.Errorf("telegram: helper failed to read a file, %v", err)
 	}
-	message = tgbotapi.NewMessage(update.Message.Chat.ID, string(bytes))
+	message = tgbotapi.NewMessage(chatID, string(bytes))
 	message.ParseMode = tgbotapi.ModeHTML
 	message.ReplyMarkup = markup
 	return message, nil
 }
 
-func (h *helper) sendTemplate(
-	update tgbotapi.Update,
-	file string,
-	data interface{},
-	markup interface{},
-) error {
+func (h *helper) sendTemplate(chatID int64, file string, data, markup interface{}) error {
 	t, err := template.ParseFiles(misc.ResolvePath("templates/" + file + ".html"))
 	if err != nil {
 		return fmt.Errorf("telegram: helper failed to parse a template, %v", err)
@@ -55,7 +50,7 @@ func (h *helper) sendTemplate(
 	if err := t.Execute(&builder, data); err != nil {
 		return fmt.Errorf("telegram: helper failed to execute a template, %v", err)
 	}
-	message := tgbotapi.NewMessage(update.Message.Chat.ID, builder.String())
+	message := tgbotapi.NewMessage(chatID, builder.String())
 	message.ParseMode = tgbotapi.ModeHTML
 	message.ReplyMarkup = markup
 	if _, err := h.bot.Send(message); err != nil {
@@ -65,14 +60,12 @@ func (h *helper) sendTemplate(
 }
 
 // TODO: file randomization.
-func (h *helper) answerCallback(update tgbotapi.Update, file string) error {
+func (h *helper) answerCallback(callbackID, file string) error {
 	bytes, err := ioutil.ReadFile(misc.ResolvePath("templates/" + file + ".html"))
 	if err != nil {
 		return fmt.Errorf("telegram: helper failed to read a file, %v", err)
 	}
-	_, err = h.bot.AnswerCallbackQuery(
-		tgbotapi.NewCallback(update.CallbackQuery.ID, string(bytes)),
-	)
+	_, err = h.bot.AnswerCallbackQuery(tgbotapi.NewCallback(callbackID, string(bytes)))
 	if err != nil {
 		return fmt.Errorf("telegram: helper failed to answer a callback query, %v", err)
 	}

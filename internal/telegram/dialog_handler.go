@@ -13,11 +13,11 @@ func NewDialogHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) H
 	return &dialogHandler{
 		bot,
 		db,
-		map[misc.Status]StatusHandler{
-			misc.CityStatus:       NewCityStatusHandler(config, bot, db),
-			misc.PriceStatus:      NewPriceStatusHandler(config, bot, db),
-			misc.RoomNumberStatus: NewRoomNumberStatusHandler(config, bot, db),
-			misc.FloorStatus:      NewFloorStatusHandler(config, bot, db),
+		map[misc.Status]TransientHandler{
+			misc.CityStatus:       NewCityHandler(config, bot, db),
+			misc.PriceStatus:      NewPriceHandler(config, bot, db),
+			misc.RoomNumberStatus: NewRoomNumberHandler(config, bot, db),
+			misc.FloorStatus:      NewFloorHandler(config, bot, db),
 		},
 	}
 }
@@ -25,7 +25,7 @@ func NewDialogHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) H
 type dialogHandler struct {
 	bot      *tgbotapi.BotAPI
 	db       *sql.DB
-	handlers map[misc.Status]StatusHandler
+	handlers map[misc.Status]TransientHandler
 }
 
 func (h *dialogHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
@@ -57,7 +57,7 @@ func (h *dialogHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error)
 		return fields, fmt.Errorf("telegram: handler failed to handle a status")
 	}
 	fields = log.Fields{"handler": view}
-	message, err := handler.HandleStatusUpdate(update, tx)
+	message, err := handler.HandleTransientUpdate(update, tx)
 	if err != nil {
 		_ = tx.Rollback()
 		return fields, err

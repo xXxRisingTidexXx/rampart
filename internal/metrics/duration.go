@@ -30,8 +30,8 @@ var durationViews = map[Duration]string{
 	TotalDuration:                "total",
 }
 
-func (duration Duration) String() string {
-	if view, ok := durationViews[duration]; ok {
+func (d Duration) String() string {
+	if view, ok := durationViews[d]; ok {
 		return view
 	}
 	return "undefined"

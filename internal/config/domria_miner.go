@@ -17,14 +17,14 @@ type DomriaMiner struct {
 	Storer    Storer       `yaml:"storer"`
 }
 
-func (miner DomriaMiner) Name() string {
-	return miner.Alias
+func (m DomriaMiner) Name() string {
+	return m.Alias
 }
 
-func (miner DomriaMiner) Schedule() string {
-	return miner.Spec
+func (m DomriaMiner) Schedule() string {
+	return m.Spec
 }
 
-func (miner DomriaMiner) Metrics() Server {
-	return miner.Server
+func (m DomriaMiner) Metrics() Server {
+	return m.Server
 }

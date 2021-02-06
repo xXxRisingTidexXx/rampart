@@ -18,8 +18,8 @@ var roomNumberViews = map[RoomNumber]string{
 	ManyRoomNumber:  "many",
 }
 
-func (roomNumber RoomNumber) String() string {
-	if view, ok := roomNumberViews[roomNumber]; ok {
+func (n RoomNumber) String() string {
+	if view, ok := roomNumberViews[n]; ok {
 		return view
 	}
 	return "undefined"

@@ -2,6 +2,9 @@ package config
 
 type Telegram struct {
 	DSN        string     `yaml:"-"`
-	Dispatcher Dispatcher `yaml:"dispatcher"`
+	Token      string     `yaml:"-"`
+	Publisher  Publisher  `yaml:"publisher"`
+	Spec       string     `yaml:"spec"`
 	Server     Server     `yaml:"server"`
+	Dispatcher Dispatcher `yaml:"dispatcher"`
 }
