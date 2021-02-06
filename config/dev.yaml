@@ -1,200 +1,188 @@
+user-agent: &user-agent RampartBot/0.0.1
 messis:
-  domria-miner: &domria-miner
-    fetcher:
-      timeout: 40s
-      retry-limit: 3
-      portion: 10
-      flags:
-        primary: newbuildings=1
-        secondary: secondary=1
-      search-format: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d
-    sanitizer:
-      url-prefix: https://dom.ria.com/uk/
-      photo-format: https://cdn.riastatic.com/photosnew/dom/photo/%s__%sfl.webp
-      panorama-prefix: https://cdn.riastatic.com/photos/
-      panorama-suffix: s.jpg
-      state-map:
-        Київськ��: Київська
-        Одес��ка: Одеська
-        Одеськ��: Одеська
-        К��ївська: Київська
-        Черновицкая: Чернівецька
-        Винницкая: Вінницька
-        Тернопольськая: Тернопільська
-        Киевская: Київська
-        Житомирская: Житомирська
-        Запорожская: Запорізька
-        О��еська: Одеська
-        Київс��ка: Київська
-        Киї��ська: Київська
-      state-suffix: ' область'
-      city-map:
-        Киє��о-Святошинський: Києво-Святошинський
-        Івано-Франк��вськ: Івано-Франківськ
-        Л��вів: Львів
-        Киї��: Київ
-        Івано-��ранківськ: Івано-Франківськ
-        ��иїв: Київ
-        Хмельниць��ий: Хмельницький
-        Терно��іль: Тернопіль
-        Хар��ів: Харків
-        Ирпень: Ірпінь
-        Дніпропетровськ: Дніпро
-        Од��са: Одеса
-        Івано-Франківсь��а: Івано-Франківська
-        Чо��номорськ: Чорноморськ
-      district-map:
-        Петрівське (нов. Святопетрівське): Святопетрівське
-        Вознесенівський (Орджонікідзевський): Вознесенівський
-        Дніпровський (Ленінський): Дніпровський
-        Олександрівський (Жовтневий): Олександрівський
-        Нові Дома (Немишлянський): Немишлянський
-        Нові Дома (Слобідський): Слобідський
-        Соломенський: Солом'янський
-        Амур-Нижнеднепровський: Амур-Нижньодніпровський
-        К��ївський: Київський
-        Нагірний (Шевченківський): Шевченківський
-        Нагірний (Київський): Київський
-        Москалівка (Новобаварський): Новобаварський
-        Вишеньк��: Вишенька
-        Дарницьки��: Дарницький
-        Шевченківськ��й: Шевченківський
-        Мали��овський: Малиновський
-        П��иморський: Приморський
-        Петропавлівська Борщагів��а: Петропавлівська Борщагівка
-        Деснян��ький: Деснянський
-        Суворов��ький: Суворовський
-        Шевчен��івський: Шевченківський
-        Дарниц��кий: Дарницький
-        Ірпінь: ''
-      district-city-swaps:
-        - Києво-Святошинський
-      district-ending: ий
-      district-suffix: ' район'
-      street-replacements:
-        - пр-т
-        - проспект
-        - просп.
-        - проспект
-        - пл.
-        - площа
-        - пров.
-        - провулок
-        - пер.
-        - переулок
-        - бул.
-        - бульвар
-        - наб.
-        - набережна
-        - вул.
-        - вулиця
-        - Вул.
-        - вулиця
-        - ул.
-        - улица
-        - бульв.
-        - бульвар
-        -  
-        - ' '
-      house-number-replacements:
-        - №
-        - ''
-        - _
-        - ''
-        - ' (вул. Освіти)'
-        - ''
-        - ' к1'
-        - ''
-        - ' к2'
-        - ''
-        - ' к 2'
-        - ''
-        - ' к 5'
-        - ''
-        - '2-й пер. Куликовский'
-        - ''
-        - ' К2'
-        - ''
-        - '.к 3'
-        - ''
-        - ' к.1'
-        - ''
-        - ' д15'
-        - ''
-        - ' километр'
-        - ''
-        - ' 10 эт'
-        - ''
-        - ' '
-        - ''
-      house-number-max-length: 20
-    geocoder:
-      timeout: 10s
-      stateless-cities:
-        - Київ
-      search-format: https://nominatim.openstreetmap.org/search?state=%s&city=%s&street=%s+%s&format=json&countrycodes=ua
-    gauger:
-      timeout: 30s
-      overpass-hosts:
-        - overpass-api.de
-        - overpass.openstreetmap.ru
-        - overpass.kumi.systems
-        - overpass.nchc.org.tw
-      subway-cities:
-        - Київ
-        - Харків
-        - Дніпро
-      ssf-search-radius: 2000
-      ssf-min-distance: 25
-      ssf-modifier: 1000
-      izf-search-radius: 3000
-      izf-min-area: 35000
-      izf-min-distance: 30
-      izf-modifier: 0.001
-      gzf-search-radius: 2500
-      gzf-min-area: 50000
-      gzf-min-distance: 20
-      gzf-modifier: 0.001
-    validator:
-      min-image-count: 4
-      min-price: 1
-      min-total-area: 12
-      max-total-area: 560
-      min-living-area: 0
-      min-kitchen-area: 0
-      min-room-number: 1
-      max-room-number: 9
-      min-specific-area: 12
-      max-specific-area: 130
-      min-floor: 1
-      min-total-floor: 2
-      max-total-floor: 50
-      min-longitude: -180
-      max-longitude: 180
-      min-latitude: -90
-      max-latitude: 90
-    storer:
-      srid: 4326
-  server: &server
+  domria-miner:
+    name: domria
+    spec: '*/6 * * * *'
+  server:
     read-timeout: 5s
     write-timeout: 5s
     max-header-bytes: 1048576
-  domria-primary-miner:
-    <<: *domria-miner
-    alias: domria-primary
-    housing: primary
-    spec: '0-59/6 * * * *'
-    server:
-      <<: *server
-      address: :9001
-  domria-secondary-miner:
-    <<: *domria-miner
-    alias: domria-secondary
-    housing: secondary
-    spec: '3-59/6 * * * *'
-    server:
-      <<: *server
-      address: :9002
+    address: :9001
+#    fetcher:
+#      timeout: 40s
+#      retry-limit: 3
+#      portion: 10
+#      flags:
+#        primary: newbuildings=1
+#        secondary: secondary=1
+#      search-format: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d
+#    sanitizer:
+#      url-prefix: https://dom.ria.com/uk/
+#      photo-format: https://cdn.riastatic.com/photosnew/dom/photo/%s__%sfl.webp
+#      panorama-prefix: https://cdn.riastatic.com/photos/
+#      panorama-suffix: s.jpg
+#      state-map:
+#        Київськ��: Київська
+#        Одес��ка: Одеська
+#        Одеськ��: Одеська
+#        К��ївська: Київська
+#        Черновицкая: Чернівецька
+#        Винницкая: Вінницька
+#        Тернопольськая: Тернопільська
+#        Киевская: Київська
+#        Житомирская: Житомирська
+#        Запорожская: Запорізька
+#        О��еська: Одеська
+#        Київс��ка: Київська
+#        Киї��ська: Київська
+#      state-suffix: ' область'
+#      city-map:
+#        Киє��о-Святошинський: Києво-Святошинський
+#        Івано-Франк��вськ: Івано-Франківськ
+#        Л��вів: Львів
+#        Киї��: Київ
+#        Івано-��ранківськ: Івано-Франківськ
+#        ��иїв: Київ
+#        Хмельниць��ий: Хмельницький
+#        Терно��іль: Тернопіль
+#        Хар��ів: Харків
+#        Ирпень: Ірпінь
+#        Дніпропетровськ: Дніпро
+#        Од��са: Одеса
+#        Івано-Франківсь��а: Івано-Франківська
+#        Чо��номорськ: Чорноморськ
+#      district-map:
+#        Петрівське (нов. Святопетрівське): Святопетрівське
+#        Вознесенівський (Орджонікідзевський): Вознесенівський
+#        Дніпровський (Ленінський): Дніпровський
+#        Олександрівський (Жовтневий): Олександрівський
+#        Нові Дома (Немишлянський): Немишлянський
+#        Нові Дома (Слобідський): Слобідський
+#        Соломенський: Солом'янський
+#        Амур-Нижнеднепровський: Амур-Нижньодніпровський
+#        К��ївський: Київський
+#        Нагірний (Шевченківський): Шевченківський
+#        Нагірний (Київський): Київський
+#        Москалівка (Новобаварський): Новобаварський
+#        Вишеньк��: Вишенька
+#        Дарницьки��: Дарницький
+#        Шевченківськ��й: Шевченківський
+#        Мали��овський: Малиновський
+#        П��иморський: Приморський
+#        Петропавлівська Борщагів��а: Петропавлівська Борщагівка
+#        Деснян��ький: Деснянський
+#        Суворов��ький: Суворовський
+#        Шевчен��івський: Шевченківський
+#        Дарниц��кий: Дарницький
+#        Ірпінь: ''
+#      district-city-swaps:
+#        - Києво-Святошинський
+#      district-ending: ий
+#      district-suffix: ' район'
+#      street-replacements:
+#        - пр-т
+#        - проспект
+#        - просп.
+#        - проспект
+#        - пл.
+#        - площа
+#        - пров.
+#        - провулок
+#        - пер.
+#        - переулок
+#        - бул.
+#        - бульвар
+#        - наб.
+#        - набережна
+#        - вул.
+#        - вулиця
+#        - Вул.
+#        - вулиця
+#        - ул.
+#        - улица
+#        - бульв.
+#        - бульвар
+#        -  
+#        - ' '
+#      house-number-replacements:
+#        - №
+#        - ''
+#        - _
+#        - ''
+#        - ' (вул. Освіти)'
+#        - ''
+#        - ' к1'
+#        - ''
+#        - ' к2'
+#        - ''
+#        - ' к 2'
+#        - ''
+#        - ' к 5'
+#        - ''
+#        - '2-й пер. Куликовский'
+#        - ''
+#        - ' К2'
+#        - ''
+#        - '.к 3'
+#        - ''
+#        - ' к.1'
+#        - ''
+#        - ' д15'
+#        - ''
+#        - ' километр'
+#        - ''
+#        - ' 10 эт'
+#        - ''
+#        - ' '
+#        - ''
+#      house-number-max-length: 20
+#    geocoder:
+#      timeout: 10s
+#      stateless-cities:
+#        - Київ
+#      search-format: https://nominatim.openstreetmap.org/search?state=%s&city=%s&street=%s+%s&format=json&countrycodes=ua
+#    gauger:
+#      timeout: 30s
+#      overpass-hosts:
+#        - overpass-api.de
+#        - overpass.openstreetmap.ru
+#        - overpass.kumi.systems
+#        - overpass.nchc.org.tw
+#      subway-cities:
+#        - Київ
+#        - Харків
+#        - Дніпро
+#      ssf-search-radius: 2000
+#      ssf-min-distance: 25
+#      ssf-modifier: 1000
+#      izf-search-radius: 3000
+#      izf-min-area: 35000
+#      izf-min-distance: 30
+#      izf-modifier: 0.001
+#      gzf-search-radius: 2500
+#      gzf-min-area: 50000
+#      gzf-min-distance: 20
+#      gzf-modifier: 0.001
+#    validator:
+#      min-image-count: 4
+#      min-price: 1
+#      min-total-area: 12
+#      max-total-area: 560
+#      min-living-area: 0
+#      min-kitchen-area: 0
+#      min-room-number: 1
+#      max-room-number: 9
+#      min-specific-area: 12
+#      max-specific-area: 130
+#      min-floor: 1
+#      min-total-floor: 2
+#      max-total-floor: 50
+#      min-longitude: -180
+#      max-longitude: 180
+#      min-latitude: -90
+#      max-latitude: 90
+#    storer:
+#      srid: 4326
 warhol:
   timeout: 40s
   thread-number: 4
@@ -209,9 +197,9 @@ telegram:
     sender:
       <<: *keymap
       like-button: "Супер \U0001F44D"
-  spec: '0-59/6 * * * *'
+  spec: '*/6 * * * *'
   server:
-    address: :9005
+    address: :9002
     read-timeout: 5s
     write-timeout: 5s
     max-header-bytes: 1048576
@@ -251,14 +239,6 @@ telegram:
       high-floor-placeholder: високий
       delete-button: "Видалити \U0001F5D1"
       delete-action: delete
-twinkle:
-  classifier:
-    model-path: scientific/models/twinkle.latest.txt
-  metrics-port: 9004
-  spec: '0-59/6 * * * *'
-coquus:
-  input-path: scientific/twinkle.csv
-  output-format: scientific/tables/{}.csv
 auge:
   pool-size: 4
   retry-limit: 3
@@ -268,4 +248,12 @@ auge:
     batch-size: 4
     worker-number: 4
   metrics-port: 9003
-  spec: '3-59/6 * * * *'
+  spec: '*/6 * * * *'
+twinkle:
+  classifier:
+    model-path: scientific/models/twinkle.latest.txt
+  metrics-port: 9004
+  spec: '*/6 * * * *'
+coquus:
+  input-path: scientific/twinkle.csv
+  output-format: scientific/tables/{}.csv
