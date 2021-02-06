@@ -47,6 +47,7 @@ func (o *Observer) observeLookups(tx *sql.Tx) ([]Lookup, error) {
 				join subscriptions on subscriptions.id = lookups.subscription_id
 				join flats on flats.id = lookups.flat_id
 			where lookups.status = 'unseen'
+				and subscriptions.status = 'active'
 		) as cte
 		where count = 1`,
 	)
