@@ -20,7 +20,6 @@ type likeHandler struct {
 	separator string
 }
 
-// TODO: add templates.
 func (h *likeHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	fields := log.Fields{"handler": "like"}
 	id, err := strconv.ParseInt(
