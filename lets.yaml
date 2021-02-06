@@ -24,9 +24,9 @@ commands:
       read MIGRATION && \
       docker-compose run --rm generate create -ext sql -dir /migrations $MIGRATION && \
       sudo chown -R $USER:$USER migrations
-  messis:
+  miner:
     description: Run the data mining app single workflow
-    cmd: docker-compose run --rm messis
+    cmd: docker-compose run --rm miner
   warhol:
     description: Start the image downloader
     cmd: |
@@ -59,20 +59,20 @@ commands:
       docker-compose up notebook
       docker rm rampart-notebook
       chown -R $USER:$USER scientific
+  auge:
+    description: Run image classification task
+    cmd: docker-compose run --rm auge-debug
   twinkle:
     description: Perform ranking by subscriptions
     cmd: docker-compose run --rm twinkle-debug
   coquus:
     description: Execute ranking dataset augmentation
     cmd: docker-compose run --rm coquus && sudo chown -R $USER:$USER scientific
-  auge:
-    description: Run image classification task
-    cmd: docker-compose run --rm auge-debug
   run:
     description: Activate the whole rampart ecosystem
     cmd: |
-      docker-compose up messis-domria-primary messis-domria-secondary telegram twinkle auge
-      docker rm rampart-messis-domria-primary rampart-messis-domria-secondary rampart-telegram rampart-twinkle rampart-auge
+      docker-compose up messis telegram twinkle auge
+      docker rm rampart-messis rampart-telegram rampart-twinkle rampart-auge
   stop:
     description: Dispose all docker stuff
     cmd: docker-compose down
