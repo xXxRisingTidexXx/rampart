@@ -11,14 +11,16 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 )
 
-// TODO: think about signal handling & graceful shutdown.
 func main() {
-	isDebug := flag.Bool("debug", false, "Execute a single workflow instead of the whole schedule")
-	alias := flag.String("miner", "", "Desired miner alias")
+	name := flag.String(
+		"miner",
+		"",
+		"Set a concrete miner name to run it once; leave the field blank to up the whole messis",
+	)
 	flag.Parse()
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
-	entry := log.WithFields(log.Fields{"app": "messis", "miner": *alias})
+	entry := log.WithField("app", "messis")
 	c, err := config.NewConfig()
 	if err != nil {
 		entry.Fatal(err)
