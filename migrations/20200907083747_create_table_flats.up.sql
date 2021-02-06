@@ -2,6 +2,7 @@ create table if not exists flats
 (
     id           serial primary key    not null,
     url          varchar(256) unique   not null check ( url != '' ),
+    status       varchar(10)           not null check ( status != '' ) default 'active',
     price        real                  not null check ( 0 < price ),
     total_area   real                  not null check ( 0 < total_area ),
     living_area  real                  not null check ( 0 <= living_area and living_area < total_area ),
