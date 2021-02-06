@@ -194,8 +194,8 @@ class Writer:
         with self._engine.begin() as connection:
             connection.execute(
                 '''
-                insert into lookups (subscription_id, flat_id, status)
-                values (%s, %s, 'unseen')
+                insert into lookups (subscription_id, flat_id)
+                values (%s, %s)
                 returning id
                 ''',
                 *[(lookup.subscription_id, f) for f in lookup.flat_ids]

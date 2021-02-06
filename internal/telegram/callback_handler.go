@@ -10,7 +10,10 @@ import (
 
 func NewCallbackHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	return &callbackHandler{
-		map[string]Handler{config.DeleteAction: NewDeleteHandler(config, bot, db)},
+		map[string]Handler{
+			config.DeleteAction: NewDeleteHandler(config, bot, db),
+			config.LikeAction:   NewLikeHandler(config, bot, db),
+		},
 		config.Separator,
 	}
 }

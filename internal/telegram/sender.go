@@ -34,7 +34,7 @@ func (s *Sender) SendLookup(lookup Lookup) {
 		),
 	)
 	if err != nil {
-		s.logger.WithField("lookup_id", lookup.ID).Errorf(
+		s.logger.WithField("id", lookup.ID).Errorf(
 			"telegram: sender failed to send a lookup, %v",
 			err,
 		)
