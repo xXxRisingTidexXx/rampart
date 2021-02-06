@@ -79,7 +79,7 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		if err != nil {
 			_ = rows.Close()
 			_ = tx.Rollback()
-			fields["subscription_id"] = id
+			fields["id"] = id
 			return fields, fmt.Errorf("telegram: handler failed to scan a row, %v", err)
 		}
 		shape := h.anyPricePlaceholder
@@ -129,7 +129,7 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 			),
 		)
 		if err != nil {
-			fields["subscription_id"] = s.ID
+			fields["id"] = s.ID
 			return fields, err
 		}
 	}

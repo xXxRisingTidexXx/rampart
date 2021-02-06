@@ -17,7 +17,7 @@ type Reviewer struct {
 
 func (r *Reviewer) ReviewLookup(lookup Lookup) {
 	if err := r.reviewLookup(lookup); err != nil {
-		r.logger.WithField("lookup_id", lookup.ID).Error(err)
+		r.logger.WithField("id", lookup.ID).Error(err)
 	}
 }
 

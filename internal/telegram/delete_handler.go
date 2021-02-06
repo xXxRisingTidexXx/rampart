@@ -30,7 +30,7 @@ func (h *deleteHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error)
 	if err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to parse id, %v", err)
 	}
-	fields["subscription_id"] = id
+	fields["id"] = id
 	tx, err := h.db.Begin()
 	if err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
