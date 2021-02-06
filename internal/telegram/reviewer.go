@@ -26,7 +26,7 @@ func (r *Reviewer) reviewLookup(lookup Lookup) error {
 	if err != nil {
 		return fmt.Errorf("telegram: reviewer failed to begin a transaction, %v", err)
 	}
-	_, err = tx.Exec("update lookups set status = 'seen' where id = $1", lookup.ID)
+	_, err = tx.Exec(`update lookups set status = 'seen' where id = $1`, lookup.ID)
 	if err != nil {
 		_ = tx.Rollback()
 		return fmt.Errorf("telegram: reviewer failed to update a lookup, %v", err)
