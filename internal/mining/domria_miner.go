@@ -92,6 +92,13 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 	for id := range s.Items[0].Photos {
 		urls = append(urls, fmt.Sprintf(m.imageURLFormat, slug, id))
 	}
+	city := strings.TrimSpace(s.Items[0].CityNameUK)
+	if m.swaps.Contains(city) {
+		city = strings.TrimSpace(s.Items[0].DistrictNameUK)
+	}
+	if value, ok := m.cityOrthography[city]; ok {
+		city = value
+	}
 	street := s.Items[0].StreetNameUK
 	if street == "" {
 		street = s.Items[0].StreetName
@@ -108,7 +115,7 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 		TotalFloor:  s.Items[0].FloorsCount,
 		Housing:     m.housings[s.Items[0].RealtySaleType],
 		Point:       orb.Point{float64(s.Items[0].Longitude), float64(s.Items[0].Latitude)},
-		City:        s.Items[0].CityNameUK,
+		City:        city,
 		Street:      street,
 		HouseNumber: string(s.Items[0].BuildingNumberStr),
 	}, nil
