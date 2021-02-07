@@ -57,7 +57,7 @@ services:
   miner:
     <<: *x-golang
     container_name: rampart-miner
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -miner domria-primary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -miner domria
   warhol:
     <<: *x-golang
     container_name: rampart-warhol
