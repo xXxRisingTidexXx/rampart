@@ -29,32 +29,32 @@ func NewDomriaMiner(config config.DomriaMiner) Miner {
 		config.MaxTotalFloor,
 		map[int]misc.Housing{1: misc.SecondaryHousing, 2: misc.PrimaryHousing},
 		config.Swaps,
-		config.CityOrthography,
-		config.StreetOrthography,
-		config.HouseNumberOrthography,
+		config.Cities,
+		strings.NewReplacer(config.StreetReplacements...),
+		strings.NewReplacer(config.HouseNumberReplacements...),
 		config.MaxHouseNumberLength,
 	}
 }
 
 type domriaMiner struct {
-	name                   string
-	spec                   string
-	client                 *http.Client
-	page                   int
-	retryLimit             int
-	searchPrefix           string
-	userAgent              string
-	urlPrefix              string
-	imageURLFormat         string
-	maxTotalArea           float64
-	maxRoomNumber          int
-	maxTotalFloor          int
-	housings               map[int]misc.Housing
-	swaps                  misc.Set
-	cityOrthography        map[string]string
-	streetOrthography      []string
-	houseNumberOrthography []string
-	maxHouseNumberLength   int
+	name                 string
+	spec                 string
+	client               *http.Client
+	page                 int
+	retryLimit           int
+	searchPrefix         string
+	userAgent            string
+	urlPrefix            string
+	imageURLFormat       string
+	maxTotalArea         float64
+	maxRoomNumber        int
+	maxTotalFloor        int
+	housings             map[int]misc.Housing
+	swaps                misc.Set
+	cities               map[string]string
+	streetReplacer       *strings.Replacer
+	houseNumberReplacer  *strings.Replacer
+	maxHouseNumberLength int
 }
 
 func (m *domriaMiner) Name() string {
@@ -96,7 +96,7 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 	if m.swaps.Contains(city) {
 		city = strings.TrimSpace(s.Items[0].DistrictNameUK)
 	}
-	if value, ok := m.cityOrthography[city]; ok {
+	if value, ok := m.cities[city]; ok {
 		city = value
 	}
 	street := s.Items[0].StreetNameUK
