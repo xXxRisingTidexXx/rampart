@@ -7,6 +7,7 @@ import (
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining"
 )
 
@@ -37,6 +38,7 @@ func main() {
 		miners[miner.Name()] = miner
 	}
 	if *name == "" {
+		metrics.RunServer(c.Messis.Server, entry)
 		scheduler := cron.New(cron.WithSeconds())
 		for _, miner := range miners {
 			entry := entry.WithField("miner", miner.Name())
