@@ -11,7 +11,7 @@ type item struct {
 	RoomsCount          int              `json:"rooms_count"`
 	Floor               int              `json:"floor"`
 	FloorsCount         int              `json:"floors_count"`
-	UserNewbuildNameUK  string           `json:"user_newbuild_name_uk"`
+	RealtySaleType      int              `json:"realty_sale_type"`
 	Longitude           coordinate       `json:"longitude"`
 	Latitude            coordinate       `json:"latitude"`
 	StateNameUK         string           `json:"state_name_uk"`
