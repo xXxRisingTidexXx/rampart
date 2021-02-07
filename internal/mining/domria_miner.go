@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func NewDomriaMiner(config config.DomriaMiner) Miner {
@@ -21,19 +22,33 @@ func NewDomriaMiner(config config.DomriaMiner) Miner {
 		config.RetryLimit,
 		config.SearchPrefix,
 		config.UserAgent,
+		config.URLPrefix,
+		config.ImageURLFormat,
 		map[int]misc.Housing{1: misc.SecondaryHousing, 2: misc.PrimaryHousing},
+		config.Swaps,
+		config.CityOrthography,
+		config.StreetOrthography,
+		config.HouseNumberOrthography,
+		config.HouseNumberMaxLength,
 	}
 }
 
 type domriaMiner struct {
-	name         string
-	spec         string
-	client       *http.Client
-	page         int
-	retryLimit   int
-	searchPrefix string
-	userAgent    string
-	housings     map[int]misc.Housing
+	name                   string
+	spec                   string
+	client                 *http.Client
+	page                   int
+	retryLimit             int
+	searchPrefix           string
+	userAgent              string
+	urlPrefix              string
+	imageURLFormat         string
+	housings               map[int]misc.Housing
+	swaps                  misc.Set
+	cityOrthography        map[string]string
+	streetOrthography      []string
+	houseNumberOrthography []string
+	houseNumberMaxLength   int
 }
 
 func (m *domriaMiner) Name() string {
@@ -68,15 +83,20 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 			m.page,
 		)
 	}
-	urls := make([]string, 0, len(s.Items[0].Photos))
+	url := m.urlPrefix + s.Items[0].BeautifulURL
+	index := strings.LastIndex(url, "-")
+	if index == -1 {
+		return Flat{}, fmt.Errorf("mining: miner ignored an item without a dash in url, %s", url)
+	}
+	urls, slug := make([]string, 0, len(s.Items[0].Photos)), url[:index]
 	for id := range s.Items[0].Photos {
-		urls = append(urls, id)
+		urls = append(urls, fmt.Sprintf(m.imageURLFormat, slug, id))
 	}
 	if s.Items[0].SaleDate != "" {
 		return Flat{}, fmt.Errorf(
 			"mining: miner ignored a sold on %s item, %s",
 			s.Items[0].SaleDate,
-			s.Items[0].BeautifulURL,
+			url,
 		)
 	}
 	housing, ok := m.housings[s.Items[0].RealtySaleType]
@@ -84,21 +104,21 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 		return Flat{}, fmt.Errorf(
 			"mining: miner ignored an item with housing %d, %s",
 			s.Items[0].RealtySaleType,
-			s.Items[0].BeautifulURL,
+			url,
 		)
 	}
 	if s.Items[0].Longitude < -180 || s.Items[0].Longitude > 180 {
 		return Flat{}, fmt.Errorf(
 			"mining: miner ignored an outlier longitude %f item, %s",
 			s.Items[0].Longitude,
-			s.Items[0].BeautifulURL,
+			url,
 		)
 	}
 	if s.Items[0].Latitude < -90 || s.Items[0].Latitude > 90 {
 		return Flat{}, fmt.Errorf(
 			"mining: miner ignored an outlier latitude %f item, %s",
 			s.Items[0].Latitude,
-			s.Items[0].BeautifulURL,
+			url,
 		)
 	}
 	street := s.Items[0].StreetNameUK
@@ -106,7 +126,7 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 		street = s.Items[0].StreetName
 	}
 	return Flat{
-		URL:         s.Items[0].BeautifulURL,
+		URL:         url,
 		ImageURLs:   urls,
 		Price:       float64(s.Items[0].PriceArr.USD),
 		TotalArea:   s.Items[0].TotalSquareMeters,

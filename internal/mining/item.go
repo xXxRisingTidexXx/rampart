@@ -14,7 +14,6 @@ type item struct {
 	RealtySaleType      int              `json:"realty_sale_type"`
 	Longitude           coordinate       `json:"longitude"`
 	Latitude            coordinate       `json:"latitude"`
-	StateNameUK         string           `json:"state_name_uk"`
 	CityNameUK          string           `json:"city_name_uk"`
 	DistrictNameUK      string           `json:"district_name_uk"`
 	StreetNameUK        string           `json:"street_name_uk"`
