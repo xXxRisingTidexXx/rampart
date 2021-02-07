@@ -12,6 +12,7 @@ import (
 	"io"
 )
 
+// TODO: graceful shutdown.
 func main() {
 	name := flag.String(
 		"miner",
