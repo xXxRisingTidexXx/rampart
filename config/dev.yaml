@@ -9,6 +9,9 @@ messis:
     user-agent: *user-agent
     url-prefix: https://dom.ria.com/uk/
     image-url-format: https://cdn.riastatic.com/photosnew/dom/photo/%s__%sfl.webp
+    max-total-area: 1000
+    max-room-number: 20
+    max-total-floor: 100
     swaps:
       - Києво-Святошинський
     city-orthography:
@@ -84,7 +87,7 @@ messis:
       - ''
       - ' '
       - ''
-    house-number-max-length: 10
+    max-house-number-length: 10
   server:
     read-timeout: 5s
     write-timeout: 5s
