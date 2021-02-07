@@ -24,12 +24,15 @@ func NewDomriaMiner(config config.DomriaMiner) Miner {
 		config.UserAgent,
 		config.URLPrefix,
 		config.ImageURLFormat,
+		config.MaxTotalArea,
+		config.MaxRoomNumber,
+		config.MaxTotalFloor,
 		map[int]misc.Housing{1: misc.SecondaryHousing, 2: misc.PrimaryHousing},
 		config.Swaps,
 		config.CityOrthography,
 		config.StreetOrthography,
 		config.HouseNumberOrthography,
-		config.HouseNumberMaxLength,
+		config.MaxHouseNumberLength,
 	}
 }
 
@@ -43,12 +46,15 @@ type domriaMiner struct {
 	userAgent              string
 	urlPrefix              string
 	imageURLFormat         string
+	maxTotalArea           float64
+	maxRoomNumber          int
+	maxTotalFloor          int
 	housings               map[int]misc.Housing
 	swaps                  misc.Set
 	cityOrthography        map[string]string
 	streetOrthography      []string
 	houseNumberOrthography []string
-	houseNumberMaxLength   int
+	maxHouseNumberLength   int
 }
 
 func (m *domriaMiner) Name() string {
@@ -150,7 +156,44 @@ func (m *domriaMiner) validateItem(i item) error {
 	if i.PriceArr.USD <= 0 {
 		return fmt.Errorf("mining: miner ignored an item with price %f, %s", i.PriceArr.USD, url)
 	}
-
+	if i.TotalSquareMeters <= 0 || i.TotalSquareMeters > m.maxTotalArea {
+		return fmt.Errorf(
+			"mining: miner ignored an item with total area %f, %s",
+			i.TotalSquareMeters,
+			url,
+		)
+	}
+	if i.LivingSquareMeters < 0 || i.LivingSquareMeters > i.TotalSquareMeters {
+		return fmt.Errorf(
+			"mining: miner ignored an item with living area %f, %s",
+			i.LivingSquareMeters,
+			url,
+		)
+	}
+	if i.KitchenSquareMeters < 0 || i.KitchenSquareMeters > i.TotalSquareMeters {
+		return fmt.Errorf(
+			"mining: miner ignored an item with kitchen area %f, %s",
+			i.KitchenSquareMeters,
+			url,
+		)
+	}
+	if i.RoomsCount <= 0 || i.RoomsCount > m.maxRoomNumber {
+		return fmt.Errorf(
+			"mining: miner ignored an item with room number %d, %s",
+			i.RoomsCount,
+			url,
+		)
+	}
+	if i.FloorsCount <= 0 || i.FloorsCount > m.maxTotalFloor {
+		return fmt.Errorf(
+			"mining: miner ignored an item with total floor %d, %s",
+			i.FloorsCount,
+			url,
+		)
+	}
+	if i.Floor <= 0 || i.Floor > i.FloorsCount {
+		return fmt.Errorf("mining: miner ignored an item with floor %d, %s", i.Floor, url)
+	}
 	if _, ok := m.housings[i.RealtySaleType]; !ok {
 		return fmt.Errorf(
 			"mining: miner ignored an item with housing %d, %s",

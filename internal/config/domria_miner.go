@@ -15,8 +15,8 @@ type DomriaMiner struct {
 	URLPrefix              string            `yaml:"url-prefix"`
 	ImageURLFormat         string            `yaml:"image-url-format"`
 	MaxTotalArea           float64           `yaml:"max-total-area"`
-	MaxRoomNumber          float64           `yaml:"max-room-number"`
-	MaxTotalFloor          float64           `yaml:"max-total-floor"`
+	MaxRoomNumber          int               `yaml:"max-room-number"`
+	MaxTotalFloor          int               `yaml:"max-total-floor"`
 	Swaps                  misc.Set          `yaml:"swaps"`
 	CityOrthography        map[string]string `yaml:"city-orthography"`
 	StreetOrthography      []string          `yaml:"street-orthography"`
