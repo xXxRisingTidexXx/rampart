@@ -60,6 +60,7 @@ func (m *domriaMiner) Spec() string {
 }
 
 // TODO: retry metric.
+// TODO: validation metric.
 func (m *domriaMiner) MineFlat() (Flat, error) {
 	m.page++
 	bytes, err := make([]byte, 0), io.EOF
@@ -77,49 +78,13 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 		m.page = -1
 		return Flat{}, io.EOF
 	}
-	if s.Items[0].BeautifulURL == "" {
-		return Flat{}, fmt.Errorf(
-			"mining: miner ignored an item without an url on page %d",
-			m.page,
-		)
+	if err := m.validateItem(s.Items[0]); err != nil {
+		return Flat{}, err
 	}
 	url := m.urlPrefix + s.Items[0].BeautifulURL
-	index := strings.LastIndex(url, "-")
-	if index == -1 {
-		return Flat{}, fmt.Errorf("mining: miner ignored an item without a dash in url, %s", url)
-	}
-	urls, slug := make([]string, 0, len(s.Items[0].Photos)), url[:index]
+	urls, slug := make([]string, 0, len(s.Items[0].Photos)), url[:strings.LastIndex(url, "-")]
 	for id := range s.Items[0].Photos {
 		urls = append(urls, fmt.Sprintf(m.imageURLFormat, slug, id))
-	}
-	if s.Items[0].SaleDate != "" {
-		return Flat{}, fmt.Errorf(
-			"mining: miner ignored a sold on %s item, %s",
-			s.Items[0].SaleDate,
-			url,
-		)
-	}
-	housing, ok := m.housings[s.Items[0].RealtySaleType]
-	if !ok {
-		return Flat{}, fmt.Errorf(
-			"mining: miner ignored an item with housing %d, %s",
-			s.Items[0].RealtySaleType,
-			url,
-		)
-	}
-	if s.Items[0].Longitude < -180 || s.Items[0].Longitude > 180 {
-		return Flat{}, fmt.Errorf(
-			"mining: miner ignored an outlier longitude %f item, %s",
-			s.Items[0].Longitude,
-			url,
-		)
-	}
-	if s.Items[0].Latitude < -90 || s.Items[0].Latitude > 90 {
-		return Flat{}, fmt.Errorf(
-			"mining: miner ignored an outlier latitude %f item, %s",
-			s.Items[0].Latitude,
-			url,
-		)
 	}
 	street := s.Items[0].StreetNameUK
 	if street == "" {
@@ -135,7 +100,7 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 		RoomNumber:  s.Items[0].RoomsCount,
 		Floor:       s.Items[0].Floor,
 		TotalFloor:  s.Items[0].FloorsCount,
-		Housing:     housing,
+		Housing:     m.housings[s.Items[0].RealtySaleType],
 		Point:       orb.Point{float64(s.Items[0].Longitude), float64(s.Items[0].Latitude)},
 		City:        s.Items[0].CityNameUK,
 		Street:      street,
@@ -166,4 +131,38 @@ func (m *domriaMiner) trySearch() ([]byte, error) {
 		return nil, fmt.Errorf("mining: miner failed to close the response body, %v", err)
 	}
 	return bytes, nil
+}
+
+func (m *domriaMiner) validateItem(i item) error {
+	if i.BeautifulURL == "" {
+		return fmt.Errorf("mining: miner ignored an item without an url on page %d", m.page)
+	}
+	url := m.urlPrefix + i.BeautifulURL
+	if strings.LastIndex(url, "-") == -1 {
+		return fmt.Errorf("mining: miner ignored an item without a dash in url, %s", url)
+	}
+	if len(i.Photos) == 0 {
+		return fmt.Errorf("mining: miner ignored an item without images, %s", url)
+	}
+	if i.SaleDate != "" {
+		return fmt.Errorf("mining: miner ignored an item sold on %s, %s", i.SaleDate, url)
+	}
+	if i.PriceArr.USD <= 0 {
+		return fmt.Errorf("mining: miner ignored an item with price %f, %s", i.PriceArr.USD, url)
+	}
+
+	if _, ok := m.housings[i.RealtySaleType]; !ok {
+		return fmt.Errorf(
+			"mining: miner ignored an item with housing %d, %s",
+			i.RealtySaleType,
+			url,
+		)
+	}
+	if i.Longitude < -180 || i.Longitude > 180 {
+		return fmt.Errorf("mining: miner ignored an item with longitude %f, %s", i.Longitude, url)
+	}
+	if i.Latitude < -90 || i.Latitude > 90 {
+		return fmt.Errorf("mining: miner ignored an item with latitude %f, %s", i.Latitude, url)
+	}
+	return nil
 }
