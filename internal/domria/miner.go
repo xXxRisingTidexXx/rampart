@@ -1,18 +1,27 @@
 package domria
 
 import (
-	"database/sql"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining"
 )
 
-func NewMiner(config config.DomriaMiner, db *sql.DB, logger log.FieldLogger) *Miner {
-	return &Miner{}
+func NewMiner(config config.DomriaMiner) mining.Miner {
+	return &miner{config.Name, config.Spec}
 }
 
-type Miner struct {
+type miner struct {
+	name string
+	spec string
 }
 
-func (m *Miner) Run() {
-	
+func (m *miner) Name() string {
+	return m.name
+}
+
+func (m *miner) Spec() string {
+	return m.spec
+}
+
+func (m *miner) MineFlat() (mining.Flat, error) {
+	return mining.Flat{}, nil
 }
