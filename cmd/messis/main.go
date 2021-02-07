@@ -47,7 +47,7 @@ func main() {
 				entry.Errorf("main: messis failed to start miner, %v", err)
 			}
 		}
-		scheduler.Start()
+		scheduler.Run()
 	} else {
 		entry := entry.WithField("miner", *name)
 		miner, ok := miners[*name]
