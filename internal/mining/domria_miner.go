@@ -99,9 +99,23 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 	if value, ok := m.cities[city]; ok {
 		city = value
 	}
-	street := s.Items[0].StreetNameUK
-	if street == "" {
-		street = s.Items[0].StreetName
+	initialStreet, houseNumber := s.Items[0].StreetNameUK, string(s.Items[0].BuildingNumberStr)
+	if initialStreet == "" {
+		initialStreet = s.Items[0].StreetName
+	}
+	street := initialStreet
+	if index := strings.Index(initialStreet, ","); index != -1 {
+		street = initialStreet[:index]
+		extraNumber := m.sanitizeHouseNumber(initialStreet[index+1:])
+		if houseNumber == "" &&
+			extraNumber != "" &&
+			extraNumber[0] >= '0' &&
+			extraNumber[0] <= '9' {
+			houseNumber = extraNumber
+		}
+	}
+	if runes := []rune(houseNumber); len(runes) > m.maxHouseNumberLength {
+		houseNumber = string(runes[:m.maxHouseNumberLength])
 	}
 	return Flat{
 		URL:         url,
@@ -116,8 +130,8 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 		Housing:     m.housings[s.Items[0].RealtySaleType],
 		Point:       orb.Point{float64(s.Items[0].Longitude), float64(s.Items[0].Latitude)},
 		City:        city,
-		Street:      street,
-		HouseNumber: string(s.Items[0].BuildingNumberStr),
+		Street:      strings.TrimSpace(m.streetReplacer.Replace(street)),
+		HouseNumber: houseNumber,
 	}, nil
 }
 
@@ -215,4 +229,15 @@ func (m *domriaMiner) validateItem(i item) error {
 		return fmt.Errorf("mining: miner ignored an item with latitude %f, %s", i.Latitude, url)
 	}
 	return nil
+}
+
+func (m *domriaMiner) sanitizeHouseNumber(houseNumber string) string {
+	if houseNumber == "" {
+		return houseNumber
+	}
+	newHouseNumber := m.houseNumberReplacer.Replace(houseNumber)
+	if index := strings.Index(newHouseNumber, ","); index != -1 {
+		return newHouseNumber[:index]
+	}
+	return newHouseNumber
 }
