@@ -9,6 +9,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining"
+	"io"
 )
 
 func main() {
@@ -67,10 +68,12 @@ func main() {
 func wrap(miner mining.Miner, logger log.FieldLogger) cron.Job {
 	return cron.FuncJob(
 		func() {
-			if flat, err := miner.MineFlat(); err != nil {
-				logger.Error(err)
-			} else {
+			switch flat, err := miner.MineFlat(); err {
+			case nil:
 				logger.Info(flat)
+			case io.EOF:
+			default:
+				logger.Error(err)
 			}
 		},
 	)
