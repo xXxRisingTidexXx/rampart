@@ -2,20 +2,16 @@ user-agent: &user-agent RampartBot/0.0.1
 messis:
   domria-miner:
     name: domria
-    spec: '*/6 * * * *'
+    spec: '*/10 * * * * *'
+    timeout: 30s
+    retry-limit: 3
+    search-prefix: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&limit=1&page=
+    user-agent: *user-agent
   server:
     read-timeout: 5s
     write-timeout: 5s
     max-header-bytes: 1048576
     address: :9001
-#    fetcher:
-#      timeout: 40s
-#      retry-limit: 3
-#      portion: 10
-#      flags:
-#        primary: newbuildings=1
-#        secondary: secondary=1
-#      search-format: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&%s&page=%d&limit=%d
 #    sanitizer:
 #      url-prefix: https://dom.ria.com/uk/
 #      photo-format: https://cdn.riastatic.com/photosnew/dom/photo/%s__%sfl.webp
