@@ -54,6 +54,12 @@ services:
       context: .
       dockerfile: docker/golang.dockerfile
     image: rampart-golang
+  messis:
+    <<: *x-golang
+    container_name: rampart-messis
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis
+    ports:
+      - 9001:9001
   miner:
     <<: *x-golang
     container_name: rampart-miner
@@ -113,12 +119,6 @@ services:
     <<: *x-python
     container_name: rampart-auge-debug
     command: python -m rampart.auge -debug
-  messis:
-    <<: *x-golang
-    container_name: rampart-messis
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis
-    ports:
-      - 9001:9001
   auge:
     <<: *x-python
     container_name: rampart-auge

@@ -24,6 +24,11 @@ commands:
       read MIGRATION && \
       docker-compose run --rm generate create -ext sql -dir /migrations $MIGRATION && \
       sudo chown -R $USER:$USER migrations
+  messis:
+    description: Launch flat mining application
+    cmd: |
+      docker-compose up messis
+      docker rm rampart-messis
   miner:
     description: Run the data mining app single workflow
     cmd: docker-compose run --rm miner
