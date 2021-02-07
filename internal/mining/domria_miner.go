@@ -10,6 +10,7 @@ func NewDomriaMiner(config config.DomriaMiner) Miner {
 		config.Name,
 		config.Spec,
 		&http.Client{Timeout: config.Timeout},
+		0,
 		config.RetryLimit,
 		config.SearchPrefix,
 		config.UserAgent,
@@ -20,6 +21,7 @@ type domriaMiner struct {
 	name         string
 	spec         string
 	client       *http.Client
+	page         int
 	retryLimit   int
 	searchPrefix string
 	userAgent    string
@@ -34,5 +36,6 @@ func (m *domriaMiner) Spec() string {
 }
 
 func (m *domriaMiner) MineFlat() (Flat, error) {
+
 	return Flat{}, nil
 }
