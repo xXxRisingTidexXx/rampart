@@ -10,9 +10,11 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/mining"
 	"io"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
-// TODO: graceful shutdown.
 func main() {
 	name := flag.String(
 		"miner",
@@ -41,24 +43,28 @@ func main() {
 	}
 	if *name == "" {
 		metrics.RunServer(c.Messis.Server, entry)
+		miningOutput := make(chan mining.Flat, 100)
 		scheduler := cron.New(cron.WithSeconds())
 		for _, miner := range miners {
 			entry := entry.WithField("miner", miner.Name())
-			if _, err := scheduler.AddJob(miner.Spec(), wrap(miner, entry)); err != nil {
-				entry.Errorf("main: messis failed to start miner, %v", err)
+			_, err := scheduler.AddJob(miner.Spec(), wrap(miner, miningOutput, entry))
+			if err != nil {
+				entry.Fatalf("main: messis failed to start miner, %v", err)
 			}
 		}
-		scheduler.Run()
+		scheduler.Start()
+		signals := make(chan os.Signal, 1)
+		signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+		<-signals
+		scheduler.Stop()
 	} else {
-		entry := entry.WithField("miner", *name)
 		miner, ok := miners[*name]
 		if !ok {
-			entry.Fatal("main: messis failed to find the miner")
+			entry.Fatalf("main: messis failed to find miner %s", *name)
 		}
-		if flat, err := miner.MineFlat(); err != nil {
-			entry.Error(err)
-		} else {
-			entry.Info(flat)
+		_, err = miner.MineFlat()
+		if err != nil {
+			entry.Fatal(err)
 		}
 	}
 	if err := db.Close(); err != nil {
@@ -66,12 +72,28 @@ func main() {
 	}
 }
 
-func wrap(miner mining.Miner, logger log.FieldLogger) cron.Job {
+func run(
+	amplifier mining.Amplifier,
+	input <-chan mining.Flat,
+	output chan<- mining.Flat,
+	logger log.FieldLogger,
+) {
+	for flat := range input {
+		apartment, err := amplifier.AmplifyFlat(flat)
+		if err != nil {
+			logger.Error(err)
+		} else if output != nil {
+			output <- apartment
+		}
+	}
+}
+
+func wrap(miner mining.Miner, output chan<- mining.Flat, logger log.FieldLogger) cron.Job {
 	return cron.FuncJob(
 		func() {
 			switch flat, err := miner.MineFlat(); err {
 			case nil:
-				logger.Info(flat)
+				output <- flat
 			case io.EOF:
 			default:
 				logger.Error(err)
