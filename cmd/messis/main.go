@@ -62,9 +62,11 @@ func main() {
 		if !ok {
 			entry.Fatalf("main: messis failed to find miner %s", *name)
 		}
-		_, err = miner.MineFlat()
+		flat, err := miner.MineFlat()
 		if err != nil {
 			entry.Fatal(err)
+		} else {
+			entry.Info(flat)
 		}
 	}
 	if err := db.Close(); err != nil {

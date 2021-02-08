@@ -4,6 +4,7 @@ messis:
     name: domria
     spec: '*/10 * * * * *'
     timeout: 30s
+    page: 0
     retry-limit: 3
     search-prefix: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&limit=1&page=
     user-agent: *user-agent

@@ -18,7 +18,7 @@ func NewDomriaMiner(config config.DomriaMiner) Miner {
 		config.Name,
 		config.Spec,
 		&http.Client{Timeout: config.Timeout},
-		-1,
+		config.Page - 1,
 		config.RetryLimit,
 		config.SearchPrefix,
 		config.UserAgent,
