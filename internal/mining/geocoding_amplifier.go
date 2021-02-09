@@ -12,12 +12,17 @@ import (
 // TODO: should we add states?
 // TODO: LocationIQ geocoder.
 func NewGeocodingAmplifier(config config.GeocodingAmplifier) Amplifier {
-	return &geocodingAmplifier{&http.Client{Timeout: config.Timeout}, config.SearchFormat}
+	return &geocodingAmplifier{
+		&http.Client{Timeout: config.Timeout},
+		config.SearchFormat,
+		config.UserAgent,
+	}
 }
 
 type geocodingAmplifier struct {
 	client       *http.Client
 	searchFormat string
+	userAgent    string
 }
 
 // TODO: metrics.
@@ -67,7 +72,7 @@ func (a *geocodingAmplifier) getPositions(flat Flat) ([]position, error) {
 	if err != nil {
 		return nil, fmt.Errorf("mining: amplifier failed to construct a request, %v", err)
 	}
-	request.Header.Set("User-Agent", "RampartBot/0.0.1")
+	request.Header.Set("User-Agent", a.userAgent)
 	response, err := a.client.Do(request)
 	if err != nil {
 		return nil, fmt.Errorf("mining: amplifier failed to make a request, %v", err)
