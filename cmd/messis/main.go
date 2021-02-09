@@ -42,23 +42,33 @@ func main() {
 		miners[miner.Name()] = miner
 	}
 	if *name == "" {
-		miningOutput := make(chan mining.Flat, 100)
+		// TODO: move to config.
+		minings := make(chan mining.Flat, 100)
 		scheduler := cron.New(cron.WithSeconds())
 		for _, miner := range miners {
 			entry := entry.WithField("miner", miner.Name())
-			_, err := scheduler.AddJob(miner.Spec(), wrap(miner, miningOutput, entry))
+			_, err := scheduler.AddJob(miner.Spec(), wrap(miner, minings, entry))
 			if err != nil {
 				entry.Fatalf("main: messis failed to start miner, %v", err)
 			}
 		}
-		scheduler.Start()
+		geocodings := make(chan mining.Flat, 100)
 		go run(
 			mining.NewGeocodingAmplifier(c.Messis.GeocodingAmplifier),
-			miningOutput,
-			nil,
+			minings,
+			geocodings,
 			entry.WithField("amplifier", "geocoding"),
 		)
+		for _, amplifier := range c.Messis.GaugingAmplifiers {
+			go run(
+				mining.NewGaugingAmplifier(amplifier),
+				geocodings,
+				nil,
+				entry.WithFields(log.Fields{"amplifier": "gauging", "host": amplifier.Host}),
+			)
+		}
 		metrics.RunServer(c.Messis.Server, entry)
+		scheduler.Start()
 		signals := make(chan os.Signal, 1)
 		signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 		<-signals
@@ -66,13 +76,20 @@ func main() {
 	} else {
 		miner, ok := miners[*name]
 		if !ok {
-			entry.Fatalf("main: messis failed to find miner %s", *name)
+			entry.Fatalf("main: messis found no miner %s", *name)
+		}
+		if len(c.Messis.GaugingAmplifiers) == 0 {
+			entry.Fatal("main: messis found no gauging amplifier")
 		}
 		flat, err := miner.MineFlat()
 		if err != nil {
 			entry.Fatal(err)
 		}
 		flat, err = mining.NewGeocodingAmplifier(c.Messis.GeocodingAmplifier).AmplifyFlat(flat)
+		if err != nil {
+			entry.Fatal(err)
+		}
+		flat, err = mining.NewGaugingAmplifier(c.Messis.GaugingAmplifiers[0]).AmplifyFlat(flat)
 		if err != nil {
 			entry.Fatal(err)
 		}
