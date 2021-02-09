@@ -4,17 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/paulmach/orb"
+	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"net/http"
 	"strings"
-	"time"
 )
 
 // TODO: should we add states?
-func NewGeocodingAmplifier() Amplifier {
-	return &geocodingAmplifier{
-		&http.Client{Timeout: time.Second * 10},
-		"https://nominatim.openstreetmap.org/search?city=%s&street=%s+%s&format=json&countrycodes=ua",
-	}
+// TODO: LocationIQ geocoder.
+func NewGeocodingAmplifier(config config.GeocodingAmplifier) Amplifier {
+	return &geocodingAmplifier{&http.Client{Timeout: config.Timeout}, config.SearchFormat}
 }
 
 type geocodingAmplifier struct {

@@ -42,7 +42,6 @@ func main() {
 		miners[miner.Name()] = miner
 	}
 	if *name == "" {
-		metrics.RunServer(c.Messis.Server, entry)
 		miningOutput := make(chan mining.Flat, 100)
 		scheduler := cron.New(cron.WithSeconds())
 		for _, miner := range miners {
@@ -54,11 +53,12 @@ func main() {
 		}
 		scheduler.Start()
 		go run(
-			mining.NewGeocodingAmplifier(),
+			mining.NewGeocodingAmplifier(c.Messis.GeocodingAmplifier),
 			miningOutput,
 			nil,
 			entry.WithField("amplifier", "geocoding"),
 		)
+		metrics.RunServer(c.Messis.Server, entry)
 		signals := make(chan os.Signal, 1)
 		signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 		<-signals
@@ -72,7 +72,7 @@ func main() {
 		if err != nil {
 			entry.Fatal(err)
 		}
-		flat, err = mining.NewGeocodingAmplifier().AmplifyFlat(flat)
+		flat, err = mining.NewGeocodingAmplifier(c.Messis.GeocodingAmplifier).AmplifyFlat(flat)
 		if err != nil {
 			entry.Fatal(err)
 		}
