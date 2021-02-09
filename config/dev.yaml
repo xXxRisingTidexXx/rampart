@@ -94,11 +94,13 @@ messis:
   geocoding-amplifier:
     timeout: 10s
     search-format: https://nominatim.openstreetmap.org/search?city=%s&street=%s+%s&format=json&countrycodes=ua
+    user-agent: *user-agent
   gauging-amplifiers:
     - &gauging-amplifier
       timeout: 30s
       host: overpass-api.de
       interpreter-format: https://%s/api/interpreter?data=%s
+      user-agent: *user-agent
       subway-cities:
         - Київ
         - Харків
@@ -114,11 +116,11 @@ messis:
       gzf-min-area: 50000
       gzf-min-distance: 20
       gzf-modifier: 0.001
-    - *gauging-amplifier
+    - <<: *gauging-amplifier
       host: overpass.openstreetmap.ru
-    - *gauging-amplifier
+    - <<: *gauging-amplifier
       host: overpass.kumi.systems
-    - *gauging-amplifier
+    - <<: *gauging-amplifier
       host: overpass.nchc.org.tw
   storing-amplifier:
     srid: 4326

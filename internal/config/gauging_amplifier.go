@@ -9,6 +9,7 @@ type GaugingAmplifier struct {
 	Timeout           time.Duration `yaml:"timeout"`
 	Host              string        `yaml:"host"`
 	InterpreterFormat string        `yaml:"interpreter-format"`
+	UserAgent         string        `yaml:"user-agent"`
 	SubwayCities      misc.Set      `yaml:"subway-cities"`
 	SSFSearchRadius   float64       `yaml:"ssf-search-radius"`
 	SSFMinDistance    float64       `yaml:"ssf-min-distance"`
