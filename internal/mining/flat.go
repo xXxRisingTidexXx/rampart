@@ -24,3 +24,7 @@ type Flat struct {
 	IZF         float64
 	GZF         float64
 }
+
+func (f Flat) HasLocation() bool {
+	return f.Point.Lon() != 0 || f.Point.Lat() != 0
+}

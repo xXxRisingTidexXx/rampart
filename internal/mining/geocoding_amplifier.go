@@ -27,7 +27,7 @@ type geocodingAmplifier struct {
 
 // TODO: metrics.
 func (a *geocodingAmplifier) AmplifyFlat(flat Flat) (Flat, error) {
-	if flat.Point.Lon() != 0 || flat.Point.Lat() != 0 {
+	if flat.HasLocation() {
 		return flat, nil
 	}
 	if flat.City == "" || flat.Street == "" || flat.HouseNumber == "" {
