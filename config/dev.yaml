@@ -94,53 +94,39 @@ messis:
   geocoding-amplifier:
     timeout: 10s
     search-format: https://nominatim.openstreetmap.org/search?city=%s&street=%s+%s&format=json&countrycodes=ua
+  gauging-amplifiers:
+    - &gauging-amplifier
+      timeout: 30s
+      host: overpass-api.de
+      interpreter-format: https://%s/api/interpreter?data=%s
+      subway-cities:
+        - Київ
+        - Харків
+        - Дніпро
+      ssf-search-radius: 2000
+      ssf-min-distance: 25
+      ssf-modifier: 1000
+      izf-search-radius: 3000
+      izf-min-area: 35000
+      izf-min-distance: 30
+      izf-modifier: 0.001
+      gzf-search-radius: 2500
+      gzf-min-area: 50000
+      gzf-min-distance: 20
+      gzf-modifier: 0.001
+    - *gauging-amplifier
+      host: overpass.openstreetmap.ru
+    - *gauging-amplifier
+      host: overpass.kumi.systems
+    - *gauging-amplifier
+      host: overpass.nchc.org.tw
+  storing-amplifier:
+    srid: 4326
   server:
     read-timeout: 5s
     write-timeout: 5s
     max-header-bytes: 1048576
     address: :9001
-#    gauger:
-#      timeout: 30s
-#      overpass-hosts:
-#        - overpass-api.de
-#        - overpass.openstreetmap.ru
-#        - overpass.kumi.systems
-#        - overpass.nchc.org.tw
-#      subway-cities:
-#        - Київ
-#        - Харків
-#        - Дніпро
-#      ssf-search-radius: 2000
-#      ssf-min-distance: 25
-#      ssf-modifier: 1000
-#      izf-search-radius: 3000
-#      izf-min-area: 35000
-#      izf-min-distance: 30
-#      izf-modifier: 0.001
-#      gzf-search-radius: 2500
-#      gzf-min-area: 50000
-#      gzf-min-distance: 20
-#      gzf-modifier: 0.001
-#    validator:
-#      min-image-count: 4
-#      min-price: 1
-#      min-total-area: 12
-#      max-total-area: 560
-#      min-living-area: 0
-#      min-kitchen-area: 0
-#      min-room-number: 1
-#      max-room-number: 9
-#      min-specific-area: 12
-#      max-specific-area: 130
-#      min-floor: 1
-#      min-total-floor: 2
-#      max-total-floor: 50
-#      min-longitude: -180
-#      max-longitude: 180
-#      min-latitude: -90
-#      max-latitude: 90
-#    storer:
-#      srid: 4326
 warhol:
   timeout: 40s
   thread-number: 4
