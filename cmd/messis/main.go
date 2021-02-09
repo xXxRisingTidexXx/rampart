@@ -53,6 +53,12 @@ func main() {
 			}
 		}
 		scheduler.Start()
+		go run(
+			mining.NewGeocodingAmplifier(),
+			miningOutput,
+			nil,
+			entry.WithField("amplifier", "geocoding"),
+		)
 		signals := make(chan os.Signal, 1)
 		signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 		<-signals
@@ -65,13 +71,30 @@ func main() {
 		flat, err := miner.MineFlat()
 		if err != nil {
 			entry.Fatal(err)
-		} else {
-			entry.Info(flat)
 		}
+		flat, err = mining.NewGeocodingAmplifier().AmplifyFlat(flat)
+		if err != nil {
+			entry.Fatal(err)
+		}
+		entry.Info(flat)
 	}
 	if err := db.Close(); err != nil {
 		entry.Fatalf("main: messis failed to close the db, %v", err)
 	}
+}
+
+func wrap(miner mining.Miner, output chan<- mining.Flat, logger log.FieldLogger) cron.Job {
+	return cron.FuncJob(
+		func() {
+			switch flat, err := miner.MineFlat(); err {
+			case nil:
+				output <- flat
+			case io.EOF:
+			default:
+				logger.Error(err)
+			}
+		},
+	)
 }
 
 func run(
@@ -88,18 +111,4 @@ func run(
 			output <- apartment
 		}
 	}
-}
-
-func wrap(miner mining.Miner, output chan<- mining.Flat, logger log.FieldLogger) cron.Job {
-	return cron.FuncJob(
-		func() {
-			switch flat, err := miner.MineFlat(); err {
-			case nil:
-				output <- flat
-			case io.EOF:
-			default:
-				logger.Error(err)
-			}
-		},
-	)
 }
