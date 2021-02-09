@@ -57,6 +57,8 @@ messis:
       - бульвар
       -  
       - ' '
+      - пр.
+      - проспект
     house-number-replacements:
       - №
       - ''
