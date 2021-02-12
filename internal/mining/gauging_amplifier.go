@@ -63,8 +63,37 @@ func (a *gaugingAmplifier) AmplifyFlat(flat Flat) (Flat, error) {
 	if !flat.HasLocation() {
 		return flat, nil
 	}
-
-	return flat, nil
+	ssf, err := a.gaugeSSF(flat)
+	if err != nil {
+		return flat, err
+	}
+	izf, err := a.gaugeIZF(flat)
+	if err != nil {
+		return flat, err
+	}
+	gzf, err := a.gaugeGZF(flat)
+	if err != nil {
+		return flat, err
+	}
+	return Flat{
+		URL:         flat.URL,
+		ImageURLs:   flat.ImageURLs,
+		Price:       flat.Price,
+		TotalArea:   flat.TotalArea,
+		LivingArea:  flat.LivingArea,
+		KitchenArea: flat.KitchenArea,
+		RoomNumber:  flat.RoomNumber,
+		Floor:       flat.Floor,
+		TotalFloor:  flat.TotalFloor,
+		Housing:     flat.Housing,
+		Point:       flat.Point,
+		City:        flat.City,
+		Street:      flat.Street,
+		HouseNumber: flat.HouseNumber,
+		SSF:         ssf,
+		IZF:         izf,
+		GZF:         gzf,
+	}, nil
 }
 
 func (a *gaugingAmplifier) gaugeSSF(flat Flat) (float64, error) {
