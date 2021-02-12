@@ -59,14 +59,21 @@ func main() {
 			geocodings,
 			entry.WithField("amplifier", "geocoding"),
 		)
+		gaugings := make(chan mining.Flat, 100)
 		for _, amplifier := range c.Messis.GaugingAmplifiers {
 			go run(
 				mining.NewGaugingAmplifier(amplifier),
 				geocodings,
-				nil,
+				gaugings,
 				entry.WithFields(log.Fields{"amplifier": "gauging", "host": amplifier.Host}),
 			)
 		}
+		go run(
+			mining.NewStoringAmplifier(c.Messis.StoringAmplifier, db),
+			gaugings,
+			nil,
+			entry.WithField("amplifier", "storing"),
+		)
 		metrics.RunServer(c.Messis.Server, entry)
 		scheduler.Start()
 		signals := make(chan os.Signal, 1)
@@ -90,6 +97,10 @@ func main() {
 			entry.Fatal(err)
 		}
 		flat, err = mining.NewGaugingAmplifier(c.Messis.GaugingAmplifiers[0]).AmplifyFlat(flat)
+		if err != nil {
+			entry.Fatal(err)
+		}
+		flat, err = mining.NewStoringAmplifier(c.Messis.StoringAmplifier, db).AmplifyFlat(flat)
 		if err != nil {
 			entry.Fatal(err)
 		}
