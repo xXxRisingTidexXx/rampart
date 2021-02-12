@@ -49,7 +49,7 @@ func (a *storingAmplifier) storeFlat(tx *sql.Tx, flat Flat) error {
 		)
 		values 
 		(
-		    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, st_geomfromwkb($11, $12), $13, $14, $15, $16,
+		    $1, $2, $3, $4, $5, $6, $7, $8, $9, st_geomfromwkb($10, $11), $12, $13, $14, $15, $16,
 		 	$17
 		)
 		returning id`,
