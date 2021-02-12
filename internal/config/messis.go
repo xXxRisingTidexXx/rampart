@@ -5,5 +5,6 @@ type Messis struct {
 	DomriaMiner        DomriaMiner        `yaml:"domria-miner"`
 	GeocodingAmplifier GeocodingAmplifier `yaml:"geocoding-amplifier"`
 	GaugingAmplifiers  []GaugingAmplifier `yaml:"gauging-amplifiers"`
+	StoringAmplifier   StoringAmplifier   `yaml:"storing-amplifier"`
 	Server             Server             `yaml:"server"`
 }
