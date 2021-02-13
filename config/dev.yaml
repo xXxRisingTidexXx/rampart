@@ -131,6 +131,7 @@ messis:
     address: :9001
 warhol:
   timeout: 40s
+  user-agent: *user-agent
   thread-number: 4
   retry-limit: 3
   output-format: scientific/images/%s.%s.%s.%s.webp
