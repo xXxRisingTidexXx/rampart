@@ -42,8 +42,7 @@ func main() {
 		miners[miner.Name()] = miner
 	}
 	if *name == "" {
-		// TODO: move to config.
-		minings := make(chan mining.Flat, 100)
+		minings := make(chan mining.Flat, c.Messis.BufferSize)
 		scheduler := cron.New(cron.WithSeconds())
 		for _, miner := range miners {
 			entry := entry.WithField("miner", miner.Name())
@@ -52,14 +51,14 @@ func main() {
 				entry.Fatalf("main: messis failed to start miner, %v", err)
 			}
 		}
-		geocodings := make(chan mining.Flat, 100)
+		geocodings := make(chan mining.Flat, c.Messis.BufferSize)
 		go run(
 			mining.NewGeocodingAmplifier(c.Messis.GeocodingAmplifier),
 			minings,
 			geocodings,
 			entry.WithField("amplifier", "geocoding"),
 		)
-		gaugings := make(chan mining.Flat, 100)
+		gaugings := make(chan mining.Flat, c.Messis.BufferSize)
 		for _, amplifier := range c.Messis.GaugingAmplifiers {
 			go run(
 				mining.NewGaugingAmplifier(amplifier),

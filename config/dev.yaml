@@ -2,7 +2,7 @@ user-agent: &user-agent RampartBot/0.0.1
 messis:
   domria-miner:
     name: domria
-    spec: '*/10 * * * * *'
+    spec: '*/20 * * * * *'
     timeout: 15s
     page: 0
     retry-limit: 3
@@ -91,13 +91,14 @@ messis:
       - ' '
       - ''
     max-house-number-length: 10
+  buffer-size: 100
   geocoding-amplifier:
     timeout: 10s
     search-format: https://nominatim.openstreetmap.org/search?city=%s&street=%s+%s&format=json&countrycodes=ua
     user-agent: *user-agent
   gauging-amplifiers:
     - &gauging-amplifier
-      timeout: 30s
+      timeout: 20s
       host: overpass-api.de
       interpreter-format: https://%s/api/interpreter?data=%s
       user-agent: *user-agent
@@ -130,7 +131,7 @@ messis:
     max-header-bytes: 1048576
     address: :9001
 warhol:
-  timeout: 40s
+  timeout: 30s
   user-agent: *user-agent
   thread-number: 4
   retry-limit: 3
