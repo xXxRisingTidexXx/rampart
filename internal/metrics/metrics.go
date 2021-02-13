@@ -38,6 +38,21 @@ var MessisMiningDuration = promauto.NewHistogramVec(
 	[]string{"miner"},
 )
 
+var MessisGeocodings = promauto.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "rampart_messis_geocodings_total",
+		Help: "Collects position detection cases",
+	},
+	[]string{"status"},
+)
+
+var MessisGeocodingDuration = promauto.NewHistogram(
+	prometheus.HistogramOpts{
+		Name: "rampart_messis_geocoding_duration_seconds",
+		Help: "Monitors position recognition timing",
+	},
+)
+
 var TelegramUpdates = promauto.NewCounterVec(
 	prometheus.CounterOpts{
 		Name: "rampart_telegram_updates_total",

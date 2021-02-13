@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 	"net/http"
 	"strings"
+	"time"
 )
 
 // TODO: should we add states?
@@ -25,21 +27,27 @@ type geocodingAmplifier struct {
 	userAgent    string
 }
 
-// TODO: metrics.
 func (a *geocodingAmplifier) AmplifyFlat(flat Flat) (Flat, error) {
 	if flat.HasLocation() {
+		metrics.MessisGeocodings.WithLabelValues("located").Inc()
 		return flat, nil
 	}
 	if flat.City == "" || flat.Street == "" || flat.HouseNumber == "" {
+		metrics.MessisGeocodings.WithLabelValues("unlocated").Inc()
 		return flat, nil
 	}
+	now := time.Now()
 	positions, err := a.getPositions(flat)
+	metrics.MessisGeocodingDuration.Observe(time.Since(now).Seconds())
 	if err != nil {
+		metrics.MessisGeocodings.WithLabelValues("failure").Inc()
 		return flat, err
 	}
 	if len(positions) == 0 {
+		metrics.MessisGeocodings.WithLabelValues("nothing").Inc()
 		return flat, nil
 	}
+	metrics.MessisGeocodings.WithLabelValues("success").Inc()
 	return Flat{
 		URL:         flat.URL,
 		ImageURLs:   flat.ImageURLs,
