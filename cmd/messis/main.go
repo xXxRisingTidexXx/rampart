@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -136,6 +137,10 @@ func run(
 			logger.Error(err)
 		} else if output != nil {
 			output <- apartment
+		} else {
+			metrics.MessisProcessingDuration.WithLabelValues(apartment.Miner).Observe(
+				time.Since(apartment.ParsingTime).Seconds(),
+			)
 		}
 	}
 }

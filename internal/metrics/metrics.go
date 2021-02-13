@@ -62,6 +62,15 @@ var MessisGaugings = promauto.NewCounterVec(
 	[]string{"host", "feature", "status"},
 )
 
+var MessisProcessingDuration = promauto.NewHistogramVec(
+	prometheus.HistogramOpts{
+		Name:    "rampart_messis_processing_duration_seconds",
+		Help:    "Reflects a single item workflow time",
+		Buckets: []float64{1, 5, 10, 20, 30, 60, 120},
+	},
+	[]string{"miner"},
+)
+
 var MessisGaugingDuration = promauto.NewHistogramVec(
 	prometheus.HistogramOpts{
 		Name:    "rampart_messis_gauging_duration_seconds",
