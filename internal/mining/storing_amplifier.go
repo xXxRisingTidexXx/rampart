@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/paulmach/orb/encoding/wkb"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
+	"time"
 )
 
 func NewStoringAmplifier(config config.StoringAmplifier, db *sql.DB) Amplifier {
@@ -17,30 +19,49 @@ type storingAmplifier struct {
 }
 
 func (a *storingAmplifier) AmplifyFlat(flat Flat) (Flat, error) {
-	tx, err := a.db.Begin()
+	ok, err := a.transactFlat(flat)
+	status := "skipped"
 	if err != nil {
-		return flat, fmt.Errorf("mining: amplifier failed to begin a transaction, %v", err)
+		status = "failure"
+	} else if ok {
+		status = "success"
 	}
-	if err := a.storeFlat(tx, flat); err != nil {
-		_ = tx.Rollback()
-		return flat, err
-	}
-	if err := tx.Commit(); err != nil {
-		return flat, fmt.Errorf("mining: amplifier failed to close a transaction, %v", err)
-	}
-	return flat, nil
+	metrics.MessisStorings.WithLabelValues("flat", status).Inc()
+	metrics.MessisStorings.WithLabelValues("visual", status).Add(float64(len(flat.ImageURLs)))
+	return flat, err
 }
 
-func (a *storingAmplifier) storeFlat(tx *sql.Tx, flat Flat) error {
-	var count int
-	err := tx.QueryRow(`select count(*) from flats where url = $1`, flat.URL).Scan(&count)
+func (a *storingAmplifier) transactFlat(flat Flat) (bool, error) {
+	tx, err := a.db.Begin()
 	if err != nil {
-		return fmt.Errorf("mining: amplifier failed to read a flat count, %v", err)
+		return false, fmt.Errorf("mining: amplifier failed to begin a transaction, %v", err)
+	}
+	ok, err := a.storeFlat(tx, flat)
+	if err != nil {
+		_ = tx.Rollback()
+		return false, err
+	}
+	if err := tx.Commit(); err != nil {
+		return false, fmt.Errorf("mining: amplifier failed to close a transaction, %v", err)
+	}
+	return ok, nil
+}
+
+func (a *storingAmplifier) storeFlat(tx *sql.Tx, flat Flat) (bool, error) {
+	var count int
+	now := time.Now()
+	err := tx.QueryRow(`select count(*) from flats where url = $1`, flat.URL).Scan(&count)
+	metrics.MessisStoringDuration.WithLabelValues("flat", "select").Observe(
+		time.Since(now).Seconds(),
+	)
+	if err != nil {
+		return false, fmt.Errorf("mining: amplifier failed to read a flat count, %v", err)
 	}
 	if count > 0 {
-		return nil
+		return false, nil
 	}
 	var flatID int
+	now = time.Now()
 	err = tx.QueryRow(
 		`insert into flats
 		(
@@ -71,11 +92,15 @@ func (a *storingAmplifier) storeFlat(tx *sql.Tx, flat Flat) error {
 		flat.IZF,
 		flat.GZF,
 	).Scan(&flatID)
+	metrics.MessisStoringDuration.WithLabelValues("flat", "insert").Observe(
+		time.Since(now).Seconds(),
+	)
 	if err != nil {
-		return fmt.Errorf("mining: amplifier failed to create a flat, %v", err)
+		return false, fmt.Errorf("mining: amplifier failed to create a flat, %v", err)
 	}
 	for _, url := range flat.ImageURLs {
 		var imageID int
+		now := time.Now()
 		err := tx.QueryRow(
 			`insert into images (url)
 			values ($1)
@@ -83,13 +108,20 @@ func (a *storingAmplifier) storeFlat(tx *sql.Tx, flat Flat) error {
 			returning id`,
 			url,
 		).Scan(&imageID)
+		metrics.MessisStoringDuration.WithLabelValues("image", "upsert").Observe(
+			time.Since(now).Seconds(),
+		)
 		if err != nil {
-			return fmt.Errorf("mining: amplifier failed to upsert an image, %v", err)
+			return false, fmt.Errorf("mining: amplifier failed to upsert an image, %v", err)
 		}
+		now = time.Now()
 		_, err = tx.Exec(`insert into visuals(flat_id, image_id) values ($1, $2)`, flatID, imageID)
+		metrics.MessisStoringDuration.WithLabelValues("visual", "insert").Observe(
+			time.Since(now).Seconds(),
+		)
 		if err != nil {
-			return fmt.Errorf("mining: amplifier failed to create a visual, %v", err)
+			return false, fmt.Errorf("mining: amplifier failed to create a visual, %v", err)
 		}
 	}
-	return nil
+	return true, nil
 }
