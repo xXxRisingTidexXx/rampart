@@ -53,6 +53,22 @@ var MessisGeocodingDuration = promauto.NewHistogram(
 	},
 )
 
+var MessisGaugings = promauto.NewCounterVec(
+	prometheus.CounterOpts{
+		Name: "rampart_messis_gaugings_total",
+		Help: "Tracks geographical feature calculation",
+	},
+	[]string{"host", "feature", "status"},
+)
+
+var MessisGaugingDuration = promauto.NewHistogramVec(
+	prometheus.HistogramOpts{
+		Name: "Measures location-based property computation time",
+		Help: "",
+	},
+	[]string{"host", "feature"},
+)
+
 var TelegramUpdates = promauto.NewCounterVec(
 	prometheus.CounterOpts{
 		Name: "rampart_telegram_updates_total",

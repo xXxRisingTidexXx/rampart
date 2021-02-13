@@ -96,11 +96,11 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 	city := strings.TrimSpace(s.Items[0].CityNameUK)
 	if m.swaps.Contains(city) {
 		city = strings.TrimSpace(s.Items[0].DistrictNameUK)
-		metrics.MessisMiningSanitations.WithLabelValues(m.name, "swap")
+		metrics.MessisMiningSanitations.WithLabelValues(m.name, "swap").Inc()
 	}
 	if value, ok := m.cities[city]; ok {
 		city = value
-		metrics.MessisMiningSanitations.WithLabelValues(m.name, "city")
+		metrics.MessisMiningSanitations.WithLabelValues(m.name, "city").Inc()
 	}
 	initialStreet := s.Items[0].StreetNameUK
 	if initialStreet == "" {
@@ -110,14 +110,14 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 	houseNumber := m.sanitizeHouseNumber(string(s.Items[0].BuildingNumberStr))
 	if index := strings.Index(initialStreet, ","); index != -1 {
 		street = initialStreet[:index]
-		metrics.MessisMiningSanitations.WithLabelValues(m.name, "street")
+		metrics.MessisMiningSanitations.WithLabelValues(m.name, "street").Inc()
 		extraNumber := m.sanitizeHouseNumber(initialStreet[index+1:])
 		if houseNumber == "" &&
 			extraNumber != "" &&
 			extraNumber[0] >= '0' &&
 			extraNumber[0] <= '9' {
 			houseNumber = extraNumber
-			metrics.MessisMiningSanitations.WithLabelValues(m.name, "house-number")
+			metrics.MessisMiningSanitations.WithLabelValues(m.name, "house-number").Inc()
 		}
 	}
 	if runes := []rune(houseNumber); len(runes) > m.maxHouseNumberLength {

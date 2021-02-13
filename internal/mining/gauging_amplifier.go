@@ -9,14 +9,15 @@ import (
 	"github.com/paulmach/osm"
 	"github.com/paulmach/osm/osmgeojson"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 // TODO: relative city center distance feature (with city diameter).
-// TODO: metrics.
 func NewGaugingAmplifier(config config.GaugingAmplifier) Amplifier {
 	return &gaugingAmplifier{
 		&http.Client{Timeout: config.Timeout},
@@ -98,8 +99,10 @@ func (a *gaugingAmplifier) AmplifyFlat(flat Flat) (Flat, error) {
 
 func (a *gaugingAmplifier) gaugeSSF(flat Flat) (float64, error) {
 	if !a.subwayCities.Contains(flat.City) {
+		metrics.MessisGaugings.WithLabelValues(a.host, "ssf", "subwayless").Inc()
 		return 0, nil
 	}
+	now := time.Now()
 	collection, err := a.queryOverpass(
 		fmt.Sprintf(
 			"node[station=subway](around:%f,%f,%f);out;",
@@ -108,7 +111,9 @@ func (a *gaugingAmplifier) gaugeSSF(flat Flat) (float64, error) {
 			flat.Point.Lon(),
 		),
 	)
+	metrics.MessisGaugingDuration.WithLabelValues(a.host, "ssf").Observe(time.Since(now).Seconds())
 	if err != nil {
+		metrics.MessisGaugings.WithLabelValues(a.host, "ssf", "failure").Inc()
 		return 0, err
 	}
 	ssf := 0.0
@@ -118,6 +123,11 @@ func (a *gaugingAmplifier) gaugeSSF(flat Flat) (float64, error) {
 			ssf += 1 / math.Max(distance, a.ssfMinDistance)
 		}
 	}
+	if ssf == 0 {
+		metrics.MessisGaugings.WithLabelValues(a.host, "ssf", "nothing").Inc()
+		return 0, nil
+	}
+	metrics.MessisGaugings.WithLabelValues(a.host, "ssf", "success").Inc()
 	return ssf * a.ssfModifier, nil
 }
 
@@ -225,6 +235,7 @@ func (a *gaugingAmplifier) gaugeGeoDistanceToPoints(points []orb.Point, point or
 }
 
 func (a *gaugingAmplifier) gaugeIZF(flat Flat) (float64, error) {
+	now := time.Now()
 	collection, err := a.queryOverpass(
 		fmt.Sprintf(
 			"(way[landuse=industrial](around:%f,%f,%f);>;relation[landuse=industrial](around:%f,%"+
@@ -237,7 +248,9 @@ func (a *gaugingAmplifier) gaugeIZF(flat Flat) (float64, error) {
 			flat.Point.Lon(),
 		),
 	)
+	metrics.MessisGaugingDuration.WithLabelValues(a.host, "izf").Observe(time.Since(now).Seconds())
 	if err != nil {
+		metrics.MessisGaugings.WithLabelValues(a.host, "izf", "failure").Inc()
 		return 0, err
 	}
 	izf := 0.0
@@ -249,10 +262,16 @@ func (a *gaugingAmplifier) gaugeIZF(flat Flat) (float64, error) {
 			}
 		}
 	}
+	if izf == 0 {
+		metrics.MessisGaugings.WithLabelValues(a.host, "izf", "nothing").Inc()
+		return 0, nil
+	}
+	metrics.MessisGaugings.WithLabelValues(a.host, "izf", "success").Inc()
 	return izf * a.izfModifier, nil
 }
 
 func (a *gaugingAmplifier) gaugeGZF(flat Flat) (float64, error) {
+	now := time.Now()
 	collection, err := a.queryOverpass(
 		fmt.Sprintf(
 			"(way[leisure=park](around:%f,%f,%f);>;relation[leisure=park](around:%f,%f,%f);>;);ou"+
@@ -265,7 +284,9 @@ func (a *gaugingAmplifier) gaugeGZF(flat Flat) (float64, error) {
 			flat.Point.Lon(),
 		),
 	)
+	metrics.MessisGaugingDuration.WithLabelValues(a.host, "gzf").Observe(time.Since(now).Seconds())
 	if err != nil {
+		metrics.MessisGaugings.WithLabelValues(a.host, "gzf", "failure").Inc()
 		return 0, err
 	}
 	gzf := 0.0
@@ -277,5 +298,10 @@ func (a *gaugingAmplifier) gaugeGZF(flat Flat) (float64, error) {
 			}
 		}
 	}
+	if gzf == 0 {
+		metrics.MessisGaugings.WithLabelValues(a.host, "gzf", "nothing").Inc()
+		return 0, nil
+	}
+	metrics.MessisGaugings.WithLabelValues(a.host, "gzf", "success").Inc()
 	return gzf * a.gzfModifier, nil
 }
