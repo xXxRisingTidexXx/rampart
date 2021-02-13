@@ -62,15 +62,6 @@ var MessisGaugings = promauto.NewCounterVec(
 	[]string{"host", "feature", "status"},
 )
 
-var MessisProcessingDuration = promauto.NewHistogramVec(
-	prometheus.HistogramOpts{
-		Name:    "rampart_messis_processing_duration_seconds",
-		Help:    "Reflects a single item workflow time",
-		Buckets: []float64{1, 5, 10, 20, 30, 60, 120},
-	},
-	[]string{"miner"},
-)
-
 var MessisGaugingDuration = promauto.NewHistogramVec(
 	prometheus.HistogramOpts{
 		Name:    "rampart_messis_gauging_duration_seconds",
@@ -95,6 +86,15 @@ var MessisStoringDuration = promauto.NewHistogramVec(
 		Buckets: []float64{0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 0.5, 1, 5},
 	},
 	[]string{"resource", "action"},
+)
+
+var MessisProcessingDuration = promauto.NewHistogramVec(
+	prometheus.HistogramOpts{
+		Name:    "rampart_messis_processing_duration_seconds",
+		Help:    "Reflects a single item workflow time",
+		Buckets: []float64{1, 5, 10, 20, 30, 60, 120},
+	},
+	[]string{"miner"},
 )
 
 var TelegramUpdates = promauto.NewCounterVec(
