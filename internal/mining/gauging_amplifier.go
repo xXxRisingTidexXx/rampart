@@ -145,7 +145,7 @@ func (a *gaugingAmplifier) queryOverpass(query string) (*geojson.FeatureCollecti
 		return nil, fmt.Errorf("mining: amplifier failed to unmarshal xml, %v", err)
 	}
 	if err := response.Body.Close(); err != nil {
-		return nil, fmt.Errorf("mining: amplifier failed to close the response body, %v", err)
+		return nil, fmt.Errorf("mining: amplifier failed to close a response body, %v", err)
 	}
 	collection, err := osmgeojson.Convert(&o, osmgeojson.NoMeta(true))
 	if err != nil {

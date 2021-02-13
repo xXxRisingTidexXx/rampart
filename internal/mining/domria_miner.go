@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func NewDomriaMiner(config config.DomriaMiner) Miner {
@@ -65,26 +66,26 @@ func (m *domriaMiner) Spec() string {
 	return m.spec
 }
 
-// TODO: retry metric.
-// TODO: validation metric.
 func (m *domriaMiner) MineFlat() (Flat, error) {
 	m.page++
-	bytes, err := make([]byte, 0), io.EOF
+	s, err := search{}, io.EOF
 	for retry := 0; retry < m.retryLimit && err != nil; retry++ {
-		bytes, err = m.trySearch()
+		now := time.Now()
+		s, err = m.trySearch()
+		metrics.MessisMiningDuration.WithLabelValues(m.name).Observe(time.Since(now).Seconds())
+		metrics.MessisMiningRetries.WithLabelValues(m.name).Inc()
 	}
 	if err != nil {
+		metrics.MessisMinings.WithLabelValues(m.name, "failure").Inc()
 		return Flat{}, err
-	}
-	var s search
-	if err := json.Unmarshal(bytes, &s); err != nil {
-		return Flat{}, fmt.Errorf("mining: miner failed to unmarshal the search, %v", err)
 	}
 	if len(s.Items) == 0 {
 		m.page = -1
+		metrics.MessisMinings.WithLabelValues(m.name, "reset").Inc()
 		return Flat{}, io.EOF
 	}
 	if err := m.validateItem(s.Items[0]); err != nil {
+		metrics.MessisMinings.WithLabelValues(m.name, "validation").Inc()
 		return Flat{}, err
 	}
 	url := m.urlPrefix + s.Items[0].BeautifulURL
@@ -95,28 +96,34 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 	city := strings.TrimSpace(s.Items[0].CityNameUK)
 	if m.swaps.Contains(city) {
 		city = strings.TrimSpace(s.Items[0].DistrictNameUK)
+		metrics.MessisMiningSanitations.WithLabelValues(m.name, "swap")
 	}
 	if value, ok := m.cities[city]; ok {
 		city = value
+		metrics.MessisMiningSanitations.WithLabelValues(m.name, "city")
 	}
-	initialStreet, houseNumber := s.Items[0].StreetNameUK, string(s.Items[0].BuildingNumberStr)
+	initialStreet := s.Items[0].StreetNameUK
 	if initialStreet == "" {
 		initialStreet = s.Items[0].StreetName
 	}
 	street := initialStreet
+	houseNumber := m.sanitizeHouseNumber(string(s.Items[0].BuildingNumberStr))
 	if index := strings.Index(initialStreet, ","); index != -1 {
 		street = initialStreet[:index]
+		metrics.MessisMiningSanitations.WithLabelValues(m.name, "street")
 		extraNumber := m.sanitizeHouseNumber(initialStreet[index+1:])
 		if houseNumber == "" &&
 			extraNumber != "" &&
 			extraNumber[0] >= '0' &&
 			extraNumber[0] <= '9' {
 			houseNumber = extraNumber
+			metrics.MessisMiningSanitations.WithLabelValues(m.name, "house-number")
 		}
 	}
 	if runes := []rune(houseNumber); len(runes) > m.maxHouseNumberLength {
 		houseNumber = string(runes[:m.maxHouseNumberLength])
 	}
+	metrics.MessisMinings.WithLabelValues(m.name, "success").Inc()
 	return Flat{
 		URL:         url,
 		ImageURLs:   urls,
@@ -135,29 +142,29 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 	}, nil
 }
 
-func (m *domriaMiner) trySearch() ([]byte, error) {
+func (m *domriaMiner) trySearch() (search, error) {
+	var s search
 	request, err := http.NewRequest(http.MethodGet, m.searchPrefix+strconv.Itoa(m.page), nil)
 	if err != nil {
-		return nil, fmt.Errorf("mining: miner failed to construct a request, %v", err)
+		return s, fmt.Errorf("mining: miner failed to construct a request, %v", err)
 	}
 	request.Header.Set("User-Agent", m.userAgent)
 	response, err := m.client.Do(request)
 	if err != nil {
-		return nil, fmt.Errorf("mining: miner failed to make a request, %v", err)
+		return s, fmt.Errorf("mining: miner failed to make a request, %v", err)
 	}
 	if response.StatusCode != http.StatusOK {
 		_ = response.Body.Close()
-		return nil, fmt.Errorf("mining: miner got response with status %s", response.Status)
+		return s, fmt.Errorf("mining: miner got response with status %s", response.Status)
 	}
-	bytes, err := ioutil.ReadAll(response.Body)
-	if err != nil {
+	if err := json.NewDecoder(response.Body).Decode(&s); err != nil {
 		_ = response.Body.Close()
-		return nil, fmt.Errorf("mining: miner failed to read the response body, %v", err)
+		return s, fmt.Errorf("mining: miner failed to unmarshal a search, %v", err)
 	}
 	if err := response.Body.Close(); err != nil {
-		return nil, fmt.Errorf("mining: miner failed to close the response body, %v", err)
+		return s, fmt.Errorf("mining: miner failed to close a response body, %v", err)
 	}
-	return bytes, nil
+	return s, nil
 }
 
 func (m *domriaMiner) validateItem(i item) error {

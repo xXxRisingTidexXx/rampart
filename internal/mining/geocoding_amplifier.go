@@ -87,7 +87,7 @@ func (a *geocodingAmplifier) getPositions(flat Flat) ([]position, error) {
 		return nil, fmt.Errorf("mining: amplifier failed to unmarshal positions, %v", err)
 	}
 	if err := response.Body.Close(); err != nil {
-		return nil, fmt.Errorf("mining: amplifier failed to close the response body, %v", err)
+		return nil, fmt.Errorf("mining: amplifier failed to close a response body, %v", err)
 	}
 	return positions, nil
 }
