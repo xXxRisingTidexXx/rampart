@@ -3,6 +3,7 @@ package mining
 import (
 	"github.com/paulmach/orb"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
+	"time"
 )
 
 type Flat struct {
@@ -23,6 +24,8 @@ type Flat struct {
 	SSF         float64
 	IZF         float64
 	GZF         float64
+	Miner       string
+	ParsingTime time.Time
 }
 
 func (f Flat) HasLocation() bool {

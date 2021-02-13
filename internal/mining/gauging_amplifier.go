@@ -94,6 +94,8 @@ func (a *gaugingAmplifier) AmplifyFlat(flat Flat) (Flat, error) {
 		SSF:         ssf,
 		IZF:         izf,
 		GZF:         gzf,
+		Miner:       flat.Miner,
+		ParsingTime: flat.ParsingTime,
 	}, nil
 }
 

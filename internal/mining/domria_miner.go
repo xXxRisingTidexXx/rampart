@@ -139,6 +139,8 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 		City:        city,
 		Street:      strings.TrimSpace(m.streetReplacer.Replace(street)),
 		HouseNumber: houseNumber,
+		Miner:       m.name,
+		ParsingTime: time.Now(),
 	}, nil
 }
 

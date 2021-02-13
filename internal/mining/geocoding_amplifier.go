@@ -63,6 +63,8 @@ func (a *geocodingAmplifier) AmplifyFlat(flat Flat) (Flat, error) {
 		City:        flat.City,
 		Street:      flat.Street,
 		HouseNumber: flat.HouseNumber,
+		Miner:       flat.Miner,
+		ParsingTime: flat.ParsingTime,
 	}, nil
 }
 
