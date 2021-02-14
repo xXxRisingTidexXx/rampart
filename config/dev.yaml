@@ -2,7 +2,7 @@ user-agent: &user-agent RampartBot/0.0.1
 messis:
   domria-miner:
     name: domria
-    spec: '*/2 * * * * *'
+    spec: '* * * * * *'
     timeout: 10s
     page: 0
     retry-limit: 3
