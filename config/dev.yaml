@@ -2,8 +2,8 @@ user-agent: &user-agent RampartBot/0.0.1
 messis:
   domria-miner:
     name: domria
-    spec: '* * * * * *'
-    timeout: 15s
+    spec: '*/2 * * * * *'
+    timeout: 10s
     page: 0
     retry-limit: 3
     search-prefix: https://dom.ria.com/searchEngine/?category=1&realty_type=2&operation_type=1&fullCategoryOperation=1_2_1&limit=1&page=
@@ -98,7 +98,7 @@ messis:
     user-agent: *user-agent
   gauging-amplifiers:
     - &gauging-amplifier
-      timeout: 20s
+      timeout: 30s
       host: overpass-api.de
       interpreter-format: https://%s/api/interpreter?data=%s
       user-agent: *user-agent
@@ -121,8 +121,6 @@ messis:
       host: overpass.openstreetmap.ru
     - <<: *gauging-amplifier
       host: overpass.kumi.systems
-    - <<: *gauging-amplifier
-      host: overpass.nchc.org.tw
   storing-amplifier:
     srid: 4326
   server:
