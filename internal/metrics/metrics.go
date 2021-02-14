@@ -5,20 +5,21 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
+var MessisProcessingDuration = promauto.NewHistogramVec(
+	prometheus.HistogramOpts{
+		Name:    "rampart_messis_processing_duration_seconds",
+		Help:    "Reflects a single item workflow time",
+		Buckets: []float64{1, 5, 10, 20, 30, 60, 120},
+	},
+	[]string{"miner"},
+)
+
 var MessisMinings = promauto.NewCounterVec(
 	prometheus.CounterOpts{
 		Name: "rampart_messis_minings_total",
 		Help: "Reflects overall parsed flat quantity",
 	},
 	[]string{"miner", "status"},
-)
-
-var MessisMiningRetries = promauto.NewCounterVec(
-	prometheus.CounterOpts{
-		Name: "rampart_messis_mining_retries_total",
-		Help: "Observes data source request attempts",
-	},
-	[]string{"miner"},
 )
 
 var MessisMiningSanitations = promauto.NewCounterVec(
@@ -86,15 +87,6 @@ var MessisStoringDuration = promauto.NewHistogramVec(
 		Buckets: []float64{0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 0.5, 1, 5},
 	},
 	[]string{"resource", "action"},
-)
-
-var MessisProcessingDuration = promauto.NewHistogramVec(
-	prometheus.HistogramOpts{
-		Name:    "rampart_messis_processing_duration_seconds",
-		Help:    "Reflects a single item workflow time",
-		Buckets: []float64{1, 5, 10, 20, 30, 60, 120},
-	},
-	[]string{"miner"},
 )
 
 var TelegramUpdates = promauto.NewCounterVec(

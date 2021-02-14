@@ -73,7 +73,6 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 		now := time.Now()
 		s, err = m.trySearch()
 		metrics.MessisMiningDuration.WithLabelValues(m.name).Observe(time.Since(now).Seconds())
-		metrics.MessisMiningRetries.WithLabelValues(m.name).Inc()
 	}
 	if err != nil {
 		metrics.MessisMinings.WithLabelValues(m.name, "failure").Inc()
