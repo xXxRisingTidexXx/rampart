@@ -1,10 +1,8 @@
-package domria
+package mining
 
-type publication struct {
+type item struct {
 	BeautifulURL        string           `json:"beautiful_url"`
 	Photos              map[string]photo `json:"photos"`
-	Panoramas           []panorama       `json:"panoramas"`
-	UpdatedAt           moment           `json:"updated_at"`
 	SaleDate            string           `json:"sale_date"`
 	PriceArr            prices           `json:"priceArr"`
 	TotalSquareMeters   float64          `json:"total_square_meters"`
@@ -13,10 +11,9 @@ type publication struct {
 	RoomsCount          int              `json:"rooms_count"`
 	Floor               int              `json:"floor"`
 	FloorsCount         int              `json:"floors_count"`
-	UserNewbuildNameUK  string           `json:"user_newbuild_name_uk"`
+	RealtySaleType      int              `json:"realty_sale_type"`
 	Longitude           coordinate       `json:"longitude"`
 	Latitude            coordinate       `json:"latitude"`
-	StateNameUK         string           `json:"state_name_uk"`
 	CityNameUK          string           `json:"city_name_uk"`
 	DistrictNameUK      string           `json:"district_name_uk"`
 	StreetNameUK        string           `json:"street_name_uk"`

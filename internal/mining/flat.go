@@ -1,4 +1,4 @@
-package domria
+package mining
 
 import (
 	"github.com/paulmach/orb"
@@ -7,12 +7,8 @@ import (
 )
 
 type Flat struct {
-	Source      string
 	URL         string
-	Photos      []string
-	Panoramas   []string
-	UpdateTime  time.Time
-	IsSold      bool
+	ImageURLs   []string
 	Price       float64
 	TotalArea   float64
 	LivingArea  float64
@@ -21,26 +17,17 @@ type Flat struct {
 	Floor       int
 	TotalFloor  int
 	Housing     misc.Housing
-	Complex     string
 	Point       orb.Point
-	State       string
 	City        string
-	District    string
 	Street      string
 	HouseNumber string
 	SSF         float64
 	IZF         float64
 	GZF         float64
+	Miner       string
+	ParsingTime time.Time
 }
 
-func (f Flat) IsLocated() bool {
+func (f Flat) HasLocation() bool {
 	return f.Point.Lon() != 0 || f.Point.Lat() != 0
-}
-
-func (f Flat) IsAddressable() bool {
-	return f.State != "" && f.City != "" && f.Street != "" && f.HouseNumber != ""
-}
-
-func (f Flat) ImageCount() int {
-	return len(f.Photos) + len(f.Panoramas)
 }

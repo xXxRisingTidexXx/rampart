@@ -1,4 +1,4 @@
-package domria
+package mining
 
 type prices struct {
 	USD price `json:"1"`

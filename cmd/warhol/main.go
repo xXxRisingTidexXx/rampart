@@ -39,7 +39,7 @@ func main() {
 	loadGroup := &sync.WaitGroup{}
 	loadGroup.Add(c.Warhol.ThreadNumber)
 	for i := 0; i < c.Warhol.ThreadNumber; i++ {
-		go load(records, raws, assets, client, c.Warhol.RetryLimit, entry, loadGroup)
+		go load(c.Warhol, records, raws, assets, client, entry, loadGroup)
 	}
 	processGroup := &sync.WaitGroup{}
 	processGroup.Add(runtime.NumCPU())
@@ -68,17 +68,17 @@ func main() {
 }
 
 func load(
+	config config.Warhol,
 	records <-chan []string,
 	raws chan<- imaging.Raw,
 	assets chan<- imaging.Asset,
 	client *http.Client,
-	limit int,
 	logger log.FieldLogger,
 	group *sync.WaitGroup,
 ) {
 	for record := range records {
-		for retry, err := 1, io.EOF; retry <= limit && err != nil; retry++ {
-			if err = pipe(record, client, raws, assets); err != nil {
+		for retry, err := 1, io.EOF; retry <= config.RetryLimit && err != nil; retry++ {
+			if err = pipe(record, client, config.UserAgent, raws, assets); err != nil {
 				logger.WithFields(log.Fields{"url": record[0], "retry": retry}).Error(err)
 			}
 		}
@@ -89,6 +89,7 @@ func load(
 func pipe(
 	record []string,
 	client *http.Client,
+	userAgent string,
 	raws chan<- imaging.Raw,
 	assets chan<- imaging.Asset,
 ) error {
@@ -96,7 +97,7 @@ func pipe(
 	if err != nil {
 		return fmt.Errorf("main: warhol failed to make a request, %v", err)
 	}
-	request.Header.Set("User-Agent", misc.UserAgent)
+	request.Header.Set("User-Agent", userAgent)
 	response, err := client.Do(request)
 	if err != nil {
 		return fmt.Errorf("main: warhol failed to send a request, %v", err)

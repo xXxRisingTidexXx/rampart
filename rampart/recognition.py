@@ -148,6 +148,7 @@ class Gallery(Dataset):
             ]
         )
 
+    # TODO: use UA from YAML.
     def __getitem__(self, index: int) -> Tuple[str, Tensor, float]:
         start = time()
         try:

@@ -1,4 +1,4 @@
-package domria
+package mining
 
 type number string
 

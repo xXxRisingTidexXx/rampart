@@ -4,21 +4,29 @@ import (
 	"database/sql"
 	"flag"
 	_ "github.com/lib/pq"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
-	"github.com/xXxRisingTidexXx/rampart/internal/domria"
 	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
+	"github.com/xXxRisingTidexXx/rampart/internal/mining"
+	"io"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
-// TODO: think about signal handling & graceful shutdown.
 func main() {
-	isDebug := flag.Bool("debug", false, "Execute a single workflow instead of the whole schedule")
-	alias := flag.String("miner", "", "Desired miner alias")
+	name := flag.String(
+		"miner",
+		"",
+		"Set a concrete miner name to run it once; leave the field blank to up the whole messis",
+	)
 	flag.Parse()
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetReportCaller(true)
-	entry := log.WithFields(log.Fields{"app": "messis", "miner": *alias})
+	entry := log.WithField("app", "messis")
 	c, err := config.NewConfig()
 	if err != nil {
 		entry.Fatal(err)
@@ -31,44 +39,115 @@ func main() {
 		_ = db.Close()
 		entry.Fatalf("main: messis failed to ping the db, %v", err)
 	}
-	drain := metrics.NewDrain(*alias, db, entry)
-	jobs := map[string]cron.Job{
-		c.Messis.DomriaPrimaryMiner.Name(): domria.NewMiner(
-			c.Messis.DomriaPrimaryMiner,
-			db,
-			drain,
-			entry,
-		),
-		c.Messis.DomriaSecondaryMiner.Name(): domria.NewMiner(
-			c.Messis.DomriaSecondaryMiner,
-			db,
-			drain,
-			entry,
-		),
+	miners := make(map[string]mining.Miner)
+	for _, miner := range []mining.Miner{mining.NewDomriaMiner(c.Messis.DomriaMiner)} {
+		miners[miner.Name()] = miner
 	}
-	job, ok := jobs[*alias]
-	if !ok {
-		_ = db.Close()
-		entry.Fatal("main: messis failed to find the miner")
-		return
-	}
-	miners := map[string]config.Miner{
-		c.Messis.DomriaPrimaryMiner.Name():   c.Messis.DomriaPrimaryMiner,
-		c.Messis.DomriaSecondaryMiner.Name(): c.Messis.DomriaSecondaryMiner,
-	}
-	miner := miners[*alias]
-	if *isDebug {
-		job.Run()
-	} else {
-		scheduler := cron.New()
-		if _, err = scheduler.AddJob(miner.Schedule(), job); err != nil {
-			_ = db.Close()
-			entry.Fatalf("main: messis failed to run, %v", err)
+	if *name == "" {
+		minings := make(chan mining.Flat, c.Messis.BufferSize)
+		scheduler := cron.New(cron.WithSeconds())
+		for _, miner := range miners {
+			entry := entry.WithField("miner", miner.Name())
+			_, err := scheduler.AddJob(miner.Spec(), wrap(miner, minings, entry))
+			if err != nil {
+				entry.Fatalf("main: messis failed to start miner, %v", err)
+			}
 		}
-		metrics.RunServer(miner.Metrics(), entry)
-		scheduler.Run()
+		geocodings := make(chan mining.Flat, c.Messis.BufferSize)
+		go run(
+			mining.NewGeocodingAmplifier(c.Messis.GeocodingAmplifier),
+			minings,
+			geocodings,
+			metrics.MessisProcessings.WithLabelValues("geocoding"),
+			entry.WithField("amplifier", "geocoding"),
+		)
+		gaugings := make(chan mining.Flat, c.Messis.BufferSize)
+		gauge := metrics.MessisProcessings.WithLabelValues("gauging")
+		for _, amplifier := range c.Messis.GaugingAmplifiers {
+			go run(
+				mining.NewGaugingAmplifier(amplifier),
+				geocodings,
+				gaugings,
+				gauge,
+				entry.WithFields(log.Fields{"amplifier": "gauging", "host": amplifier.Host}),
+			)
+		}
+		go run(
+			mining.NewStoringAmplifier(c.Messis.StoringAmplifier, db),
+			gaugings,
+			nil,
+			metrics.MessisProcessings.WithLabelValues("storing"),
+			entry.WithField("amplifier", "storing"),
+		)
+		metrics.RunServer(c.Messis.Server, entry)
+		scheduler.Start()
+		signals := make(chan os.Signal, 1)
+		signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+		<-signals
+		scheduler.Stop()
+	} else {
+		miner, ok := miners[*name]
+		if !ok {
+			entry.Fatalf("main: messis found no miner %s", *name)
+		}
+		if len(c.Messis.GaugingAmplifiers) == 0 {
+			entry.Fatal("main: messis found no gauging amplifier")
+		}
+		flat, err := miner.MineFlat()
+		if err != nil {
+			entry.Fatal(err)
+		}
+		flat, err = mining.NewGeocodingAmplifier(c.Messis.GeocodingAmplifier).AmplifyFlat(flat)
+		if err != nil {
+			entry.Fatal(err)
+		}
+		flat, err = mining.NewGaugingAmplifier(c.Messis.GaugingAmplifiers[0]).AmplifyFlat(flat)
+		if err != nil {
+			entry.Fatal(err)
+		}
+		flat, err = mining.NewStoringAmplifier(c.Messis.StoringAmplifier, db).AmplifyFlat(flat)
+		if err != nil {
+			entry.Fatal(err)
+		}
+		entry.Info(flat)
 	}
-	if err = db.Close(); err != nil {
+	if err := db.Close(); err != nil {
 		entry.Fatalf("main: messis failed to close the db, %v", err)
+	}
+}
+
+func wrap(miner mining.Miner, output chan<- mining.Flat, logger log.FieldLogger) cron.Job {
+	return cron.FuncJob(
+		func() {
+			switch flat, err := miner.MineFlat(); err {
+			case nil:
+				output <- flat
+			case io.EOF:
+			default:
+				logger.Error(err)
+			}
+		},
+	)
+}
+
+func run(
+	amplifier mining.Amplifier,
+	input <-chan mining.Flat,
+	output chan<- mining.Flat,
+	gauge prometheus.Gauge,
+	logger log.FieldLogger,
+) {
+	for flat := range input {
+		gauge.Set(float64(len(input)))
+		apartment, err := amplifier.AmplifyFlat(flat)
+		if err != nil {
+			logger.Error(err)
+		} else if output != nil {
+			output <- apartment
+		} else {
+			metrics.MessisProcessingDuration.WithLabelValues(apartment.Miner).Observe(
+				time.Since(apartment.ParsingTime).Seconds(),
+			)
+		}
 	}
 }

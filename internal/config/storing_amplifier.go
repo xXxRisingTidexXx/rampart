@@ -1,5 +1,5 @@
 package config
 
-type Storer struct {
+type StoringAmplifier struct {
 	SRID int `yaml:"srid"`
 }

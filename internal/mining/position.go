@@ -1,4 +1,4 @@
-package domria
+package mining
 
 type position struct {
 	Lon coordinate `json:"lon"`

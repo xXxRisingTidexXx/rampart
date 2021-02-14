@@ -57,7 +57,13 @@ services:
   messis:
     <<: *x-golang
     container_name: rampart-messis
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -debug -miner domria-primary
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis
+    ports:
+      - 9001:9001
+  miner:
+    <<: *x-golang
+    container_name: rampart-miner
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -miner domria
   warhol:
     <<: *x-golang
     container_name: rampart-warhol
@@ -71,7 +77,7 @@ services:
     container_name: rampart-telegram
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/telegram
     ports:
-      - 9005:9005
+      - 9002:9002
   publisher:
     <<: *x-golang
     container_name: rampart-publisher
@@ -113,30 +119,18 @@ services:
     <<: *x-python
     container_name: rampart-auge-debug
     command: python -m rampart.auge -debug
-  messis-domria-primary:
-    <<: *x-golang
-    container_name: rampart-messis-domria-primary
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -miner domria-primary
-    ports:
-      - 9001:9001
-  messis-domria-secondary:
-    <<: *x-golang
-    container_name: rampart-messis-domria-secondary
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -miner domria-secondary
-    ports:
-      - 9002:9002
-  twinkle:
-    <<: *x-python
-    container_name: rampart-twinkle
-    command: python -m rampart.twinkle
-    ports:
-      - 9004:9004
   auge:
     <<: *x-python
     container_name: rampart-auge
     command: python -m rampart.auge
     ports:
       - 9003:9003
+  twinkle:
+    <<: *x-python
+    container_name: rampart-twinkle
+    command: python -m rampart.twinkle
+    ports:
+      - 9004:9004
 volumes:
   database:
     name: rampart-database
