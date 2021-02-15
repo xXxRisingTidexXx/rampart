@@ -185,6 +185,10 @@ assistant:
       high-floor-placeholder: високий
       delete-button: "Видалити \U0001F5D1"
       delete-action: delete
+moderator:
+  dispatcher:
+    timeout: 5
+    handler: {}
 auge:
   pool-size: 4
   retry-limit: 3

@@ -1,7 +1,7 @@
 package config
 
 type Moderator struct {
-	DSN   string `yaml:"-"`
-	Token string `yaml:"-"`
-	Admin string `yaml:"-"`
+	DSN        string              `yaml:"-"`
+	Token      string              `yaml:"-"`
+	Dispatcher ModeratorDispatcher `yaml:"dispatcher"`
 }
