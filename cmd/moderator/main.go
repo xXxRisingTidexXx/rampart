@@ -6,6 +6,7 @@ import (
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
+	"github.com/xXxRisingTidexXx/rampart/internal/telegram"
 	"os"
 	"os/signal"
 	"syscall"
@@ -30,12 +31,12 @@ func main() {
 		_ = db.Close()
 		entry.Fatalf("main: moderator failed to ping the db, %v", err)
 	}
-	_, err = tgbotapi.NewBotAPI(c.Moderator.Token)
+	bot, err := tgbotapi.NewBotAPI(c.Moderator.Token)
 	if err != nil {
 		_ = db.Close()
 		entry.Fatalf("main: moderator failed to create the bot, %v", err)
 	}
-
+	telegram.RunModeratorDispatcher(bot, db, entry)
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 	<-signals

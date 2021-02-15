@@ -54,7 +54,7 @@ func main() {
 		}
 		scheduler.Start()
 		metrics.RunServer(c.Assistant.Server, entry)
-		telegram.RunDispatcher(c.Assistant.Dispatcher, bot, db, entry)
+		telegram.RunAssistantDispatcher(c.Assistant.Dispatcher, bot, db, entry)
 		signals := make(chan os.Signal, 1)
 		signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 		<-signals

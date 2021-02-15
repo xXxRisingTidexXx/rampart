@@ -8,7 +8,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 )
 
-func RunDispatcher(
+func RunAssistantDispatcher(
 	config config.Dispatcher,
 	bot *tgbotapi.BotAPI,
 	db *sql.DB,
@@ -28,5 +28,18 @@ func work(updates tgbotapi.UpdatesChannel, handler Handler, logger log.FieldLogg
 			logger.WithFields(fields).Error(err)
 		}
 		metrics.TelegramUpdates.WithLabelValues(fields["handler"].(string)).Inc()
+	}
+}
+
+func RunModeratorDispatcher(bot *tgbotapi.BotAPI, db *sql.DB, logger log.FieldLogger) {
+	updates, _ := bot.GetUpdatesChan(tgbotapi.UpdateConfig{Timeout: 3})
+	go consume(updates, NewRootHandler(), logger)
+}
+
+func consume(updates tgbotapi.UpdatesChannel, handler Handler, logger log.FieldLogger) {
+	for update := range updates {
+		if fields, err := handler.HandleUpdate(update); err != nil {
+			logger.WithFields(fields).Error(err)
+		}
 	}
 }
