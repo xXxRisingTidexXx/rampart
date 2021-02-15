@@ -8,7 +8,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
-func NewAddHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+func NewAddHandler(config config.AssistantHandler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	return &addHandler{&helper{bot}, db, tgbotapi.NewKeyboardButton(config.CancelButton)}
 }
 

@@ -7,7 +7,11 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
-func NewAssistantHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+func NewAssistantHandler(
+	config config.AssistantHandler,
+	bot *tgbotapi.BotAPI,
+	db *sql.DB,
+) Handler {
 	return &assistantHandler{NewTextHandler(config, bot, db), NewCallbackHandler(config, bot, db)}
 }
 

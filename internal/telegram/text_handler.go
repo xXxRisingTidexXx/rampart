@@ -7,7 +7,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
-func NewTextHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+func NewTextHandler(config config.AssistantHandler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	handlers := make(map[string]Handler)
 	handlers[config.StartCommand] = NewStartHandler(config, bot)
 	handlers[config.StartButton] = handlers[config.StartCommand]

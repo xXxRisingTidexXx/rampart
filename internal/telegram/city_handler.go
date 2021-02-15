@@ -8,7 +8,11 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
-func NewCityHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) TransientHandler {
+func NewCityHandler(
+	config config.AssistantHandler,
+	bot *tgbotapi.BotAPI,
+	db *sql.DB,
+) TransientHandler {
 	return &cityHandler{
 		&helper{bot},
 		db,

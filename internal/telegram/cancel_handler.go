@@ -8,7 +8,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
-func NewCancelHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+func NewCancelHandler(config config.AssistantHandler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	return &cancelHandler{
 		&helper{bot},
 		db,

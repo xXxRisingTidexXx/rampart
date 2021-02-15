@@ -6,7 +6,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
-func NewHelpHandler(config config.Handler, bot *tgbotapi.BotAPI) Handler {
+func NewHelpHandler(config config.AssistantHandler, bot *tgbotapi.BotAPI) Handler {
 	return &helpHandler{
 		&helper{bot},
 		tgbotapi.NewReplyKeyboard(

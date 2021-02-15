@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func NewDeleteHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+func NewDeleteHandler(config config.AssistantHandler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	return &deleteHandler{&helper{bot}, db, config.Separator}
 }
 

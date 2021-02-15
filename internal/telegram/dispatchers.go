@@ -9,7 +9,7 @@ import (
 )
 
 func RunAssistantDispatcher(
-	config config.Dispatcher,
+	config config.AssistantDispatcher,
 	bot *tgbotapi.BotAPI,
 	db *sql.DB,
 	logger log.FieldLogger,
