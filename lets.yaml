@@ -58,6 +58,9 @@ commands:
   publisher:
     description: Launch apartment issuer code
     cmd: docker-compose run --rm publisher
+  moderator:
+    description: Run data moderation & markup bot
+    cmd: docker-compose run --rm moderator
   notebook:
     description: Setup Jupyter Notebook server
     cmd: |

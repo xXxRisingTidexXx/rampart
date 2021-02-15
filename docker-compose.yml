@@ -82,6 +82,10 @@ services:
     <<: *x-golang
     container_name: rampart-publisher
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/assistant -publisher
+  moderator:
+    <<: *x-golang
+    container_name: rampart-moderator
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/moderator
   notebook:
     build:
       context: .
