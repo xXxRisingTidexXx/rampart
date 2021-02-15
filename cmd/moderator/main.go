@@ -36,7 +36,7 @@ func main() {
 		_ = db.Close()
 		entry.Fatalf("main: moderator failed to create the bot, %v", err)
 	}
-	telegram.RunModeratorDispatcher(bot, db, entry)
+	telegram.RunModeratorDispatcher(c.Moderator.Dispatcher, bot, db, entry)
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 	<-signals
