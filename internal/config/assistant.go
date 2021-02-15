@@ -1,6 +1,6 @@
 package config
 
-type Telegram struct {
+type Assistant struct {
 	DSN        string     `yaml:"-"`
 	Token      string     `yaml:"-"`
 	Publisher  Publisher  `yaml:"publisher"`

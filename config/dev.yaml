@@ -135,7 +135,7 @@ warhol:
   retry-limit: 3
   output-format: scientific/images/%s.%s.%s.%s.webp
   input-path: scientific/auge.csv
-telegram:
+assistant:
   keymap: &keymap
     separator: '|'
     like-action: like

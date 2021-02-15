@@ -30,7 +30,7 @@ func main() {
 	if err != nil {
 		entry.Fatal(err)
 	}
-	db, err := sql.Open("postgres", c.Telegram.DSN)
+	db, err := sql.Open("postgres", c.Assistant.DSN)
 	if err != nil {
 		entry.Fatalf("main: assistant failed to open the db, %v", err)
 	}
@@ -38,23 +38,23 @@ func main() {
 		_ = db.Close()
 		entry.Fatalf("main: assistant failed to ping the db, %v", err)
 	}
-	bot, err := tgbotapi.NewBotAPI(c.Telegram.Token)
+	bot, err := tgbotapi.NewBotAPI(c.Assistant.Token)
 	if err != nil {
 		_ = db.Close()
 		entry.Fatalf("main: assistant failed to create the bot, %v", err)
 	}
-	publisher := telegram.NewPublisher(c.Telegram.Publisher, bot, db, entry)
+	publisher := telegram.NewPublisher(c.Assistant.Publisher, bot, db, entry)
 	if *isPublisher {
 		publisher.Run()
 	} else {
 		scheduler := cron.New()
-		if _, err := scheduler.AddJob(c.Telegram.Spec, publisher); err != nil {
+		if _, err := scheduler.AddJob(c.Assistant.Spec, publisher); err != nil {
 			_ = db.Close()
 			entry.Fatalf("main: assitant failed to run the publisher, %v", err)
 		}
 		scheduler.Start()
-		metrics.RunServer(c.Telegram.Server, entry)
-		telegram.RunDispatcher(c.Telegram.Dispatcher, bot, db, entry)
+		metrics.RunServer(c.Assistant.Server, entry)
+		telegram.RunDispatcher(c.Assistant.Dispatcher, bot, db, entry)
 		signals := make(chan os.Signal, 1)
 		signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 		<-signals
