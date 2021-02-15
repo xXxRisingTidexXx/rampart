@@ -15,5 +15,8 @@ type moderatorHandler struct {
 }
 
 func (h *moderatorHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
+	if update.Message != nil && update.Message.Chat != nil && update.Message.Chat.UserName == "junkkerrigan" {
+		log.Info("Hello, bitch!")
+	}
 	return nil, nil
 }

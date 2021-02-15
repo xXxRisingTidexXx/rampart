@@ -22,6 +22,10 @@ func NewConfig() (Config, error) {
 	if config.Moderator.Token == "" {
 		return config, fmt.Errorf("config: failed to find the moderator token")
 	}
+	config.Moderator.Admin = os.Getenv("RAMPART_MODERATOR_ADMIN")
+	if config.Moderator.Admin == "" {
+		return config, fmt.Errorf("config: failed to find the moderator admin")
+	}
 	bytes, err := ioutil.ReadFile(misc.ResolvePath("config/dev.yaml"))
 	if err != nil {
 		return config, fmt.Errorf("config: failed to read the config file, %v", err)
