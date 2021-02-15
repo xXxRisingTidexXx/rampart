@@ -60,7 +60,9 @@ commands:
     cmd: docker-compose run --rm publisher
   moderator:
     description: Run data moderation & markup bot
-    cmd: docker-compose run --rm moderator
+    cmd: |
+      docker-compose up moderator
+      docker rm rampart-moderator
   notebook:
     description: Setup Jupyter Notebook server
     cmd: |
