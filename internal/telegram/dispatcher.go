@@ -6,10 +6,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
-	"sync"
 )
 
-func StartDispatcher(
+func RunDispatcher(
 	config config.Dispatcher,
 	bot *tgbotapi.BotAPI,
 	db *sql.DB,
@@ -17,20 +16,12 @@ func StartDispatcher(
 ) {
 	updates, _ := bot.GetUpdatesChan(tgbotapi.UpdateConfig{Timeout: config.Timeout})
 	handler := NewRootHandler(config.Handler, bot, db)
-	group := &sync.WaitGroup{}
-	group.Add(config.WorkerNumber)
 	for i := 0; i < config.WorkerNumber; i++ {
-		go work(updates, handler, logger, group)
+		go work(updates, handler, logger)
 	}
-	group.Wait()
 }
 
-func work(
-	updates tgbotapi.UpdatesChannel,
-	handler Handler,
-	logger log.FieldLogger,
-	group *sync.WaitGroup,
-) {
+func work(updates tgbotapi.UpdatesChannel, handler Handler, logger log.FieldLogger) {
 	for update := range updates {
 		fields, err := handler.HandleUpdate(update)
 		if err != nil {
@@ -38,5 +29,4 @@ func work(
 		}
 		metrics.TelegramUpdates.WithLabelValues(fields["handler"].(string)).Inc()
 	}
-	group.Done()
 }

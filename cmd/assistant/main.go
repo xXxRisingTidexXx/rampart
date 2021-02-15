@@ -10,6 +10,9 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/metrics"
 	"github.com/xXxRisingTidexXx/rampart/internal/telegram"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 // TODO: viber integration, https://github.com/mileusna/viber .
@@ -51,7 +54,11 @@ func main() {
 		}
 		scheduler.Start()
 		metrics.RunServer(c.Telegram.Server, entry)
-		telegram.StartDispatcher(c.Telegram.Dispatcher, bot, db, entry)
+		telegram.RunDispatcher(c.Telegram.Dispatcher, bot, db, entry)
+		signals := make(chan os.Signal, 1)
+		signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+		<-signals
+		scheduler.Stop()
 	}
 	if err = db.Close(); err != nil {
 		entry.Fatalf("main: assistant failed to close the db, %v", err)
