@@ -15,7 +15,7 @@ func RunAssistantDispatcher(
 	logger log.FieldLogger,
 ) {
 	updates, _ := bot.GetUpdatesChan(tgbotapi.UpdateConfig{Timeout: config.Timeout})
-	handler := NewRootHandler(config.Handler, bot, db)
+	handler := NewAssistantHandler(config.Handler, bot, db)
 	for i := 0; i < config.WorkerNumber; i++ {
 		go work(updates, handler, logger)
 	}

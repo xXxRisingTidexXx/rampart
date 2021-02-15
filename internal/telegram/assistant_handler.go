@@ -7,16 +7,16 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
-func NewRootHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
-	return &rootHandler{NewTextHandler(config, bot, db), NewCallbackHandler(config, bot, db)}
+func NewAssistantHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+	return &assistantHandler{NewTextHandler(config, bot, db), NewCallbackHandler(config, bot, db)}
 }
 
-type rootHandler struct {
+type assistantHandler struct {
 	textHandler     Handler
 	callbackHandler Handler
 }
 
-func (h *rootHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
+func (h *assistantHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	if update.Message != nil && update.Message.Chat != nil && update.Message.Text != "" {
 		fields, err := h.textHandler.HandleUpdate(update)
 		fields["chat_id"] = update.Message.Chat.ID
