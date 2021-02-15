@@ -33,7 +33,7 @@ func work(updates tgbotapi.UpdatesChannel, handler Handler, logger log.FieldLogg
 
 func RunModeratorDispatcher(bot *tgbotapi.BotAPI, db *sql.DB, logger log.FieldLogger) {
 	updates, _ := bot.GetUpdatesChan(tgbotapi.UpdateConfig{Timeout: 3})
-	go consume(updates, NewRootHandler(), logger)
+	go consume(updates, NewModeratorHandler(bot, db), logger)
 }
 
 func consume(updates tgbotapi.UpdatesChannel, handler Handler, logger log.FieldLogger) {
