@@ -50,11 +50,11 @@ commands:
       rm -f images/target_*.webp && \
       docker-compose run --rm travesty && \
       sudo chown -R $USER:$USER images
-  telegram:
+  assistant:
     description: Run Telegram API client in long pulling mode + flat snitch
     cmd: |
-      docker-compose up telegram
-      docker rm rampart-telegram
+      docker-compose up assistant
+      docker rm rampart-assistant
   publisher:
     description: Launch apartment issuer code
     cmd: docker-compose run --rm publisher
@@ -76,8 +76,8 @@ commands:
   run:
     description: Activate the whole rampart ecosystem
     cmd: |
-      docker-compose up messis telegram twinkle auge
-      docker rm rampart-messis rampart-telegram rampart-twinkle rampart-auge
+      docker-compose up messis assistant twinkle auge
+      docker rm rampart-messis rampart-assistant rampart-twinkle rampart-auge
   stop:
     description: Dispose all docker stuff
     cmd: docker-compose down

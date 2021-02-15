@@ -72,16 +72,16 @@ services:
     <<: *x-golang
     container_name: rampart-travesty
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/travesty
-  telegram:
+  assistant:
     <<: *x-golang
-    container_name: rampart-telegram
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/telegram
+    container_name: rampart-assistant
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/assistant
     ports:
       - 9002:9002
   publisher:
     <<: *x-golang
     container_name: rampart-publisher
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/telegram -publisher
+    command: go run github.com/xXxRisingTidexXx/rampart/cmd/assistant -publisher
   notebook:
     build:
       context: .
