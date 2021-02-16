@@ -13,7 +13,7 @@ func NewAssistantTextHandler(
 	db *sql.DB,
 ) Handler {
 	handlers := make(map[string]Handler)
-	handlers[config.StartCommand] = NewStartHandler(config, bot)
+	handlers[config.StartCommand] = NewAssistantStartHandler(config, bot)
 	handlers[config.StartButton] = handlers[config.StartCommand]
 	handlers[config.HelpCommand] = NewHelpHandler(config, bot)
 	handlers[config.HelpButton] = handlers[config.HelpCommand]
