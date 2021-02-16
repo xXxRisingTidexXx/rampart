@@ -12,9 +12,10 @@ func NewModeratorTextHandler(
 	bot *tgbotapi.BotAPI,
 	db *sql.DB,
 ) Handler {
-	return &moderatorTextHandler{
-		map[string]Handler{config.StartCommand: NewModeratorStartHandler(config, bot)},
-	}
+	handlers := make(map[string]Handler)
+	handlers[config.StartCommand] = NewModeratorStartHandler(config, bot)
+	handlers[config.ImageMarkupButton] = NewImageMarkupHandler(config, bot, db)
+	return &moderatorTextHandler{handlers}
 }
 
 type moderatorTextHandler struct {
