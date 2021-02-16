@@ -28,8 +28,20 @@ type moderatorHandler struct {
 func (h *moderatorHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	if update.Message != nil &&
 		update.Message.Chat != nil &&
+		update.Message.Text != "" &&
 		update.Message.Chat.UserName == h.admin {
-		log.Info("Hello, bitch!")
+		fields, err := h.textHandler.HandleUpdate(update)
+		fields["chat_id"] = update.Message.Chat.ID
+		return fields, err
+	}
+	if update.CallbackQuery != nil &&
+		update.CallbackQuery.Message != nil &&
+		update.CallbackQuery.Message.Chat != nil &&
+		update.CallbackQuery.Data != "" &&
+		update.CallbackQuery.Message.Chat.UserName == h.admin {
+		fields, err := h.callbackHandler.HandleUpdate(update)
+		fields["chat_id"] = update.CallbackQuery.Message.Chat.ID
+		return fields, err
 	}
 	return log.Fields{"handler": "moderator"}, nil
 }
