@@ -12,11 +12,17 @@ func NewModeratorHandler(
 	bot *tgbotapi.BotAPI,
 	db *sql.DB,
 ) Handler {
-	return &moderatorHandler{config.Admin}
+	return &moderatorHandler{
+		NewModeratorTextHandler(config, bot, db),
+		NewModeratorCallbackHandler(config, bot, db),
+		config.Admin,
+	}
 }
 
 type moderatorHandler struct {
-	admin string
+	textHandler     Handler
+	callbackHandler Handler
+	admin           string
 }
 
 func (h *moderatorHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
@@ -25,5 +31,5 @@ func (h *moderatorHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, err
 		update.Message.Chat.UserName == h.admin {
 		log.Info("Hello, bitch!")
 	}
-	return nil, nil
+	return log.Fields{"handler": "moderator"}, nil
 }
