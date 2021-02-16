@@ -8,12 +8,12 @@ import (
 	"strings"
 )
 
-func NewAssistantCallbackHandler(
+func NewCallbackHandler(
 	config config.AssistantHandler,
 	bot *tgbotapi.BotAPI,
 	db *sql.DB,
 ) Handler {
-	return &assistantCallbackHandler{
+	return &callbackHandler{
 		map[string]Handler{
 			config.DeleteAction: NewDeleteHandler(config, bot, db),
 			config.LikeAction:   NewLikeHandler(config, bot, db),
@@ -22,13 +22,13 @@ func NewAssistantCallbackHandler(
 	}
 }
 
-type assistantCallbackHandler struct {
+type callbackHandler struct {
 	handlers  map[string]Handler
 	separator string
 }
 
-func (h *assistantCallbackHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
-	fields := log.Fields{"handler": "assistant-callback"}
+func (h *callbackHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
+	fields := log.Fields{"handler": "callback"}
 	index := strings.Index(update.CallbackQuery.Data, h.separator)
 	if index == -1 {
 		return fields, nil

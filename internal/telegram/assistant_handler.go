@@ -14,7 +14,7 @@ func NewAssistantHandler(
 ) Handler {
 	return &assistantHandler{
 		NewAssistantTextHandler(config, bot, db),
-		NewAssistantCallbackHandler(config, bot, db),
+		NewCallbackHandler(config, bot, db),
 	}
 }
 
