@@ -12,13 +12,18 @@ func NewModeratorTextHandler(
 	bot *tgbotapi.BotAPI,
 	db *sql.DB,
 ) Handler {
-	return &moderatorTextHandler{}
+	handlers := make(map[string]Handler)
+
+	return &moderatorTextHandler{handlers}
 }
 
 type moderatorTextHandler struct {
-
+	handlers map[string]Handler
 }
 
 func (h *moderatorTextHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
+	if handler, ok := h.handlers[update.Message.Text]; ok {
+		return handler.HandleUpdate(update)
+	}
 	return log.Fields{"handler": "moderator-text"}, nil
 }
