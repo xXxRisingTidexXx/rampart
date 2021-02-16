@@ -135,10 +135,9 @@ warhol:
   retry-limit: 3
   output-format: scientific/images/%s.%s.%s.%s.webp
   input-path: scientific/auge.csv
-separator: &separator '|'
 assistant:
   keymap: &keymap
-    separator: *separator
+    separator: '|'
     like-action: like
   publisher:
     sender:
@@ -191,8 +190,13 @@ moderator:
     timeout: 5
     handler:
       start-command: /start
+      start-button: "Меню \U0001F4D1"
       image-markup-button: "Розмітка світлин \U0001F4F7"
-      separator: *separator
+      luxury-button: "Р"
+      comfort-button: "К"
+      junk-button: "С"
+      construction-button: "Б"
+      excess-button: "Н"
 auge:
   pool-size: 4
   retry-limit: 3
