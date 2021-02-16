@@ -2,5 +2,5 @@ package config
 
 type ModeratorDispatcher struct {
 	Timeout int              `yaml:"timeout"`
-	Handler ModeratorHandler `yaml:"dispatcher"`
+	Handler ModeratorHandler `yaml:"handler"`
 }
