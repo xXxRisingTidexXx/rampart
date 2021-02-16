@@ -135,9 +135,10 @@ warhol:
   retry-limit: 3
   output-format: scientific/images/%s.%s.%s.%s.webp
   input-path: scientific/auge.csv
+separator: &separator '|'
 assistant:
   keymap: &keymap
-    separator: '|'
+    separator: *separator
     like-action: like
   publisher:
     sender:
@@ -188,7 +189,10 @@ assistant:
 moderator:
   dispatcher:
     timeout: 5
-    handler: {}
+    handler:
+      start-command: /start
+      image-markup-button: "Розмітка світлин \U0001F4F7"
+      separator: *separator
 auge:
   pool-size: 4
   retry-limit: 3

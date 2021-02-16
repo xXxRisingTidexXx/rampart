@@ -7,7 +7,12 @@ import (
 )
 
 func NewModeratorStartHandler(config config.ModeratorHandler, bot *tgbotapi.BotAPI) Handler {
-	return &moderatorStartHandler{&helper{bot}, tgbotapi.NewReplyKeyboard()}
+	return &moderatorStartHandler{
+		&helper{bot},
+		tgbotapi.NewReplyKeyboard(
+			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.ImageMarkupButton)),
+		),
+	}
 }
 
 type moderatorStartHandler struct {
