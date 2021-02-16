@@ -12,7 +12,10 @@ func NewAssistantHandler(
 	bot *tgbotapi.BotAPI,
 	db *sql.DB,
 ) Handler {
-	return &assistantHandler{NewTextHandler(config, bot, db), NewCallbackHandler(config, bot, db)}
+	return &assistantHandler{
+		NewAssistantTextHandler(config, bot, db),
+		NewAssistantCallbackHandler(config, bot, db),
+	}
 }
 
 type assistantHandler struct {
@@ -34,5 +37,5 @@ func (h *assistantHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, err
 		fields["chat_id"] = update.CallbackQuery.Message.Chat.ID
 		return fields, err
 	}
-	return log.Fields{"handler": "root"}, nil
+	return log.Fields{"handler": "assistant"}, nil
 }
