@@ -33,7 +33,7 @@ func (h *enoughHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error)
 	_, err = tx.Exec(`delete from moderations where id = $1`, update.Message.Chat.ID)
 	if err != nil {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to delete moderations, %v", err)
+		return fields, fmt.Errorf("telegram: handler failed to delete a moderation, %v", err)
 	}
 	if err := tx.Commit(); err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
