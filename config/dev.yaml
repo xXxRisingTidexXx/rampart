@@ -190,13 +190,13 @@ moderator:
     timeout: 5
     handler:
       start-command: /start
-      start-button: "Меню \U0001F4D1"
-      image-markup-button: "Розмітка світлин \U0001F4F7"
+      markup-button: "Світлини \U0001F4F7"
       luxury-button: "Р"
       comfort-button: "К"
       junk-button: "С"
       construction-button: "Б"
       excess-button: "Н"
+      enough-button: "Досить \U0001F62B"
 auge:
   pool-size: 4
   retry-limit: 3
