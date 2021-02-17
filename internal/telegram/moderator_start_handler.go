@@ -10,7 +10,7 @@ func NewModeratorStartHandler(config config.ModeratorHandler, bot *tgbotapi.BotA
 	return &moderatorStartHandler{
 		&helper{bot},
 		tgbotapi.NewReplyKeyboard(
-			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.ImageMarkupButton)),
+			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.MarkupButton)),
 		),
 	}
 }
