@@ -16,6 +16,7 @@ func NewModeratorTextHandler(
 		map[string]Handler{
 			config.StartCommand: NewModeratorStartHandler(config, bot),
 			config.MarkupButton: NewMarkupHandler(config, bot, db),
+			config.EnoughButton: NewEnoughHandler(config, bot, db),
 		},
 	}
 }
