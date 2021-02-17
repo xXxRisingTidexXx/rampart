@@ -71,3 +71,12 @@ func (h *helper) answerCallback(callbackID, file string) error {
 	}
 	return nil
 }
+
+func (h *helper) sendText(chatID int64, text string, markup interface{}) error {
+	message := tgbotapi.NewMessage(chatID, text)
+	message.ReplyMarkup = markup
+	if _, err := h.bot.Send(message); err != nil {
+		return fmt.Errorf("telegram: helper failed to send a text, %v", err)
+	}
+	return nil
+}
