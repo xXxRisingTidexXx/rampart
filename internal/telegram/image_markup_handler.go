@@ -27,7 +27,23 @@ func (h *imageMarkupHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, e
 	if err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
-	
+	var (
+		id  int
+		url string
+	)
+	row := tx.QueryRow(
+		`select id, url from images where interior = 'unknown' order by random() limit 1`,
+	)
+	if err := row.Scan(&id, &url); err == sql.ErrNoRows {
+		if err := tx.Commit(); err != nil {
+			return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+		}
+		return fields, h.helper.sendMessage(update.Message.Chat.ID, "no_markup", nil)
+	} else if err != nil {
+		_ = tx.Rollback()
+		return fields, fmt.Errorf("telegram: handler failed to select an image, %v", err)
+	}
+
 	if err := tx.Commit(); err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
