@@ -191,11 +191,11 @@ moderator:
     handler:
       start-command: /start
       markup-button: "Світлини \U0001F4F7"
-      luxury-button: "Р"
-      comfort-button: "К"
-      junk-button: "С"
-      construction-button: "Б"
-      excess-button: "Н"
+      luxury-button: "\U0001F3DB"
+      comfort-button: "\U0001F3E0"
+      junk-button: "\U0001F3DA"
+      construction-button: "\U0001F3D7"
+      excess-button: "\U0001F3DD"
       enough-button: "Досить \U0001F62B"
 auge:
   pool-size: 4
