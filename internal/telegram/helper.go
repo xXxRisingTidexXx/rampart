@@ -6,6 +6,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"html/template"
 	"io/ioutil"
+	"net/http"
 	"strings"
 )
 
@@ -72,11 +73,24 @@ func (h *helper) answerCallback(callbackID, file string) error {
 	return nil
 }
 
-func (h *helper) sendText(chatID int64, text string, markup interface{}) error {
-	message := tgbotapi.NewMessage(chatID, text)
+// TODO: should we just send url or separate http client?
+func (h *helper) sendImage(chatID int64, url string, markup interface{}) error {
+	response, err := http.Get(url)
+	if err != nil {
+		return fmt.Errorf("telegram: helper failed to make a request, %v", err)
+	}
+	bytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		_ = response.Body.Close()
+		return fmt.Errorf("telegram: helper failed to read a response body, %v", err)
+	}
+	if err := response.Body.Close(); err != nil {
+		return fmt.Errorf("telegram: helper faield to close a response body, %v", err)
+	}
+	message := tgbotapi.NewPhotoUpload(chatID, tgbotapi.FileBytes{Bytes: bytes})
 	message.ReplyMarkup = markup
 	if _, err := h.bot.Send(message); err != nil {
-		return fmt.Errorf("telegram: helper failed to send a text, %v", err)
+		return fmt.Errorf("telegram: helper failed to send an image, %v", err)
 	}
 	return nil
 }

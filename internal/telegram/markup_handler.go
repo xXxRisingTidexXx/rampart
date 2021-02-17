@@ -74,5 +74,5 @@ func (h *markupHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error)
 	if err := tx.Commit(); err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	return fields, h.helper.sendText(update.Message.Chat.ID, url, h.markup)
+	return fields, h.helper.sendImage(update.Message.Chat.ID, url, h.markup)
 }
