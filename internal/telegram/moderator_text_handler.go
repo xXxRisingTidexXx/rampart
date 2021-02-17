@@ -12,13 +12,16 @@ func NewModeratorTextHandler(
 	bot *tgbotapi.BotAPI,
 	db *sql.DB,
 ) Handler {
-	return &moderatorTextHandler{
-		map[string]Handler{
-			config.StartCommand: NewModeratorStartHandler(config, bot),
-			config.MarkupButton: NewMarkupHandler(config, bot, db),
-			config.EnoughButton: NewEnoughHandler(config, bot, db),
-		},
-	}
+	handlers := make(map[string]Handler)
+	handlers[config.StartCommand] = NewModeratorStartHandler(config, bot)
+	handlers[config.MarkupButton] = NewMarkupHandler(config, bot, db)
+	handlers[config.LuxuryButton] = NewInteriorHandler(config, bot, db)
+	handlers[config.ComfortButton] = handlers[config.LuxuryButton]
+	handlers[config.JunkButton] = handlers[config.LuxuryButton]
+	handlers[config.ConstructionButton] = handlers[config.LuxuryButton]
+	handlers[config.ExcessButton] = handlers[config.LuxuryButton]
+	handlers[config.EnoughButton] = NewEnoughHandler(config, bot, db)
+	return &moderatorTextHandler{handlers}
 }
 
 type moderatorTextHandler struct {
