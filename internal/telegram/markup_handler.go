@@ -41,6 +41,11 @@ func (h *markupHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error)
 	if err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
+	_, err = tx.Exec(`delete from moderations where id = $1`, update.Message.Chat.ID)
+	if err != nil {
+		_ = tx.Rollback()
+		return fields, fmt.Errorf("telegram: handler failed to delete a moderation, %v", err)
+	}
 	var (
 		id  int
 		url string
