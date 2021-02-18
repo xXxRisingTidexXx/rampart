@@ -196,7 +196,7 @@ moderator:
       junk-button: "\U0001F3DA"
       construction-button: "\U0001F3D7"
       excess-button: "\U0001F3DD"
-      enough-button: "Досить \U0001F62B"
+      enough-button: "Досить \U0001F60C"
 auge:
   pool-size: 4
   retry-limit: 3
