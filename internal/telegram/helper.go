@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+// TODO: public wrapper.
+// TODO: separate http client.
 type helper struct {
 	bot *tgbotapi.BotAPI
 }
@@ -73,7 +75,6 @@ func (h *helper) answerCallback(callbackID, file string) error {
 	return nil
 }
 
-// TODO: should we just send url or separate http client?
 func (h *helper) sendImage(chatID int64, url string, markup interface{}) error {
 	response, err := http.Get(url)
 	if err != nil {
