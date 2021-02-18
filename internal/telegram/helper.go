@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -75,7 +76,7 @@ func (h *helper) answerCallback(callbackID, file string) error {
 	return nil
 }
 
-func (h *helper) sendImage(chatID int64, url string, markup interface{}) error {
+func (h *helper) sendImage(chatID int64, imageID int, url string, markup interface{}) error {
 	response, err := http.Get(url)
 	if err != nil {
 		return fmt.Errorf("telegram: helper failed to make a request, %v", err)
@@ -88,9 +89,10 @@ func (h *helper) sendImage(chatID int64, url string, markup interface{}) error {
 	if err := response.Body.Close(); err != nil {
 		return fmt.Errorf("telegram: helper faield to close a response body, %v", err)
 	}
-	message := tgbotapi.NewPhotoUpload(chatID, tgbotapi.FileBytes{Bytes: bytes})
-	message.ReplyMarkup = markup
-	if _, err := h.bot.Send(message); err != nil {
+	photo := tgbotapi.NewPhotoUpload(chatID, tgbotapi.FileBytes{Bytes: bytes})
+	photo.Caption = strconv.Itoa(imageID)
+	photo.ReplyMarkup = markup
+	if _, err := h.bot.Send(photo); err != nil {
 		return fmt.Errorf("telegram: helper failed to send an image, %v", err)
 	}
 	return nil

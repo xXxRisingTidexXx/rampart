@@ -112,5 +112,5 @@ func (h *interiorHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, erro
 	if err := tx.Commit(); err != nil {
 		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	return fields, h.helper.sendImage(update.Message.Chat.ID, url, h.presentMarkup)
+	return fields, h.helper.sendImage(update.Message.Chat.ID, id, url, h.presentMarkup)
 }
