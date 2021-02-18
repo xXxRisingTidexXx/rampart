@@ -10,7 +10,7 @@ import (
 )
 
 func NewRoomNumberHandler(
-	config config.Handler,
+	config config.AssistantHandler,
 	bot *tgbotapi.BotAPI,
 	db *sql.DB,
 ) TransientHandler {

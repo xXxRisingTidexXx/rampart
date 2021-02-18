@@ -9,7 +9,11 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
-func NewFloorHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) TransientHandler {
+func NewFloorHandler(
+	config config.AssistantHandler,
+	bot *tgbotapi.BotAPI,
+	db *sql.DB,
+) TransientHandler {
 	return &floorHandler{
 		&helper{bot},
 		db,

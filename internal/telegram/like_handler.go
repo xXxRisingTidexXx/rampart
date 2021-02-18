@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func NewLikeHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+func NewLikeHandler(config config.AssistantHandler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	return &likeHandler{&helper{bot}, db, config.Separator}
 }
 

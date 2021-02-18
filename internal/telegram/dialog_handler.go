@@ -9,7 +9,7 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
 
-func NewDialogHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+func NewDialogHandler(config config.AssistantHandler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	return &dialogHandler{
 		bot,
 		db,

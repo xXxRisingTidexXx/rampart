@@ -6,9 +6,13 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"html/template"
 	"io/ioutil"
+	"net/http"
+	"strconv"
 	"strings"
 )
 
+// TODO: public wrapper.
+// TODO: separate http client.
 type helper struct {
 	bot *tgbotapi.BotAPI
 }
@@ -68,6 +72,28 @@ func (h *helper) answerCallback(callbackID, file string) error {
 	_, err = h.bot.AnswerCallbackQuery(tgbotapi.NewCallback(callbackID, string(bytes)))
 	if err != nil {
 		return fmt.Errorf("telegram: helper failed to answer a callback query, %v", err)
+	}
+	return nil
+}
+
+func (h *helper) sendImage(chatID int64, imageID int, url string, markup interface{}) error {
+	response, err := http.Get(url)
+	if err != nil {
+		return fmt.Errorf("telegram: helper failed to make a request, %v", err)
+	}
+	bytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		_ = response.Body.Close()
+		return fmt.Errorf("telegram: helper failed to read a response body, %v", err)
+	}
+	if err := response.Body.Close(); err != nil {
+		return fmt.Errorf("telegram: helper faield to close a response body, %v", err)
+	}
+	photo := tgbotapi.NewPhotoUpload(chatID, tgbotapi.FileBytes{Bytes: bytes})
+	photo.Caption = strconv.Itoa(imageID)
+	photo.ReplyMarkup = markup
+	if _, err := h.bot.Send(photo); err != nil {
+		return fmt.Errorf("telegram: helper failed to send an image, %v", err)
 	}
 	return nil
 }

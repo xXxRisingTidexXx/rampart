@@ -10,7 +10,11 @@ import (
 	"strings"
 )
 
-func NewPriceHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) TransientHandler {
+func NewPriceHandler(
+	config config.AssistantHandler,
+	bot *tgbotapi.BotAPI,
+	db *sql.DB,
+) TransientHandler {
 	return &priceHandler{
 		&helper{bot},
 		db,

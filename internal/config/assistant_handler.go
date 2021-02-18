@@ -1,7 +1,7 @@
 package config
 
 // TODO: template path field + helper's randomization.
-type Handler struct {
+type AssistantHandler struct {
 	StartCommand               string `yaml:"start-command"`
 	StartButton                string `yaml:"start-button"`
 	HelpCommand                string `yaml:"help-command"`

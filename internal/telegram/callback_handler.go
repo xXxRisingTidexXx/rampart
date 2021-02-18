@@ -8,7 +8,11 @@ import (
 	"strings"
 )
 
-func NewCallbackHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+func NewCallbackHandler(
+	config config.AssistantHandler,
+	bot *tgbotapi.BotAPI,
+	db *sql.DB,
+) Handler {
 	return &callbackHandler{
 		map[string]Handler{
 			config.DeleteAction: NewDeleteHandler(config, bot, db),

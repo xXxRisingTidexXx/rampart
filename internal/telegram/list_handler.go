@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-func NewListHandler(config config.Handler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
+func NewListHandler(config config.AssistantHandler, bot *tgbotapi.BotAPI, db *sql.DB) Handler {
 	return &listHandler{
 		&helper{bot},
 		db,

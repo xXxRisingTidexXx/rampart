@@ -87,8 +87,8 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 		metrics.MessisMinings.WithLabelValues(m.name, "validation").Inc()
 		return Flat{}, err
 	}
-	url := m.urlPrefix + s.Items[0].BeautifulURL
-	urls, slug := make([]string, 0, len(s.Items[0].Photos)), url[:strings.LastIndex(url, "-")]
+	urls := make([]string, 0, len(s.Items[0].Photos))
+	slug := s.Items[0].BeautifulURL[:strings.LastIndex(s.Items[0].BeautifulURL, "-")]
 	for id := range s.Items[0].Photos {
 		urls = append(urls, fmt.Sprintf(m.imageURLFormat, slug, id))
 	}
@@ -124,7 +124,7 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 	}
 	metrics.MessisMinings.WithLabelValues(m.name, "success").Inc()
 	return Flat{
-		URL:         url,
+		URL:         m.urlPrefix + s.Items[0].BeautifulURL,
 		ImageURLs:   urls,
 		Price:       float64(s.Items[0].PriceArr.USD),
 		TotalArea:   s.Items[0].TotalSquareMeters,

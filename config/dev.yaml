@@ -135,7 +135,7 @@ warhol:
   retry-limit: 3
   output-format: scientific/images/%s.%s.%s.%s.webp
   input-path: scientific/auge.csv
-telegram:
+assistant:
   keymap: &keymap
     separator: '|'
     like-action: like
@@ -185,6 +185,18 @@ telegram:
       high-floor-placeholder: високий
       delete-button: "Видалити \U0001F5D1"
       delete-action: delete
+moderator:
+  dispatcher:
+    timeout: 5
+    handler:
+      start-command: /start
+      markup-button: "Світлини \U0001F4F7"
+      luxury-button: "\U0001F3DB"
+      comfort-button: "\U0001F3E0"
+      junk-button: "\U0001F3DA"
+      construction-button: "\U0001F3D7"
+      excess-button: "\U0001F3DD"
+      enough-button: "Досить \U0001F60C"
 auge:
   pool-size: 4
   retry-limit: 3
