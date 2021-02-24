@@ -21,7 +21,7 @@ type moderatorHelpHandler struct {
 }
 
 func (h *moderatorHelpHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
-	return log.Fields{"handler": "moderator-help"}, h.helper.sendMessage(
+	return log.Fields{"handler": "moderator-help"}, h.helper.sendMessageNoPreview(
 		update.Message.Chat.ID,
 		"moderator_help",
 		h.markup,

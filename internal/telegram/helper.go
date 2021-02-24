@@ -97,3 +97,15 @@ func (h *helper) sendImage(chatID int64, imageID int, url string, markup interfa
 	}
 	return nil
 }
+
+func (h *helper) sendMessageNoPreview(chatID int64, file string, markup interface{}) error {
+	message, err := h.prepareMessage(chatID, file, markup)
+	if err != nil {
+		return err
+	}
+	message.DisableWebPagePreview = true
+	if _, err := h.bot.Send(message); err != nil {
+		return fmt.Errorf("telegram: helper failed to send a message without preview, %v", err)
+	}
+	return nil
+}
