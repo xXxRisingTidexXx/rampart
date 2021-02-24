@@ -190,6 +190,9 @@ moderator:
     timeout: 5
     handler:
       start-command: /start
+      start-button: "Зрозуміло \U0001F44D"
+      help-command: /help
+      help-button: "Довідка \U0001F64B"
       markup-button: "Світлини \U0001F4F7"
       luxury-button: "\U0001F3DB"
       comfort-button: "\U0001F3E0"

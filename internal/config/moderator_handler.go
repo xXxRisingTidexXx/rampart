@@ -7,6 +7,9 @@ import (
 type ModeratorHandler struct {
 	Admins             misc.Set `yaml:"-"`
 	StartCommand       string   `yaml:"start-command"`
+	StartButton        string   `yaml:"start-button"`
+	HelpCommand        string   `yaml:"help-command"`
+	HelpButton         string   `yaml:"help-button"`
 	MarkupButton       string   `yaml:"markup-button"`
 	LuxuryButton       string   `yaml:"luxury-button"`
 	ComfortButton      string   `yaml:"comfort-button"`
