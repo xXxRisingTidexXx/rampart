@@ -93,7 +93,7 @@ func (m *domriaMiner) MineFlat() (Flat, error) {
 		urls = append(urls, fmt.Sprintf(m.imageURLFormat, slug, id))
 	}
 	city := strings.TrimSpace(s.Items[0].CityNameUK)
-	if m.swaps.Contains(city) {
+	if m.swaps.Has(city) {
 		city = strings.TrimSpace(s.Items[0].DistrictNameUK)
 		metrics.MessisMiningSanitations.WithLabelValues(m.name, "swap").Inc()
 	}
