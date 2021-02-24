@@ -100,7 +100,7 @@ func (a *gaugingAmplifier) AmplifyFlat(flat Flat) (Flat, error) {
 }
 
 func (a *gaugingAmplifier) gaugeSSF(flat Flat) (float64, error) {
-	if !a.subwayCities.Contains(flat.City) {
+	if !a.subwayCities.Has(flat.City) {
 		metrics.MessisGaugings.WithLabelValues(a.host, "ssf", "subwayless").Inc()
 		return 0, nil
 	}
