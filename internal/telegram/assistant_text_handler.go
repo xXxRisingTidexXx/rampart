@@ -15,7 +15,7 @@ func NewAssistantTextHandler(
 	handlers := make(map[string]Handler)
 	handlers[config.StartCommand] = NewAssistantStartHandler(config, bot)
 	handlers[config.StartButton] = handlers[config.StartCommand]
-	handlers[config.HelpCommand] = NewHelpHandler(config, bot)
+	handlers[config.HelpCommand] = NewAssistantHelpHandler(config, bot)
 	handlers[config.HelpButton] = handlers[config.HelpCommand]
 	handlers[config.CancelButton] = NewCancelHandler(config, bot, db)
 	handlers[config.AddButton] = NewAddHandler(config, bot, db)

@@ -6,8 +6,8 @@ import (
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
-func NewHelpHandler(config config.AssistantHandler, bot *tgbotapi.BotAPI) Handler {
-	return &helpHandler{
+func NewAssistantHelpHandler(config config.AssistantHandler, bot *tgbotapi.BotAPI) Handler {
+	return &assistantHelpHandler{
 		&helper{bot},
 		tgbotapi.NewReplyKeyboard(
 			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.StartButton)),
@@ -15,15 +15,15 @@ func NewHelpHandler(config config.AssistantHandler, bot *tgbotapi.BotAPI) Handle
 	}
 }
 
-type helpHandler struct {
+type assistantHelpHandler struct {
 	helper *helper
 	markup tgbotapi.ReplyKeyboardMarkup
 }
 
-func (h *helpHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
-	return log.Fields{"handler": "help"}, h.helper.sendMessage(
+func (h *assistantHelpHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
+	return log.Fields{"handler": "assistant-help"}, h.helper.sendMessage(
 		update.Message.Chat.ID,
-		"help",
+		"assistant_help",
 		h.markup,
 	)
 }
