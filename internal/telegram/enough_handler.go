@@ -13,7 +13,10 @@ func NewEnoughHandler(config config.ModeratorHandler, bot *tgbotapi.BotAPI, db *
 		&helper{bot},
 		db,
 		tgbotapi.NewReplyKeyboard(
-			tgbotapi.NewKeyboardButtonRow(tgbotapi.NewKeyboardButton(config.MarkupButton)),
+			tgbotapi.NewKeyboardButtonRow(
+				tgbotapi.NewKeyboardButton(config.MarkupButton),
+				tgbotapi.NewKeyboardButton(config.HelpButton),
+			),
 		),
 	}
 }
