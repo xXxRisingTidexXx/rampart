@@ -19,7 +19,7 @@ x-golang: &x-golang
   env_file:
     - .env
   environment:
-    RAMPART_DATABASE_DSN: postgres://postgres:postgres@rampart-database:5432/rampart?sslmode=disable
+    RAMPART_DSN: postgres://postgres:postgres@rampart-database:5432/rampart?sslmode=disable
 x-python: &x-python
   image: rampart-python
   volumes:
@@ -31,7 +31,7 @@ x-python: &x-python
     - .env
   ipc: host
   environment:
-    RAMPART_DATABASE_DSN: postgres://postgres:postgres@rampart-database:5432/rampart
+    RAMPART_DSN: postgres://postgres:postgres@rampart-database:5432/rampart
 services:
   database:
     image: postgis/postgis:13-3.0-alpine
@@ -113,7 +113,7 @@ services:
       - .env
     environment:
       JUPYTER_ENABLE_LAB: 'yes'
-      RAMPART_DATABASE_DSN: postgres://postgres:postgres@rampart-database:5432/rampart
+      RAMPART_DSN: postgres://postgres:postgres@rampart-database:5432/rampart
     depends_on:
       - database
   python:

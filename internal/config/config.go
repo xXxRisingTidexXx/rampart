@@ -10,7 +10,7 @@ import (
 
 func NewConfig() (Config, error) {
 	var config Config
-	config.Messis.DSN = os.Getenv("RAMPART_DATABASE_DSN")
+	config.Messis.DSN = os.Getenv("RAMPART_DSN")
 	if config.Messis.DSN == "" {
 		return config, fmt.Errorf("config: failed to find the db dsn")
 	}
