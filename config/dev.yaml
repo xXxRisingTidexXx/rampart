@@ -131,7 +131,7 @@ messis:
 warhol:
   timeout: 30s
   user-agent: *user-agent
-  thread-number: 4
+  thread-number: 8
   retry-limit: 3
   output-format: scientific/images/%s.%s.%s.%s.webp
   input-path: scientific/auge.csv
