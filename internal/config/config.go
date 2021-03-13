@@ -6,7 +6,6 @@ import (
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
-	"strings"
 )
 
 func NewConfig() (Config, error) {
@@ -23,10 +22,6 @@ func NewConfig() (Config, error) {
 	if config.Moderator.Token == "" {
 		return config, fmt.Errorf("config: failed to find the moderator token")
 	}
-	admins := os.Getenv("RAMPART_MODERATOR_ADMINS")
-	if admins == "" {
-		return config, fmt.Errorf("config: failed to find the moderator admins")
-	}
 	bytes, err := ioutil.ReadFile(misc.ResolvePath("config/dev.yaml"))
 	if err != nil {
 		return config, fmt.Errorf("config: failed to read the config file, %v", err)
@@ -37,7 +32,6 @@ func NewConfig() (Config, error) {
 	config.Warhol.InputPath = misc.ResolvePath(config.Warhol.InputPath)
 	config.Assistant.DSN = config.Messis.DSN
 	config.Moderator.DSN = config.Messis.DSN
-	config.Moderator.Dispatcher.Handler.Admins = misc.NewSet(strings.Split(admins, ","))
 	return config, nil
 }
 
