@@ -5,5 +5,5 @@ import (
 )
 
 type Handler interface {
-	HandleUpdate(update tgbotapi.Update) (Info, error)
+	HandleUpdate(tgbotapi.Update) (Info, error)
 }

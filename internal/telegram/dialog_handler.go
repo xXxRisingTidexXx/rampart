@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
@@ -28,45 +27,45 @@ type dialogHandler struct {
 	handlers map[misc.Status]TransientHandler
 }
 
-func (h *dialogHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
-	fields := log.Fields{"handler": "dialog"}
+func (h *dialogHandler) HandleUpdate(update tgbotapi.Update) (Info, error) {
+	info := NewInfo("dialog")
 	tx, err := h.db.Begin()
 	if err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
 	var view string
 	row := tx.QueryRow(`select status from transients where id = $1`, update.Message.Chat.ID)
 	if err := row.Scan(&view); err == sql.ErrNoRows {
 		if err := tx.Commit(); err != nil {
-			return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+			return info, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 		}
-		return fields, nil
+		return info, nil
 	} else if err != nil {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to read a transient, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to read a transient, %v", err)
 	}
-	fields["status"] = view
+	info.Extras["status"] = view
 	status, ok := misc.ToStatus(view)
 	if !ok {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to find a status")
+		return info, fmt.Errorf("telegram: handler failed to find a status")
 	}
 	handler, ok := h.handlers[status]
 	if !ok {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to handle a status")
+		return info, fmt.Errorf("telegram: handler failed to handle a status")
 	}
-	fields = log.Fields{"handler": view}
+	info = NewInfo(view)
 	message, err := handler.HandleTransientUpdate(update, tx)
 	if err != nil {
 		_ = tx.Rollback()
-		return fields, err
+		return info, err
 	}
 	if err := tx.Commit(); err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
 	if _, err := h.bot.Send(message); err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to send a message, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to send a message, %v", err)
 	}
-	return fields, nil
+	return info, nil
 }

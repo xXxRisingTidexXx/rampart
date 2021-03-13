@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
@@ -35,16 +34,16 @@ type markupHandler struct {
 	markup tgbotapi.ReplyKeyboardMarkup
 }
 
-func (h *markupHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
-	fields := log.Fields{"handler": "markup"}
+func (h *markupHandler) HandleUpdate(update tgbotapi.Update) (Info, error) {
+	info := NewInfo("markup")
 	tx, err := h.db.Begin()
 	if err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
 	_, err = tx.Exec(`delete from moderations where id = $1`, update.Message.Chat.ID)
 	if err != nil {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to delete a moderation, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to delete a moderation, %v", err)
 	}
 	var (
 		id  int
@@ -60,12 +59,12 @@ func (h *markupHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error)
 	)
 	if err := row.Scan(&id, &url); err == sql.ErrNoRows {
 		if err := tx.Commit(); err != nil {
-			return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+			return info, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 		}
-		return fields, h.helper.sendMessage(update.Message.Chat.ID, "no_markup", nil)
+		return info, h.helper.sendMessage(update.Message.Chat.ID, "no_markup", nil)
 	} else if err != nil {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to read an image, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to read an image, %v", err)
 	}
 	_, err = tx.Exec(
 		`insert into moderations (id, image_id) values ($1, $2)`,
@@ -74,10 +73,10 @@ func (h *markupHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error)
 	)
 	if err != nil {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to create a moderation, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to create a moderation, %v", err)
 	}
 	if err := tx.Commit(); err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	return fields, h.helper.sendImage(update.Message.Chat.ID, id, url, h.markup)
+	return info, h.helper.sendImage(update.Message.Chat.ID, id, url, h.markup)
 }

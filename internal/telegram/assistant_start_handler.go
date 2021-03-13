@@ -2,7 +2,6 @@ package telegram
 
 import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
@@ -24,8 +23,8 @@ type assistantStartHandler struct {
 	markup tgbotapi.ReplyKeyboardMarkup
 }
 
-func (h *assistantStartHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
-	return log.Fields{"handler": "assistant-start"}, h.helper.sendMessage(
+func (h *assistantStartHandler) HandleUpdate(update tgbotapi.Update) (Info, error) {
+	return NewInfo("assistant-start"), h.helper.sendMessage(
 		update.Message.Chat.ID,
 		"assistant_menu",
 		h.markup,

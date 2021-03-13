@@ -3,7 +3,6 @@ package telegram
 import (
 	"database/sql"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
@@ -31,9 +30,9 @@ type moderatorTextHandler struct {
 	handlers map[string]Handler
 }
 
-func (h *moderatorTextHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
+func (h *moderatorTextHandler) HandleUpdate(update tgbotapi.Update) (Info, error) {
 	if handler, ok := h.handlers[update.Message.Text]; ok {
 		return handler.HandleUpdate(update)
 	}
-	return log.Fields{"handler": "moderator-text"}, nil
+	return NewInfo("moderator-text"), nil
 }

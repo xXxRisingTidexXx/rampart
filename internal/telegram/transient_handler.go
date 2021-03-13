@@ -6,5 +6,5 @@ import (
 )
 
 type TransientHandler interface {
-	HandleTransientUpdate(update tgbotapi.Update, tx *sql.Tx) (tgbotapi.MessageConfig, error)
+	HandleTransientUpdate(tgbotapi.Update, *sql.Tx) (tgbotapi.MessageConfig, error)
 }
