@@ -9,30 +9,41 @@ commands:
       if [[ ! -e scientific/auge.csv ]]; then touch scientific/auge.csv ; fi && \
       if [[ ! -e scientific/twinkle.csv ]]; then touch scientific/twinkle.csv ; fi && \
       docker-compose build golang notebook python
-  database:
-    description: Run the DB server
-    cmd: docker-compose up -d database
   psql:
     description: Run PostgreSQL CLI
-    cmd: docker exec -it rampart-database psql rampart postgres
+    cmd: |
+      docker-compose up -d database && \
+      while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
+      docker exec -it rampart-database psql -d rampart -U postgres
+      docker-compose down
   migrate:
     description: Upgrade the DB schema to the newest version
-    cmd: docker-compose run --rm migrate
+    cmd: |
+      docker-compose up -d database && \
+      while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
+      docker-compose run --rm migrate && \
+      docker-compose down
   generate:
     description: Create the brand new migration files
     cmd: |
       printf 'Enter new migration name: ' && \
       read MIGRATION && \
-      docker-compose run --rm generate create -ext sql -dir /migrations $MIGRATION && \
+      docker-compose run --rm generate $MIGRATION && \
       sudo chown -R $USER:$USER migrations
   messis:
     description: Launch flat mining application
     cmd: |
+      docker-compose up -d database && \
+      while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
       docker-compose up messis
-      docker rm rampart-messis
+      docker-compose down
   miner:
     description: Run the data mining app single workflow
-    cmd: docker-compose run --rm miner
+    cmd: |
+      docker-compose up -d database && \
+      while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
+      docker-compose run --rm messis -miner domria
+      docker-compose down
   warhol:
     description: Start the image downloader
     cmd: |
@@ -54,36 +65,53 @@ commands:
   assistant:
     description: Run Telegram API client in long pulling mode + flat snitch
     cmd: |
+      docker-compose up -d database && \
+      while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
       docker-compose up assistant
-      docker rm rampart-assistant
+      docker-compose down
   publisher:
     description: Launch apartment issuer code
-    cmd: docker-compose run --rm publisher
+    cmd: |
+      docker-compose up -d database && \
+      while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
+      docker-compose run --rm assistant -publisher && \
+      docker-compose down
   moderator:
     description: Run data moderation & markup bot
     cmd: |
+      docker-compose up -d database && \
+      while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
       docker-compose up moderator
-      docker rm rampart-moderator
+      docker-compose down
   notebook:
     description: Setup Jupyter Notebook server
     cmd: |
-      docker-compose up notebook
-      docker rm rampart-notebook
+      docker-compose up -d database && \
+      while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
+      docker-compose up notebook && \
+      docker-compose down
       chown -R $USER:$USER scientific
   auge:
     description: Run image classification task
-    cmd: docker-compose run --rm auge-debug
+    cmd: |
+      docker-compose up -d database && \
+      while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
+      docker-compose run --rm auge -debug && \
+      docker-compose down
   twinkle:
     description: Perform ranking by subscriptions
-    cmd: docker-compose run --rm twinkle-debug
+    cmd: |
+      docker-compose up -d database && \
+      while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
+      docker-compose run --rm twinkle -debug && \
+      docker-compose down
   coquus:
     description: Execute ranking dataset augmentation
     cmd: docker-compose run --rm coquus && sudo chown -R $USER:$USER scientific
   run:
     description: Activate the whole rampart ecosystem
     cmd: |
+      docker-compose up -d database && \
+      while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
       docker-compose up messis assistant twinkle auge
-      docker rm rampart-messis rampart-assistant rampart-twinkle rampart-auge
-  stop:
-    description: Dispose all docker stuff
-    cmd: docker-compose down
+      docker-compose down

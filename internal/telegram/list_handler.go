@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 	"strconv"
@@ -48,11 +47,11 @@ type listHandler struct {
 	separator              string
 }
 
-func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
-	fields := log.Fields{"handler": "list"}
+func (h *listHandler) HandleUpdate(update tgbotapi.Update) (Info, error) {
+	info := NewInfo("list")
 	tx, err := h.db.Begin()
 	if err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
 	rows, err := tx.Query(
 		`select id, uuid, city, price, room_number, floor
@@ -63,7 +62,7 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	)
 	if err != nil {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to read subscriptions, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to read subscriptions, %v", err)
 	}
 	subscriptions := make([]subscription, 0)
 	for rows.Next() {
@@ -79,8 +78,8 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 		if err != nil {
 			_ = rows.Close()
 			_ = tx.Rollback()
-			fields["id"] = id
-			return fields, fmt.Errorf("telegram: handler failed to scan a row, %v", err)
+			info.Extras["id"] = id
+			return info, fmt.Errorf("telegram: handler failed to scan a row, %v", err)
 		}
 		shape := h.anyPricePlaceholder
 		if price > 0 {
@@ -102,17 +101,17 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 	if err := rows.Err(); err != nil {
 		_ = rows.Close()
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to finish iteration, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to finish iteration, %v", err)
 	}
 	if err := rows.Close(); err != nil {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to close rows, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to close rows, %v", err)
 	}
 	if err := tx.Commit(); err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
 	if len(subscriptions) == 0 {
-		return fields, h.helper.sendMessage(update.Message.Chat.ID, "empty_list", h.markup)
+		return info, h.helper.sendMessage(update.Message.Chat.ID, "empty_list", h.markup)
 	}
 	for _, s := range subscriptions {
 		err := h.helper.sendTemplate(
@@ -129,9 +128,9 @@ func (h *listHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
 			),
 		)
 		if err != nil {
-			fields["id"] = s.ID
-			return fields, err
+			info.Extras["id"] = s.ID
+			return info, err
 		}
 	}
-	return fields, nil
+	return info, nil
 }

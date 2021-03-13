@@ -2,7 +2,6 @@ package telegram
 
 import (
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
@@ -23,8 +22,8 @@ type moderatorStartHandler struct {
 	markup tgbotapi.ReplyKeyboardMarkup
 }
 
-func (h *moderatorStartHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
-	return log.Fields{"handler": "moderator-start"}, h.helper.sendMessage(
+func (h *moderatorStartHandler) HandleUpdate(update tgbotapi.Update) (Info, error) {
+	return NewInfo("moderator-start"), h.helper.sendMessage(
 		update.Message.Chat.ID,
 		"moderator_menu",
 		h.markup,

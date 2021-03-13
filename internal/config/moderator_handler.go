@@ -1,11 +1,6 @@
 package config
 
-import (
-	"github.com/xXxRisingTidexXx/rampart/internal/misc"
-)
-
 type ModeratorHandler struct {
-	Admins             misc.Set `yaml:"-"`
 	StartCommand       string   `yaml:"start-command"`
 	StartButton        string   `yaml:"start-button"`
 	HelpCommand        string   `yaml:"help-command"`

@@ -3,7 +3,6 @@ package telegram
 import (
 	"database/sql"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 )
 
@@ -28,7 +27,7 @@ type assistantTextHandler struct {
 	dialogHandler   Handler
 }
 
-func (h *assistantTextHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
+func (h *assistantTextHandler) HandleUpdate(update tgbotapi.Update) (Info, error) {
 	if handler, ok := h.commandHandlers[update.Message.Text]; ok {
 		return handler.HandleUpdate(update)
 	}

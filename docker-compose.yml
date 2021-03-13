@@ -18,6 +18,8 @@ x-golang: &x-golang
     - ./templates:/go/src/app/templates
   env_file:
     - .env
+  environment:
+    RAMPART_DSN: postgres://postgres:postgres@rampart-database:5432/rampart?sslmode=disable
 x-python: &x-python
   image: rampart-python
   volumes:
@@ -28,6 +30,8 @@ x-python: &x-python
   env_file:
     - .env
   ipc: host
+  environment:
+    RAMPART_DSN: postgres://postgres:postgres@rampart-database:5432/rampart
 services:
   database:
     image: postgis/postgis:13-3.0-alpine
@@ -45,10 +49,13 @@ services:
   migrate:
     <<: *x-migrate
     container_name: rampart-migrate
-    command: -path migrations -database $RAMPART_DATABASE_DSN up
+    command: -path migrations -database postgres://postgres:postgres@rampart-database:5432/rampart?sslmode=disable up
+    depends_on:
+      - database
   generate:
     <<: *x-migrate
     container_name: rampart-generate
+    entrypoint: migrate create -ext sql -dir /migrations
   golang:
     build:
       context: .
@@ -57,13 +64,11 @@ services:
   messis:
     <<: *x-golang
     container_name: rampart-messis
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis
+    entrypoint: go run github.com/xXxRisingTidexXx/rampart/cmd/messis
     ports:
       - 9001:9001
-  miner:
-    <<: *x-golang
-    container_name: rampart-miner
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/messis -miner domria
+    depends_on:
+      - database
   warhol:
     <<: *x-golang
     container_name: rampart-warhol
@@ -75,17 +80,17 @@ services:
   assistant:
     <<: *x-golang
     container_name: rampart-assistant
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/assistant
+    entrypoint: go run github.com/xXxRisingTidexXx/rampart/cmd/assistant
     ports:
       - 9002:9002
-  publisher:
-    <<: *x-golang
-    container_name: rampart-publisher
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/assistant -publisher
+    depends_on:
+      - database
   moderator:
     <<: *x-golang
     container_name: rampart-moderator
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/moderator
+    depends_on:
+      - database
   notebook:
     build:
       context: .
@@ -108,35 +113,34 @@ services:
       - .env
     environment:
       JUPYTER_ENABLE_LAB: 'yes'
+      RAMPART_DSN: postgres://postgres:postgres@rampart-database:5432/rampart
+    depends_on:
+      - database
   python:
     build:
       context: .
       dockerfile: docker/python.dockerfile
     image: rampart-python
-  twinkle-debug:
+  auge:
     <<: *x-python
-    container_name: rampart-twinkle-debug
-    command: python -m rampart.twinkle -debug
+    container_name: rampart-auge
+    entrypoint: python -m rampart.auge
+    ports:
+      - 9003:9003
+    depends_on:
+      - database
+  twinkle:
+    <<: *x-python
+    container_name: rampart-twinkle
+    entrypoint: python -m rampart.twinkle
+    ports:
+      - 9004:9004
+    depends_on:
+      - database
   coquus:
     <<: *x-python
     container_name: rampart-coquus
     command: python -m rampart.coquus
-  auge-debug:
-    <<: *x-python
-    container_name: rampart-auge-debug
-    command: python -m rampart.auge -debug
-  auge:
-    <<: *x-python
-    container_name: rampart-auge
-    command: python -m rampart.auge
-    ports:
-      - 9003:9003
-  twinkle:
-    <<: *x-python
-    container_name: rampart-twinkle
-    command: python -m rampart.twinkle
-    ports:
-      - 9004:9004
 volumes:
   database:
     name: rampart-database

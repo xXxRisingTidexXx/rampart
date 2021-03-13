@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"strconv"
 	"strings"
@@ -20,50 +19,50 @@ type likeHandler struct {
 	separator string
 }
 
-func (h *likeHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
-	fields := log.Fields{"handler": "like"}
+func (h *likeHandler) HandleUpdate(update tgbotapi.Update) (Info, error) {
+	info := NewInfo("like")
 	id, err := strconv.ParseInt(
 		update.CallbackQuery.Data[strings.LastIndex(update.CallbackQuery.Data, h.separator)+1:],
 		10,
 		64,
 	)
 	if err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to parse id, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to parse id, %v", err)
 	}
-	fields["id"] = id
+	info.Extras["id"] = id
 	tx, err := h.db.Begin()
 	if err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
-	fields["like"] = "check"
+	info.Extras["like"] = "check"
 	ok, err := h.updateLookup(tx, id, true)
 	if err != nil {
 		_ = tx.Rollback()
-		return fields, err
+		return info, err
 	}
 	if ok {
 		if err := tx.Commit(); err != nil {
-			return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+			return info, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 		}
-		return fields, h.helper.answerCallback(update.CallbackQuery.ID, "check_like")
+		return info, h.helper.answerCallback(update.CallbackQuery.ID, "check_like")
 	}
-	fields["like"] = "uncheck"
+	info.Extras["like"] = "uncheck"
 	ok, err = h.updateLookup(tx, id, false)
 	if err != nil {
 		_ = tx.Rollback()
-		return fields, err
+		return info, err
 	}
 	if ok {
 		if err := tx.Commit(); err != nil {
-			return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+			return info, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 		}
-		return fields, h.helper.answerCallback(update.CallbackQuery.ID, "uncheck_like")
+		return info, h.helper.answerCallback(update.CallbackQuery.ID, "uncheck_like")
 	}
-	fields["like"] = "absent"
+	info.Extras["like"] = "absent"
 	if err := tx.Commit(); err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	return fields, h.helper.answerCallback(update.CallbackQuery.ID, "absent_like")
+	return info, h.helper.answerCallback(update.CallbackQuery.ID, "absent_like")
 }
 
 func (h *likeHandler) updateLookup(tx *sql.Tx, id int64, shouldLike bool) (bool, error) {

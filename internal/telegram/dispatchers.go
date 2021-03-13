@@ -23,11 +23,11 @@ func RunAssistantDispatcher(
 
 func work(updates tgbotapi.UpdatesChannel, handler Handler, logger log.FieldLogger) {
 	for update := range updates {
-		fields, err := handler.HandleUpdate(update)
+		info, err := handler.HandleUpdate(update)
 		if err != nil {
-			logger.WithFields(fields).Error(err)
+			logger.WithFields(info.Fields()).Error(err)
 		}
-		metrics.TelegramUpdates.WithLabelValues(fields["handler"].(string)).Inc()
+		metrics.TelegramUpdates.WithLabelValues(info.Handler).Inc()
 	}
 }
 
@@ -43,8 +43,8 @@ func RunModeratorDispatcher(
 
 func consume(updates tgbotapi.UpdatesChannel, handler Handler, logger log.FieldLogger) {
 	for update := range updates {
-		if fields, err := handler.HandleUpdate(update); err != nil {
-			logger.WithFields(fields).Error(err)
+		if info, err := handler.HandleUpdate(update); err != nil {
+			logger.WithFields(info.Fields()).Error(err)
 		}
 	}
 }

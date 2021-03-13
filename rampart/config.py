@@ -15,7 +15,7 @@ class Config:
     __slots__ = ['twinkle', 'coquus', 'auge']
 
     def __init__(self, config: Dict[str, Any]):
-        dsn = _get_env('RAMPART_DATABASE_DSN')
+        dsn = _get_env('RAMPART_DSN')
         config['twinkle']['dsn'] = dsn
         config['auge']['dsn'] = dsn
         self.twinkle = TwinkleConfig(config['twinkle'])

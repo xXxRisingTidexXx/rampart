@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/go-telegram-bot-api/telegram-bot-api"
-	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
 	"github.com/xXxRisingTidexXx/rampart/internal/misc"
 )
@@ -44,34 +43,34 @@ type interiorHandler struct {
 	presentMarkup tgbotapi.ReplyKeyboardMarkup
 }
 
-func (h *interiorHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, error) {
-	fields := log.Fields{"handler": "interior"}
+func (h *interiorHandler) HandleUpdate(update tgbotapi.Update) (Info, error) {
+	info := NewInfo("interior")
 	tx, err := h.db.Begin()
 	if err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to begin a transaction, %v", err)
 	}
 	var id int
 	row := tx.QueryRow(`select image_id from moderations where id = $1`, update.Message.Chat.ID)
 	if err := row.Scan(&id); err == sql.ErrNoRows {
 		if err := tx.Commit(); err != nil {
-			return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+			return info, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 		}
-		return fields, nil
+		return info, nil
 	} else if err != nil {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to read a moderation, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to read a moderation, %v", err)
 	}
 	interior, ok := h.mappings[update.Message.Text]
 	if !ok {
 		if err := tx.Commit(); err != nil {
-			return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+			return info, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 		}
-		return fields, h.helper.sendMessage(update.Message.Chat.ID, "invalid_interior", nil)
+		return info, h.helper.sendMessage(update.Message.Chat.ID, "invalid_interior", nil)
 	}
 	_, err = tx.Exec(`update images set interior = $1 where id = $2`, interior.String(), id)
 	if err != nil {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler faield to update an image, %v", err)
+		return info, fmt.Errorf("telegram: handler faield to update an image, %v", err)
 	}
 	var url string
 	row = tx.QueryRow(
@@ -86,19 +85,19 @@ func (h *interiorHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, erro
 		_, err = tx.Exec(`delete from moderations where id = $1`, update.Message.Chat.ID)
 		if err != nil {
 			_ = tx.Rollback()
-			return fields, fmt.Errorf("telegram: handler failed to delete a moderation, %v", err)
+			return info, fmt.Errorf("telegram: handler failed to delete a moderation, %v", err)
 		}
 		if err := tx.Commit(); err != nil {
-			return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+			return info, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 		}
-		return fields, h.helper.sendMessage(
+		return info, h.helper.sendMessage(
 			update.Message.Chat.ID,
 			"absent_interior",
 			h.absentMarkup,
 		)
 	} else if err != nil {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to read an image, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to read an image, %v", err)
 	}
 	_, err = tx.Exec(
 		`update moderations set image_id = $1 where id = $2`,
@@ -107,10 +106,10 @@ func (h *interiorHandler) HandleUpdate(update tgbotapi.Update) (log.Fields, erro
 	)
 	if err != nil {
 		_ = tx.Rollback()
-		return fields, fmt.Errorf("telegram: handler failed to update a moderation, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to update a moderation, %v", err)
 	}
 	if err := tx.Commit(); err != nil {
-		return fields, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
+		return info, fmt.Errorf("telegram: handler failed to commit a transaction, %v", err)
 	}
-	return fields, h.helper.sendImage(update.Message.Chat.ID, id, url, h.presentMarkup)
+	return info, h.helper.sendImage(update.Message.Chat.ID, id, url, h.presentMarkup)
 }
