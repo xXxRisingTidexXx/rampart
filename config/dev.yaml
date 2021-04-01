@@ -1,4 +1,4 @@
-user-agent: &user-agent RampartBot/0.0.1
+user-agent: &user-agent RampartBot/1.0.0
 messis:
   domria-miner:
     name: domria
@@ -201,18 +201,15 @@ moderator:
       excess-button: "\U0001F3DD"
       enough-button: "Досить \U0001F60C"
 auge:
-  pool-size: 4
+  loader-number: 10
   retry-limit: 3
-  recognizer:
-    model-path: scientific/models/auge.latest.pth
+  loader:
     timeout: 10
-    batch-size: 4
-    worker-number: 4
+    user-agent: *user-agent
+  model-path: scientific/models/auge.latest.pth
   metrics-port: 9003
-  spec: '*/6 * * * *'
 twinkle:
-  classifier:
-    model-path: scientific/models/twinkle.latest.txt
+  model-path: scientific/models/twinkle.latest.txt
   metrics-port: 9004
   spec: '*/6 * * * *'
 coquus:

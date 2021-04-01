@@ -58,27 +58,25 @@ class CoquusConfig:
 class AugeConfig:
     __slots__ = [
         'dsn',
-        'pool_size',
+        'loader_number',
         'retry_limit',
-        'recognizer',
-        'metrics_port',
-        'spec'
+        'loader',
+        'model_path',
+        'metrics_port'
     ]
 
     def __init__(self, config: Dict[str, Any]):
         self.dsn: str = config['dsn']
-        self.pool_size: int = config['pool-size']
+        self.loader_number: int = config['loader-number']
         self.retry_limit: int = config['retry-limit']
-        self.recognizer = RecognizerConfig(config['recognizer'])
+        self.loader = LoaderConfig(config['loader'])
+        self.model_path = str(_root_path / config['model-path'])
         self.metrics_port: int = config['metrics-port']
-        self.spec: str = config['spec']
 
 
-class RecognizerConfig:
-    __slots__ = ['model_path', 'timeout', 'batch_size', 'worker_number']
+class LoaderConfig:
+    __slots__ = ['timeout', 'user_agent']
 
     def __init__(self, config: Dict[str, Any]):
-        self.model_path = str(_root_path / config['model-path'])
         self.timeout: float = config['timeout']
-        self.batch_size: int = config['batch-size']
-        self.worker_number: int = config['worker-number']
+        self.user_agent: str = config['user-agent']
