@@ -25,7 +25,7 @@ def _main():
     args = parser.parse_args()
     config = get_config()
     engine = create_engine(config.auge.dsn)
-    reader = Reader(engine, config.auge.loader_number)
+    reader = Reader(engine)
     session = Session()
     session.mount(
         'https://',
@@ -50,7 +50,7 @@ def _main():
 
 
 def _run_once(reader: Reader, loader: Loader, recognizer: Recognizer, updater: Updater):
-    for url in reader.read_urls():
+    for url in reader.read_urls(1):
         updater.update_image(recognizer.recognize_image(loader.load_image(url)))
 
 
@@ -76,7 +76,7 @@ def _run_forever(
     scheduler.add_job(
         _read_urls,
         IntervalTrigger(seconds=config.interval),
-        (reader, urls)
+        (reader, config.loader_number, urls)
     )
     try:
         scheduler.start()
@@ -86,8 +86,8 @@ def _run_forever(
         images.join()
 
 
-def _read_urls(reader: Reader, urls: Queue):
-    for url in reader.read_urls():
+def _read_urls(reader: Reader, limit: int, urls: Queue):
+    for url in reader.read_urls(limit):
         urls.put(url)
 
 

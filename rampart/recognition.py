@@ -14,18 +14,17 @@ _logger = get_logger('rampart.recognition')
 
 
 class Reader:
-    __slots__ = ['_engine', '_limit']
+    __slots__ = ['_engine']
 
-    def __init__(self, engine: Engine, limit: int):
+    def __init__(self, engine: Engine):
         self._engine = engine
-        self._limit = limit
 
-    def read_urls(self) -> List[str]:
+    def read_urls(self, limit: int) -> List[str]:
         with self._engine.connect() as connection:
             return [
                 u[0] for u in connection.execute(
                     "select url from images where interior = 'unknown' limit %s",
-                    self._limit
+                    limit
                 )
             ]
 
