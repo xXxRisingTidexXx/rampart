@@ -208,6 +208,7 @@ auge:
     user-agent: *user-agent
   model-path: scientific/models/auge.latest.pth
   metrics-port: 9003
+  buffer-size: 100
 twinkle:
   model-path: scientific/models/twinkle.latest.txt
   metrics-port: 9004
