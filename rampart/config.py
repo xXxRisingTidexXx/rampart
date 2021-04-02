@@ -38,7 +38,8 @@ class AugeConfig:
         'loader',
         'model_path',
         'metrics_port',
-        'buffer_size'
+        'buffer_size',
+        'interval'
     ]
 
     def __init__(self, config: Dict[str, Any]):
@@ -49,6 +50,7 @@ class AugeConfig:
         self.model_path = str(_root_path / config['model-path'])
         self.metrics_port: int = config['metrics-port']
         self.buffer_size: int = config['buffer-size']
+        self.interval: int = config['interval']
 
 
 class LoaderConfig:

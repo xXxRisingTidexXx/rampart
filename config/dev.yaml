@@ -209,6 +209,7 @@ auge:
   model-path: scientific/models/auge.latest.pth
   metrics-port: 9003
   buffer-size: 100
+  interval: 1
 twinkle:
   model-path: scientific/models/twinkle.latest.txt
   metrics-port: 9004
