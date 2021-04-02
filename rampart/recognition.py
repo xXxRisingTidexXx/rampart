@@ -1,12 +1,10 @@
 from enum import Enum, unique
 from io import BytesIO
-from time import time
-from typing import List, Tuple
+from typing import List
 from PIL.Image import open, new, Image as Picture
 from requests import Session, codes
-from requests.exceptions import RequestException
 from sqlalchemy.engine.base import Engine
-from torch import Tensor, empty, load, no_grad
+from torch import load, no_grad
 from torchvision.transforms import Compose, ToTensor, Resize, Normalize
 from torchvision.models import Inception3
 from rampart.config import LoaderConfig
@@ -35,7 +33,7 @@ class Reader:
 class Loader:
     __slots__ = ['_session', '_timeout', '_user_agent']
 
-    def __init__(self, session: Session, config: LoaderConfig):
+    def __init__(self, config: LoaderConfig, session: Session):
         self._session = session
         self._timeout = config.timeout
         self._user_agent = config.user_agent
@@ -77,12 +75,9 @@ class Interior(Enum):
 
 
 class Recognizer:
-    __slots__ = ['_network', '_transforms']
+    __slots__ = ['_transforms', '_network']
 
     def __init__(self, path: str):
-        self._network = Inception3(5)
-        self._network.load_state_dict(load(path))
-        self._network.eval()
         self._transforms = Compose(
             [
                 ToTensor(),
@@ -90,6 +85,9 @@ class Recognizer:
                 Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
             ]
         )
+        self._network = Inception3(5, init_weights=False)
+        self._network.load_state_dict(load(path))
+        self._network.eval()
 
     @no_grad()
     def recognize_image(self, image: Image) -> Image:

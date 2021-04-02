@@ -1,13 +1,15 @@
 from argparse import ArgumentParser
 from queue import Queue
+from threading import Thread
 from prometheus_client.exposition import start_http_server
 from requests.adapters import HTTPAdapter
 from sqlalchemy import create_engine
-from rampart.config import get_config
+from rampart.config import get_config, AugeConfig
 from rampart.logging import get_logger
-from rampart.recognition import Reader, Image, Loader, Recognizer, Updater
-from requests import Session
+from rampart.recognition import Reader, Loader, Recognizer, Updater
+from requests import Session, RequestException
 from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.triggers.interval import IntervalTrigger
 
 _logger = get_logger('rampart.auge')
 
@@ -32,18 +34,14 @@ def _main():
             max_retries=config.auge.retry_limit
         )
     )
-    loader = Loader(session, config.auge.loader)
+    loader = Loader(config.auge.loader, session)
     recognizer = Recognizer(config.auge.model_path)
     updater = Updater(engine)
-    scheduler = BlockingScheduler()
     try:
         if args.debug:
-            pass
+            _run_once(reader, loader, recognizer, updater)
         else:
-            start_http_server(config.auge.metrics_port)
-            scheduler.start()
-    except KeyboardInterrupt:
-        scheduler.shutdown()
+            _run_forever(config.auge, reader, loader, recognizer, updater)
     except Exception:  # noqa
         _logger.exception('Auge got fatal error')
     finally:
@@ -51,18 +49,60 @@ def _main():
         engine.dispose()
 
 
-def _read_urls(reader: Reader, urls: Queue[str]):
+def _run_once(reader: Reader, loader: Loader, recognizer: Recognizer, updater: Updater):
+    for url in reader.read_urls():
+        updater.update_image(recognizer.recognize_image(loader.load_image(url)))
+
+
+def _run_forever(
+    config: AugeConfig,
+    reader: Reader,
+    loader: Loader,
+    recognizer: Recognizer,
+    updater: Updater
+):
+    start_http_server(config.metrics_port)
+    urls = Queue(config.buffer_size)
+    Thread(target=_read_urls, args=(reader, urls), daemon=True).start()
+    images = Queue(config.buffer_size)
+    for _ in range(config.loader_number):
+        Thread(target=_load_images, args=(loader, urls, images), daemon=True).start()
+    Thread(
+        target=_recognize_images,
+        args=(recognizer, updater, images),
+        daemon=True
+    ).start()
+    scheduler = BlockingScheduler()
+    scheduler.add_job(
+        _read_urls,
+        IntervalTrigger(seconds=config.interval),
+        (reader, urls)
+    )
+    try:
+        scheduler.start()
+    except KeyboardInterrupt:
+        scheduler.shutdown()
+        urls.join()
+        images.join()
+
+
+def _read_urls(reader: Reader, urls: Queue):
     for url in reader.read_urls():
         urls.put(url)
 
 
-def _load_images(loader: Loader, urls: Queue[str], images: Queue[Image]):
+def _load_images(loader: Loader, urls: Queue, images: Queue):
     while True:
-        images.put(loader.load_image(urls.get()))
-        urls.task_done()
+        url = urls.get()
+        try:
+            images.put(loader.load_image(url))
+        except (RequestException, RuntimeError):
+            _logger.exception('Auge failed to load an image', extra={'url': url})
+        finally:
+            urls.task_done()
 
 
-def _recognize_images(recognizer: Recognizer, updater: Updater, images: Queue[Image]):
+def _recognize_images(recognizer: Recognizer, updater: Updater, images: Queue):
     while True:
         updater.update_image(recognizer.recognize_image(images.get()))
         images.task_done()
