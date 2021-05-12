@@ -12,13 +12,6 @@ gen
 node_modules
 venv
 .lets
-.config
-.jupyter
-.local
-.npm
-.cache
 .ipynb_checkpoints
-.ipython
-.env
 __pycache__
 scientific

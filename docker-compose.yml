@@ -3,8 +3,6 @@ x-migrate: &x-migrate
   image: migrate/migrate:v4.12.2
   volumes:
     - ./migrations:/migrations
-  env_file:
-    - .env
 x-golang: &x-golang
   image: rampart-golang
   volumes:
@@ -16,8 +14,6 @@ x-golang: &x-golang
     - ./scientific:/go/src/app/scientific
     - ./images:/go/src/app/images
     - ./templates:/go/src/app/templates
-  env_file:
-    - .env
   environment:
     RAMPART_DSN: postgres://postgres:postgres@rampart-database:5432/rampart?sslmode=disable
 x-python: &x-python
@@ -27,8 +23,6 @@ x-python: &x-python
     - ./rampart:/app/rampart
     - ./scientific:/app/scientific
     - ./config:/app/config
-  env_file:
-    - .env
   ipc: host
   environment:
     RAMPART_DSN: postgres://postgres:postgres@rampart-database:5432/rampart
@@ -101,16 +95,8 @@ services:
       - ./notebooks:/home/jovyan/notebooks
       - ./images:/home/jovyan/images
       - ./scientific:/home/jovyan/scientific
-      - ./.cache:/home/jovyan/.cache
-      - ./.config:/home/jovyan/.config
-      - ./.ipython:/home/jovyan/.ipython
-      - ./.jupyter:/home/jovyan/.jupyter
-      - ./.local:/home/jovyan/.local
-      - ./.npm:/home/jovyan/.npm
     ports:
       - 8888:8888
-    env_file:
-      - .env
     environment:
       JUPYTER_ENABLE_LAB: 'yes'
       RAMPART_DSN: postgres://postgres:postgres@rampart-database:5432/rampart
