@@ -4,10 +4,9 @@ from typing import List
 from PIL.Image import open, new, Image as Picture
 from requests import Session, codes
 from sqlalchemy.engine.base import Engine
-from torch import load, no_grad
+from torch import load, no_grad, tensor
 from torchvision.transforms import Compose, ToTensor, Resize, Normalize
 from torchvision.models import Inception3
-from rampart.config import LoaderConfig
 from rampart.logging import get_logger
 
 _logger = get_logger('rampart.recognition')
@@ -30,19 +29,13 @@ class Reader:
 
 
 class Loader:
-    __slots__ = ['_session', '_timeout', '_user_agent']
+    __slots__ = ['_session']
 
-    def __init__(self, config: LoaderConfig, session: Session):
+    def __init__(self, session: Session):
         self._session = session
-        self._timeout = config.timeout
-        self._user_agent = config.user_agent
 
     def load_image(self, url: str) -> 'Image':
-        response = self._session.get(
-            url,
-            timeout=self._timeout,
-            headers={'User-Agent': self._user_agent}
-        )
+        response = self._session.get(url, timeout=10)
         if response.status_code != codes.ok:
             raise RuntimeError(f'Loader got non-ok status {response.status_code}')
         source = open(BytesIO(response.content))
@@ -74,7 +67,7 @@ class Interior(Enum):
 
 
 class Recognizer:
-    __slots__ = ['_transforms', '_network']
+    __slots__ = ['_transforms', '_module']
 
     def __init__(self, path: str):
         self._transforms = Compose(
@@ -84,13 +77,17 @@ class Recognizer:
                 Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
             ]
         )
-        self._network = Inception3(5, init_weights=False)
-        self._network.load_state_dict(load(path))
-        self._network.eval()
+        self._module = Inception3(5, init_weights=False)
+        self._module.load_state_dict(load(path))
+        self._module.eval()
 
     @no_grad()
     def recognize_image(self, image: Image) -> Image:
-        pass
+        return Image(
+            image.url,
+            image.source,
+            Interior(self._module(tensor([self._transforms(image.source)]))[0])
+        )
 
 
 class Updater:

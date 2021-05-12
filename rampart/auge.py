@@ -34,19 +34,19 @@ def _main():
             max_retries=config.auge.retry_limit
         )
     )
-    loader = Loader(config.auge.loader, session)
+    loader = Loader(session)
     recognizer = Recognizer(config.auge.model_path)
-    updater = Updater(engine)
-    try:
-        if args.debug:
-            _run_once(reader, loader, recognizer, updater)
-        else:
-            _run_forever(config.auge, reader, loader, recognizer, updater)
-    except Exception:  # noqa
-        _logger.exception('Auge got fatal error')
-    finally:
-        session.close()
-        engine.dispose()
+    # updater = Updater(engine)
+    # try:
+    #     if args.debug:
+    #         _run_once(reader, loader, recognizer, updater)
+    #     else:
+    #         _run_forever(config.auge, reader, loader, recognizer, updater)
+    # except Exception:  # noqa
+    #     _logger.exception('Auge got fatal error')
+    # finally:
+    #     session.close()
+    #     engine.dispose()
 
 
 def _run_once(reader: Reader, loader: Loader, recognizer: Recognizer, updater: Updater):

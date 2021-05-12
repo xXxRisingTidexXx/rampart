@@ -3,23 +3,12 @@ from enum import Enum, unique
 from lightgbm import Booster
 from pandas import read_sql, DataFrame
 from sqlalchemy.engine.base import Engine
-from rampart.config import ClassifierConfig
 
 
-# TODO: leverage optuna to set the hyperparameters.
-# https://medium.com/optuna/lightgbm-tuner-new-optuna-integration-for-hyperparameter-optimization-8b7095e99258
-# https://scikit-learn.org/stable/modules/generated/sklearn.metrics.ndcg_score.html
-# https://lightgbm.readthedocs.io/en/latest/Parameters-Tuning.html
-# TODO: add ranking metrics.
-# TODO: think about sklearn gradient booster.
-# https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingClassifier.html
-# https://scikit-learn.org/stable/modules/model_persistence.html
-# TODO: add to notebook.
-# https://plotly.com/python/roc-and-pr-curves/
 class Classifier:
     __slots__ = ['_loader', '_reader', '_booster', '_writer', '_limit']
 
-    def __init__(self, config: ClassifierConfig, engine: Engine):
+    def __init__(self, engine: Engine):
         self._loader = Loader(engine)
         self._reader = Reader(engine)
         self._booster = Booster(model_file=config.model_path)
