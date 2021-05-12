@@ -106,10 +106,10 @@ commands:
   coquus:
     description: Execute ranking dataset augmentation
     cmd: docker-compose run --rm coquus && sudo chown -R $USER:$USER scientific
-  run:
-    description: Activate the whole rampart ecosystem
+  app:
+    description: Run the web app
     cmd: |
       docker-compose up -d database && \
       while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
-      docker-compose up messis assistant twinkle auge
+      docker-compose up app
       docker-compose down

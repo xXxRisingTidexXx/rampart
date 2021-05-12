@@ -25,7 +25,7 @@ x-python: &x-python
     - ./config:/app/config
   ipc: host
   environment:
-    RAMPART_DSN: postgres://postgres:postgres@rampart-database:5432/rampart
+    RAMPART_DSN: postgresql://postgres:postgres@rampart-database:5432/rampart
 services:
   database:
     image: postgis/postgis:13-3.0-alpine
@@ -127,6 +127,14 @@ services:
     <<: *x-python
     container_name: rampart-coquus
     command: python -m rampart.coquus
+  app:
+    <<: *x-python
+    container_name: rampart-app
+    command: uvicorn --host 0.0.0.0 --port 9005 rampart.web:app
+    ports:
+      - 9005:9005
+    depends_on:
+      - database
 volumes:
   database:
     name: rampart-database
