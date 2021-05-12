@@ -101,7 +101,7 @@ commands:
     cmd: |
       docker-compose up -d database && \
       while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
-      docker-compose run --rm twinkle -debug && \
+      docker-compose run --rm twinkle && \
       docker-compose down
   coquus:
     description: Execute ranking dataset augmentation
