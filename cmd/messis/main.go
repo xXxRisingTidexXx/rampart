@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"flag"
 	_ "github.com/lib/pq"
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
 	"github.com/xXxRisingTidexXx/rampart/internal/config"
@@ -58,17 +57,14 @@ func main() {
 			mining.NewGeocodingAmplifier(c.Messis.GeocodingAmplifier),
 			minings,
 			geocodings,
-			metrics.MessisProcessings.WithLabelValues("geocoding"),
 			entry.WithField("amplifier", "geocoding"),
 		)
 		gaugings := make(chan mining.Flat, c.Messis.BufferSize)
-		gauge := metrics.MessisProcessings.WithLabelValues("gauging")
 		for _, amplifier := range c.Messis.GaugingAmplifiers {
 			go run(
 				mining.NewGaugingAmplifier(amplifier),
 				geocodings,
 				gaugings,
-				gauge,
 				entry.WithFields(log.Fields{"amplifier": "gauging", "host": amplifier.Host}),
 			)
 		}
@@ -76,7 +72,6 @@ func main() {
 			mining.NewStoringAmplifier(c.Messis.StoringAmplifier, db),
 			gaugings,
 			nil,
-			metrics.MessisProcessings.WithLabelValues("storing"),
 			entry.WithField("amplifier", "storing"),
 		)
 		metrics.RunServer(c.Messis.Server, entry)
@@ -134,11 +129,9 @@ func run(
 	amplifier mining.Amplifier,
 	input <-chan mining.Flat,
 	output chan<- mining.Flat,
-	gauge prometheus.Gauge,
 	logger log.FieldLogger,
 ) {
 	for flat := range input {
-		gauge.Set(float64(len(input)))
 		apartment, err := amplifier.AmplifyFlat(flat)
 		if err != nil {
 			logger.Error(err)

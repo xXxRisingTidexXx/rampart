@@ -5,14 +5,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
-var MessisProcessings = promauto.NewGaugeVec(
-	prometheus.GaugeOpts{
-		Name: "rampart_messis_processings_total",
-		Help: "Measures flat buffered channel sizes",
-	},
-	[]string{"channel"},
-)
-
 var MessisProcessingDuration = promauto.NewHistogramVec(
 	prometheus.HistogramOpts{
 		Name:    "rampart_messis_processing_duration_seconds",

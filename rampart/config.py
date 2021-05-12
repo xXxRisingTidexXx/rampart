@@ -12,15 +12,15 @@ def get_config() -> 'Config':
 
 
 class Config:
-    __slots__ = ['twinkle', 'coquus', 'auge']
+    __slots__ = ['auge', 'twinkle', 'coquus']
 
     def __init__(self, config: Dict[str, Any]):
         dsn = _get_env('RAMPART_DSN')
-        config['twinkle']['dsn'] = dsn
         config['auge']['dsn'] = dsn
+        config['twinkle']['dsn'] = dsn
+        self.auge = AugeConfig(config['auge'])
         self.twinkle = TwinkleConfig(config['twinkle'])
         self.coquus = CoquusConfig(config['coquus'])
-        self.auge = AugeConfig(config['auge'])
 
 
 def _get_env(key: str) -> str:
@@ -30,21 +30,45 @@ def _get_env(key: str) -> str:
     return value
 
 
-class TwinkleConfig:
-    __slots__ = ['dsn', 'classifier', 'metrics_port', 'spec']
+class AugeConfig:
+    __slots__ = [
+        'dsn',
+        'loader_number',
+        'retry_limit',
+        'loader',
+        'model_path',
+        'metrics_port',
+        'buffer_size',
+        'interval'
+    ]
 
     def __init__(self, config: Dict[str, Any]):
         self.dsn: str = config['dsn']
-        self.classifier = ClassifierConfig(config['classifier'])
+        self.loader_number: int = config['loader-number']
+        self.retry_limit: int = config['retry-limit']
+        self.loader = LoaderConfig(config['loader'])
+        self.model_path = str(_root_path / config['model-path'])
         self.metrics_port: int = config['metrics-port']
-        self.spec: str = config['spec']
+        self.buffer_size: int = config['buffer-size']
+        self.interval: int = config['interval']
 
 
-class ClassifierConfig:
-    __slots__ = ['model_path', 'limit']
+class LoaderConfig:
+    __slots__ = ['timeout', 'user_agent']
 
     def __init__(self, config: Dict[str, Any]):
+        self.timeout: float = config['timeout']
+        self.user_agent: str = config['user-agent']
+
+
+class TwinkleConfig:
+    __slots__ = ['dsn', 'model_path', 'metrics_port', 'spec']
+
+    def __init__(self, config: Dict[str, Any]):
+        self.dsn: str = config['dsn']
         self.model_path = str(_root_path / config['model-path'])
+        self.metrics_port: int = config['metrics-port']
+        self.spec: str = config['spec']
 
 
 class CoquusConfig:
@@ -53,32 +77,3 @@ class CoquusConfig:
     def __init__(self, config: Dict[str, Any]):
         self.input_path = str(_root_path / config['input-path'])
         self.output_format = str(_root_path / config['output-format'])
-
-
-class AugeConfig:
-    __slots__ = [
-        'dsn',
-        'pool_size',
-        'retry_limit',
-        'recognizer',
-        'metrics_port',
-        'spec'
-    ]
-
-    def __init__(self, config: Dict[str, Any]):
-        self.dsn: str = config['dsn']
-        self.pool_size: int = config['pool-size']
-        self.retry_limit: int = config['retry-limit']
-        self.recognizer = RecognizerConfig(config['recognizer'])
-        self.metrics_port: int = config['metrics-port']
-        self.spec: str = config['spec']
-
-
-class RecognizerConfig:
-    __slots__ = ['model_path', 'timeout', 'batch_size', 'worker_number']
-
-    def __init__(self, config: Dict[str, Any]):
-        self.model_path = str(_root_path / config['model-path'])
-        self.timeout: float = config['timeout']
-        self.batch_size: int = config['batch-size']
-        self.worker_number: int = config['worker-number']
