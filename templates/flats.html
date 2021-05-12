@@ -1,0 +1,21 @@
+<html lang="en">
+<head>
+    <title>Rampart</title>
+</head>
+<body>
+<h1>Пошук</h1>
+<ul>
+    {% for flat in flats %}
+    <li>
+        <h3>
+            <a href="{{ flat.url }}">{{ flat.city }}, {{ flat.street }}, {{ flat.house_number }}</a>
+        </h3>
+        <p><b>Ціна:</b> {{ flat.price }}</p>
+        <p><b>Кімнати:</b> {{ flat.room_number }}</p>
+        <p><b>Поверх:</b> {{ flat.floor }}</p>
+        <p><b>Поверховість:</b> {{ flat.total_floor }}</p>
+    </li>
+    {% endfor %}
+</ul>
+</body>
+</html>

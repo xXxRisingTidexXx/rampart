@@ -23,6 +23,7 @@ x-python: &x-python
     - ./rampart:/app/rampart
     - ./scientific:/app/scientific
     - ./config:/app/config
+    - ./templates:/app/templates
   ipc: host
   environment:
     RAMPART_DSN: postgresql://postgres:postgres@rampart-database:5432/rampart

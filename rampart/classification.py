@@ -64,7 +64,9 @@ class Reader:
                             when interior = 'excess' then 1
                             else 0
                             end) as excess_count,
-                    0 as panorama_count
+                    0 as panorama_count,
+                    street,
+                    house_number
                 from flats
                     join visuals on flats.id = visuals.flat_id
                     join images on visuals.image_id = images.id
