@@ -8,3 +8,5 @@ pandas
 lightgbm
 torchvision
 requests
+fastapi
+uvicorn[standard]
