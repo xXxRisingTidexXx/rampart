@@ -25,7 +25,7 @@ def _read_root(
         floor = 'any'
     flats = _reader.read_flats(Query(city, price, RoomNumber[room_number], Floor[floor]))
     if len(flats) <= 0:
-        return _templates.TemplateResponse('flats.html', [])
+        return _templates.TemplateResponse('flats.html', {'request': request, 'flats': []})
     flats['is_relevant'] = _classifier.classify_flats(
         flats.drop(columns=['id', 'url', 'street', 'house_number'])
     )
