@@ -6,6 +6,4 @@ COPY go.mod .
 COPY go.sum .
 COPY cmd cmd
 COPY internal internal
-COPY config config
-COPY templates templates
 RUN apk add build-base && go get ./...

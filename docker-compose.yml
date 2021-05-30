@@ -13,7 +13,6 @@ x-golang: &x-golang
     - ./config:/go/src/app/config
     - ./scientific:/go/src/app/scientific
     - ./images:/go/src/app/images
-    - ./templates:/go/src/app/templates
   environment:
     RAMPART_DSN: postgres://postgres:postgres@rampart-database:5432/rampart?sslmode=disable
 x-python: &x-python
@@ -23,7 +22,6 @@ x-python: &x-python
     - ./rampart:/app/rampart
     - ./scientific:/app/scientific
     - ./config:/app/config
-    - ./templates:/app/templates
   ipc: host
   environment:
     RAMPART_DSN: postgresql://postgres:postgres@rampart-database:5432/rampart
@@ -68,24 +66,6 @@ services:
     <<: *x-golang
     container_name: rampart-warhol
     command: go run github.com/xXxRisingTidexXx/rampart/cmd/warhol
-  travesty:
-    <<: *x-golang
-    container_name: rampart-travesty
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/travesty
-  assistant:
-    <<: *x-golang
-    container_name: rampart-assistant
-    entrypoint: go run github.com/xXxRisingTidexXx/rampart/cmd/assistant
-    ports:
-      - 9002:9002
-    depends_on:
-      - database
-  moderator:
-    <<: *x-golang
-    container_name: rampart-moderator
-    command: go run github.com/xXxRisingTidexXx/rampart/cmd/moderator
-    depends_on:
-      - database
   notebook:
     build:
       context: .
@@ -108,26 +88,6 @@ services:
       context: .
       dockerfile: docker/python.dockerfile
     image: rampart-python
-  auge:
-    <<: *x-python
-    container_name: rampart-auge
-    entrypoint: python -m rampart.auge
-    ports:
-      - 9003:9003
-    depends_on:
-      - database
-  twinkle:
-    <<: *x-python
-    container_name: rampart-twinkle
-    entrypoint: python -m rampart.twinkle
-    ports:
-      - 9004:9004
-    depends_on:
-      - database
-  coquus:
-    <<: *x-python
-    container_name: rampart-coquus
-    command: python -m rampart.coquus
   app:
     <<: *x-python
     container_name: rampart-app
