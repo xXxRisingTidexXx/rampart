@@ -55,12 +55,12 @@ commands:
       docker-compose up notebook && \
       docker-compose down
       chown -R $USER:$USER scientific
-  mining:
+  tube:
     description: Run the data mining app single workflow
     cmd: |
       docker-compose up -d database && \
       while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
-      docker-compose run --rm mining
+      docker-compose run --rm tube
       docker-compose down
   app:
     description: Run the web app

@@ -88,10 +88,10 @@ services:
       context: .
       dockerfile: docker/python.dockerfile
     image: rampart-python
-  mining:
+  tube:
     <<: *x-python
-    container_name: rampart-mining
-    command: python -m rampart.mining
+    container_name: rampart-tube
+    command: python -m rampart.tube
     depends_on:
       - database
   app:
