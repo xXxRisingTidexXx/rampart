@@ -7,11 +7,11 @@ from shapely.geometry import Point
 @dataclass(frozen=True)
 class Flat:
     url: str
-    images: List['Image']
+    images_urls: List[str]
     price: float
-    total_price: float
-    living_price: float
-    kitchen_price: float
+    total_area: float
+    living_area: float
+    kitchen_area: float
     room_number: int
     floor: int
     total_floor: int
@@ -23,6 +23,16 @@ class Flat:
     ssf: float
     izf: float
     gzf: float
+
+    @property
+    def has_location(self) -> bool:
+        return self.point.x or self.point.y
+
+
+@unique
+class Housing(Enum):
+    primary = 0
+    secondary = 1
 
 
 @dataclass(frozen=True)
@@ -39,9 +49,3 @@ class Interior(Enum):
     junk = 3
     construction = 4
     excess = 5
-
-
-@unique
-class Housing(Enum):
-    primary = 0
-    secondary = 1

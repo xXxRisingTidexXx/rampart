@@ -1,9 +1,8 @@
 from typing import Optional
 from requests import Session, codes
-from requests.adapters import HTTPAdapter
 from shapely.geometry import Point
 from rampart.exceptions import RampartError
-from rampart.models import Flat, Housing, Image, Interior
+from rampart.models import Flat, Housing
 
 
 class Miner:
@@ -64,10 +63,7 @@ class Miner:
         return Flat(
             'https://dom.ria.com/uk/' + url,
             [
-                Image(
-                    f'https://cdn.riastatic.com/photosnew/dom/photo/{url[:index]}__{k}fl.webp',
-                    Interior.unknown
-                )
+                f'https://cdn.riastatic.com/photosnew/dom/photo/{url[:index]}__{k}fl.webp'
                 for k in items[0].get('photos', {}).keys()
             ],
             float(items[0].get('priceArr', {}).get('1', '0').replace(' ', '')),
@@ -86,14 +82,3 @@ class Miner:
             0,
             0
         )
-
-
-def _main():
-    with Session() as session:
-        session.mount('https://', HTTPAdapter(pool_maxsize=5, max_retries=3))
-        session.headers['User-Agent'] = 'RampartBot/1.0.0'
-        print(Miner(session).mine_flat())
-
-
-if __name__ == '__main__':
-    _main()
