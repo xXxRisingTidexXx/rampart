@@ -1,3 +1,4 @@
+from typing import Optional
 from requests import Session, codes
 from shapely.geometry import Point
 from rampart.exceptions import RampartError
@@ -10,9 +11,9 @@ class Geocoder:
     def __init__(self, session: Session):
         self._session = session
 
-    def geocode_flat(self, flat: Flat) -> Flat:
+    def geocode_flat(self, flat: Flat) -> Optional[Flat]:
         if flat.has_location or not flat.city or not flat.street or not flat.house_number:
-            return flat
+            return None
         response = self._session.get(
             f'https://nominatim.openstreetmap.org/search?format=json&countrycodes=ua&q='
             f'{flat.house_number.replace(" ", "+")}+{flat.street.replace(" ", "+")},+'
@@ -23,7 +24,7 @@ class Geocoder:
             raise RampartError(f'Geocoder got status: {response.status_code}')
         locations = response.json()
         if not len(locations):
-            return flat
+            return None
         longitude = float(locations[0].get('lon', 0))
         if longitude < -180 or longitude > 180:
             raise RampartError(f'Geocoder got invalid longitude: {longitude}, {flat.url}')
