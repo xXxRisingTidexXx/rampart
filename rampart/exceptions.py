@@ -1,0 +1,2 @@
+class RampartError(RuntimeError):
+    pass
