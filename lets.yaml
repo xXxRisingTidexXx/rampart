@@ -28,6 +28,13 @@ commands:
       read MIGRATION && \
       docker-compose run --rm generate $MIGRATION && \
       sudo chown -R $USER:$USER migrations
+  miner:
+    description: Run the data mining app single workflow
+    cmd: |
+      docker-compose up -d database && \
+      while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
+      docker-compose run --rm messis -miner domria
+      docker-compose down
   messis:
     description: Launch flat mining application
     cmd: |

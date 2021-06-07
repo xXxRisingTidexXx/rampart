@@ -135,71 +135,6 @@ warhol:
   retry-limit: 3
   output-format: scientific/images/%s.%s.%s.%s.webp
   input-path: scientific/auge.csv
-assistant:
-  keymap: &keymap
-    separator: '|'
-    like-action: like
-  publisher:
-    sender:
-      <<: *keymap
-      like-button: "Супер \U0001F44D"
-  spec: '*/6 * * * *'
-  server:
-    address: :9002
-    read-timeout: 5s
-    write-timeout: 5s
-    max-header-bytes: 1048576
-  dispatcher:
-    timeout: 5
-    worker-number: 2
-    handler:
-      <<: *keymap
-      start-command: /start
-      start-button: "Зрозуміло \U0001F44D"
-      help-command: /help
-      help-button: "Довідка \U0001F64B"
-      cancel-button: "Головне меню \U00002B05"
-      add-button: "Підписка \U0001F49C"
-      list-button: "Наявне \U0001F5C4"
-      any-price-button: "Не знаю \U0001F615"
-      any-room-number-button: "Байдуже \U0001F612"
-      one-room-number-button: '1'
-      two-room-number-button: '2'
-      three-room-number-button: '3'
-      many-room-number-button: '4+'
-      any-floor-button: "Байдуже \U0001F612"
-      low-floor-button: Ні
-      high-floor-button: Так
-      min-flat-count: 10
-      max-price-length: 15
-      max-room-number-length: 2
-      max-room-number: 10
-      any-price-placeholder: довільна
-      any-room-number-placeholder: довільна
-      one-room-number-placeholder: '1'
-      two-room-number-placeholder: '2'
-      three-room-number-placeholder: '3'
-      many-room-number-placeholder: '4+'
-      any-floor-placeholder: довільний
-      low-floor-placeholder: низький
-      high-floor-placeholder: високий
-      delete-button: "Видалити \U0001F5D1"
-      delete-action: delete
-moderator:
-  dispatcher:
-    timeout: 5
-    handler:
-      start-command: /start
-      start-button: "Зрозуміло \U0001F44D"
-      help-command: /help
-      help-button: "Довідка \U0001F64B"
-      markup-button: "Світлини \U0001F4F7"
-      luxury-button: "\U0001F3DB"
-      comfort-button: "\U0001F3E0"
-      junk-button: "\U0001F3DA"
-      construction-button: "\U0001F3D7"
-      excess-button: "\U0001F3DD"
-      enough-button: "Досить \U0001F60C"
 auge:
   loader-number: 10
   retry-limit: 3
@@ -214,6 +149,3 @@ twinkle:
   model-path: scientific/models/twinkle.latest.txt
   metrics-port: 9004
   spec: '*/6 * * * *'
-coquus:
-  input-path: scientific/twinkle.csv
-  output-format: scientific/tables/{}.csv
