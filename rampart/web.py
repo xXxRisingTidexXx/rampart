@@ -1,73 +1,50 @@
-from fastapi import FastAPI
+from os import getenv
+from fastapi import FastAPI, HTTPException
+from requests import codes
+from sqlalchemy import create_engine
+from rampart.twinkle import Reader, Classifier, Query, RoomNumber, Floor
 
 app = FastAPI()
+_reader = Reader(create_engine(getenv('RAMPART_DSN')))
+_classifier = Classifier()
 
 
 @app.get('/')
-def _get_root():
+def _get_root(city: str, price: float, room_number: str, floor: str):
+    if price < 0:
+        raise HTTPException(codes.bad, 'Price shouldn\'t be negative')
+    if room_number not in RoomNumber.__members__:
+        raise HTTPException(codes.bad, 'Choose room number from the existing ones')
+    if floor not in Floor.__members__:
+        raise HTTPException(codes.bad, 'Choose floor from the existing ones')
+    flats = _reader.read_flats(Query(city, price, RoomNumber[room_number], Floor[floor]))
+    if len(flats) <= 0:
+        return []
+    flats['is_relevant'] = _classifier.classify_flats(
+        flats.drop(columns=['id', 'url', 'street', 'house_number'])
+    )
     return [
         {
-            'url': 'https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-pecherskiy-lesi-ukrainki-bul-17060617.html',
-            'image_urls': [
-                'https://cdn.riastatic.com/photosnew/dom/photo/prodaja-kvartira-kiev-pecherskiy-lesi-ukrainki-bul__135692528fl.webp',
-                'https://cdn.riastatic.com/photosnew/dom/photo/prodaja-kvartira-kiev-pecherskiy-lesi-ukrainki-bul__135692585fl.webp',
-                'https://cdn.riastatic.com/photosnew/dom/photo/prodaja-kvartira-kiev-pecherskiy-lesi-ukrainki-bul__140511350fl.webp',
-                'https://cdn.riastatic.com/photosnew/dom/photo/prodaja-kvartira-kiev-pecherskiy-lesi-ukrainki-bul__140511385fl.webp'
-            ],
-            'price': 88000,
-            'total_area': 46,
-            'living_area': 30,
-            'kitchen_area': 10,
-            'room_number': 2,
-            'floor': 3,
-            'total_floor': 5,
-            'housing': 'secondary',
-            'point': [30.5333129, 50.4316619],
-            'ssf': 2.34552923,
-            'izf': 3.10933487,
-            'gzf': 1.20394283
-        },
-        {
-            'url': 'https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-goloseevskiy-akimovia-niya-enko-lia-19376478.html',
-            'image_urls': [
-                'https://cdn.riastatic.com/photosnew/dom/photo/prodaja-kvartira-kiev-goloseevskiy-akimovia-niya-enko-lia__138023220fl.webp',
-                'https://cdn.riastatic.com/photosnew/dom/photo/prodaja-kvartira-kiev-goloseevskiy-akimovia-niya-enko-lia__138022923fl.webp',
-                'https://cdn.riastatic.com/photosnew/dom/photo/prodaja-kvartira-kiev-goloseevskiy-akimovia-niya-enko-lia__138022986fl.webp',
-                'https://cdn.riastatic.com/photosnew/dom/photo/prodaja-kvartira-kiev-goloseevskiy-akimovia-niya-enko-lia__139104075fl.webp',
-                'https://cdn.riastatic.com/photosnew/dom/photo/prodaja-kvartira-kiev-goloseevskiy-akimovia-niya-enko-lia__139104079fl.webp',
-                'https://cdn.riastatic.com/photosnew/dom/photo/prodaja-kvartira-kiev-goloseevskiy-akimovia-niya-enko-lia__139104082fl.webp'
-            ],
-            'price': 80000,
-            'total_area': 37,
-            'living_area': 25,
-            'kitchen_area': 5,
-            'room_number': 1,
-            'floor': 6,
-            'total_floor': 14,
-            'housing': 'primary',
-            'point': [30.4733, 50.39329],
-            'ssf': 1.230348274,
-            'izf': 4.329372812,
-            'gzf': 0.837239403
-        },
-        {
-            'url': 'https://dom.ria.com/uk/realty-prodaja-kvartira-kiev-osokorki-solomii-krushelnitskoy-ulitsa-19769039.html',
-            'image_urls': [
-                'https://cdn.riastatic.com/photosnew/dom/photo/prodaja-kvartira-kiev-osokorki-solomii-krushelnitskoy-ulitsa__145980630fl.webp',
-                'https://cdn.riastatic.com/photosnew/dom/photo/prodaja-kvartira-kiev-osokorki-solomii-krushelnitskoy-ulitsa__145980632fl.webp',
-                'https://cdn.riastatic.com/photosnew/dom/photo/prodaja-kvartira-kiev-osokorki-solomii-krushelnitskoy-ulitsa__145980633fl.webp'
-            ],
-            'price': 69500,
-            'total_area': 37,
-            'living_area': 11,
-            'kitchen_area': 0,
-            'room_number': 1,
-            'floor': 22,
-            'total_floor': 25,
-            'housing': 'secondary',
-            'point': [30.6494872, 50.3925324],
-            'ssf': 0.921392232,
-            'izf': 18.22930293,
-            'gzf': 0
+            'url': f['url'],
+            'price': int(f['actual_price']),
+            'total_area': int(f['total_area']),
+            'living_area': int(f['living_area']),
+            'kitchen_area': int(f['kitchen_area']),
+            'room_number': f['actual_room_number'],
+            'floor': f['actual_floor'],
+            'total_floor': f['total_floor'],
+            'city': city,
+            'street': f['street'],
+            'house_number': f['house_number'],
+            'ssf': f['ssf'],
+            'izf': f['izf'],
+            'gzf': f['gzf'],
+            'abandoned_count': f['abandoned_count'],
+            'luxury_count': f['luxury_count'],
+            'comfort_count': f['comfort_count'],
+            'junk_count': f['junk_count'],
+            'construction_count': f['construction_count'],
+            'excess_count': f['excess_count']
         }
+        for _, f in flats[flats['is_relevant']].iterrows()
     ]

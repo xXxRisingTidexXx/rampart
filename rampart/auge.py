@@ -13,7 +13,7 @@ from requests import Session, codes, RequestException
 from requests.adapters import HTTPAdapter
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
-from torch import load, no_grad, max, unsqueeze
+from torch import load, no_grad, max, unsqueeze, set_num_threads
 from torchvision.transforms import Compose, ToTensor, Resize, Normalize
 from torchvision.models import Inception3
 from rampart.exceptions import RampartError
@@ -126,6 +126,7 @@ def _main():
         help='Whether to run the job immediately or periodically'
     )
     args = parser.parse_args()
+    set_num_threads(8)
     engine = create_engine(getenv('RAMPART_DSN'))
     reader = Reader(engine)
     session = Session()
