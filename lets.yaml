@@ -69,10 +69,17 @@ commands:
       while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
       docker-compose run --rm tube
       docker-compose down
-  app:
-    description: Run the web app
+  auge:
+    description: Run image classification task
     cmd: |
       docker-compose up -d database && \
       while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
-      docker-compose up app
+      docker-compose run --rm auge -debug && \
+      docker-compose down
+  run:
+    description: Run the whole ecosystem
+    cmd: |
+      docker-compose up -d database && \
+      while ! nc -z localhost 5432 2>/dev/null; do sleep 1; done && \
+      docker-compose up messis auge
       docker-compose down

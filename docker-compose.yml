@@ -88,6 +88,12 @@ services:
       context: .
       dockerfile: docker/python.dockerfile
     image: rampart-python
+  auge:
+    <<: *x-python
+    container_name: rampart-auge
+    entrypoint: python -m rampart.auge
+    depends_on:
+      - database
   tube:
     <<: *x-python
     container_name: rampart-tube
