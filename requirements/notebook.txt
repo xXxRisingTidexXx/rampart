@@ -22,7 +22,7 @@ numpy==1.20.3
     #   torchvision
 pandas==1.2.4
     # via ppscore
-pillow==8.2.0
+pillow==9.0.0
     # via torchvision
 plotly==4.14.3
     # via -r requirements/notebook.in
