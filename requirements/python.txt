@@ -32,7 +32,7 @@ lightgbm==3.2.1
     # via -r requirements/python.in
 markupsafe==2.0.1
     # via jinja2
-numpy==1.20.3
+numpy==1.22.0
     # via
     #   lightgbm
     #   pandas
