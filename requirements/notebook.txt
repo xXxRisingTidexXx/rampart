@@ -12,7 +12,7 @@ joblib==1.0.1
     # via scikit-learn
 lightgbm==3.2.1
     # via -r requirements/notebook.in
-numpy==1.20.3
+numpy==1.22.0
     # via
     #   lightgbm
     #   pandas
