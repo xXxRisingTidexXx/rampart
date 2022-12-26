@@ -65,5 +65,5 @@ torchvision==0.8.2+cpu
     # via -r requirements/notebook.in
 typing-extensions==3.10.0.0
     # via torch
-wheel==0.36.2
+wheel==0.38.1
     # via lightgbm
